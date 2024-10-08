@@ -18,9 +18,7 @@ const MenuAuthenticationScreen = () => {
     <View style={st.container}>
 
       {/* làm cho thanh statusbar trong suốt */}
-      <StatusBar translucent backgroundColor="transparent" barStyle={
-        'dark-content'
-      } />
+      <StatusBar backgroundColor="transparent" barStyle={'dark-content'} />
 
       {/* phần nội dung */}
       <View style={st.content}>
