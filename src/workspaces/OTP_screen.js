@@ -15,7 +15,11 @@ const inputLoginScreen = () => {
       return
     }
 
-    alert('Đăng ký thành công')
+    alert('tiếp theo')
+  }
+
+  const handleForgetPassword = () => {
+    alert('Quên mật khẩu')
   }
   return (
     <View style={st.container}>
@@ -63,7 +67,7 @@ const inputLoginScreen = () => {
           <Text style={{ color: 'red', fontWeight: 'bold' }}>{OTPErrorText}</Text>
 
           {/* không nhận được email */}
-          <TouchableOpacity onPress={() => alert('Không nhận được mã OTP')}>
+          <TouchableOpacity onPress={handleForgetPassword}>
             <Text style={{ color: '#57B5F4', fontWeight: 'bold' }}>Bạn không nhận được email?</Text>
           </TouchableOpacity>
         </View>
