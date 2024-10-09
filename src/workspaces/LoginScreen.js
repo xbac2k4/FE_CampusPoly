@@ -65,27 +65,39 @@ const LoginScreen = () => {
         </View>
 
         {/* nhập email */}
-        <TextInput
-          onChangeText={(text) => {
-            setEmail(text)
-            if (emailErrorText !== '') {
-              setEmailErrorText('')
-            }
-          }}
-          value={email}
-          placeholder="Email"
-          style={st.emailInput}
-        />
+        <View style={st.inputContainer}>
+          <Feather
+            name="user"
+            size={20}
+            style={{ marginLeft: 10 }}
+          />
+          <TextInput
+            onChangeText={(text) => {
+              setEmail(text)
+              if (emailErrorText !== '') {
+                setEmailErrorText('')
+              }
+            }}
+            value={email}
+            placeholder="Email"
+            style={st.emailInput}
+          />
+        </View>
 
         {/* thông báo lỗi email */}
         <View style={{
-          width: '90%',
+          width: '90%'
         }}>
           <Text style={{ color: 'red' }}>{emailErrorText}</Text>
         </View>
 
         {/* nhập mật khẩu */}
         <View style={st.inputContainer}>
+          <Feather
+            name="lock"
+            size={20}
+            style={{ marginLeft: 10 }}
+          />
           <TextInput
             onChangeText={(text) => {
               setPassword(text)
@@ -99,15 +111,15 @@ const LoginScreen = () => {
             secureTextEntry={!showPassword}
           />
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={st.iconContainer}>
-            <Feather name={showPassword ? 'eye' : 'eye-off'} size={20} color='red' />
+            <Feather name={showPassword ? 'eye' : 'eye-off'} size={20} />
           </TouchableOpacity>
         </View>
 
         {/* thông báo lỗi mật khẩu */}
         <View style={{
-          width: '90%',
+          width: '90%'
         }}>
-          <Text style={{ color: 'red' }}>{passErrorText}</Text>
+          <Text style={{ color: 'red', }}>{passErrorText}</Text>
         </View>
       </View>
 
@@ -162,13 +174,9 @@ const st = StyleSheet.create({
   },
   emailInput: {
     width: '90%',
-    borderWidth: 1,
-    borderColor: 'black',
-    marginTop: 20,
     padding: 20,
     fontWeight: 'bold',
     fontSize: 15,
-    borderRadius: 10,
   },
   passwordInput: {
     flex: 1,
