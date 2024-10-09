@@ -1,7 +1,8 @@
-import { Image, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import Feather from 'react-native-vector-icons/Feather';
 import Entypo from 'react-native-vector-icons/Entypo';
+import AuthenticationHeader from '../components/authenticationHeader';
 
 
 const LoginScreen = () => {
@@ -42,27 +43,7 @@ const LoginScreen = () => {
   }
   return (
     <View style={st.container}>
-
-      {/* thanh statusbar */}
-      <StatusBar backgroundColor="transparent" barStyle={'dark-content'} />
-
-      {/* logo */}
-      <Image
-        source={require('../assets/images/logo.png')}
-        style={st.logo}
-        resizeMode="contain"
-      />
-
-      {/* nút trở lại */}
-      <View
-        style={{
-          width: '90%',
-        }}>
-        <TouchableOpacity>
-          <Image
-            source={require('../assets/images/left-arrow.png')} />
-        </TouchableOpacity>
-      </View>
+      <AuthenticationHeader />
 
       {/* form đăng nhập */}
       <View style={st.loginForm}>
@@ -193,7 +174,6 @@ const st = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white'
   },
-  logo: { width: 180, height: 50 },
   loginForm: {
     width: '100%',
     alignItems: 'center',

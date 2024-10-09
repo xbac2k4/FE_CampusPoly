@@ -1,6 +1,8 @@
 import { Image, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import AuthenticationHeader from '../components/authenticationHeader';
+
 
 const inputLoginScreen = () => {
   const [OTP, setOTP] = useState('')
@@ -18,26 +20,7 @@ const inputLoginScreen = () => {
   return (
     <View style={st.container}>
 
-      {/* thanh statusbar */}
-      <StatusBar backgroundColor="transparent" barStyle={'dark-content'} />
-
-      {/* logo */}
-      <Image
-        source={require('../assets/images/logo.png')}
-        style={st.logo}
-        resizeMode="contain"
-      />
-
-      {/* nút trở lại */}
-      <View
-        style={{
-          width: '90%',
-        }}>
-        <TouchableOpacity>
-          <Image
-            source={require('../assets/images/left-arrow.png')} />
-        </TouchableOpacity>
-      </View>
+      <AuthenticationHeader />
 
       {/* form nhập mã OTP */}
       <View style={st.loginForm}>
