@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import HomeScreen from './src/workspaces/homeScreen'
+import HomeScreen from './src/workspaces/Home/homeScreen'
 
 const App = () => {
   return (

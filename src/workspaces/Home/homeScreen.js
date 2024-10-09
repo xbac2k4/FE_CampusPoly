@@ -1,8 +1,10 @@
 import { StyleSheet, Text, TouchableOpacity, View, FlatList } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import StoryComponent from '../components/storyComponent';
-import ArticleComponent from '../components/articleComponent';
+import StoryComponent from '../../components/Home/storyComponent';
+import ArticleComponent from '../../components/Home/articleComponent';
+
+
 
 const HomeScreen = () => {
   const [userName, setUserName] = useState(''); // State để lưu tên người dùng
@@ -32,12 +34,12 @@ const HomeScreen = () => {
   const fetchStories = async () => {
     // Giả lập dữ liệu từ API
     const fakeStories = [
-      { id: '1', imgStory: require('../assets/image/test3.jpg'), imgUser: require('../assets/image/test2.jpg') },
-      { id: '2', imgStory: require('../assets/image/test3.jpg'), imgUser: require('../assets/image/test2.jpg') },
-      { id: '3', imgStory: require('../assets/image/test3.jpg'), imgUser: require('../assets/image/test2.jpg') },
-      { id: '4', imgStory: require('../assets/image/test3.jpg'), imgUser: require('../assets/image/test2.jpg') },
-      { id: '5', imgStory: require('../assets/image/test3.jpg'), imgUser: require('../assets/image/test2.jpg') },
-      { id: '6', imgStory: require('../assets/image/test3.jpg'), imgUser: require('../assets/image/test2.jpg') },
+      { id: '1', imgStory: require('../../assets/image/test3.jpg'), imgUser: require('../../assets/image/test2.jpg') },
+      { id: '2', imgStory: require('../../assets/image/test3.jpg'), imgUser: require('../../assets/image/test2.jpg') },
+      { id: '3', imgStory: require('../../assets/image/test3.jpg'), imgUser: require('../../assets/image/test2.jpg') },
+      { id: '4', imgStory: require('../../assets/image/test3.jpg'), imgUser: require('../../assets/image/test2.jpg') },
+      { id: '5', imgStory: require('../../assets/image/test3.jpg'), imgUser: require('../../assets/image/test2.jpg') },
+      { id: '6', imgStory: require('../../assets/image/test3.jpg'), imgUser: require('../../assets/image/test2.jpg') },
     ];
     setStories(fakeStories); // Cập nhật stories
   };

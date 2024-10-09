@@ -7,7 +7,7 @@ const ArticleComponent = ({ imgavatar, username, time, content, imgcontent, }) =
             <View style={{ height: 1, backgroundColor: '#fff', marginBottom: 15 }} />
             <View style={styles.headerContent}>
                 <View style={{ flexDirection: 'row' }}>
-                    <Image source={require("../assets/image/test2.jpg")} style={styles.imageavatar} />
+                    <Image source={require("../../assets/image/test2.jpg")} style={styles.imageavatar} />
                     <View style={{ marginLeft: 6, marginTop: -5 }}>
                         <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 14, letterSpacing: 1.6, fontFamily: "HankenGrotesk-Regular" }}>Phạm Việt Anh</Text>
                         <Text style={{ fontSize: 12, fontFamily: 'HankenGrotesk-Regular', fontWeight: "medium", color: '#727477' }}>20m ago</Text>
@@ -18,11 +18,11 @@ const ArticleComponent = ({ imgavatar, username, time, content, imgcontent, }) =
                 </TouchableOpacity>
             </View>
             <View style={styles.bodyContent}>
-                <Text style={{ fontFamily: 'rgl1', fontSize: 16, fontWeight: '500', color: "#fff", letterSpacing: 1.4 }} >
+                <Text style={{ fontFamily: 'rgl1', fontSize: 16, fontWeight: '500', color: "#fff" }} >
                     “If you think you are too small to make a difference, try sleeping with a mosquito.” ~ Dalai Lama
                 </Text>
                 <TouchableOpacity>
-                    <Image source={require("../assets/image/test3.jpg")} style={styles.imgContent} />
+                    <Image source={require("../../assets/image/test3.jpg")} style={styles.imgContent} />
                 </TouchableOpacity>
             </View>
             <View style={styles.interactContainer}>
