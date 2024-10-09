@@ -1,4 +1,4 @@
-import { Image, Pressable, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import AuthenticationHeader from '../components/authenticationHeader';
 import Feather from 'react-native-vector-icons/Feather';
@@ -97,11 +97,12 @@ const inputLoginScreen = () => {
           <Text style={{ color: 'red', }}>{passErrorText}</Text>
         </View>
 
+          {/* Chính sách */}
+
         <View style={{
           width: '90%'
         }}>
 
-          {/* Chính sách */}
           <Text style={{ color: 'black', fontSize: 15 }}>Khi đăng kí nghĩa là bạn đồng ý với
             <Text onPress={openTermsOfService} style={st.policyText}> Điều khoản dịch vụ</Text> và
             <Text onPress={openPrivacyPolicy} style={st.policyText}> Chính sách riêng tư</Text> , bao gồm cả
