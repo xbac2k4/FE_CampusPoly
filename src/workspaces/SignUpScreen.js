@@ -1,32 +1,44 @@
 import { Image, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import Feather from 'react-native-vector-icons/Feather';
+import Entypo from 'react-native-vector-icons/Entypo';
+
 
 const LoginScreen = () => {
+  const [name, setName] = useState('')
+  const [nameErrorText, setNameErrorText] = useState('')
+
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [emailErrorText, setEmailErrorText] = useState('')
-  const [passErrorText, setPassErrorText] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
+
+  const [birthDay, setBirthDay] = useState('')
+  const [birthDayErrorText, setBirthDayErrorText] = useState('')
 
   // Hàm xử lý khi người dùng ấn nút đăng nhập
-  const handleLogin = () => {
-    if (email === '' && password === '') {
+  const handleSignUp = () => {
+    if (email === '' && name === '' && birthDay === '') {
       setEmailErrorText('Vui lòng nhập email')
-      setPassErrorText('Vui lòng nhập mật khẩu')
+      setNameErrorText('Vui lòng nhập tên')
+      setBirthDayErrorText('Vui lòng nhập ngày sinh')
       return
     }
+
+    if (name === '') {
+      setNameErrorText('Vui lòng nhập tên')
+      return
+    }
+
     if (email === '') {
       setEmailErrorText('Vui lòng nhập email')
       return
     }
 
-    if (password === '') {
-      setPassErrorText('Vui lòng nhập mật khẩu')
+    if (birthDay === '') {
+      setBirthDayErrorText('Vui lòng nhập ngày sinh')
       return
     }
 
-    alert('Đăng nhập thành công')
+    alert('Đăng ký thành công')
   }
   return (
     <View style={st.container}>
@@ -56,71 +68,110 @@ const LoginScreen = () => {
       <View style={st.loginForm}>
 
         {/* tiêu đề */}
-        <View
-          style={{ width: '80%' }}>
-          <Text
-            style={st.title}>
-            Đăng nhập
-          </Text>
+        <Text
+          style={st.title}>
+          Tạo tài khoản của bạn
+        </Text>
+
+        {/* nhập tên */}
+        <View style={st.inputContainer}>
+          <Feather
+            name="user"
+            size={20}
+            style={{ marginLeft: 10 }}
+          />
+          <TextInput
+            onChangeText={(text) => {
+              if (text.length > 50) {
+                setNameErrorText('Tên không được quá 50 ký tự')
+                return
+              }
+              setName(text)
+              if (nameErrorText !== '') {
+                setNameErrorText('')
+              }
+            }}
+            value={name}
+            placeholder="Tên"
+            style={st.input}
+          />
+        </View>
+
+        {/* thông báo lỗi tên */}
+        <View style={{
+          width: '90%',
+          flexDirection: 'row',
+          justifyContent: 'space-between'
+        }}>
+          <Text style={{ color: 'red' }}>{nameErrorText}</Text>
+          <Text style={{ color: name.length > 50 ? 'red' : 'gray' }}>{name.length}/50</Text>
         </View>
 
         {/* nhập email */}
-        <TextInput
-          onChangeText={(text) => {
-            setEmail(text)
-            if (emailErrorText !== '') {
-              setEmailErrorText('')
-            }
-          }}
-          value={email}
-          placeholder="Email"
-          style={st.emailInput}
-        />
+        <View style={st.inputContainer}>
+          <Entypo
+            name="email"
+            size={20}
+            style={{ marginLeft: 10 }}
+          />
+          <TextInput
+            onChangeText={(text) => {
+              setEmail(text)
+              if (emailErrorText !== '') {
+                setEmailErrorText('')
+              }
+            }}
+            value={email}
+            placeholder="Email"
+            style={st.input}
+          />
+        </View>
 
         {/* thông báo lỗi email */}
         <View style={{
-          width: '90%',
+          width: '90%'
         }}>
           <Text style={{ color: 'red' }}>{emailErrorText}</Text>
         </View>
 
-        {/* nhập mật khẩu */}
+        {/* nhập ngày sinh */}
         <View style={st.inputContainer}>
+          <Feather
+            name="calendar"
+            size={20}
+            style={{ marginLeft: 10 }}
+          />
           <TextInput
             onChangeText={(text) => {
-              setPassword(text)
-              if (passErrorText !== '') {
-                setPassErrorText('')
+              setBirthDay(text)
+              if (birthDayErrorText !== '') {
+                setBirthDayErrorText('')
               }
             }}
-            value={password}
-            placeholder="Mật khẩu"
-            style={st.passwordInput}
-            secureTextEntry={!showPassword}
+            value={birthDay}
+            placeholder="Ngày sinh"
+            style={st.input}
           />
-          <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={st.iconContainer}>
-            <Feather name={showPassword ? 'eye' : 'eye-off'} size={20} color='red' />
-          </TouchableOpacity>
         </View>
 
-        {/* thông báo lỗi mật khẩu */}
+        {/* thông báo lỗi ngày sinh */}
         <View style={{
-          width: '90%',
+          width: '90%'
         }}>
-          <Text style={{ color: 'red' }}>{passErrorText}</Text>
+          <Text style={{ color: 'red' }}>{birthDayErrorText}</Text>
         </View>
       </View>
 
-      {/* nút quên mật khẩu và đăng nhập */}
+      {/* nút tiếp theo */}
       <View style={st.bottomContainer}>
         <View style={st.bottomBar}>
 
           <TouchableOpacity
-            onPress={handleLogin}
+            onPress={handleSignUp}
             style={[st.bottomBtn, { backgroundColor: '#D9D9D9' }]}>
             <Text
               style={st.btnText}>
-              Tiếp
+              Tiếp theo
             </Text>
           </TouchableOpacity>
         </View>
@@ -150,18 +201,14 @@ const st = StyleSheet.create({
   },
   title: {
     fontWeight: 'bold',
-    fontSize: 35,
+    fontSize: 30,
     color: 'black',
   },
-  emailInput: {
+  input: {
     width: '90%',
-    borderWidth: 1,
-    borderColor: 'black',
-    marginTop: 20,
     padding: 20,
     fontWeight: 'bold',
     fontSize: 15,
-    borderRadius: 10,
   },
   passwordInput: {
     flex: 1,
