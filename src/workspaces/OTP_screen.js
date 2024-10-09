@@ -7,13 +7,13 @@ const inputLoginScreen = () => {
   const [OTPErrorText, setOTPErrorText] = useState('')
 
   // Hàm xử lý khi người dùng ấn nút đăng nhập
-  const handleLogin = () => {
-    if (email === '') {
-      setEmailErrorText('Vui lòng nhập email')
+  const handleSignUp = () => {
+    if (OTP === '') {
+      setOTPErrorText('Vui lòng nhập OTP')
       return
     }
 
-    alert('Đăng nhập thành công')
+    alert('Đăng ký thành công')
   }
   return (
     <View style={st.container}>
@@ -90,7 +90,7 @@ const inputLoginScreen = () => {
       <View style={st.bottomContainer}>
         <View style={st.bottomBar}>
           <TouchableOpacity
-            onPress={handleLogin}
+            onPress={handleSignUp}
             style={[st.bottomBtn, { backgroundColor: '#D9D9D9' }]}>
             <Text
               style={st.btnText}>
