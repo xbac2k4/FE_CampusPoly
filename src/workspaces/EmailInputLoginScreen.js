@@ -2,27 +2,14 @@ import { Image, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View }
 import React, { useState } from 'react'
 import Feather from 'react-native-vector-icons/Feather';
 
-const LoginScreen = () => {
+const EmailInputLoginScreen = () => {
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [emailErrorText, setEmailErrorText] = useState('')
-  const [passErrorText, setPassErrorText] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
 
   // Hàm xử lý khi người dùng ấn nút đăng nhập
   const handleLogin = () => {
-    if (email === '' && password === '') {
-      setEmailErrorText('Vui lòng nhập email')
-      setPassErrorText('Vui lòng nhập mật khẩu')
-      return
-    }
     if (email === '') {
       setEmailErrorText('Vui lòng nhập email')
-      return
-    }
-
-    if (password === '') {
-      setPassErrorText('Vui lòng nhập mật khẩu')
       return
     }
 
@@ -60,66 +47,31 @@ const LoginScreen = () => {
           style={{ width: '80%' }}>
           <Text
             style={st.title}>
-            Đăng nhập
+            Để bắt đầu, trước tiên hãy nhập số điện thoại, email hoặc @tên người dùng của bạn
           </Text>
         </View>
 
         {/* nhập email */}
-        <View style={st.inputContainer}>
-          <Feather
-            name="user"
-            size={20}
-            style={{ marginLeft: 10 }}
-          />
-          <TextInput
-            onChangeText={(text) => {
-              setEmail(text)
-              if (emailErrorText !== '') {
-                setEmailErrorText('')
-              }
-            }}
-            value={email}
-            placeholder="Email"
-            style={st.emailInput}
-          />
-        </View>
-
-        {/* thông báo lỗi email */}
-        <View style={{
-          width: '90%'
-        }}>
-          <Text style={{ color: 'red' }}>{emailErrorText}</Text>
-        </View>
-
-        {/* nhập mật khẩu */}
-        <View style={st.inputContainer}>
-          <Feather
-            name="lock"
-            size={20}
-            style={{ marginLeft: 10 }}
-          />
-          <TextInput
-            onChangeText={(text) => {
-              setPassword(text)
-              if (passErrorText !== '') {
-                setPassErrorText('')
-              }
-            }}
-            value={password}
-            placeholder="Mật khẩu"
-            style={st.passwordInput}
-            secureTextEntry={!showPassword}
-          />
-          <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={st.iconContainer}>
-            <Feather name={showPassword ? 'eye' : 'eye-off'} size={20} />
-          </TouchableOpacity>
-        </View>
-
-        {/* thông báo lỗi mật khẩu */}
-        <View style={{
-          width: '90%'
-        }}>
-          <Text style={{ color: 'red', }}>{passErrorText}</Text>
+        <View>
+          <View style={st.inputContainer}>
+            <Feather
+              name="user"
+              size={20}
+              style={{ marginLeft: 10 }}
+            />
+            <TextInput
+              onChangeText={(text) => {
+                setEmail(text)
+                if (emailErrorText !== '') {
+                  setEmailErrorText('')
+                }
+              }}
+              value={email}
+              placeholder="Email"
+              style={st.emailInput}
+            />
+          </View>
+          <Text style={{ color: 'red', fontWeight: 'bold' }}>{emailErrorText}</Text>
         </View>
       </View>
 
@@ -139,7 +91,7 @@ const LoginScreen = () => {
             style={[st.bottomBtn, { backgroundColor: '#D9D9D9' }]}>
             <Text
               style={st.btnText}>
-              Đăng nhập
+              Tiếp theo
             </Text>
           </TouchableOpacity>
         </View>
@@ -153,7 +105,7 @@ const LoginScreen = () => {
   )
 }
 
-export default LoginScreen
+export default EmailInputLoginScreen
 
 const st = StyleSheet.create({
   container: {
@@ -169,17 +121,11 @@ const st = StyleSheet.create({
   },
   title: {
     fontWeight: 'bold',
-    fontSize: 35,
+    fontSize: 30,
     color: 'black',
   },
   emailInput: {
     width: '90%',
-    padding: 20,
-    fontWeight: 'bold',
-    fontSize: 15,
-  },
-  passwordInput: {
-    flex: 1,
     padding: 20,
     fontWeight: 'bold',
     fontSize: 15,
@@ -192,9 +138,6 @@ const st = StyleSheet.create({
     borderColor: 'black',
     marginTop: 10,
     borderRadius: 10,
-  },
-  iconContainer: {
-    padding: 10,
   },
   bottomContainer: {
     width: '100%',
