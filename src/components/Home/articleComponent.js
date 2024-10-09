@@ -34,6 +34,7 @@ const ArticleComponent = ({
   return (
     <View style={styles.container}>
       <View style={{ height: 1, backgroundColor: '#323436', marginBottom: 15 }} />
+      
       <View style={styles.headerContent}>
         <View style={{ flexDirection: 'row' }}>
           <TouchableOpacity onPress={() => { /* Xử lý avatar */ }}>
@@ -61,6 +62,7 @@ const ArticleComponent = ({
           </TouchableOpacity>
         ) : null}
       </View>
+      
       <View style={styles.interactContainer}>
         <View style={{ flexDirection: "row" }}>
           <View style={styles.iconLike}>

@@ -72,7 +72,7 @@ const HomeScreen = () => {
       commentcount: 30,
     },
   ];
-  
+
   useEffect(() => {
     fetchUserName();
     setGreeting(getGreeting());
@@ -82,23 +82,26 @@ const HomeScreen = () => {
   const renderStoryItem = ({ item }) => (
     <StoryComponent
       imgStory={item.imgStory}
-      onStoryPress={() => {}}
-      onUserPress={() => {}}
+      onStoryPress={() => { }}
+      onUserPress={() => { }}
       imgUser={item.imgUser}
     />
   );
 
   return (
-    <ScrollView style={styles.container}> {/* Sử dụng ScrollView để bao bọc toàn bộ nội dung */}
+    <ScrollView style={styles.container}>
       <View style={styles.headerContent}>
         <Text style={{ color: "#ffff", fontSize: 18, fontFamily: 'HankenGrotesk-Regular', fontWeight: '500' }}>
-          {greeting}, <Text>{userName || 'User'}</Text>
+          {greeting}, {userName || 'User'}
         </Text>
+
+        {/* Thêm icon vào text 🚀🚀🚀🚀🚀🛠️🛠️🛠️🛠️🛠️🛠️🛠️🛠️💕💕💕 */}
         <TouchableOpacity style={styles.circleIcon}
           onPress={() => {
-            { /**Sử lý chuyển màn hình sang màn hình tin nhắn */ }
           }}>
-          <Icon name="mail-outline" size={15} color="#fff" />
+          <Text>
+            <Icon name="mail-outline" size={15} color="#fff" />
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -115,7 +118,7 @@ const HomeScreen = () => {
         <FlatList
           data={fakeArticles}
           renderItem={({ item }) => (
-            <ArticleComponent 
+            <ArticleComponent
               id={item.id}
               imgavatar={item.imgavatar}
               username={item.username}
@@ -158,7 +161,7 @@ const styles = StyleSheet.create({
   storyContainer: {
     marginTop: 20,
   },
-  articleContainer:{
+  articleContainer: {
     flex: 20
   }
 });
