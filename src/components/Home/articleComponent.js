@@ -26,10 +26,10 @@ const ArticleComponent = ({
   const [likes, setLikes] = useState(likecount);
 
   // Hàm xử lý khi nhấn nút thích
-  const handleLikePress = () => {
-    setIsLiked(!isLiked); // Đảo trạng thái thích
-    setLikes(prevLikes => (isLiked ? prevLikes - 1 : prevLikes + 1)); // Cập nhật số lượng lượt thích
-  };
+  // const handleLikePress = () => {
+  //   setIsLiked(!isLiked); // Đảo trạng thái thích
+  //   setLikes(prevLikes => (isLiked ? prevLikes - 1 : prevLikes + 1)); // Cập nhật số lượng lượt thích
+  // };
 
   return (
     <View style={styles.container}>
@@ -86,7 +86,7 @@ const ArticleComponent = ({
           </TouchableOpacity>
         </View>
         <TouchableOpacity onPress={() => { /* Xử lý nút bookmark */ }} style={{ marginTop: 5 }}>
-          <Icons name="bookmark" color={"#ECEBED"} size={16} />
+          {/* <Icons name="bookmark" color={"#ECEBED"} size={16} /> */}
         </TouchableOpacity>
       </View>
       <View style={{ height: 1, backgroundColor: '#323436', marginTop: 15 }} />

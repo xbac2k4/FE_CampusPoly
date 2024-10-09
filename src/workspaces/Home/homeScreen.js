@@ -98,7 +98,8 @@ const HomeScreen = () => {
           onPress={() => {
             { /**Sử lý chuyển màn hình sang màn hình tin nhắn */ }
           }}>
-          <Icon name="mail-outline" size={15} color="#fff" />
+         <Text>
+          <Icon name="mail-outline" size={15} color="#fff" /></Text>
         </TouchableOpacity>
       </View>
 
