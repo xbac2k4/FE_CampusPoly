@@ -2,7 +2,7 @@ import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-nativ
 import React from 'react'
 
 
-const CustomInput = ({ name, placeholder, leadIcon, onChangeText, trailingIcon }) => {
+const CustomInput = ({ name, placeholder, leadIcon, onChangeText, trailingIcon, secureTextEntry }) => {
     return (
         <View style={st.inputContainer}>
             {name && (
@@ -16,12 +16,9 @@ const CustomInput = ({ name, placeholder, leadIcon, onChangeText, trailingIcon }
                 value={name}
                 placeholder={placeholder}
                 style={st.input}
+                secureTextEntry={secureTextEntry == null ? false : secureTextEntry}
             />
-            {trailingIcon && (
-                <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={st.iconContainer}>
-                    {trailingIcon()}
-                </TouchableOpacity>
-            )}
+            {trailingIcon && trailingIcon()}
         </View>
     )
 }
@@ -38,7 +35,7 @@ const st = StyleSheet.create({
         marginTop: 10,
         borderRadius: 10,
     },
-    label:{
+    label: {
         position: 'absolute',
         left: 50,
         top: -10,
