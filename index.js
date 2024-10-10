@@ -10,8 +10,9 @@ import SignUpScreen from './src/workspaces/SignUpScreen'
 import SignUpPasswordScreen from './src/workspaces/SignUpPasswordScreen'
 import SignUpNameScreen from './src/workspaces/SignUpNameScreen'
 import SignUpImageScreen from './src/workspaces/SignUpImageScreen'
+import EmailInputLoginScreen from './src/workspaces/EmailInputLoginScreen'
 
 
 import {name as appName} from './app.json';
 
-AppRegistry.registerComponent(appName, () => LoginScreen);
+AppRegistry.registerComponent(appName, () => EmailInputLoginScreen);
