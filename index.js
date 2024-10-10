@@ -13,4 +13,4 @@ import SignUpImageScreen from './src/workspaces/SignUpImageScreen'
 
 import {name as appName} from './app.json';
 
-AppRegistry.registerComponent(appName, () => SignUpImageScreen);
+AppRegistry.registerComponent(appName, () => SignUpNameScreen);

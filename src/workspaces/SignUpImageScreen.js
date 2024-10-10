@@ -77,7 +77,7 @@ const SignUpImageScreen = () => {
       <View style={st.bottomContainer}>
         <TwoButtonBottom
           text2="Tiếp theo"
-          text1="Bỏ qua"
+          text1="Bỏ qua bây giờ"
           onPress2={handleName}
           onPress1={abandon}
         />
