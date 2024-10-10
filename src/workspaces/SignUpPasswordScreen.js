@@ -1,8 +1,10 @@
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import React, { useState } from 'react'
 import AuthenticationHeader from '../components/AuthenticationHeader';
 import Feather from 'react-native-vector-icons/Feather';
 import OneButtonBottom from '../components/OneButtonBottom';
+import CustomInput from '../components/CustomInput';
+import ErrorMessage from '../components/ErrorMessage';
 
 
 
@@ -51,8 +53,8 @@ const SignUpPasswordScreen = () => {
 
       <AuthenticationHeader />
 
-      {/* form nhập mã OTP */}
-      <View style={st.loginForm}>
+      {/* form nhập mật khẩu */}
+      <View style={st.form}>
 
         {/* tiêu đề */}
         <View
@@ -68,35 +70,29 @@ const SignUpPasswordScreen = () => {
         </View>
 
         {/* nhập mật khẩu */}
-        <View style={st.inputContainer}>
-          <Feather
-            name="lock"
-            size={20}
-            style={{ marginLeft: 10 }}
-          />
-          <TextInput
-            onChangeText={(text) => {
-              setPassword(text)
-              if (passErrorText !== '') {
-                setPassErrorText('')
-              }
-            }}
-            value={password}
-            placeholder="Mật khẩu"
-            style={st.input}
-            secureTextEntry={!showPassword}
-          />
-          <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={st.iconContainer}>
+        <CustomInput
+          name={password}
+          placeholder='Mật khẩu'
+          leadIcon={() => (
+            <Feather
+              name="lock"
+              size={20}
+              style={{ marginLeft: 10 }}
+            />
+          )}
+          onChangeText={(text) => {
+            setPassword(text)
+            if (passErrorText !== '') {
+              setPassErrorText('')
+            }
+          }}
+          trailingIcon={() => (
             <Feather name={showPassword ? 'eye' : 'eye-off'} size={20} />
-          </TouchableOpacity>
-        </View>
+          )}
+        />
 
         {/* thông báo lỗi mật khẩu */}
-        <View style={{
-          width: '90%'
-        }}>
-          <Text style={{ color: 'red', }}>{passErrorText}</Text>
-        </View>
+        <ErrorMessage message={passErrorText} />
 
         {/* Chính sách */}
 
@@ -134,7 +130,7 @@ const st = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white'
   },
-  loginForm: {
+  form: {
     width: '100%',
     alignItems: 'center',
     marginTop: 20,
@@ -148,24 +144,6 @@ const st = StyleSheet.create({
     color: 'black',
     fontSize: 15,
     marginTop: 10,
-  },
-  input: {
-    flex: 1,
-    padding: 20,
-    fontWeight: 'bold',
-    fontSize: 15,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '90%',
-    borderWidth: 1,
-    borderColor: 'black',
-    marginTop: 10,
-    borderRadius: 10,
-  },
-  iconContainer: {
-    padding: 10,
   },
   policyText: {
     color: '#57B5F4'
