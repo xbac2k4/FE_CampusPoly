@@ -9,6 +9,8 @@ import OTP_screen from './src/workspaces/OTP_screen'
 import SignUpScreen from './src/workspaces/SignUpScreen'
 import SignUpPasswordScreen from './src/workspaces/SignUpPasswordScreen'
 import SignUpNameScreen from './src/workspaces/SignUpNameScreen'
+import SignUpImageScreen from './src/workspaces/SignUpImageScreen'
+
 import {name as appName} from './app.json';
 
-AppRegistry.registerComponent(appName, () => SignUpNameScreen);
+AppRegistry.registerComponent(appName, () => SignUpImageScreen);
