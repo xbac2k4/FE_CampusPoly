@@ -1,7 +1,7 @@
 import { FlatList, Image, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import Feather from 'react-native-vector-icons/Feather';
-import TwoButtonBottom from '../components/TwoButtonBottom';
+import TwoButtonBottom from '../components/OneButtonBottom';
 
 
 

@@ -1,7 +1,8 @@
-import { Image, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AuthenticationHeader from '../components/AuthenticationHeader';
+import OneButtonBottom from '../components/OneButtonBottom';
 
 
 const inputLoginScreen = () => {
@@ -75,16 +76,10 @@ const inputLoginScreen = () => {
 
       {/* nút tiếp theo */}
       <View style={st.bottomContainer}>
-        <View style={st.bottomBar}>
-          <TouchableOpacity
-            onPress={handleSignUp}
-            style={[st.bottomBtn, { backgroundColor: '#D9D9D9' }]}>
-            <Text
-              style={st.btnText}>
-              Tiếp theo
-            </Text>
-          </TouchableOpacity>
-        </View>
+      <OneButtonBottom
+          text='Tiếp theo'
+          onPress={handleSignUp}
+        />
 
       </View>
 
@@ -138,28 +133,5 @@ const st = StyleSheet.create({
     width: '100%',
     flex: 1,
     justifyContent: 'flex-end',
-  },
-  bottomBar: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    paddingVertical: 20,
-    borderTopColor: 'black',
-    borderTopWidth: 2,
-    paddingHorizontal: 20,
-  },
-
-  bottomBtn: {
-    padding: 15,
-    borderRadius: 40,
-    borderWidth: 1,
-    borderColor: 'black',
-    height: 55,
-    elevation: 5
-  },
-
-  btnText: {
-    color: 'black',
-    fontWeight: 'bold',
-    fontSize: 16,
   }
 })

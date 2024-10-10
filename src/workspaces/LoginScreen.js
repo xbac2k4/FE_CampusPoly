@@ -2,7 +2,7 @@ import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-nativ
 import React, { useState } from 'react'
 import Feather from 'react-native-vector-icons/Feather';
 import AuthenticationHeader from '../components/AuthenticationHeader';
-import TwoButtonBottom from '../components/TwoButtonBottom';
+import TwoButtonBottom from '../components/OneButtonBottom';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('')
