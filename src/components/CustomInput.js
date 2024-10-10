@@ -13,6 +13,7 @@ const CustomInput = (props) => {
                     top: -10,
                     backgroundColor: 'white',
                     fontSize: 15,
+                    paddingHorizontal: 5,
                 }}>
                     {props.placeholder}
                 </Text>

@@ -1,8 +1,10 @@
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AuthenticationHeader from '../components/AuthenticationHeader';
 import OneButtonBottom from '../components/OneButtonBottom';
+import CustomInput from '../components/CustomInput';
+import ErrorMessage from '../components/ErrorMessage';
 
 
 const inputLoginScreen = () => {
@@ -28,7 +30,7 @@ const inputLoginScreen = () => {
       <AuthenticationHeader />
 
       {/* form nhập mã OTP */}
-      <View style={st.loginForm}>
+      <View style={st.form}>
 
         {/* tiêu đề */}
         <View
@@ -45,27 +47,26 @@ const inputLoginScreen = () => {
 
         {/* nhập mã OTP */}
         <View>
-          <View style={st.inputContainer}>
-            <MaterialCommunityIcons
-              name="onepassword"
-              size={20}
-              style={{ marginLeft: 10 }}
-            />
-            <TextInput
-              onChangeText={(text) => {
-                setOTP(text)
-                if (OTPErrorText !== '') {
-                  setOTPErrorText('')
-                }
-              }}
-              value={OTP}
-              placeholder="Mã xác nhận"
-              style={st.input}
-            />
-          </View>
+          <CustomInput
+            name={OTP}
+            placeholder='Mã xác nhận'
+            leadIcon={() => (
+              <MaterialCommunityIcons
+                name="onepassword"
+                size={20}
+                style={{ marginLeft: 10 }}
+              />
+            )}
+            onChangeText={(text) => {
+              setOTP(text)
+              if (OTPErrorText !== '') {
+                setOTPErrorText('')
+              }
+            }}
+          />
 
           {/* thông báo lỗi mã OTP */}
-          <Text style={{ color: 'red', fontWeight: 'bold' }}>{OTPErrorText}</Text>
+          <ErrorMessage message={OTPErrorText}/>
 
           {/* không nhận được email */}
           <TouchableOpacity onPress={handleForgetPassword}>
@@ -98,8 +99,7 @@ const st = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white'
   },
-  logo: { width: 180, height: 50 },
-  loginForm: {
+  form: {
     width: '100%',
     alignItems: 'center',
     marginTop: 20,
@@ -113,21 +113,6 @@ const st = StyleSheet.create({
     color: 'black',
     fontSize: 15,
     marginTop: 10,
-  },
-  input: {
-    width: '90%',
-    padding: 20,
-    fontWeight: 'bold',
-    fontSize: 15,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '90%',
-    borderWidth: 1,
-    borderColor: 'black',
-    marginTop: 10,
-    borderRadius: 10,
   },
   bottomContainer: {
     width: '100%',

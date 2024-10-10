@@ -15,4 +15,4 @@ import EmailInputLoginScreen from './src/workspaces/EmailInputLoginScreen'
 
 import {name as appName} from './app.json';
 
-AppRegistry.registerComponent(appName, () => SignUpScreen);
+AppRegistry.registerComponent(appName, () => OTP_screen);
