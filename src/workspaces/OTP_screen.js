@@ -76,7 +76,7 @@ const inputLoginScreen = () => {
 
       {/* nút tiếp theo */}
       <View style={st.bottomContainer}>
-      <OneButtonBottom
+        <OneButtonBottom
           text='Tiếp theo'
           onPress={handleSignUp}
         />
