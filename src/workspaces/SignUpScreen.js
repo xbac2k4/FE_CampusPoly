@@ -5,6 +5,7 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import AuthenticationHeader from '../components/AuthenticationHeader';
 import OneButtonBottom from '../components/OneButtonBottom';
 import CustomInput from '../components/CustomInput';
+import ErrorMessage from '../components/ErrorMessage';
 
 
 const LoginScreen = () => {
@@ -109,11 +110,9 @@ const LoginScreen = () => {
         />
 
         {/* thông báo lỗi email */}
-        <View style={{
-          width: '90%'
-        }}>
-          <Text style={{ color: 'red' }}>{emailErrorText}</Text>
-        </View>
+        <ErrorMessage
+          message={emailErrorText}
+        />
 
         {/* nhập ngày sinh */}
         <CustomInput
@@ -134,11 +133,9 @@ const LoginScreen = () => {
           )} />
 
         {/* thông báo lỗi ngày sinh */}
-        <View style={{
-          width: '90%'
-        }}>
-          <Text style={{ color: 'red' }}>{birthDayErrorText}</Text>
-        </View>
+        <ErrorMessage
+          message={birthDayErrorText}
+        />
       </View>
 
       {/* nút tiếp theo */}
