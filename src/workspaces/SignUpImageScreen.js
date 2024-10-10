@@ -1,18 +1,34 @@
-import { FlatList, Image, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Image, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
-import Feather from 'react-native-vector-icons/Feather';
-
-
+import { launchImageLibrary } from 'react-native-image-picker';
 
 const SignUpImageScreen = () => {
 
-  // Hàm xử lý khi người dùng ấn nút đăng nhập
+  // lưu trữ uri ảnh người dùng chọn
+  const [imageUri, setImageUri] = useState(null);
+
+  // Hàm xử lý khi người dùng ấn nút tiếp theo
   const handleName = () => {
     alert('tiếp theo')
   }
 
+  // Hàm xử lý khi người dùng ấn nút bỏ qua
   const abandon = () => {
     alert('Bỏ qua bây giờ')
+  }
+
+  // Hàm chọn ảnh từ thư viện
+  const selectImage = () => {
+    launchImageLibrary({ mediaType: 'photo' }, (res) => {
+      if (res.didCancel) {
+        console.log('Người dùng đã hủy chọn ảnh');
+      } else if (res.error) {
+        console.log('Lỗi: ', res.error);
+      } else {
+        const uri = res.assets[0].uri;
+        setImageUri(uri);
+      }
+    })
   }
 
   return (
@@ -45,11 +61,15 @@ const SignUpImageScreen = () => {
         </View>
 
         {/* nút tải ảnh */}
-        <TouchableOpacity>
-          <Image source={require('../assets/images/upload-image.png')} />
+        <TouchableOpacity onPress={selectImage}>
+          {imageUri ? (
+            // nếu có ảnh thì hiển thị ảnh
+            <Image source={{ uri: imageUri }} style={st.image} />
+          ) : (
+            // nếu không có ảnh thì hiển thị nút tải ảnh
+            <Image source={require('../assets/images/upload-image.png')} />)}
+
         </TouchableOpacity>
-
-
       </View>
 
       {/* nút tiếp theo */}
@@ -104,25 +124,12 @@ const st = StyleSheet.create({
     fontSize: 15,
     marginTop: 10,
   },
-  input: {
-    flex: 1,
-    padding: 20,
-    fontWeight: 'bold',
-    fontSize: 15,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '90%',
-    borderWidth: 1,
-    borderColor: 'black',
-    marginTop: 10,
+  image: {
+    width: 300,
+    height: 300,
+    marginTop: 20,
     borderRadius: 10,
-  },
-  suggestedName: {
-    color: '#57B5F4',
-    fontSize: 15,
-    marginRight: 10
+    resizeMode: 'cover'
   },
   bottomContainer: {
     width: '100%',
