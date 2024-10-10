@@ -1,6 +1,7 @@
 import { Image, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import Feather from 'react-native-vector-icons/Feather';
+import AuthenticationHeader from '../components/AuthenticationHeader';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('')
@@ -31,26 +32,7 @@ const LoginScreen = () => {
   return (
     <View style={st.container}>
 
-      {/* thanh statusbar */}
-      <StatusBar backgroundColor="transparent" barStyle={'dark-content'} />
-
-      {/* logo */}
-      <Image
-        source={require('../assets/images/logo.png')}
-        style={st.logo}
-        resizeMode="contain"
-      />
-
-      {/* nút trở lại */}
-      <View
-        style={{
-          width: '90%',
-        }}>
-        <TouchableOpacity>
-          <Image
-            source={require('../assets/images/left-arrow.png')} />
-        </TouchableOpacity>
-      </View>
+      <AuthenticationHeader />
 
       {/* form đăng nhập */}
       <View style={st.loginForm}>
