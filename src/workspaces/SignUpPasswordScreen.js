@@ -5,7 +5,7 @@ import Feather from 'react-native-vector-icons/Feather';
 
 
 
-const inputLoginScreen = () => {
+const SignUpPasswordScreen = () => {
   const [password, setPassword] = useState('')
   const [passErrorText, setPassErrorText] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -131,7 +131,7 @@ const inputLoginScreen = () => {
   )
 }
 
-export default inputLoginScreen
+export default SignUpPasswordScreen
 
 const st = StyleSheet.create({
   container: {
