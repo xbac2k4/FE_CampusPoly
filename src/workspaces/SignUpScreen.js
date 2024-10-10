@@ -1,9 +1,10 @@
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import React, { useState } from 'react'
 import Feather from 'react-native-vector-icons/Feather';
 import Entypo from 'react-native-vector-icons/Entypo';
 import AuthenticationHeader from '../components/AuthenticationHeader';
 import OneButtonBottom from '../components/OneButtonBottom';
+import CustomInput from '../components/CustomInput';
 
 
 const LoginScreen = () => {
@@ -46,8 +47,8 @@ const LoginScreen = () => {
     <View style={st.container}>
       <AuthenticationHeader />
 
-      {/* form đăng nhập */}
-      <View style={st.loginForm}>
+      {/* form thông tin */}
+      <View style={st.form}>
 
         {/* tiêu đề */}
         <Text
@@ -56,28 +57,27 @@ const LoginScreen = () => {
         </Text>
 
         {/* nhập tên */}
-        <View style={st.inputContainer}>
-          <Feather
-            name="user"
-            size={20}
-            style={{ marginLeft: 10 }}
-          />
-          <TextInput
-            onChangeText={(text) => {
-              if (text.length > 50) {
-                setNameErrorText('Tên không được quá 50 ký tự')
-                return
-              }
-              setName(text)
-              if (nameErrorText !== '') {
-                setNameErrorText('')
-              }
-            }}
-            value={name}
-            placeholder="Tên"
-            style={st.input}
-          />
-        </View>
+        <CustomInput
+          name={name}
+          placeholder='Tên'
+          onChangeText={(text) => {
+            if (text.length > 50) {
+              setNameErrorText('Tên không được quá 50 ký tự')
+              return
+            }
+            setName(text)
+            if (nameErrorText !== '') {
+              setNameErrorText('')
+            }
+          }}
+          leadIcon={() => (
+            <Feather
+              name="user"
+              size={20}
+              style={{ marginLeft: 10 }}
+            />
+          )}
+        />
 
         {/* thông báo lỗi tên */}
         <View style={{
@@ -90,24 +90,23 @@ const LoginScreen = () => {
         </View>
 
         {/* nhập email */}
-        <View style={st.inputContainer}>
-          <Entypo
-            name="email"
-            size={20}
-            style={{ marginLeft: 10 }}
-          />
-          <TextInput
-            onChangeText={(text) => {
-              setEmail(text)
-              if (emailErrorText !== '') {
-                setEmailErrorText('')
-              }
-            }}
-            value={email}
-            placeholder="Email"
-            style={st.input}
-          />
-        </View>
+        <CustomInput
+          name={email}
+          placeholder='Email'
+          onChangeText={(text) => {
+            setEmail(text)
+            if (emailErrorText !== '') {
+              setEmailErrorText('')
+            }
+          }}
+          leadIcon={() => (
+            <Entypo
+              name="email"
+              size={20}
+              style={{ marginLeft: 10 }}
+            />
+          )}
+        />
 
         {/* thông báo lỗi email */}
         <View style={{
@@ -117,24 +116,22 @@ const LoginScreen = () => {
         </View>
 
         {/* nhập ngày sinh */}
-        <View style={st.inputContainer}>
-          <Feather
-            name="calendar"
-            size={20}
-            style={{ marginLeft: 10 }}
-          />
-          <TextInput
-            onChangeText={(text) => {
-              setBirthDay(text)
-              if (birthDayErrorText !== '') {
-                setBirthDayErrorText('')
-              }
-            }}
-            value={birthDay}
-            placeholder="Ngày sinh"
-            style={st.input}
-          />
-        </View>
+        <CustomInput
+          name={birthDay}
+          placeholder='Ngày sinh'
+          onChangeText={(text) => {
+            setBirthDay(text)
+            if (birthDayErrorText !== '') {
+              setBirthDayErrorText('')
+            }
+          }}
+          leadIcon={() => (
+            <Feather
+              name="calendar"
+              size={20}
+              style={{ marginLeft: 10 }}
+            />
+          )} />
 
         {/* thông báo lỗi ngày sinh */}
         <View style={{
@@ -168,7 +165,7 @@ const st = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white'
   },
-  loginForm: {
+  form: {
     width: '100%',
     alignItems: 'center',
     marginTop: 20,
@@ -177,30 +174,6 @@ const st = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 30,
     color: 'black',
-  },
-  input: {
-    width: '90%',
-    padding: 20,
-    fontWeight: 'bold',
-    fontSize: 15,
-  },
-  passwordInput: {
-    flex: 1,
-    padding: 20,
-    fontWeight: 'bold',
-    fontSize: 15,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '90%',
-    borderWidth: 1,
-    borderColor: 'black',
-    marginTop: 10,
-    borderRadius: 10,
-  },
-  iconContainer: {
-    padding: 10,
   },
   bottomContainer: {
     width: '100%',
