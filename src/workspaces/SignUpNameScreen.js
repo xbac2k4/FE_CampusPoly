@@ -1,7 +1,9 @@
-import { FlatList, Image, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { FlatList, Image, StatusBar, StyleSheet, Text, View } from 'react-native'
 import React, { useState } from 'react'
 import Feather from 'react-native-vector-icons/Feather';
-import TwoButtonBottom from '../components/OneButtonBottom';
+import TwoButtonBottom from '../components/TwoButtonBottom';
+import CustomInput from '../components/CustomInput';
+import ErrorMessage from '../components/ErrorMessage';
 
 
 
@@ -59,31 +61,26 @@ const SignUpNameScreen = () => {
         </View>
 
         {/* nhập tên người dùng */}
-        <View style={st.inputContainer}>
-          <Feather
-            name="user"
-            size={20}
-            style={{ marginLeft: 10 }}
-          />
-          <TextInput
-            onChangeText={(text) => {
-              setUsername(text)
-              if (usernameErrorText !== '') {
-                setUsernameErrorText('')
-              }
-            }}
-            value={username}
-            placeholder="Tên người dùng"
-            style={st.input}
-          />
-        </View>
+        <CustomInput
+          name={username}
+          leadIcon={() => (
+            <Feather
+              name="user"
+              size={20}
+              style={{ marginLeft: 10 }}
+            />
+          )}
+          onChangeText={(text) => {
+            setUsername(text)
+            if (usernameErrorText !== '') {
+              setUsernameErrorText('')
+            }
+          }}
+          placeholder={'Tên người dùng'}
+        />
 
         {/* thông báo lỗi tên người dùng */}
-        <View style={{
-          width: '90%'
-        }}>
-          <Text style={{ color: 'red', }}>{usernameErrorText}</Text>
-        </View>
+        <ErrorMessage message={usernameErrorText} />
 
         {/* danh sách gợi ý tên và hiển thị thêm  */}
 

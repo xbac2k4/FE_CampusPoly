@@ -1,24 +1,24 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 
-const TwoButtonBottom = (props) => {
+const TwoButtonBottom = ({ onPress1, text1, onPress2, text2 }) => {
     return (
         <View style={st.bottomBar}>
             <TouchableOpacity
-                onPress={props.onPress1}
+                onPress={onPress1}
                 style={[st.bottomBtn, { backgroundColor: 'white' }]}>
                 <Text
                     style={st.btnText}>
-                    {props.text1}
+                    {text1}
                 </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-                onPress={props.onPress2}
+                onPress={onPress2}
                 style={[st.bottomBtn, { backgroundColor: '#D9D9D9' }]}>
                 <Text
                     style={st.btnText}>
-                    {props.text2}
+                    {text2}
                 </Text>
             </TouchableOpacity>
         </View>

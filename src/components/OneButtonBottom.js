@@ -1,16 +1,16 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 
-const OneButtonBottom = (props) => {
+const OneButtonBottom = ({onPress,text}) => {
     return (
         <View style={st.bottomBar}>
 
             <TouchableOpacity
-                onPress={props.onPress}
+                onPress={onPress}
                 style={st.bottomBtn}>
                 <Text
                     style={st.btnText}>
-                    {props.text}
+                    {text}
                 </Text>
             </TouchableOpacity>
         </View>
