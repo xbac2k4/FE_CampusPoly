@@ -123,27 +123,4 @@ const st = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-end',
   },
-  bottomBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 20,
-    borderTopColor: 'black',
-    borderTopWidth: 2,
-    paddingHorizontal: 20,
-  },
-
-  bottomBtn: {
-    padding: 15,
-    borderRadius: 40,
-    borderWidth: 1,
-    borderColor: 'black',
-    height: 55,
-    elevation: 5
-  },
-
-  btnText: {
-    color: 'black',
-    fontWeight: 'bold',
-    fontSize: 16,
-  }
 })
