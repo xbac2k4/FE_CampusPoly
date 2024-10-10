@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import AuthenticationHeader from '../components/AuthenticationHeader';
 import Feather from 'react-native-vector-icons/Feather';
@@ -87,8 +87,11 @@ const SignUpPasswordScreen = () => {
             }
           }}
           trailingIcon={() => (
-            <Feather name={showPassword ? 'eye' : 'eye-off'} size={20} />
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={st.iconContainer}>
+              <Feather name={showPassword ? 'eye' : 'eye-off'} size={20} />
+            </TouchableOpacity>
           )}
+          secureTextEntry={!showPassword}
         />
 
         {/* thông báo lỗi mật khẩu */}
@@ -152,5 +155,8 @@ const st = StyleSheet.create({
     width: '100%',
     flex: 1,
     justifyContent: 'flex-end',
-  }
+  },
+  iconContainer: {
+    padding: 10,
+  },
 })
