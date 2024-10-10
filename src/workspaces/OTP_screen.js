@@ -1,7 +1,7 @@
 import { Image, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import AuthenticationHeader from '../components/authenticationHeader';
+import AuthenticationHeader from '../components/AuthenticationHeader';
 
 
 const inputLoginScreen = () => {

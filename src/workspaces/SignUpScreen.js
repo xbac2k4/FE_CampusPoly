@@ -2,7 +2,7 @@ import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-nativ
 import React, { useState } from 'react'
 import Feather from 'react-native-vector-icons/Feather';
 import Entypo from 'react-native-vector-icons/Entypo';
-import AuthenticationHeader from '../components/authenticationHeader';
+import AuthenticationHeader from '../components/AuthenticationHeader';
 
 
 const LoginScreen = () => {

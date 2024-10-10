@@ -1,6 +1,6 @@
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
-import AuthenticationHeader from '../components/authenticationHeader';
+import AuthenticationHeader from '../components/AuthenticationHeader';
 import Feather from 'react-native-vector-icons/Feather';
 
 
@@ -97,7 +97,7 @@ const SignUpPasswordScreen = () => {
           <Text style={{ color: 'red', }}>{passErrorText}</Text>
         </View>
 
-          {/* Chính sách */}
+        {/* Chính sách */}
 
         <View style={{
           width: '90%'

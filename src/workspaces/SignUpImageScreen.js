@@ -1,6 +1,7 @@
 import { Image, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import { launchImageLibrary } from 'react-native-image-picker';
+import TwoButtonBottom from '../components/TwoButtonBottom';
 
 const SignUpImageScreen = () => {
 
@@ -74,26 +75,12 @@ const SignUpImageScreen = () => {
 
       {/* nút tiếp theo */}
       <View style={st.bottomContainer}>
-        <View style={st.bottomBar}>
-          <TouchableOpacity
-            onPress={abandon}
-            style={[st.bottomBtn, { backgroundColor: 'white' }]}>
-            <Text
-              style={st.btnText}>
-              Bỏ qua bây giờ
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={handleName}
-            style={[st.bottomBtn, { backgroundColor: '#D9D9D9' }]}>
-            <Text
-              style={st.btnText}>
-              Tiếp theo
-            </Text>
-          </TouchableOpacity>
-        </View>
-
+        <TwoButtonBottom
+          text2="Tiếp theo"
+          text1="Bỏ qua"
+          onPress2={handleName}
+          onPress1={abandon}
+        />
       </View>
 
     </View>
