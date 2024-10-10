@@ -2,6 +2,7 @@ import { Image, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View }
 import React, { useState } from 'react'
 import Feather from 'react-native-vector-icons/Feather';
 import AuthenticationHeader from '../components/AuthenticationHeader';
+import TwoButtonBottom from '../components/TwoButtonBottom';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('')
@@ -107,29 +108,13 @@ const LoginScreen = () => {
 
       {/* nút quên mật khẩu và đăng nhập */}
       <View style={st.bottomContainer}>
-        <View style={st.bottomBar}>
-          <TouchableOpacity
-            style={[st.bottomBtn, { backgroundColor: 'white' }]}>
-            <Text
-              style={st.btnText}>
-              Quên mật khẩu?
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={handleLogin}
-            style={[st.bottomBtn, { backgroundColor: '#D9D9D9' }]}>
-            <Text
-              style={st.btnText}>
-              Đăng nhập
-            </Text>
-          </TouchableOpacity>
-        </View>
-
+        <TwoButtonBottom
+          text1='Quên mật khẩu?'
+          text2='Đăng nhập'
+          onPress1={() => alert('Quên mật khẩu')}
+          onPress2={handleLogin}
+        />
       </View>
-
-
-
 
     </View>
   )
@@ -143,7 +128,6 @@ const st = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white'
   },
-  logo: { width: 180, height: 50 },
   loginForm: {
     width: '100%',
     alignItems: 'center',
@@ -182,28 +166,5 @@ const st = StyleSheet.create({
     width: '100%',
     flex: 1,
     justifyContent: 'flex-end',
-  },
-  bottomBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 20,
-    borderTopColor: 'black',
-    borderTopWidth: 2,
-    paddingHorizontal: 20,
-  },
-
-  bottomBtn: {
-    padding: 15,
-    borderRadius: 40,
-    borderWidth: 1,
-    borderColor: 'black',
-    height: 55,
-    elevation: 5
-  },
-
-  btnText: {
-    color: 'black',
-    fontWeight: 'bold',
-    fontSize: 16,
   }
 })
