@@ -22,17 +22,20 @@ const ArticleComponent = ({
 }) => {
   // Trạng thái để theo dõi có thích hay không
   const [isLiked, setIsLiked] = useState(false);
+  //Trạng thái để theo dõi bookmark
+  const [isBookmark, setIsBookmark] = useState(false);
   // State để theo dõi số lượng lượt thích
   const [likes, setLikes] = useState(likecount);
 
   // Hàm xử lý khi nhấn nút thích
-  // const handleLikePress = () => {
-  //   setIsLiked(!isLiked); // Đảo trạng thái thích
-  //   setLikes(prevLikes => (isLiked ? prevLikes - 1 : prevLikes + 1)); // Cập nhật số lượng lượt thích
-  // };
+  const handleLikePress = () => {
+    setIsLiked(!isLiked); // Đảo trạng thái thích
+    setLikes(prevLikes => (isLiked ? prevLikes - 1 : prevLikes + 1)); // Cập nhật số lượng lượt thích
+  };
 
   return (
     <View style={styles.container}>
+      
       <View style={{ height: 1, backgroundColor: '#323436', marginBottom: 15 }} />
       
       <View style={styles.headerContent}>
@@ -46,7 +49,7 @@ const ArticleComponent = ({
           </View>
         </View>
         <TouchableOpacity onPress={() => { /* Xử lý nút menu */ }}>
-          <Image source={require('../../assets/image/dot.png')} resizeMode='contain' style={{ width: 20, height: 20 }} />
+          <Image source={require('../../assets/images/dot.png')} resizeMode='contain' style={{ width: 20, height: 20 }} />
         </TouchableOpacity>
       </View>
       <View style={styles.bodyContent}>
@@ -66,29 +69,35 @@ const ArticleComponent = ({
       <View style={styles.interactContainer}>
         <View style={{ flexDirection: "row" }}>
           <View style={styles.iconLike}>
-            <TouchableOpacity onPress={() => setIsLiked(!isLiked)}>
+            <TouchableOpacity onPress={handleLikePress}>
               <Image
                 source={isLiked
-                  ? require('../../assets/image/hear2.png') 
-                  : require('../../assets/image/heart.png')}
+                  ? require('../../assets/images/hear2.png') 
+                  : require('../../assets/images/heart.png')}
                 resizeMode='contain'
                 style={{ width: 20, height: 20, marginLeft: 3 }}
               />
             </TouchableOpacity>
-            <Text style={styles.textInteract}>{likecount}</Text>
+            <Text style={styles.textInteract}>{likes}</Text>
           </View>
           <View style={styles.iconLike}>
             <TouchableOpacity onPress={() => { /* Xử lý nút comment */ }}>
-              <Image source={require("../../assets/image/comment.png")} resizeMode='contain' style={{ width: 20, height: 20, marginLeft: 3 }} />
+              <Image source={require("../../assets/images/comment.png")} resizeMode='contain' style={{ width: 20, height: 20, marginLeft: 3 }} />
             </TouchableOpacity>
             <Text style={styles.textInteract}>{commentcount}</Text>
           </View>
           <TouchableOpacity onPress={() => { /* Xử lý nút share */ }} style={[styles.iconLike, { marginLeft: 4 }]}>
-            <Image source={require('../../assets/image/share.png')} resizeMode='contain' style={{ width: 20, height: 20 }} />
+            <Image source={require('../../assets/images/share.png')} resizeMode='contain' style={{ width: 20, height: 20 }} />
           </TouchableOpacity>
         </View>
-        <TouchableOpacity onPress={() => { /* Xử lý nút bookmark */ }} style={{ marginTop: 5 }}>
-          {/* <Icons name="bookmark" color={"#ECEBED"} size={16} /> */}
+        <TouchableOpacity onPress={() => setIsBookmark(!isBookmark)}  style={{ marginTop: 5 }}>
+        <Image
+                source={isBookmark
+                  ? require('../../assets/images/bookmark.png') 
+                  : require('../../assets/images/bookmark2.png')}
+                resizeMode='contain'
+                style={{ width: 20, height: 20}}
+              />
         </TouchableOpacity>
       </View>
       <View style={{ height: 1, backgroundColor: '#323436', marginTop: 15 }} />

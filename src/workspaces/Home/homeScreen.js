@@ -30,12 +30,12 @@ const HomeScreen = () => {
   // Hàm giả lập để lấy danh sách stories từ API
   const fetchStories = async () => {
     const fakeStories = [
-      { id: '1', imgStory: require('../../assets/image/test3.jpg'), imgUser: require('../../assets/image/test2.jpg') },
-      { id: '2', imgStory: require('../../assets/image/test3.jpg'), imgUser: require('../../assets/image/test2.jpg') },
-      { id: '3', imgStory: require('../../assets/image/test3.jpg'), imgUser: require('../../assets/image/test2.jpg') },
-      { id: '4', imgStory: require('../../assets/image/test3.jpg'), imgUser: require('../../assets/image/test2.jpg') },
-      { id: '5', imgStory: require('../../assets/image/test3.jpg'), imgUser: require('../../assets/image/test2.jpg') },
-      { id: '6', imgStory: require('../../assets/image/test3.jpg'), imgUser: require('../../assets/image/test2.jpg') },
+      { id: '1', imgStory: require('../../assets/images/test3.jpg'), imgUser: require('../../assets/images/test2.jpg') },
+      { id: '2', imgStory: require('../../assets/images/test3.jpg'), imgUser: require('../../assets/images/test2.jpg') },
+      { id: '3', imgStory: require('../../assets/images/test3.jpg'), imgUser: require('../../assets/images/test2.jpg') },
+      { id: '4', imgStory: require('../../assets/images/test3.jpg'), imgUser: require('../../assets/images/test2.jpg') },
+      { id: '5', imgStory: require('../../assets/images/test3.jpg'), imgUser: require('../../assets/images/test2.jpg') },
+      { id: '6', imgStory: require('../../assets/images/test3.jpg'), imgUser: require('../../assets/images/test2.jpg') },
     ];
     setStories(fakeStories);
   };
@@ -43,27 +43,27 @@ const HomeScreen = () => {
   const fakeArticles = [
     {
       id: '1',
-      imgavatar: require('../../assets/image/car1.jpg'),
+      imgavatar: require('../../assets/images/car1.jpg'),
       username: 'Đào Việt Anh',
       time: '2h ago',
       content: 'This is the first article content.',
-      imgcontent: require('../../assets/image/car2.jpg'),
+      imgcontent: require('../../assets/images/car2.jpg'),
       likecount: 150,
       commentcount: 20,
     },
     {
       id: '2',
-      imgavatar: require('../../assets/image/car2.jpg'),
+      imgavatar: require('../../assets/images/car2.jpg'),
       username: 'Phạm Việt Anh',
       time: '3m ago',
       content: null,
-      imgcontent: require('../../assets/image/car2.jpg'),
+      imgcontent: require('../../assets/images/car2.jpg'),
       likecount: 250,
       commentcount: 45,
     },
     {
       id: '3',
-      imgavatar: require('../../assets/image/car3.jpg'),
+      imgavatar: require('../../assets/images/car3.jpg'),
       username: 'Đào Thúy Liên',
       time: '5h ago',
       content: 'This is the third article content.',
@@ -99,7 +99,7 @@ const HomeScreen = () => {
         <TouchableOpacity style={styles.circleIcon}
           onPress={() => {
           }}>
-          <Icon name="mail-outline" size={15} color="#fff" />
+        <Text><Icon name="mail-outline" size={15} color="#fff" /></Text>
         </TouchableOpacity>
       </View>
 
@@ -112,9 +112,10 @@ const HomeScreen = () => {
         ItemSeparatorComponent={() => <View style={{ width: 10 }} />}
         style={styles.storyContainer}
       />
-      <View style={styles.articleContainer}>
+      <View style={styles.articleContainer}> {/**Dang xảy ra cảnh báo flastlist và scrolView xung đột với 🆘🆘🆘🆘 */}
         <FlatList
           data={fakeArticles}
+        nestedScrollEnabled={true}
           renderItem={({ item }) => (
             <ArticleComponent
               id={item.id}
@@ -160,6 +161,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   articleContainer: {
-    flex: 20
+    marginTop:20
   }
 });
