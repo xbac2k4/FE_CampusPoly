@@ -11,9 +11,8 @@ const user = {
   location: 'Brooklyn, NY',
   bio: 'Writer by Profession. Artist by Passion!',
   profileImage: require('../../assets/images/avt.png'),
-  backgroundImage: require('../../assets/images/background.png'),
-  followers: 2467,
-  following: 1589,
+  backgroundImage: require('../../assets/images/background.png'), 
+  friends: 4056, 
   posts: [
     {
       id: 1,
@@ -55,7 +54,7 @@ const ProfileScreen = () => {
       <ScrollView stickyHeaderIndices={[2]}>
         {/* Header and ProfileStats */}
         <Header user={user} />
-        <ProfileStats followers={user.followers} following={user.following} />
+        <ProfileStats friends={user.friends} />
         
         {/* ProfileTabs (Sticky) */}
         <ProfileTabs onTabSelect={setActiveTab} />

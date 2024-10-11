@@ -2,51 +2,55 @@ import React, { useState, useEffect } from 'react';
 import { View, ScrollView, Text, StyleSheet, TouchableOpacity, Image, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const { width: screenWidth } = Dimensions.get('window'); // Get the screen width for responsive image sizing
+const { width: screenWidth } = Dimensions.get('window');
+
+// Import các hình ảnh
+import avt from '../../assets/images/avt.png';
+import bookmark from '../../assets/images/bookmark.png';
+import bookmarkFilled from '../../assets/images/bookmark2.png';
+import comment from '../../assets/images/comment.png';
+import heart from '../../assets/images/heart.png';
+import heartFilled from '../../assets/images/hear2.png';
+import share from '../../assets/images/share.png';
 
 const ProfilePosts = ({ user }) => {
-  const [likedPosts, setLikedPosts] = useState([]); // State to keep track of liked posts
-  const [savedPosts, setSavedPosts] = useState([]); // State to keep track of saved posts
-  const [activeImageIndex, setActiveImageIndex] = useState({}); // State to track the active image index for each post
+  const [likedPosts, setLikedPosts] = useState([]); 
+  const [savedPosts, setSavedPosts] = useState([]); 
+  const [activeImageIndex, setActiveImageIndex] = useState({}); 
 
   if (!user) {
-    return null;
+    return null; 
   }
 
   useEffect(() => {
-    // Initialize the active image index to 0 for every post with images
     const initialIndices = {};
     user.posts.forEach((post) => {
       if (post.images && post.images.length > 1) {
-        initialIndices[post.id] = 0; // Default the first image to be active
+        initialIndices[post.id] = 0; // Thiết lập chỉ mục đầu tiên cho các bài có nhiều ảnh
       }
     });
     setActiveImageIndex(initialIndices);
   }, [user.posts]);
 
   const toggleLike = (postId) => {
-    if (likedPosts.includes(postId)) {
-      setLikedPosts(likedPosts.filter((id) => id !== postId)); // Remove from liked posts if already liked
-    } else {
-      setLikedPosts([...likedPosts, postId]); // Add to liked posts if not already liked
-    }
+    setLikedPosts((prevLikedPosts) => 
+      prevLikedPosts.includes(postId)
+        ? prevLikedPosts.filter((id) => id !== postId)
+        : [...prevLikedPosts, postId]
+    ); // Chuyển đổi trạng thái thích của bài đăng
   };
 
   const toggleSave = (postId) => {
-    if (savedPosts.includes(postId)) {
-      setSavedPosts(savedPosts.filter((id) => id !== postId)); // Remove from saved posts if already saved
-    } else {
-      setSavedPosts([...savedPosts, postId]); // Add to saved posts if not already saved
-    }
+    setSavedPosts((prevSavedPosts) => 
+      prevSavedPosts.includes(postId)
+        ? prevSavedPosts.filter((id) => id !== postId)
+        : [...prevSavedPosts, postId]
+    ); // Chuyển đổi trạng thái lưu của bài đăng
   };
 
-  // Function to render multiple images with pagination dots
   const renderImages = (images, postId) => {
-    // Don't show dots if there's only one image
     if (images.length === 1) {
-      return (
-        <Image source={images[0]} style={styles.postImage} />
-      );
+      return <Image source={images[0]} style={styles.postImage} />;
     }
 
     return (
@@ -57,7 +61,6 @@ const ProfilePosts = ({ user }) => {
           style={styles.imageList}
           showsHorizontalScrollIndicator={false}
           onScroll={(event) => {
-            // Update active image index based on scroll position
             const index = Math.round(event.nativeEvent.contentOffset.x / screenWidth);
             setActiveImageIndex((prevState) => ({
               ...prevState,
@@ -75,9 +78,7 @@ const ProfilePosts = ({ user }) => {
               key={index}
               style={[
                 styles.paginationDot,
-                activeImageIndex[postId] === index
-                  ? styles.activeDot
-                  : styles.inactiveDot,
+                activeImageIndex[postId] === index ? styles.activeDot : styles.inactiveDot,
               ]}
             />
           ))}
@@ -90,7 +91,6 @@ const ProfilePosts = ({ user }) => {
     <ScrollView contentContainerStyle={styles.flatListContent}>
       {user.posts.map((item) => (
         <View key={item.id} style={styles.postContainer}>
-          {/* Post Header with Profile Image and Name */}
           <View style={styles.postHeader}>
             <Image source={user.profileImage} style={styles.profileImage} />
             <View style={styles.headerText}>
@@ -101,53 +101,32 @@ const ProfilePosts = ({ user }) => {
               <Text style={styles.moreText}>⋮</Text>
             </TouchableOpacity>
           </View>
-
-          {/* Post Text */}
           <Text style={styles.postText}>{item.text}</Text>
-
-          {/* Post Images (if available) */}
           {item.images && renderImages(item.images, item.id)}
-
-          {/* Post metadata like likes, comments, etc. */}
           <View style={styles.postMeta}>
             <View style={styles.leftMetaIcons}>
-              {/* Like button with color toggle */}
-              <TouchableOpacity
-                style={styles.iconButton}
-                onPress={() => toggleLike(item.id)}
-              >
-                <Icon
-                  name="thumbs-up"
-                  size={20}
-                  color={likedPosts.includes(item.id) ? '#FF0000' : '#B3B3B3'} // Change color based on liked state
+              <TouchableOpacity style={styles.iconButton} onPress={() => toggleLike(item.id)}>
+                <Image
+                  source={likedPosts.includes(item.id) ? heartFilled : heart}
+                  style={styles.iconImage}
                 />
                 <Text style={styles.metaText}>{item.likes}</Text>
               </TouchableOpacity>
-
               <TouchableOpacity style={styles.iconButton}>
-                <Icon name="comment" size={20} color="#B3B3B3" />
+                <Image source={comment} style={styles.iconImage} />
                 <Text style={styles.metaText}>{item.comments}</Text>
               </TouchableOpacity>
-
               <TouchableOpacity style={styles.iconButton}>
-                <Icon name="share" size={20} color="#B3B3B3" />
+                <Image source={share} style={styles.iconImage} />
               </TouchableOpacity>
             </View>
-
-            {/* Save Icon with color toggle */}
-            <TouchableOpacity 
-              style={styles.iconButton}
-              onPress={() => toggleSave(item.id)}
-            >
-              <Icon
-                name={savedPosts.includes(item.id) ? 'bookmark' : 'bookmark-o'} // Change icon based on saved state
-                size={20}
-                color={savedPosts.includes(item.id) ? '#FF0000' : '#B3B3B3'} // Change color based on saved state
+            <TouchableOpacity style={styles.iconButton} onPress={() => toggleSave(item.id)}>
+              <Image
+                source={savedPosts.includes(item.id) ? bookmarkFilled : bookmark}
+                style={styles.iconImage}
               />
             </TouchableOpacity>
           </View>
-
-          {/* Gray Line Separator */}
           <View style={styles.separator} />
         </View>
       ))}
@@ -198,7 +177,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   postImage: {
-    width: screenWidth - 50, // Responsive to screen size
+    width: screenWidth - 50,
     height: 200,
     borderRadius: 8,
     marginRight: 10,
@@ -216,12 +195,13 @@ const styles = StyleSheet.create({
   iconButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: 15, // Adds space between the icons
+    marginRight: 15,
+    marginTop: 10,
   },
   metaText: {
     color: '#B3B3B3',
     fontSize: 14,
-    marginLeft: 5, // Separates text from the icon
+    marginLeft: 5,
   },
   flatListContent: {
     paddingBottom: 20,
@@ -233,12 +213,16 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   imageList: {
-    marginBottom: 10, // Space below the image gallery
+    marginBottom: 10,
   },
   paginationContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: 10,
+  },
+  iconImage: {
+    width: 20,
+    height: 20,
   },
   paginationDot: {
     height: 8,
@@ -247,10 +231,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   activeDot: {
-    backgroundColor: '#FF0000', // Active red dot
+    backgroundColor: '#FF0000',
   },
   inactiveDot: {
-    backgroundColor: '#B3B3B3', // Inactive gray dot
+    backgroundColor: '#B3B3B3',
   },
 });
 

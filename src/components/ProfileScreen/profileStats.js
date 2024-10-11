@@ -1,59 +1,55 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
-const ProfileStats = ({ followers, following }) => (
+const ProfileStats = ({ friends }) => (
   <View style={styles.statsContainer}>
     <View style={styles.stat}>
-      {/* Sử dụng toLocaleString() để format số có dấu phẩy */}
-      <Text style={styles.statNumber}>{followers.toLocaleString()}</Text>
-      <Text style={styles.statText}>Followers</Text>
-    </View>
-    <View style={styles.stat}>
-      {/* Sử dụng toLocaleString() để format số có dấu phẩy */}
-      <Text style={styles.statNumber}>{following.toLocaleString()}</Text>
-      <Text style={styles.statText}>Following</Text>
+      {/* Hiển thị số bạn bè với dấu phẩy */} 
+      <Text style={styles.statNumber}>{friends.toLocaleString()}</Text>
+      <Text style={styles.statText}>Friends</Text>
     </View>
 
-    {/* Nút Edit Profile nằm ngang với Followers và Following */}
+    {/* Nút Edit Profile nằm ngang với số Friends */}
     <TouchableOpacity style={styles.editButton}>
       <Text style={styles.editButtonText}>Edit Profile</Text>
     </TouchableOpacity>
   </View>
 );
 
+
 const styles = StyleSheet.create({
   statsContainer: {
-    flexDirection: 'row', // Các phần tử sẽ sắp xếp ngang
-    justifyContent: 'space-between', // Căn đều giữa các phần tử
-    alignItems: 'center', // Căn giữa các phần tử dọc
-    width: '100%', // Chiếm hết chiều rộng màn hình
+    flexDirection: 'row', 
+    justifyContent: 'space-evenly', 
+    alignItems: 'center', 
+    width: '100%', 
     marginTop: 16,
-    paddingHorizontal: 20, // Đảm bảo không bị sát cạnh màn hình
+    paddingHorizontal: 20, 
   },
   stat: {
-    alignItems: 'flex-start', // Căn giữa các phần tử trong mỗi View
+    alignItems: 'flex-start', 
   },
   statNumber: {
     fontSize: 16,
-    color: 'white', // Màu trắng cho số
+    color: 'white', 
     fontWeight: 'bold',
   },
   statText: {
     fontSize: 14,
-    color: '#727477', // Màu xám cho chữ 'Followers' và 'Following'
+    color: '#727477', 
   },
   editButton: {
-    backgroundColor: 'transparent', // Nền trong suốt
-    borderColor: 'white', // Viền trắng
-    borderWidth: 1, // Độ dày viền
-    borderRadius: 20, // Bo góc nút
+    backgroundColor: 'transparent', 
+    borderColor: 'white', 
+    borderWidth: 1, 
+    borderRadius: 20, 
     paddingVertical: 8,
     paddingHorizontal: 16,
-    marginLeft: 16, // Khoảng cách giữa nút và các số
+    marginLeft: 16, 
   },
   editButtonText: {
-    color: 'white', // Màu chữ trắng
-    fontSize: 14, // Kích thước chữ
+    color: 'white', 
+    fontSize: 14, 
     fontWeight: 'bold',
   },
 });
