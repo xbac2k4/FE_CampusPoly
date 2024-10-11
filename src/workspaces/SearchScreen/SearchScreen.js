@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
-import Fontisto from 'react-native-vector-icons/Fontisto';
 
 const DATA = [
   {
@@ -14,6 +13,7 @@ const DATA = [
     likes: '18.6k',
     comments: '4.7k',
     shares: '12.4k',
+
   },
   {
     id: '2',
@@ -24,13 +24,16 @@ const DATA = [
     comments: '186',
     shares: '2.9k',
   },
-  // Thêm nhiều phần tử khác
+  
 ];
 
 const SearchScreen = () => {
+  // Khởi tạo state để lưu trữ trạng thái bài viết đã thích
   const [likedPosts, setLikedPosts] = useState({});
-  const [isfavorite, setIsFavorite] = useState(false);
+  // Khởi tạo state để lưu trữ trạng thái bài viết yêu thích
+  const [favoritePosts, setFavoritePosts] = useState({});
 
+  // Hàm để bật/tắt trạng thái like của bài đăng
   const toggleLike = (postId) => {
     setLikedPosts((prevLikedPosts) => ({
       ...prevLikedPosts,
@@ -38,6 +41,15 @@ const SearchScreen = () => {
     }));
   };
 
+  // Hàm để bật/tắt trạng thái yêu thích của bài đăng
+  const toggleFavorite = (postId) => {
+    setFavoritePosts((prevFavoritePosts) => ({
+      ...prevFavoritePosts,
+      [postId]: !prevFavoritePosts[postId],
+    }));
+  };
+
+  // Hàm render từng bài viết
   const renderPost = ({ item }) => (
     <View style={styles.postContainer}>
       <View style={styles.postHeader}>
@@ -68,10 +80,10 @@ const SearchScreen = () => {
           <Entypo name="share-alternative" size={20} color="white" />
           <Text style={styles.postStatText}>{item.shares}</Text>
         </View>
-        <TouchableOpacity onPress={() => setIsFavorite(!isfavorite)} style={styles.favoritesContainer}>
+        <TouchableOpacity onPress={() => toggleFavorite(item.id)} style={styles.favoritesContainer}>
           <Image
             style={{ width: 20, height: 20 }}
-            source={isfavorite ? require('../../assets/fav2.png') : require('../../assets/fav1.png')}
+            source={favoritePosts[item.id] ? require('../../assets/fav2.png') : require('../../assets/fav1.png')}
           />
         </TouchableOpacity>
       </View>
@@ -79,6 +91,7 @@ const SearchScreen = () => {
     </View>
   );
 
+  // Hàm render giao diện chính của màn hình tìm kiếm
   return (
     <View style={styles.container}>
       <View style={styles.searchContainer}>
@@ -105,6 +118,9 @@ const SearchScreen = () => {
         </TouchableOpacity>
         <TouchableOpacity style={styles.filterButton}>
           <Text style={styles.filterText}>Text</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.filterButton}>
+          <Text style={styles.filterText}>Links</Text>
         </TouchableOpacity>
       </ScrollView>
       <FlatList
