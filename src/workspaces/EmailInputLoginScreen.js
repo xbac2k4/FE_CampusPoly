@@ -1,8 +1,10 @@
-import { StyleSheet, Text, TextInput, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import React, { useState } from 'react'
 import Feather from 'react-native-vector-icons/Feather';
 import AuthenticationHeader from '../components/AuthenticationHeader';
-import TwoButtonBottom from '../components/OneButtonBottom';
+import TwoButtonBottom from '../components/TwoButtonBottom';
+import CustomInput from '../components/CustomInput';
+import ErrorMessage from '../components/ErrorMessage';
 
 const EmailInputLoginScreen = () => {
   const [email, setEmail] = useState('')
@@ -34,27 +36,24 @@ const EmailInputLoginScreen = () => {
         </View>
 
         {/* nhập email */}
-        <View>
-          <View style={st.inputContainer}>
+        <CustomInput
+          leadIcon={() => (
             <Feather
               name="user"
               size={20}
               style={{ marginLeft: 10 }}
             />
-            <TextInput
-              onChangeText={(text) => {
-                setEmail(text)
-                if (emailErrorText !== '') {
-                  setEmailErrorText('')
-                }
-              }}
-              value={email}
-              placeholder="Email"
-              style={st.emailInput}
-            />
-          </View>
-          <Text style={{ color: 'red', fontWeight: 'bold' }}>{emailErrorText}</Text>
-        </View>
+          )}
+          name={email}
+          onChangeText={(text) => {
+            setEmail(text)
+            if (emailErrorText !== '') {
+              setEmailErrorText('')
+            }
+          }}
+          placeholder={'Email'}
+        />
+        <ErrorMessage message={emailErrorText} />
       </View>
 
       {/* nút quên mật khẩu và đăng nhập */}
@@ -92,21 +91,6 @@ const st = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 30,
     color: 'black',
-  },
-  emailInput: {
-    width: '90%',
-    padding: 20,
-    fontWeight: 'bold',
-    fontSize: 15,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '90%',
-    borderWidth: 1,
-    borderColor: 'black',
-    marginTop: 10,
-    borderRadius: 10,
   },
   bottomContainer: {
     width: '100%',

@@ -2,7 +2,9 @@ import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-nativ
 import React, { useState } from 'react'
 import Feather from 'react-native-vector-icons/Feather';
 import AuthenticationHeader from '../components/AuthenticationHeader';
-import TwoButtonBottom from '../components/OneButtonBottom';
+import TwoButtonBottom from '../components/TwoButtonBottom';
+import CustomInput from '../components/CustomInput';
+import ErrorMessage from '../components/ErrorMessage';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('')
@@ -48,62 +50,54 @@ const LoginScreen = () => {
         </View>
 
         {/* nhập email */}
-        <View style={st.inputContainer}>
-          <Feather
-            name="user"
-            size={20}
-            style={{ marginLeft: 10 }}
-          />
-          <TextInput
-            onChangeText={(text) => {
-              setEmail(text)
-              if (emailErrorText !== '') {
-                setEmailErrorText('')
-              }
-            }}
-            value={email}
-            placeholder="Email"
-            style={st.emailInput}
-          />
-        </View>
+        <CustomInput
+          leadIcon={() => (
+            <Feather
+              name="user"
+              size={20}
+              style={{ marginLeft: 10 }}
+            />
+          )}
+          name={email}
+          onChangeText={(text) => {
+            setEmail(text)
+            if (emailErrorText !== '') {
+              setEmailErrorText('')
+            }
+          }}
+          placeholder={'Email'}
+        />
 
         {/* thông báo lỗi email */}
-        <View style={{
-          width: '90%'
-        }}>
-          <Text style={{ color: 'red' }}>{emailErrorText}</Text>
-        </View>
+        <ErrorMessage message={emailErrorText} />
 
         {/* nhập mật khẩu */}
-        <View style={st.inputContainer}>
-          <Feather
-            name="lock"
-            size={20}
-            style={{ marginLeft: 10 }}
-          />
-          <TextInput
-            onChangeText={(text) => {
-              setPassword(text)
-              if (passErrorText !== '') {
-                setPassErrorText('')
-              }
-            }}
-            value={password}
-            placeholder="Mật khẩu"
-            style={st.passwordInput}
-            secureTextEntry={!showPassword}
-          />
-          <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={st.iconContainer}>
-            <Feather name={showPassword ? 'eye' : 'eye-off'} size={20} />
-          </TouchableOpacity>
-        </View>
+        <CustomInput
+          leadIcon={() => (
+            <Feather
+              name="lock"
+              size={20}
+              style={{ marginLeft: 10 }}
+            />
+          )}
+          name={password}
+          onChangeText={(text) => {
+            setPassword(text)
+            if (passErrorText !== '') {
+              setPassErrorText('')
+            }
+          }}
+          placeholder={'Mật khẩu'}
+          trailingIcon={() => (
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={st.iconContainer}>
+              <Feather name={showPassword ? 'eye' : 'eye-off'} size={20} />
+            </TouchableOpacity>
+          )}
+          secureTextEntry={!showPassword}
+        />
 
         {/* thông báo lỗi mật khẩu */}
-        <View style={{
-          width: '90%'
-        }}>
-          <Text style={{ color: 'red', }}>{passErrorText}</Text>
-        </View>
+        <ErrorMessage message={passErrorText} />
       </View>
 
       {/* nút quên mật khẩu và đăng nhập */}
@@ -137,27 +131,6 @@ const st = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 35,
     color: 'black',
-  },
-  emailInput: {
-    width: '90%',
-    padding: 20,
-    fontWeight: 'bold',
-    fontSize: 15,
-  },
-  passwordInput: {
-    flex: 1,
-    padding: 20,
-    fontWeight: 'bold',
-    fontSize: 15,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '90%',
-    borderWidth: 1,
-    borderColor: 'black',
-    marginTop: 10,
-    borderRadius: 10,
   },
   iconContainer: {
     padding: 10,
