@@ -1,6 +1,8 @@
-import { Image, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import Feather from 'react-native-vector-icons/Feather';
+import AuthenticationHeader from '../components/AuthenticationHeader';
+import TwoButtonBottom from '../components/OneButtonBottom';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('')
@@ -31,26 +33,7 @@ const LoginScreen = () => {
   return (
     <View style={st.container}>
 
-      {/* thanh statusbar */}
-      <StatusBar backgroundColor="transparent" barStyle={'dark-content'} />
-
-      {/* logo */}
-      <Image
-        source={require('../assets/images/logo.png')}
-        style={st.logo}
-        resizeMode="contain"
-      />
-
-      {/* nút trở lại */}
-      <View
-        style={{
-          width: '90%',
-        }}>
-        <TouchableOpacity>
-          <Image
-            source={require('../assets/images/left-arrow.png')} />
-        </TouchableOpacity>
-      </View>
+      <AuthenticationHeader />
 
       {/* form đăng nhập */}
       <View style={st.loginForm}>
@@ -65,27 +48,39 @@ const LoginScreen = () => {
         </View>
 
         {/* nhập email */}
-        <TextInput
-          onChangeText={(text) => {
-            setEmail(text)
-            if (emailErrorText !== '') {
-              setEmailErrorText('')
-            }
-          }}
-          value={email}
-          placeholder="Email"
-          style={st.emailInput}
-        />
+        <View style={st.inputContainer}>
+          <Feather
+            name="user"
+            size={20}
+            style={{ marginLeft: 10 }}
+          />
+          <TextInput
+            onChangeText={(text) => {
+              setEmail(text)
+              if (emailErrorText !== '') {
+                setEmailErrorText('')
+              }
+            }}
+            value={email}
+            placeholder="Email"
+            style={st.emailInput}
+          />
+        </View>
 
         {/* thông báo lỗi email */}
         <View style={{
-          width: '90%',
+          width: '90%'
         }}>
           <Text style={{ color: 'red' }}>{emailErrorText}</Text>
         </View>
 
         {/* nhập mật khẩu */}
         <View style={st.inputContainer}>
+          <Feather
+            name="lock"
+            size={20}
+            style={{ marginLeft: 10 }}
+          />
           <TextInput
             onChangeText={(text) => {
               setPassword(text)
@@ -99,43 +94,27 @@ const LoginScreen = () => {
             secureTextEntry={!showPassword}
           />
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={st.iconContainer}>
-            <Feather name={showPassword ? 'eye' : 'eye-off'} size={20} color='red' />
+            <Feather name={showPassword ? 'eye' : 'eye-off'} size={20} />
           </TouchableOpacity>
         </View>
 
         {/* thông báo lỗi mật khẩu */}
         <View style={{
-          width: '90%',
+          width: '90%'
         }}>
-          <Text style={{ color: 'red' }}>{passErrorText}</Text>
+          <Text style={{ color: 'red', }}>{passErrorText}</Text>
         </View>
       </View>
 
       {/* nút quên mật khẩu và đăng nhập */}
       <View style={st.bottomContainer}>
-        <View style={st.bottomBar}>
-          <TouchableOpacity
-            style={[st.bottomBtn, { backgroundColor: 'white' }]}>
-            <Text
-              style={st.btnText}>
-              Quên mật khẩu?
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={handleLogin}
-            style={[st.bottomBtn, { backgroundColor: '#D9D9D9' }]}>
-            <Text
-              style={st.btnText}>
-              Đăng nhập
-            </Text>
-          </TouchableOpacity>
-        </View>
-
+        <TwoButtonBottom
+          text1='Quên mật khẩu?'
+          text2='Đăng nhập'
+          onPress1={() => alert('Quên mật khẩu')}
+          onPress2={handleLogin}
+        />
       </View>
-
-
-
 
     </View>
   )
@@ -149,7 +128,6 @@ const st = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white'
   },
-  logo: { width: 180, height: 50 },
   loginForm: {
     width: '100%',
     alignItems: 'center',
@@ -162,13 +140,9 @@ const st = StyleSheet.create({
   },
   emailInput: {
     width: '90%',
-    borderWidth: 1,
-    borderColor: 'black',
-    marginTop: 20,
     padding: 20,
     fontWeight: 'bold',
     fontSize: 15,
-    borderRadius: 10,
   },
   passwordInput: {
     flex: 1,
@@ -192,28 +166,5 @@ const st = StyleSheet.create({
     width: '100%',
     flex: 1,
     justifyContent: 'flex-end',
-  },
-  bottomBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 20,
-    borderTopColor: 'black',
-    borderTopWidth: 2,
-    paddingHorizontal: 20,
-  },
-
-  bottomBtn: {
-    padding: 15,
-    borderRadius: 40,
-    borderWidth: 1,
-    borderColor: 'black',
-    height: 55,
-    elevation: 5
-  },
-
-  btnText: {
-    color: 'black',
-    fontWeight: 'bold',
-    fontSize: 16,
   }
 })

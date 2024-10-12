@@ -4,9 +4,15 @@
 
 import {AppRegistry} from 'react-native';
 import App from './App';
-import MenuAuthenticationScreen from './src/workspaces/MenuAuthenticationScreen'
 import LoginScreen from './src/workspaces/LoginScreen'
-import WelcomeScreen from './src/workspaces/WelcomeScreen'
+import OTP_screen from './src/workspaces/OTP_screen'
+import SignUpScreen from './src/workspaces/SignUpScreen'
+import SignUpPasswordScreen from './src/workspaces/SignUpPasswordScreen'
+import SignUpNameScreen from './src/workspaces/SignUpNameScreen'
+import SignUpImageScreen from './src/workspaces/SignUpImageScreen'
+import EmailInputLoginScreen from './src/workspaces/EmailInputLoginScreen'
+
+
 import {name as appName} from './app.json';
 
-AppRegistry.registerComponent(appName, () => WelcomeScreen);
+AppRegistry.registerComponent(appName, () => SignUpNameScreen);
