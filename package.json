@@ -10,6 +10,10 @@
     "test": "jest"
   },
   "dependencies": {
+    "hugeicons-react": "^0.3.0",
+    "nativewind": "^2.0.11",
+    "react-native-linear-gradient": "^2.8.3",
+    "twrnc": "^4.5.1"
     "@react-native-community/masked-view": "^0.1.11",
     "react": "18.3.1",
     "react-native": "0.75.4",
@@ -35,6 +39,7 @@
     "jest": "^29.6.3",
     "prettier": "2.8.8",
     "react-test-renderer": "18.3.1",
+    "tailwindcss": "^3.3.2",
     "typescript": "5.0.4"
   },
   "engines": {
