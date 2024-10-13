@@ -2,10 +2,9 @@ apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
-project.ext.vectoricons = [
-  iconFontNames: [ 'MaterialIcons.ttf', 'FontAwesome.ttf','AntDesign.ttf' ] // Thêm các font cần thiết vào đây
-]
-apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
+apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
+
+
 
 
 
@@ -118,6 +117,7 @@ dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
 
+
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
     } else {
@@ -128,4 +128,5 @@ dependencies {
     implementation project(':react-native-linear-gradient')
 }
 
+    implementation project(':react-native-vector-icons')
 }
