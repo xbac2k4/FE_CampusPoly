@@ -89,50 +89,48 @@ const HomeScreen = () => {
   );
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.headerContent}>
-        <Text style={{ color: "#ffff", fontSize: 18, fontFamily: 'HankenGrotesk-Regular', fontWeight: '500' }}>
-          {greeting}, {userName || 'User'}
-        </Text>
+    <FlatList
+    style={styles.container}
+    data={fakeArticles}  // Dữ liệu của FlatList chính
+    keyExtractor={item => item.id}
+    nestedScrollEnabled={true}
+    ListHeaderComponent={(
+      <View style={{flex: 1}}>
+        <View style={styles.headerContent}>
+          <Text style={{ color: "#ffff", fontSize: 18, fontFamily: 'HankenGrotesk-Regular', fontWeight: '500' }}>
+            {greeting}, {userName || 'User'}
+          </Text>
+          {/* Thêm icon vào text 🚀🚀🚀🚀🚀🛠️🛠️🛠️🛠️🛠️🛠️🛠️🛠️💕💕💕 */}
+          <TouchableOpacity style={styles.circleIcon} onPress={() => {}}>
+            <Text><Icon name="mail-outline" size={15} color="#fff" /></Text>
+          </TouchableOpacity>
+        </View>
 
-        {/* Thêm icon vào text 🚀🚀🚀🚀🚀🛠️🛠️🛠️🛠️🛠️🛠️🛠️🛠️💕💕💕 */}
-        <TouchableOpacity style={styles.circleIcon}
-          onPress={() => {
-          }}>
-        <Text><Icon name="mail-outline" size={15} color="#fff" /></Text>
-        </TouchableOpacity>
-      </View>
-
-      <FlatList
-        data={stories}
-        renderItem={renderStoryItem}
-        keyExtractor={item => item.id}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        ItemSeparatorComponent={() => <View style={{ width: 10 }} />}
-        style={styles.storyContainer}
-      />
-      <View style={styles.articleContainer}> {/**Dang xảy ra cảnh báo flastlist và scrolView xung đột với 🆘🆘🆘🆘 */}
+        {/* Phần FlatList cho stories */}
         <FlatList
-          data={fakeArticles}
-        nestedScrollEnabled={true}
-          renderItem={({ item }) => (
-            <ArticleComponent
-              id={item.id}
-              imgavatar={item.imgavatar}
-              username={item.username}
-              time={item.time}
-              content={item.content}
-              imgcontent={item.imgcontent}
-              likecount={item.likecount}
-              commentcount={item.commentcount}
-            />
-          )}
+          data={stories}
+          renderItem={renderStoryItem}
           keyExtractor={item => item.id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          ItemSeparatorComponent={() => <View style={{ width: 10 }} />}
+          style={styles.storyContainer}
         />
       </View>
-    </ScrollView>
-  );
+    )}
+    renderItem={({ item }) => (
+      <ArticleComponent
+        id={item.id}
+        imgavatar={item.imgavatar}
+        username={item.username}
+        time={item.time}
+        content={item.content}
+        imgcontent={item.imgcontent}
+        likecount={item.likecount}
+        commentcount={item.commentcount}
+      />
+    )}
+  />  );
 }
 
 export default HomeScreen;

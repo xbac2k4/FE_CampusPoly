@@ -6,7 +6,7 @@ import CommentScreen from './src/workspaces/Comment/commentScreen'
 const App = () => {
   return (
     <View style={{flex:1}}>
-      <CommentScreen/>
+      <HomeScreen/>
     </View>
   )
 }
