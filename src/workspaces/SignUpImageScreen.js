@@ -1,7 +1,7 @@
 import { Image, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import { launchImageLibrary } from 'react-native-image-picker';
-import TwoButtonBottom from '../components/OneButtonBottom';
+import TwoButtonBottom from '../components/TwoButtonBottom';
 
 const SignUpImageScreen = () => {
 
