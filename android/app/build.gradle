@@ -123,10 +123,4 @@ dependencies {
     } else {
         implementation jscFlavor
     }
-    implementation project(':react-native-vector-icons')
-    dependencies {
-    implementation project(':react-native-linear-gradient')
-}
-
-    implementation project(':react-native-vector-icons')
 }
