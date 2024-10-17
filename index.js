@@ -11,6 +11,10 @@ import SignUpPasswordScreen from './src/workspaces/SignUpPasswordScreen'
 import SignUpNameScreen from './src/workspaces/SignUpNameScreen'
 import SignUpImageScreen from './src/workspaces/SignUpImageScreen'
 import EmailInputLoginScreen from './src/workspaces/EmailInputLoginScreen'
+import SearchScreen from './src/workspaces/SearchScreen/SearchScreen'
+import commentScreen from './src/workspaces/Comment/commentScreen'
+import homeScreen from './src/workspaces/Home/homeScreen'
+import profileScreen from './src/workspaces/ProfileScreen/profileScreen'
 import 'react-native-gesture-handler';
 
 

@@ -3,7 +3,7 @@ import {View, StyleSheet, Image} from 'react-native';
 import ProfileScreen from './src/workspaces/ProfileScreen/profileScreen';
 import CommentScreen from './src/workspaces/Comment/commentScreen';
 import HomeScreen from './src/workspaces/Home/homeScreen';
-import {Home, Profile} from './src/workspaces/Home/index';
+import {Home,Search, Profile} from './src/workspaces/Home/index';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import LinearGradient from 'react-native-linear-gradient';
@@ -45,7 +45,7 @@ const App = () => {
         />
         <Tab.Screen
           name="Search"
-          component={Home}
+          component={Search}
           options={({route}) => ({
             tabBarIcon: ({focused}) => (
               <Image
