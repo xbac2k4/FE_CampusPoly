@@ -11,7 +11,7 @@ const AuthenticationHeader = () => {
             {/* thanh statusbar */}
             <StatusBar backgroundColor="transparent" barStyle={'dark-content'} />
 
-            {/* logo */}
+            {/* logo 123*/}
             <Image
                 source={require('../assets/images/logo.png')}
                 style={st.logo}

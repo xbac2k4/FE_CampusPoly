@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, FlatList, Image } from 'react-native';
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, FlatList, Image, KeyboardAvoidingView } from 'react-native';
 import React, { useState } from 'react';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -117,37 +117,43 @@ const SearchScreen = () => {
 
   // Hàm render giao diện chính của màn hình tìm kiếm
   return (
-    <View style={styles.container}>
-      <View style={styles.searchContainer}>
-        <AntDesign name="search1" size={20} color="#FFFFFF" style={styles.icon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Search for people, posts, tags..."
-          placeholderTextColor="#ECEBED"
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={{ flex: 1 }}
+    >
+      <View style={styles.container}>
+        <View style={styles.searchContainer}>
+          <AntDesign name="search1" size={20} color="#FFFFFF" style={styles.icon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Search for people, posts, tags..."
+            placeholderTextColor="#ECEBED"
+          />
+        </View>
+        <Text style={styles.popularText}>Popular</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterContainer}>
+          {['All', 'Profiles', 'Photos', 'Videos', 'Text', 'Links'].map((filter) => (
+            <TouchableOpacity
+              key={filter}
+              style={[
+                styles.filterButton,
+                activeFilter === filter && styles.activeButton, // Thay đổi màu khi được chọn
+              ]}
+              onPress={() => handleFilterPress(filter)}
+            >
+              <Text style={styles.filterText}>{filter}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+        <FlatList
+          data={DATA}
+          renderItem={renderPost}
+          keyExtractor={item => item.id}
+          style={styles.list}
         />
       </View>
-      <Text style={styles.popularText}>Popular</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterContainer}>
-        {['All', 'Profiles', 'Photos', 'Videos', 'Text', 'Links'].map((filter) => (
-          <TouchableOpacity
-            key={filter}
-            style={[
-              styles.filterButton,
-              activeFilter === filter && styles.activeButton, // Thay đổi màu khi được chọn
-            ]}
-            onPress={() => handleFilterPress(filter)}
-          >
-            <Text style={styles.filterText}>{filter}</Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-      <FlatList
-        data={DATA}
-        renderItem={renderPost}
-        keyExtractor={item => item.id}
-        style={styles.list}
-      />
-    </View>
+    </KeyboardAvoidingView>
+
   );
 }
 
@@ -186,6 +192,7 @@ const styles = StyleSheet.create({
   filterContainer: {
     marginTop: 12,
     marginBottom: 32,
+    paddingVertical: 10
   },
   filterButton: {
     backgroundColor: '#323436',
