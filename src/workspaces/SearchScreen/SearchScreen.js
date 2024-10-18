@@ -10,7 +10,7 @@ const DATA = [
     id: '1',
     name: 'Michelle Ogilvy',
     time: '1h ago',
-    image: require('../../assets/dongthoigian.png'),
+    image: require('../../assets/images/dongthoigian.png'),
     likes: '18.6k',
     comments: '4.7k',
   },
@@ -18,7 +18,7 @@ const DATA = [
     id: '2',
     name: 'Brandon Loia',
     time: '1h ago',
-    image: require('../../assets/dongthoigian2.png'),
+    image: require('../../assets/images/dongthoigian2.png'),
     likes: '4.7k',
     comments: '186',
   },
@@ -107,7 +107,7 @@ const SearchScreen = () => {
         <TouchableOpacity onPress={() => toggleFavorite(item.id)} style={styles.favoritesContainer}>
           <Image
             style={{ width: 20, height: 20 }}
-            source={favoritePosts[item.id] ? require('../../assets/fav2.png') : require('../../assets/fav1.png')}
+            source={favoritePosts[item.id] ? require('../../assets/images/fav2.png') : require('../../assets/images/fav1.png')}
           />
         </TouchableOpacity>
       </View>

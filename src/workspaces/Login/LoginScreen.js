@@ -1,19 +1,32 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import Feather from 'react-native-vector-icons/Feather';
-import AuthenticationHeader from '../components/AuthenticationHeader';
-import TwoButtonBottom from '../components/TwoButtonBottom';
-import CustomInput from '../components/CustomInput';
-import ErrorMessage from '../components/ErrorMessage';
+import AuthenticationHeader from '../../components/AuthHeader';
+import TwoButtonBottom from '../../components/TwoButtonBottom';
+import CustomInput from '../../components/CustomInput';
+import ErrorMessage from '../../components/ErrorMessage';
 
-const EmailInputLoginScreen = () => {
+const LoginScreen = () => {
   const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [emailErrorText, setEmailErrorText] = useState('')
+  const [passErrorText, setPassErrorText] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
 
   // Hàm xử lý khi người dùng ấn nút đăng nhập
   const handleLogin = () => {
+    if (email === '' && password === '') {
+      setEmailErrorText('Vui lòng nhập email')
+      setPassErrorText('Vui lòng nhập mật khẩu')
+      return
+    }
     if (email === '') {
       setEmailErrorText('Vui lòng nhập email')
+      return
+    }
+
+    if (password === '') {
+      setPassErrorText('Vui lòng nhập mật khẩu')
       return
     }
 
@@ -21,6 +34,7 @@ const EmailInputLoginScreen = () => {
   }
   return (
     <View style={st.container}>
+
       <AuthenticationHeader />
 
       {/* form đăng nhập */}
@@ -31,7 +45,7 @@ const EmailInputLoginScreen = () => {
           style={{ width: '80%' }}>
           <Text
             style={st.title}>
-            Để bắt đầu, trước tiên hãy nhập số điện thoại, email hoặc @tên người dùng của bạn
+            Đăng nhập
           </Text>
         </View>
 
@@ -53,28 +67,54 @@ const EmailInputLoginScreen = () => {
           }}
           placeholder={'Email'}
         />
+
+        {/* thông báo lỗi email */}
         <ErrorMessage message={emailErrorText} />
+
+        {/* nhập mật khẩu */}
+        <CustomInput
+          leadIcon={() => (
+            <Feather
+              name="lock"
+              size={20}
+              style={{ marginLeft: 10 }}
+            />
+          )}
+          name={password}
+          onChangeText={(text) => {
+            setPassword(text)
+            if (passErrorText !== '') {
+              setPassErrorText('')
+            }
+          }}
+          placeholder={'Mật khẩu'}
+          trailingIcon={() => (
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={st.iconContainer}>
+              <Feather name={showPassword ? 'eye' : 'eye-off'} size={20} />
+            </TouchableOpacity>
+          )}
+          secureTextEntry={!showPassword}
+        />
+
+        {/* thông báo lỗi mật khẩu */}
+        <ErrorMessage message={passErrorText} />
       </View>
 
       {/* nút quên mật khẩu và đăng nhập */}
       <View style={st.bottomContainer}>
         <TwoButtonBottom
           text1='Quên mật khẩu?'
-          text2='Tiếp theo'
+          text2='Đăng nhập'
           onPress1={() => alert('Quên mật khẩu')}
           onPress2={handleLogin}
         />
-
       </View>
-
-
-
 
     </View>
   )
 }
 
-export default EmailInputLoginScreen
+export default LoginScreen
 
 const st = StyleSheet.create({
   container: {
@@ -89,8 +129,11 @@ const st = StyleSheet.create({
   },
   title: {
     fontWeight: 'bold',
-    fontSize: 30,
+    fontSize: 35,
     color: 'black',
+  },
+  iconContainer: {
+    padding: 10,
   },
   bottomContainer: {
     width: '100%',

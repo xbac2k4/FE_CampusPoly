@@ -1,9 +1,9 @@
 import { FlatList, Image, StatusBar, StyleSheet, Text, View } from 'react-native'
 import React, { useState } from 'react'
 import Feather from 'react-native-vector-icons/Feather';
-import TwoButtonBottom from '../components/TwoButtonBottom';
-import CustomInput from '../components/CustomInput';
-import ErrorMessage from '../components/ErrorMessage';
+import TwoButtonBottom from '../../components/TwoButtonBottom';
+import CustomInput from '../../components/CustomInput';
+import ErrorMessage from '../../components/ErrorMessage';
 
 
 
@@ -39,7 +39,7 @@ const SignUpNameScreen = () => {
 
       {/* logo */}
       <Image
-        source={require('../assets/images/logo.png')}
+        source={require('../../assets/images/logo.png')}
         style={st.logo}
         resizeMode="contain"
       />

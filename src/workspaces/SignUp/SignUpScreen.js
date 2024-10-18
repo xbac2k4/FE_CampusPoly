@@ -2,10 +2,10 @@ import { StyleSheet, Text, View } from 'react-native'
 import React, { useState } from 'react'
 import Feather from 'react-native-vector-icons/Feather';
 import Entypo from 'react-native-vector-icons/Entypo';
-import AuthenticationHeader from '../components/AuthenticationHeader';
-import OneButtonBottom from '../components/OneButtonBottom';
-import CustomInput from '../components/CustomInput';
-import ErrorMessage from '../components/ErrorMessage';
+import AuthenticationHeader from '../../components/AuthHeader';
+import OneButtonBottom from '../../components/OneButtonBottom';
+import CustomInput from '../../components/CustomInput';
+import ErrorMessage from '../../components/ErrorMessage';
 
 
 const LoginScreen = () => {
