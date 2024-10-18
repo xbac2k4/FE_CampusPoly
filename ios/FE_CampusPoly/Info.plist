@@ -62,11 +62,12 @@
 		<string>HankenGrotesk-LightItalic.ttf</string>
 		<string>HankenGrotesk-Medium.ttf</string>
 		<string>HankenGrotesk-MediumItalic.ttf</string>
-		<string>HankenGrotesk-Regular.ttf</string>
 		<string>HankenGrotesk-SemiBold.ttf</string>
 		<string>HankenGrotesk-SemiBoldItalic.ttf</string>
 		<string>HankenGrotesk-Thin.ttf</string>
 		<string>HankenGrotesk-ThinItalic.ttf</string>
+		<string>rgl1.ttf</string>
+		<string>rubik.ttf</string>
 	</array>
 </dict>
 </plist>
