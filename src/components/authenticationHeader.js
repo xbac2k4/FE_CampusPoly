@@ -1,7 +1,8 @@
 import { Image, StatusBar, StyleSheet, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 
-const AuthenticationHeader = () => {
+const AuthenticationHeader = () => { 
+    
     return (
         <View style={{
             alignItems: 'center',
