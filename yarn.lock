@@ -3856,11 +3856,6 @@ http-errors@2.0.0:
     statuses "2.0.1"
     toidentifier "1.0.1"
 
-hugeicons-react@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/hugeicons-react/-/hugeicons-react-0.3.0.tgz#a788db21b116f16062b75ccf3a3633575722ec9f"
-  integrity sha512-znmC+uX7xVqcIs0q09LvwEvJkjX0U3xgT05BSiRV19farS4lPONOKjYT0JkcQG5cvfV0rXHSEAEVNjbHAu81rg==
-
 human-signals@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/human-signals/-/human-signals-2.1.0.tgz#dc91fcba42e4d06e4abaed33b3e7a3c02f514ea0"
@@ -4854,6 +4849,11 @@ loose-envify@^1.0.0, loose-envify@^1.1.0, loose-envify@^1.4.0:
   dependencies:
     js-tokens "^3.0.0 || ^4.0.0"
 
+lottie-react-native@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/lottie-react-native/-/lottie-react-native-7.0.0.tgz#045a30432b75ef33ae2f36a67c9fa3b44abebf5a"
+  integrity sha512-RnwacxdB1MKDS/WSX8XFyXw5nxEKF+aLYRzbkQBQY0pZTRF2XYg8zd25D1su1M0TEP0sgWutwN5rweSeCsf8qQ==
+
 lru-cache@^5.1.1:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-5.1.1.tgz#1da27e6710271947695daf6848e847f01d84b920"
@@ -5679,6 +5679,11 @@ react-native-linear-gradient@^2.8.3:
   version "2.8.3"
   resolved "https://registry.yarnpkg.com/react-native-linear-gradient/-/react-native-linear-gradient-2.8.3.tgz#9a116649f86d74747304ee13db325e20b21e564f"
   integrity sha512-KflAXZcEg54PXkLyflaSZQ3PJp4uC4whM7nT/Uot9m0e/qxFV3p6uor1983D1YOBJbJN7rrWdqIjq0T42jOJyA==
+
+react-native-pull-to-refresh-custom@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/react-native-pull-to-refresh-custom/-/react-native-pull-to-refresh-custom-1.0.3.tgz#52c93fb48866a18adf0c11f08d4de86322eef270"
+  integrity sha512-j1B1Y1Tux8JBn//U6ZDD1IHLREKH+LC9CN0XNgmvGspBX/hQ9whAY4ZxY9TgU4usNzhEYtIroFvVtgK/8WwyQQ==
 
 react-native-reanimated@^3.15.5:
   version "3.16.0"
