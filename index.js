@@ -1,6 +1,4 @@
 import { AppRegistry } from 'react-native';
-import { Provider } from 'react-redux'; // Nhập khẩu Provider từ react-redux
-import { store } from './src/workspaces/alert/store'; // Nhập khẩu Redux store từ file store của bạn
 import AlertScreen from './src/workspaces/alert/alertScreen';
 import App from './App';
 import LoginScreen from './src/workspaces/LoginScreen'
@@ -21,4 +19,4 @@ import 'react-native-gesture-handler';
 import {name as appName} from './app.json';
 
 // Đăng ký component
-AppRegistry.registerComponent(appName, () => Alert);
+AppRegistry.registerComponent(appName, () => AlertScreen);
