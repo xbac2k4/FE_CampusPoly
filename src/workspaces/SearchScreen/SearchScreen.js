@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
   filterContainer: {
     marginTop: 12,
     marginBottom: 32,
-    paddingVertical: 10
+    paddingVertical: 15
   },
   filterButton: {
     backgroundColor: '#323436',

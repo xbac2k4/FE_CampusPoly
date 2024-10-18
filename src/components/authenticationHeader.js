@@ -6,7 +6,9 @@ const AuthenticationHeader = () => {
     return (
         <View style={{
             alignItems: 'center',
-            width: '100%'
+            width: '100%' 
+
+            // comemt
         }}>
             {/* thanh statusbar */}
             <StatusBar backgroundColor="transparent" barStyle={'dark-content'} />
