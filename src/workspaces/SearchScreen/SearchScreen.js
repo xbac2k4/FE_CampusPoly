@@ -1,9 +1,10 @@
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, FlatList, Image } from 'react-native';
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, FlatList, Image, KeyboardAvoidingView } from 'react-native';
 import React, { useState } from 'react';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
 
+// Dữ liệu giả lập cho các bài viết
 const DATA = [
   {
     id: '1',
@@ -12,8 +13,6 @@ const DATA = [
     image: require('../../assets/dongthoigian.png'),
     likes: '18.6k',
     comments: '4.7k',
-    shares: '12.4k',
-
   },
   {
     id: '2',
@@ -22,16 +21,16 @@ const DATA = [
     image: require('../../assets/dongthoigian2.png'),
     likes: '4.7k',
     comments: '186',
-    shares: '2.9k',
   },
-  
 ];
 
 const SearchScreen = () => {
-  // Khởi tạo state để lưu trữ trạng thái bài viết đã thích
+  // State để lưu trữ trạng thái bài viết đã thích
   const [likedPosts, setLikedPosts] = useState({});
-  // Khởi tạo state để lưu trữ trạng thái bài viết yêu thích
+  // State để lưu trữ trạng thái bài viết yêu thích
   const [favoritePosts, setFavoritePosts] = useState({});
+  // State để lưu trữ nút filter đang được chọn
+  const [activeFilter, setActiveFilter] = useState('All');
 
   // Hàm để bật/tắt trạng thái like của bài đăng
   const toggleLike = (postId) => {
@@ -49,6 +48,29 @@ const SearchScreen = () => {
     }));
   };
 
+  // Hàm để xử lý khi nhấn nút filter
+  const handleFilterPress = (filter) => {
+    setActiveFilter(filter);
+  };
+
+  // Hàm xử lý khi nhấn nút comment
+  const handleCommentPress = (postId) => {
+    console.log(`Comment button pressed for post ${postId}`);
+    // Thực hiện các hành động khác khi nhấn nút comment
+  };
+
+  // Hàm xử lý khi nhấn nút share
+  const handleSharePress = (postId) => {
+    console.log(`Share button pressed for post ${postId}`);
+    // Thực hiện các hành động khác khi nhấn nút share
+  };
+
+  // Thêm hàm xử lý cho sự kiện ấn vào ảnh
+  const handleImagePress = (postId) => {
+    console.log(`Image pressed for post ${postId}`);
+    // Thực hiện các hành động khác khi ảnh được nhấn
+  };
+
   // Hàm render từng bài viết
   const renderPost = ({ item }) => (
     <View style={styles.postContainer}>
@@ -59,7 +81,9 @@ const SearchScreen = () => {
           <Text style={styles.postTime}>{item.time}</Text>
         </View>
       </View>
-      <Image source={item.image} style={styles.postImage} />
+      <TouchableOpacity onPress={() => handleImagePress(item.id)}>
+        <Image source={item.image} style={styles.postImage} />
+      </TouchableOpacity>
       <View style={styles.postStats}>
         <TouchableOpacity
           style={styles.statContainer}
@@ -72,14 +96,14 @@ const SearchScreen = () => {
           />
           <Text style={styles.postStatText}>{item.likes}</Text>
         </TouchableOpacity>
-        <View style={styles.statContainer}>
+        <TouchableOpacity onPress={() => handleCommentPress(item.id)} style={styles.statContainer}>
           <FontAwesome name="commenting-o" size={20} color="white" />
           <Text style={styles.postStatText}>{item.comments}</Text>
-        </View>
-        <View style={styles.statContainer}>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => handleSharePress(item.id)} style={styles.statContainer}>
           <Entypo name="share-alternative" size={20} color="white" />
           <Text style={styles.postStatText}>{item.shares}</Text>
-        </View>
+        </TouchableOpacity>
         <TouchableOpacity onPress={() => toggleFavorite(item.id)} style={styles.favoritesContainer}>
           <Image
             style={{ width: 20, height: 20 }}
@@ -93,43 +117,43 @@ const SearchScreen = () => {
 
   // Hàm render giao diện chính của màn hình tìm kiếm
   return (
-    <View style={styles.container}>
-      <View style={styles.searchContainer}>
-        <AntDesign name="search1" size={20} color="#FFFFFF" style={styles.icon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Search for people, posts, tags..."
-          placeholderTextColor="#ECEBED"
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={{ flex: 1 }}
+    >
+      <View style={styles.container}>
+        <View style={styles.searchContainer}>
+          <AntDesign name="search1" size={20} color="#FFFFFF" style={styles.icon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Search for people, posts, tags..."
+            placeholderTextColor="#ECEBED"
+          />
+        </View>
+        <Text style={styles.popularText}>Popular</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterContainer}>
+          {['All', 'Profiles', 'Photos', 'Videos', 'Text', 'Links'].map((filter) => (
+            <TouchableOpacity
+              key={filter}
+              style={[
+                styles.filterButton,
+                activeFilter === filter && styles.activeButton, // Thay đổi màu khi được chọn
+              ]}
+              onPress={() => handleFilterPress(filter)}
+            >
+              <Text style={styles.filterText}>{filter}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+        <FlatList
+          data={DATA}
+          renderItem={renderPost}
+          keyExtractor={item => item.id}
+          style={styles.list}
         />
       </View>
-      <Text style={styles.popularText}>Popular</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterContainer}>
-        <TouchableOpacity style={[styles.filterButton, styles.activeButton]}>
-          <Text style={[styles.filterText]}>All</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.filterButton}>
-          <Text style={styles.filterText}>Profiles</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.filterButton}>
-          <Text style={styles.filterText}>Photos</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.filterButton}>
-          <Text style={styles.filterText}>Videos</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.filterButton}>
-          <Text style={styles.filterText}>Text</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.filterButton}>
-          <Text style={styles.filterText}>Links</Text>
-        </TouchableOpacity>
-      </ScrollView>
-      <FlatList
-        data={DATA}
-        renderItem={renderPost}
-        keyExtractor={item => item.id}
-        style={styles.list}
-      />
-    </View>
+    </KeyboardAvoidingView>
+
   );
 }
 
@@ -168,6 +192,7 @@ const styles = StyleSheet.create({
   filterContainer: {
     marginTop: 12,
     marginBottom: 32,
+    paddingVertical: 15
   },
   filterButton: {
     backgroundColor: '#323436',
