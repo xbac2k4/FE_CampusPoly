@@ -6,7 +6,7 @@ import { store } from './src/workspaces/alert/store';
 import React, { useEffect, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import LinearGradient from 'react-native-linear-gradient';
-import { Home, Search, Profile, Comment, Alert } from './src/workspaces/Home/index';
+import { Home, Search, ProfileScreen, Comment, Alert } from './src/workspaces/Home/index';
 
 const Tab = createBottomTabNavigator();
 
@@ -81,7 +81,7 @@ const App = () => {
           />
           <Tab.Screen
             name="AddPost"
-            component={Profile}
+            component={ProfileScreen}
             options={{
               tabBarIcon: ({ focused }) => (
                 <View style={styles.iconContainer}>
@@ -118,7 +118,7 @@ const App = () => {
           />
           <Tab.Screen
             name="Profile"
-            component={Profile}
+            component={ProfileScreen}
             options={{
               tabBarIcon: ({ focused }) => (
                 <Image
