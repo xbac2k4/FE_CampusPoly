@@ -9,7 +9,7 @@ import ErrorMessage from '../../components/ErrorMessage';
 import Screens from '../../navigation/Screens';
 
 
-const SignUpScreen = ({navigation}) => {
+const SignUpScreen = ({ navigation }) => {
   const [name, setName] = useState('')
   const [nameErrorText, setNameErrorText] = useState('')
 
@@ -87,7 +87,7 @@ const SignUpScreen = ({navigation}) => {
           flexDirection: 'row',
           justifyContent: 'space-between'
         }}>
-          <Text style={{ color: 'red' }}>{nameErrorText}</Text>
+          <Text style={{ color: 'red', fontWeight: 'bold' }}>{nameErrorText}</Text>
           <Text style={{ color: name.length > 50 ? 'red' : 'gray' }}>{name.length}/50</Text>
         </View>
 
