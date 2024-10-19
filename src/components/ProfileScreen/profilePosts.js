@@ -76,8 +76,7 @@ const ProfilePosts = ({ user }) => {
           {images.map((_, index) => (
             <View
               key={index}
-              style={[
-                styles.paginationDot,
+              style={[styles.paginationDot,
                 activeImageIndex[postId] === index ? styles.activeDot : styles.inactiveDot,
               ]}
             />
@@ -105,27 +104,37 @@ const ProfilePosts = ({ user }) => {
           {item.images && renderImages(item.images, item.id)}
           <View style={styles.postMeta}>
             <View style={styles.leftMetaIcons}>
-              <TouchableOpacity style={styles.iconButton} onPress={() => toggleLike(item.id)}>
-                <Image
-                  source={likedPosts.includes(item.id) ? heartFilled : heart}
-                  style={styles.iconImage}
-                />
+              <View style={styles.iconLike}>
+                <TouchableOpacity onPress={() => toggleLike(item.id)}>
+                  <Image
+                    source={likedPosts.includes(item.id) ? heartFilled : heart}
+                    style={styles.iconImage}
+                  />
+                </TouchableOpacity>
                 <Text style={styles.metaText}>{item.likes}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.iconButton}>
-                <Image source={comment} style={styles.iconImage} />
+              </View>
+
+              <View style={styles.iconLike}>
+                <TouchableOpacity>
+                  <Image source={comment} style={styles.iconImage} />
+                </TouchableOpacity>
                 <Text style={styles.metaText}>{item.comments}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.iconButton}>
-                <Image source={share} style={styles.iconImage} />
-              </TouchableOpacity>
+              </View>
+
+              <View style={styles.iconLike}>
+                <TouchableOpacity>
+                  <Image source={share} style={styles.iconImage} />
+                </TouchableOpacity>
+              </View>
             </View>
+            <View style={styles.iconLike}>
             <TouchableOpacity style={styles.iconButton} onPress={() => toggleSave(item.id)}>
               <Image
                 source={savedPosts.includes(item.id) ? bookmarkFilled : bookmark}
                 style={styles.iconImage}
               />
             </TouchableOpacity>
+            </View>
           </View>
           <View style={styles.separator} />
         </View>
@@ -137,7 +146,7 @@ const ProfilePosts = ({ user }) => {
 const styles = StyleSheet.create({
   postContainer: {
     width: '100%',
-    backgroundColor: '#000',
+    backgroundColor: '#181A1C',
     paddingVertical: 10,
     paddingHorizontal: 20,
   },
@@ -192,10 +201,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  iconButton: {
+  iconLike: {
     flexDirection: 'row',
     alignItems: 'center',
     marginRight: 15,
+  },
+  iconButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginTop: 10,
   },
   metaText: {

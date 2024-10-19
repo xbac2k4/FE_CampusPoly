@@ -69,7 +69,7 @@ const ProfileScreen = () => {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: '#181A1C',
   },
 });
 
