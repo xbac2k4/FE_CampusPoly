@@ -14,7 +14,7 @@ const MainStackNavigator = () => {
       <Stack.Screen name="Welcome" component={WelcomeScreen} />
       <Stack.Screen name="MenuAuthentication" component={MenuAuthenticationScreen} />
       <Stack.Screen name="EmailInputLogin" component={EmailInputLoginScreen} />
-      <Stack.Screen name="EmailInputLogin" component={LoginScreen} />
+      <Stack.Screen name="Login" component={LoginScreen} />
 
 
     </Stack.Navigator>

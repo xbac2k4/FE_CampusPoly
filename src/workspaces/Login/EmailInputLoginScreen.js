@@ -17,8 +17,7 @@ const EmailInputLoginScreen = ({navigation}) => {
       return
     }
 
-    alert('Đăng nhập thành công')
-    navigation.navigate('PasswordInputLogin')
+    navigation.navigate('Login')
   }
   return (
     <View style={st.container}>
