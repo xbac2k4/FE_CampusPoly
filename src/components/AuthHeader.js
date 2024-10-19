@@ -1,7 +1,7 @@
 import { Image, StatusBar, StyleSheet, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 
-const AuthenticationHeader = () => {
+const AuthenticationHeader = ({ navigation }) => {
 
     return (
         <View style={{
@@ -24,7 +24,7 @@ const AuthenticationHeader = () => {
                 style={{
                     width: '90%',
                 }}>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
                     <Image
                         source={require('../assets/images/left-arrow.png')} />
                 </TouchableOpacity>

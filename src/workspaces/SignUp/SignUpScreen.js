@@ -8,7 +8,7 @@ import CustomInput from '../../components/CustomInput';
 import ErrorMessage from '../../components/ErrorMessage';
 
 
-const LoginScreen = () => {
+const Screen = () => {
   const [name, setName] = useState('')
   const [nameErrorText, setNameErrorText] = useState('')
 
@@ -154,7 +154,7 @@ const LoginScreen = () => {
   )
 }
 
-export default LoginScreen
+export default Screen
 
 const st = StyleSheet.create({
   container: {

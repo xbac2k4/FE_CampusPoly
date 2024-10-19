@@ -19,4 +19,4 @@ import 'react-native-gesture-handler';
 import {name as appName} from './app.json';
 import CommentScreen from './src/workspaces/Comment/commentScreen';
 
-AppRegistry.registerComponent(appName, () => OTP_screen);
+AppRegistry.registerComponent(appName, () => App);

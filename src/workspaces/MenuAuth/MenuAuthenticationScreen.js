@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, StatusBar, Image, TouchableOpacity } from 'react-native'
 import React from 'react'
 
-const MenuAuthenticationScreen = () => {
+const MenuAuthenticationScreen = ({ navigation }) => {
 
   const thanhNgang = () => {
     return (
@@ -24,7 +24,7 @@ const MenuAuthenticationScreen = () => {
       <View style={st.content}>
 
         {/* logo ứng dụng */}
-        <Image source={require('../assets/images/logo.png')} />
+        <Image source={require('../../assets/images/logo.png')} />
 
         {/* tiêu đề */}
         <Text style={st.title}>Cùng xem điều gì đang diễn ra ngay bây giờ</Text>
@@ -40,7 +40,7 @@ const MenuAuthenticationScreen = () => {
           >
             <Image
               style={{ width: 30, height: 30 }}
-              source={require('../assets/images/GoogleLogo.png')} />
+              source={require('../../assets/images/GoogleLogo.png')} />
             <Text
               style={st.btnText}
             >Tiếp tục với Google</Text>
@@ -88,7 +88,7 @@ const MenuAuthenticationScreen = () => {
             padding: 10
           }}>
           <Text style={{ color: 'black' }}>Bạn đã có một tài khoản? </Text>
-          <Text style={{ color: '#57b5f4', fontWeight: 'bold' }}>Đăng nhập</Text>
+          <Text onPress={() => navigation.navigate('EmailInputLogin')} style={{ color: '#57b5f4', fontWeight: 'bold' }}>Đăng nhập</Text>
         </Text>
       </View>
 

@@ -1,20 +1,20 @@
 import { Image, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect } from 'react'
 
-const WelcomeScreen = () => {
+const WelcomeScreen = ({ navigation }) => {
 
     // hàm xử lý tự đông động chuyển màn hình
     useEffect(() => {
         const timer = setTimeout(() => {
-        //   alert('Thông báo', 'Chuyển màn hình')
-        }, 3000)
-    
+            navigation.navigate('MenuAuthentication')
+        }, 2000)
+
         return () => clearTimeout(timer)
-      }, [])
+    }, [])
 
     return (
         <View style={st.container}>
-            <Image source={require('../../assets/images/landinglogo.png')}/>
+            <Image source={require('../../assets/images/landinglogo.png')} />
         </View>
     )
 }
