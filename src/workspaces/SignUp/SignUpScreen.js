@@ -6,6 +6,7 @@ import AuthenticationHeader from '../../components/AuthHeader';
 import OneButtonBottom from '../../components/OneButtonBottom';
 import CustomInput from '../../components/CustomInput';
 import ErrorMessage from '../../components/ErrorMessage';
+import Screens from '../../navigation/Screens';
 
 
 const SignUpScreen = ({navigation}) => {
@@ -42,7 +43,7 @@ const SignUpScreen = ({navigation}) => {
       return
     }
 
-    navigation.navigate('OTP')
+    navigation.navigate(Screens.OTP)
   }
   return (
     <View style={st.container}>

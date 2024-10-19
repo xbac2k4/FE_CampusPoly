@@ -5,6 +5,7 @@ import AuthenticationHeader from '../../components/AuthHeader';
 import OneButtonBottom from '../../components/OneButtonBottom';
 import CustomInput from '../../components/CustomInput';
 import ErrorMessage from '../../components/ErrorMessage';
+import Screens from '../../navigation/Screens';
 
 
 const OTPScreen = ({navigation}) => {
@@ -18,7 +19,7 @@ const OTPScreen = ({navigation}) => {
       return
     }
 
-    navigation.navigate('SignUpPassword')
+    navigation.navigate(Screens.SignUpPassword)
   }
 
   const handleForgetPassword = () => {

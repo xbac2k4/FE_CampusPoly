@@ -1,12 +1,13 @@
 import { Image, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect } from 'react'
+import Screens from '../../navigation/Screens'
 
 const WelcomeScreen = ({ navigation }) => {
 
     // hàm xử lý tự đông động chuyển màn hình
     useEffect(() => {
         const timer = setTimeout(() => {
-            navigation.navigate('MenuAuthentication')
+            navigation.navigate(Screens.MenuAuth)
         }, 2000)
 
         return () => clearTimeout(timer)

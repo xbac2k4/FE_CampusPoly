@@ -5,6 +5,7 @@ import AuthenticationHeader from '../../components/AuthHeader';
 import TwoButtonBottom from '../../components/TwoButtonBottom';
 import CustomInput from '../../components/CustomInput';
 import ErrorMessage from '../../components/ErrorMessage';
+import Screens from '../../navigation/Screens';
 
 const LoginScreen = ({ route, navigation }) => {
   const [email, setEmail] = useState(route.params?.email ?? '')
@@ -30,7 +31,7 @@ const LoginScreen = ({ route, navigation }) => {
       return
     }
 
-    navigation.navigate('BottomTab')
+    navigation.navigate(Screens.BottomTab)
   }
   return (
     <View style={st.container}>

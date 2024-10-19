@@ -11,29 +11,23 @@ import SignUpPasswordScreen from '../workspaces/SignUp/SignUpPasswordScreen';
 import SignUpNameScreen from '../workspaces/SignUp/SignUpNameScreen';
 import SignUpImageScreen from '../workspaces/SignUp/SignUpImageScreen';
 import BottomTabNavigator from './BottomTabNavigator';
+import Screens from './Screens';
 
 const Stack = createNativeStackNavigator();
 
 const MainStackNavigator = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Welcome" component={WelcomeScreen} />
-      <Stack.Screen name="MenuAuthentication" component={MenuAuthenticationScreen} />
-      <Stack.Screen name="EmailInputLogin" component={EmailInputLoginScreen} />
-      <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="SignUp" component={SignUpScreen} />
-      <Stack.Screen name="OTP" component={OTPScreen} />
-      <Stack.Screen name="SignUpPassword" component={SignUpPasswordScreen} />
-      <Stack.Screen name="SignUpName" component={SignUpNameScreen} />
-      <Stack.Screen name="SignUpImage" component={SignUpImageScreen} />
-      <Stack.Screen name="BottomTab" component={BottomTabNavigator} />
-
-
-
-
-
-
-
+      <Stack.Screen name={Screens.Welcome} component={WelcomeScreen} />
+      <Stack.Screen name={Screens.MenuAuth} component={MenuAuthenticationScreen} />
+      <Stack.Screen name={Screens.EmailInputLogin} component={EmailInputLoginScreen} />
+      <Stack.Screen name={Screens.Login} component={LoginScreen} />
+      <Stack.Screen name={Screens.SignUp} component={SignUpScreen} />
+      <Stack.Screen name={Screens.OTP} component={OTPScreen} />
+      <Stack.Screen name={Screens.SignUpPassword} component={SignUpPasswordScreen} />
+      <Stack.Screen name={Screens.SignUpName} component={SignUpNameScreen} />
+      <Stack.Screen name={Screens.SignUpImage} component={SignUpImageScreen} />
+      <Stack.Screen name={Screens.BottomTab} component={BottomTabNavigator} />
     </Stack.Navigator>
   )
 }

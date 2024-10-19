@@ -4,6 +4,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import TwoButtonBottom from '../../components/TwoButtonBottom';
 import CustomInput from '../../components/CustomInput';
 import ErrorMessage from '../../components/ErrorMessage';
+import Screens from '../../navigation/Screens';
 
 
 
@@ -18,7 +19,7 @@ const SignUpNameScreen = ({navigation}) => {
       return
     }
 
-    navigation.navigate('SignUpImage')
+    navigation.navigate(Screens.SignUpImage)
   }
 
   const abandon = () => {

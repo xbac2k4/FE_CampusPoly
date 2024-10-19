@@ -5,6 +5,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import OneButtonBottom from '../../components/OneButtonBottom';
 import CustomInput from '../../components/CustomInput';
 import ErrorMessage from '../../components/ErrorMessage';
+import Screens from '../../navigation/Screens';
 
 
 
@@ -25,7 +26,7 @@ const SignUpPasswordScreen = ({navigation}) => {
       return
     }
 
-    navigation.navigate('SignUpName')
+    navigation.navigate(Screens.SignUpName)
   }
 
   const openTermsOfService = () => {

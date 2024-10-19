@@ -2,6 +2,7 @@ import { Image, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'reac
 import React, { useState } from 'react'
 import { launchImageLibrary } from 'react-native-image-picker';
 import TwoButtonBottom from '../../components/TwoButtonBottom';
+import Screens from '../../navigation/Screens';
 
 const SignUpImageScreen = ({navigation}) => {
 
@@ -10,7 +11,7 @@ const SignUpImageScreen = ({navigation}) => {
 
   // Hàm xử lý khi người dùng ấn nút tiếp theo
   const handleImage = () => {
-    navigation.navigate('EmailInputLogin')
+    navigation.navigate(Screens.EmailInputLogin)
   }
 
   // Hàm xử lý khi người dùng ấn nút bỏ qua

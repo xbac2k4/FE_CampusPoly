@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, StatusBar, Image, TouchableOpacity } from 'react-native'
 import React from 'react'
+import Screens from '../../navigation/Screens'
 
 const MenuAuthenticationScreen = ({ navigation }) => {
 
@@ -62,7 +63,7 @@ const MenuAuthenticationScreen = ({ navigation }) => {
           {/* nút tạo tài khoản */}
           <TouchableOpacity
             style={st.btn}
-            onPress={() => navigation.navigate('SignUp')}
+            onPress={() => navigation.navigate(Screens.SignUp)}
           >
             <Text
               style={st.btnText}
@@ -89,7 +90,7 @@ const MenuAuthenticationScreen = ({ navigation }) => {
             padding: 10
           }}>
           <Text style={{ color: 'black' }}>Bạn đã có một tài khoản? </Text>
-          <Text onPress={() => navigation.navigate('EmailInputLogin')} style={{ color: '#57b5f4', fontWeight: 'bold' }}>Đăng nhập</Text>
+          <Text onPress={() => navigation.navigate(Screens.EmailInputLogin)} style={{ color: '#57b5f4', fontWeight: 'bold' }}>Đăng nhập</Text>
         </Text>
       </View>
 

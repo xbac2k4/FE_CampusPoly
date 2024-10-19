@@ -7,6 +7,7 @@ import SearchScreen from '../workspaces/SearchScreen/SearchScreen';
 import NotificationScreen from '../workspaces/alert/alertScreen';
 import ProfileScreen from '../workspaces/ProfileScreen/profileScreen';
 import LinearGradient from 'react-native-linear-gradient';
+import Screens from './Screens';
 
 
 const Tab = createBottomTabNavigator();
@@ -44,7 +45,7 @@ const BottomTabNavigator = () => {
           }}
         >
           <Tab.Screen
-            name="Home"
+            name={Screens.Home}
             component={HomeScreen}
             options={{
               tabBarIcon: ({ focused }) => (
@@ -61,7 +62,7 @@ const BottomTabNavigator = () => {
             }}
           />
           <Tab.Screen
-            name="Search"
+            name={Screens.Search}
             component={SearchScreen}
             options={{
               tabBarIcon: ({ focused }) => (
@@ -98,7 +99,7 @@ const BottomTabNavigator = () => {
             }}
           />
           <Tab.Screen
-            name="Alert"
+            name={Screens.Alert}
             component={NotificationScreen}
             options={{
               tabBarIcon: ({ focused }) => (
@@ -115,7 +116,7 @@ const BottomTabNavigator = () => {
             }}
           />
           <Tab.Screen
-            name="Profile"
+            name={Screens.Profile}
             component={ProfileScreen}
             options={{
               tabBarIcon: ({ focused }) => (
