@@ -8,7 +8,7 @@ import ErrorMessage from '../../components/ErrorMessage';
 
 
 
-const SignUpPasswordScreen = () => {
+const SignUpPasswordScreen = ({navigation}) => {
   const [password, setPassword] = useState('')
   const [passErrorText, setPassErrorText] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -25,7 +25,7 @@ const SignUpPasswordScreen = () => {
       return
     }
 
-    alert('Đăng ký thành công')
+    navigation.navigate('SignUpName')
   }
 
   const openTermsOfService = () => {
@@ -51,7 +51,7 @@ const SignUpPasswordScreen = () => {
   return (
     <View style={st.container}>
 
-      <AuthenticationHeader />
+      <AuthenticationHeader navigation={navigation}/>
 
       {/* form nhập mật khẩu */}
       <View style={st.form}>

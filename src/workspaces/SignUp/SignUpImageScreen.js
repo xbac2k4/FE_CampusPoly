@@ -3,14 +3,14 @@ import React, { useState } from 'react'
 import { launchImageLibrary } from 'react-native-image-picker';
 import TwoButtonBottom from '../../components/TwoButtonBottom';
 
-const SignUpImageScreen = () => {
+const SignUpImageScreen = ({navigation}) => {
 
   // lưu trữ uri ảnh người dùng chọn
   const [imageUri, setImageUri] = useState(null);
 
   // Hàm xử lý khi người dùng ấn nút tiếp theo
-  const handleName = () => {
-    alert('tiếp theo')
+  const handleImage = () => {
+    navigation.navigate('EmailInputLogin')
   }
 
   // Hàm xử lý khi người dùng ấn nút bỏ qua
@@ -78,7 +78,7 @@ const SignUpImageScreen = () => {
         <TwoButtonBottom
           text2="Tiếp theo"
           text1="Bỏ qua bây giờ"
-          onPress2={handleName}
+          onPress2={handleImage}
           onPress1={abandon}
         />
       </View>

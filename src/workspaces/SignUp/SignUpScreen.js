@@ -8,7 +8,7 @@ import CustomInput from '../../components/CustomInput';
 import ErrorMessage from '../../components/ErrorMessage';
 
 
-const Screen = () => {
+const SignUpScreen = ({navigation}) => {
   const [name, setName] = useState('')
   const [nameErrorText, setNameErrorText] = useState('')
 
@@ -42,11 +42,11 @@ const Screen = () => {
       return
     }
 
-    alert('Đăng ký thành công')
+    navigation.navigate('OTP')
   }
   return (
     <View style={st.container}>
-      <AuthenticationHeader />
+      <AuthenticationHeader navigation={navigation} />
 
       {/* form thông tin */}
       <View style={st.form}>
@@ -154,7 +154,7 @@ const Screen = () => {
   )
 }
 
-export default Screen
+export default SignUpScreen
 
 const st = StyleSheet.create({
   container: {

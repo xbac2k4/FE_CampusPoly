@@ -62,6 +62,7 @@ const MenuAuthenticationScreen = ({ navigation }) => {
           {/* nút tạo tài khoản */}
           <TouchableOpacity
             style={st.btn}
+            onPress={() => navigation.navigate('SignUp')}
           >
             <Text
               style={st.btnText}

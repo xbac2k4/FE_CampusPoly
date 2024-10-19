@@ -17,7 +17,7 @@ const EmailInputLoginScreen = ({navigation}) => {
       return
     }
 
-    navigation.navigate('Login')
+    navigation.navigate('Login', { email })
   }
   return (
     <View style={st.container}>

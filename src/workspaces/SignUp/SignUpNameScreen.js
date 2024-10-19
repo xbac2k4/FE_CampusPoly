@@ -7,7 +7,7 @@ import ErrorMessage from '../../components/ErrorMessage';
 
 
 
-const SignUpNameScreen = () => {
+const SignUpNameScreen = ({navigation}) => {
   const [username, setUsername] = useState('')
   const [usernameErrorText, setUsernameErrorText] = useState('')
 
@@ -18,7 +18,7 @@ const SignUpNameScreen = () => {
       return
     }
 
-    alert('tiếp theo')
+    navigation.navigate('SignUpImage')
   }
 
   const abandon = () => {

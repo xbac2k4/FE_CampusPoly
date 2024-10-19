@@ -7,7 +7,7 @@ import CustomInput from '../../components/CustomInput';
 import ErrorMessage from '../../components/ErrorMessage';
 
 
-const inputLoginScreen = () => {
+const OTPScreen = ({navigation}) => {
   const [OTP, setOTP] = useState('')
   const [OTPErrorText, setOTPErrorText] = useState('')
 
@@ -18,7 +18,7 @@ const inputLoginScreen = () => {
       return
     }
 
-    alert('tiếp theo')
+    navigation.navigate('SignUpPassword')
   }
 
   const handleForgetPassword = () => {
@@ -27,7 +27,7 @@ const inputLoginScreen = () => {
   return (
     <View style={st.container}>
 
-      <AuthenticationHeader />
+      <AuthenticationHeader navigation={navigation}/>
 
       {/* form nhập mã OTP */}
       <View style={st.form}>
@@ -91,7 +91,7 @@ const inputLoginScreen = () => {
   )
 }
 
-export default inputLoginScreen
+export default OTPScreen
 
 const st = StyleSheet.create({
   container: {

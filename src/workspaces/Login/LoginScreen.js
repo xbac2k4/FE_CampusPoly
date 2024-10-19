@@ -6,8 +6,8 @@ import TwoButtonBottom from '../../components/TwoButtonBottom';
 import CustomInput from '../../components/CustomInput';
 import ErrorMessage from '../../components/ErrorMessage';
 
-const LoginScreen = () => {
-  const [email, setEmail] = useState('')
+const LoginScreen = ({ route, navigation }) => {
+  const [email, setEmail] = useState(route.params?.email ?? '')
   const [password, setPassword] = useState('')
   const [emailErrorText, setEmailErrorText] = useState('')
   const [passErrorText, setPassErrorText] = useState('')
@@ -35,7 +35,7 @@ const LoginScreen = () => {
   return (
     <View style={st.container}>
 
-      <AuthenticationHeader />
+      <AuthenticationHeader navigation={navigation}/>
 
       {/* form đăng nhập */}
       <View style={st.loginForm}>
