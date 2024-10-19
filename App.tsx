@@ -1,8 +1,5 @@
 
 import { View, StyleSheet, Image, Keyboard } from 'react-native';
-import ProfileScreen from './src/workspaces/ProfileScreen/profileScreen';
-import CommentScreen from './src/workspaces/Comment/commentScreen';
-import HomeScreen from './src/workspaces/Home/homeScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { Provider } from 'react-redux';
 import { store } from './src/workspaces/alert/store';

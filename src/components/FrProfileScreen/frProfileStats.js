@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 
-const ProfileStats = ({ friends }) => (
+const FrProfileStats = ({ friends }) => (
   <View style={styles.statsContainer}>
     <View style={styles.stat}>
       {/* Hiển thị số bạn bè với dấu phẩy */} 
@@ -10,9 +11,14 @@ const ProfileStats = ({ friends }) => (
     </View>
 
     {/* Nút Edit Profile nằm ngang với số Friends */}
-    <TouchableOpacity style={styles.editButton}>
-      <Text style={styles.editButtonText}>Edit Profile</Text>
-    </TouchableOpacity>
+    <LinearGradient
+        colors={['#F7B733', '#FC4A1A']}
+        style={styles.followButtonGradient}
+      >
+        <TouchableOpacity style={styles.followButton}>
+          <Text style={styles.followButtonText}>Follow</Text>
+        </TouchableOpacity>
+      </LinearGradient>
   </View>
 );
 
@@ -52,6 +58,20 @@ const styles = StyleSheet.create({
     fontSize: 14, 
     fontWeight: 'bold',
   },
+  followButtonGradient: {
+    borderRadius: 20, // Ensure the gradient follows the button shape
+    marginLeft: 16, 
+  },
+  followButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+  },
+  followButtonText: {
+    color: 'white', 
+    fontSize: 14, 
+    fontWeight: 'bold',
+  },
 });
 
-export default ProfileStats;
+export default FrProfileStats;

@@ -1,7 +1,39 @@
+// import FrProfileStats from '../../components/FrProfileScreen/frProfileStats';
+// import ProfileTabs from '../../components/ProfileScreen/profileTabs';
+// import ProfilePosts from '../../components/ProfileScreen/profilePosts';
+
+// const FrProfileScreen = ({ route }) => {
+//   // Provide default values in case params are undefined
+//   const { user = {}, isOwnProfile = false } = route.params || {};
+//   const [activeTab, setActiveTab] = useState('Posts');
+
+//   return (
+//     <View style={styles.screen}>
+//       <ScrollView stickyHeaderIndices={[2]}>
+//         {/* Header and ProfileStats */}
+//         <Header user={user} />
+//         <FrProfileStats friends={user.friends} isOwnProfile={isOwnProfile} />
+//         {/* ProfileTabs (Sticky) */}
+//         <ProfileTabs onTabSelect={setActiveTab} />
+//         {/* Conditionally render the posts based on activeTab */}
+//         {activeTab === 'Posts' && <ProfilePosts user={user} />}
+//       </ScrollView>
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   screen: {
+//     flex: 1,
+//     backgroundColor: '#181A1C',
+//   },
+// });
+
+// export default FrProfileScreen;
 import React, { useState } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import Header from '../../components/ProfileScreen/header';
-import ProfileStats from '../../components/ProfileScreen/profileStats';
+import FrProfileStats from '../../components/FrProfileScreen/frProfileStats';
 import ProfileTabs from '../../components/ProfileScreen/profileTabs';
 import ProfilePosts from '../../components/ProfileScreen/profilePosts';
 
@@ -46,7 +78,7 @@ const user = {
   ],
 };
 
-const ProfileScreen = () => {
+const FrProfileScreen = () => {
   const [activeTab, setActiveTab] = useState('Posts');
 
   return (
@@ -54,7 +86,7 @@ const ProfileScreen = () => {
       <ScrollView stickyHeaderIndices={[2]}>
         {/* Header and ProfileStats */}
         <Header user={user} />
-        <ProfileStats friends={user.friends} />
+        <FrProfileStats friends={user.friends} />
         
         {/* ProfileTabs (Sticky) */}
         <ProfileTabs onTabSelect={setActiveTab} />
@@ -73,4 +105,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ProfileScreen;
+export default FrProfileScreen;

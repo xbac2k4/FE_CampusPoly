@@ -93,8 +93,8 @@ const ArticleComponent = ({
         <TouchableOpacity onPress={() => setIsBookmark(!isBookmark)}  style={{ marginTop: 5 }}>
         <Image
                 source={isBookmark
-                  ? require('../../assets/images/bookmark.png') 
-                  : require('../../assets/images/bookmark2.png')}
+                  ? require('../../assets/images/bookmark2.png') 
+                  : require('../../assets/images/bookmark.png')}
                 resizeMode='contain'
                 style={{ width: 20, height: 20}}
               />

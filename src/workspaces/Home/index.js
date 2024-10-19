@@ -1,12 +1,12 @@
 import Home from "./homeScreen"
-import Profile from "../ProfileScreen/profileScreen"
 import Search from "../SearchScreen/SearchScreen"
 import Comment from "../Comment/commentScreen"
 import Alert from "../alert/alertScreen"
+import ProfileScreen from "../ProfileScreen/profileScreen"
 export {
     Home,
     Search,
-    Profile,
+    ProfileScreen,
     Comment,
     Alert
  }

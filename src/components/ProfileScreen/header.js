@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, StatusBar } from 'react-native';
+import { View, Text, Image, StyleSheet, StatusBar, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const Header = ({ user }) => (
   <View style={styles.headerContainer}>
@@ -12,7 +13,16 @@ const Header = ({ user }) => (
     {/* Hiển thị ảnh đại diện */}
     <Image source={user.profileImage} style={styles.profileImage} />
     
-    <Text style={styles.name}>{user.name}</Text>
+    {/* Hiển thị tên và biểu tượng email */}
+    <View style={styles.nameContainer}>
+      <Text style={styles.name}>{user.name}</Text>
+      
+      {/* Clickable email icon */}
+      <TouchableOpacity style={styles.circleIcon} onPress={() => { /* handle icon press */ }}>
+        <Icon name="mail-outline" size={15} color="#fff" />
+      </TouchableOpacity>
+    </View>
+    
     <Text style={styles.location}>{user.location}</Text>
     <Text style={styles.bio}>{user.bio}</Text>
   </View>
@@ -24,28 +34,43 @@ const styles = StyleSheet.create({
     marginTop: 0, 
   },
   backgroundImage: {
-    position: 'absolute', // Đặt ảnh bìa ở vị trí tuyệt đố
+    position: 'absolute',
     top: 0,
     left: 0,
     width: '100%',
-    height: 160, 
-    opacity: 0.9, 
+    height: 160,
+    opacity: 0.9,
     zIndex: -1,
   },
   profileImage: {
-    width: 140, 
-    height: 140, 
+    width: 140,
+    height: 140,
     borderRadius: 100,
     borderWidth: 3,
     borderColor: '#fff',
     marginTop: 80,
     marginBottom: 12,
   },
+  nameContainer: {
+    flexDirection: 'row', 
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   name: {
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
     color: '#FFFFFF',
+  },
+  circleIcon: {
+    width: 30, 
+    height: 30, 
+    borderRadius: 15, 
+    backgroundColor: '#333', // Optional: You can change this to match the UI theme
+    justifyContent: 'center', 
+    alignItems: 'center',
+    marginLeft: 8, 
+    marginTop: 5
   },
   location: {
     fontSize: 16,
