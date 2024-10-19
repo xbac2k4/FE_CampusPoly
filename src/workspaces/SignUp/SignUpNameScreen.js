@@ -23,7 +23,7 @@ const SignUpNameScreen = ({navigation}) => {
   }
 
   const abandon = () => {
-    alert('Bỏ qua bây giờ')
+    navigation.navigate(Screens.SignUpImage)
   }
 
   const suggestedNames = [
