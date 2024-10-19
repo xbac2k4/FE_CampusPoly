@@ -16,9 +16,10 @@ import commentScreen from './src/workspaces/Comment/commentScreen'
 import homeScreen from './src/workspaces/Home/homeScreen'
 import profileScreen from './src/workspaces/ProfileScreen/profileScreen'
 import WelcomeScreen from './src/workspaces/WelcomeScreen';
+import ChatScreen from './src/workspaces/ChatScreen/ChatScreen';
 import 'react-native-gesture-handler';
 
 
 import {name as appName} from './app.json';
 
-AppRegistry.registerComponent(appName, () => App);
+AppRegistry.registerComponent(appName, () => ChatScreen);

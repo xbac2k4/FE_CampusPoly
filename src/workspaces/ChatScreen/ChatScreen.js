@@ -3,7 +3,7 @@ import React from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-const ChatviewScreen = () => {
+const ChatScreen = () => {
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -105,7 +105,7 @@ const ChatviewScreen = () => {
   );
 };
 
-export default ChatviewScreen;
+export default ChatScreen;
 
 const styles = StyleSheet.create({
   container: {
