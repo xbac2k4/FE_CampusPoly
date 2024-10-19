@@ -10,6 +10,7 @@ import OTPScreen from '../workspaces/SignUp/OTP_screen';
 import SignUpPasswordScreen from '../workspaces/SignUp/SignUpPasswordScreen';
 import SignUpNameScreen from '../workspaces/SignUp/SignUpNameScreen';
 import SignUpImageScreen from '../workspaces/SignUp/SignUpImageScreen';
+import BottomTabNavigator from './BottomTabNavigator';
 
 const Stack = createNativeStackNavigator();
 
@@ -25,6 +26,8 @@ const MainStackNavigator = () => {
       <Stack.Screen name="SignUpPassword" component={SignUpPasswordScreen} />
       <Stack.Screen name="SignUpName" component={SignUpNameScreen} />
       <Stack.Screen name="SignUpImage" component={SignUpImageScreen} />
+      <Stack.Screen name="BottomTab" component={BottomTabNavigator} />
+
 
 
 

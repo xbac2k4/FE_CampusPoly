@@ -30,7 +30,7 @@ const LoginScreen = ({ route, navigation }) => {
       return
     }
 
-    alert('Đăng nhập thành công')
+    navigation.navigate('BottomTab')
   }
   return (
     <View style={st.container}>
