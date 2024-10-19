@@ -1,5 +1,5 @@
 import { AppRegistry } from 'react-native';
-import AlertScreen from './src/workspaces/alert/alertScreen';
+import AlertScreen from './src/workspaces/Notification/NotificationScreen';
 import App from './App';
 import LoginScreen from './src/workspaces/Login/LoginScreen'
 import OTP_screen from './src/workspaces/SignUp/OTP_screen'
@@ -16,7 +16,7 @@ import Welcome from './src/workspaces/Welcome/WelcomeScreen'
 import 'react-native-gesture-handler';
 
 
-import {name as appName} from './app.json';
+import { name as appName } from './app.json';
 import CommentScreen from './src/workspaces/Comment/commentScreen';
 import FrProfileScreen from './src/workspaces/FrProfileScreen/frProfileScreen';
 

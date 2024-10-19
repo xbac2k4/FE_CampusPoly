@@ -5,8 +5,9 @@ import AuthenticationHeader from '../../components/AuthHeader';
 import TwoButtonBottom from '../../components/TwoButtonBottom';
 import CustomInput from '../../components/CustomInput';
 import ErrorMessage from '../../components/ErrorMessage';
+import Screens from '../../navigation/Screens';
 
-const EmailInputLoginScreen = () => {
+const EmailInputLoginScreen = ({navigation}) => {
   const [email, setEmail] = useState('')
   const [emailErrorText, setEmailErrorText] = useState('')
 
@@ -17,11 +18,11 @@ const EmailInputLoginScreen = () => {
       return
     }
 
-    alert('Đăng nhập thành công')
+    navigation.navigate(Screens.Login, { email })
   }
   return (
     <View style={st.container}>
-      <AuthenticationHeader />
+      <AuthenticationHeader navigation={navigation}/>
 
       {/* form đăng nhập */}
       <View style={st.loginForm}>
