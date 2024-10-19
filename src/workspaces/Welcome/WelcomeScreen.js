@@ -1,7 +1,8 @@
-import React, {useEffect, useRef} from 'react';
-import {View, Text, StyleSheet, Animated, Easing, Image} from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, Animated, Easing, Image } from 'react-native';
+import Screens from '../../navigation/Screens';
 
-const WelcomeScreen = () => {
+const WelcomeScreen = ({ navigation }) => {
   const letters = 'CAMPUSPOLY'.split('');
   const animations = useRef(letters.map(() => new Animated.Value(0))).current;
   const fadeAnim = useRef(new Animated.Value(0)).current; // Animated.Value cho logo
@@ -32,102 +33,82 @@ const WelcomeScreen = () => {
               }),
             ),
           ),
-        ]).start(() => {
-          runAnimation();
-        });
+        ]).start();
       });
     };
 
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 2000,
-      useNativeDriver: true,
-    }).start();
-
     runAnimation();
-  }, [animations]);
 
-  const renderLetters = () => {
-    return letters.map((letter, index) => {
-      const translateY = animations[index].interpolate({
-        inputRange: [0, 1],
-        outputRange: [50, 0],
-      });
+    // Thêm sự kiện chuyển màn hình sau 3 giây
+    const timer = setTimeout(() => {
+      navigation.navigate(Screens.MenuAuth); // Thay 'NextScreen' bằng tên màn hình bạn muốn chuyển đến
+    }, 2000);
 
-      const rotate = animations[index].interpolate({
-        inputRange: [0, 1],
-        outputRange: ['30deg', '0deg'],
-      });
-
-      const opacity = animations[index].interpolate({
-        inputRange: [0, 1],
-        outputRange: [0, 1],
-      });
-
-      return (
-        <Animated.Text
-          key={index}
-          style={[
-            st.letter,
-            {
-              transform: [{translateY}, {rotate}],
-              opacity: opacity,
-            },
-          ]}>
-          {letter}
-        </Animated.Text>
-      );
-    });
-  };
+    // Dọn dẹp timer khi component bị unmount
+    return () => clearTimeout(timer);
+  }, [animations, navigation]);
 
   return (
-    <View style={st.container}>
-      {/* Logo với hiệu ứng fade-in */}
-      <Animated.View style={{opacity: fadeAnim}}>
-        <Image
-          source={require('../../assets/images/logowelcome.png')}
-          style={st.logo}
-        />
-      </Animated.View>
-
-      <View style={st.textContainer}>{renderLetters()}</View>
-      <Text style={st.sinceText}>SINCE 2024</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Welcome to CAMPUSPOLY</Text>
+      <View style={styles.lettersContainer}>
+        {letters.map((letter, index) => (
+          <Animated.Text
+            key={index}
+            style={[
+              styles.letter,
+              {
+                opacity: animations[index],
+                transform: [
+                  {
+                    translateY: animations[index].interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [20, 0],
+                    }),
+                  },
+                ],
+              },
+            ]}
+          >
+            {letter}
+          </Animated.Text>
+        ))}
+      </View>
+      <Animated.Image
+        source={require('../../assets/images/logowelcome.png')}
+        style={[styles.logo, { opacity: fadeAnim }]}
+        resizeMode="contain"
+      />
     </View>
   );
 };
 
-export default WelcomeScreen;
-
-const st = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'white',
+    backgroundColor: '#fff',
   },
-  logo: {
-    width: 500,
-    height: 500,
-    resizeMode: 'contain',
-    marginBottom: 40,
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
   },
-  textContainer: {
-    position: 'absolute',
-    top: '60%',
-    zIndex: 1,
+  lettersContainer: {
     flexDirection: 'row',
   },
   letter: {
     fontSize: 48,
-    // fontWeight: 'bold',
-    color: 'black',
+    color: '#333',
     marginHorizontal: 2,
-    fontFamily: 'rubik',
+    fontFamily: 'rubik'
   },
-  sinceText: {
-    fontSize: 16,
-    fontWeight: '400',
-    color: 'black',
-    top: '-13%',
+  logo: {
+    width: 100,
+    height: 100,
+    marginTop: 20,
   },
 });
+
+export default WelcomeScreen;
