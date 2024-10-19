@@ -4,8 +4,10 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import StoryComponent from '../../components/Home/storyComponent';
 import ProfilePosts from '../../components/ProfileScreen/profilePosts';
 import { useNavigation } from '@react-navigation/native';
+import Screens from '../../navigation/Screens';
 
 const HomeScreen = () => {
+
   const [userName, setUserName] = useState(''); // State to store the user's name
   const [greeting, setGreeting] = useState(''); // State to store the greeting message
   const [stories, setStories] = useState([]); // State to store the list of stories
@@ -73,7 +75,7 @@ const HomeScreen = () => {
             likes: 8998,
             comments: 145,
             images: [
-              require('../../assets/images/venice1.png'),
+              require('../../assets/images/car2.jpg'),
               require('../../assets/images/venice2.png'),
               require('../../assets/images/venice3.png'),
             ],
@@ -142,7 +144,7 @@ const HomeScreen = () => {
   const renderStoryItem = ({ item }) => (
     <StoryComponent
       imgStory={item.imgStory}
-      onStoryPress={() => {}} // Define what happens when the story is pressed
+      onStoryPress={() => { }} // Define what happens when the story is pressed
       onUserPress={() => handleUserPress(item.userId)} // Pass user data on press
       imgUser={item.imgUser}
     />
@@ -166,7 +168,7 @@ const HomeScreen = () => {
               }}>
               {greeting}, {userName || 'User'}
             </Text>
-            <TouchableOpacity style={styles.circleIcon} onPress={() => {}}>
+            <TouchableOpacity style={styles.circleIcon} onPress={() => navigation.navigate(Screens.Message)}>
               <Icon name="mail-outline" size={15} color="#fff" />
             </TouchableOpacity>
           </View>
@@ -184,7 +186,9 @@ const HomeScreen = () => {
         </View>
       }
       renderItem={({ item }) => (
-        <ProfilePosts user={item} />
+        <TouchableOpacity onPress={() => navigation.navigate(Screens.Comment)}>
+          <ProfilePosts user={item} />
+        </TouchableOpacity>
       )}
     />
   );

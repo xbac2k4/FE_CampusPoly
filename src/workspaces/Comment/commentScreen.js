@@ -11,7 +11,7 @@ import ArticleComponent from '../../components/Home/articleComponent';
 import CommentComponent from '../../components/Comment/CommentComponent';
 import CommentInputComponent from '../../components/Comment/CommentInputComponent';
 
-const CommentScreen = () => {
+const CommentScreen = ({navigation}) => {
 
   const handleSendComment = comment => {
     console.log('Comment gửi:', comment);
@@ -119,7 +119,7 @@ const CommentScreen = () => {
       <View style={styles.barHeader}>
         <TouchableOpacity
           onPress={() => {
-            /* Xử lý hành động của nút back */
+            navigation.goBack();
           }}
           style={styles.circleIcon}>
           <Image

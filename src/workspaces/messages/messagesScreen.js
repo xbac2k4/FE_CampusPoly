@@ -13,7 +13,7 @@ const users = [
   { id: '8', name: 'Vũ Quang Huy', avatar: 'https://ispacedanang.edu.vn/wp-content/uploads/2024/05/hinh-anh-dep-ve-hoc-sinh-cap-3-1.jpg', online: false, message: 'CampusPoly.....', time: '20/9/2024' },
 ];
 
-const MessengerScreen = () => {
+const MessengerScreen = ({ navigation }) => {
   // Hiển thị người dùng theo trạng thái hoạt động (online trước, offline sau)
   const renderPinnedUsers = () => (
     <FlatList
@@ -40,7 +40,7 @@ const MessengerScreen = () => {
   // Hiển thị người dùng có tin nhắn
   const renderMessage = ({ item }) => (
     <TouchableOpacity style={styles.messageContainer}>
-      <Image source={{ uri: item.avatar }} style={styles.messageAvatar}  />
+      <Image source={{ uri: item.avatar }} style={styles.messageAvatar} />
 
       <View style={styles.messageContent}>
         <Text style={styles.messageName}>{item.name}</Text>
@@ -61,7 +61,9 @@ const MessengerScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => {
+          navigation.goBack()
+        }}>
           <Icon name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>MESSAGES</Text>
@@ -103,12 +105,12 @@ const MessengerScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000', 
+    backgroundColor: '#000',
   },
   header: {
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    justifyContent: 'space-between', 
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     padding: 20,
   },
   headerTitle: {
@@ -122,7 +124,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1E1E1E',
     borderRadius: 30,
     paddingHorizontal: 20,
-    marginHorizontal:15,
+    marginHorizontal: 15,
     marginBottom: 16,
   },
   searchInput: {
@@ -139,16 +141,16 @@ const styles = StyleSheet.create({
     color: 'gray',
   },
   pinnedContainer: {
-    maxHeight: 100, 
+    maxHeight: 100,
   },
   pinnedList: {
-    paddingHorizontal: 20, 
+    paddingHorizontal: 20,
   },
   pinnedUserContainer: {
     alignItems: 'center',
     marginRight: 20,
-    width: 60, 
-    position: 'relative', 
+    width: 60,
+    position: 'relative',
   },
   onlineDot: {
     width: 12,
@@ -172,7 +174,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
     color: '#fff',
     fontSize: 12,
-    textAlign: 'center', 
+    textAlign: 'center',
   },
   messageContainer: {
     flexDirection: 'row',
@@ -202,11 +204,11 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: '#444', 
+    backgroundColor: '#444',
     marginVertical: 10,
   },
   messageList: {
-    flex: 1, 
+    flex: 1,
   },
 });
 

@@ -12,6 +12,10 @@ import SignUpNameScreen from '../workspaces/SignUp/SignUpNameScreen';
 import SignUpImageScreen from '../workspaces/SignUp/SignUpImageScreen';
 import BottomTabNavigator from './BottomTabNavigator';
 import Screens from './Screens';
+import CommentScreen from '../workspaces/Comment/CommentScreen';
+import MessagesScreen from '../workspaces/messages/MessagesScreen';
+
+
 
 const Stack = createNativeStackNavigator();
 
@@ -28,6 +32,10 @@ const MainStackNavigator = () => {
       <Stack.Screen name={Screens.SignUpName} component={SignUpNameScreen} />
       <Stack.Screen name={Screens.SignUpImage} component={SignUpImageScreen} />
       <Stack.Screen name={Screens.BottomTab} component={BottomTabNavigator} />
+      <Stack.Screen name={Screens.Comment} component={CommentScreen} />
+      <Stack.Screen name={Screens.Message} component={MessagesScreen} />
+
+
     </Stack.Navigator>
   )
 }

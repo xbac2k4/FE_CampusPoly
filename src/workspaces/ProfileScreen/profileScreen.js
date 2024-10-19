@@ -20,7 +20,7 @@ const user = {
       likes: 8998,
       comments: 145,
       images: [
-        require('../../assets/images/venice1.png'),
+        require('../../assets/images/car2.jpg'),
         require('../../assets/images/venice2.png'),
         require('../../assets/images/venice3.png'),
       ],

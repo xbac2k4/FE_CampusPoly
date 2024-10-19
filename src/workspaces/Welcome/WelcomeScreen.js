@@ -33,82 +33,109 @@ const WelcomeScreen = ({ navigation }) => {
               }),
             ),
           ),
-        ]).start();
+        ]).start(() => {
+          runAnimation();
+        });
       });
     };
 
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 2000,
+      useNativeDriver: true,
+    }).start();
+
     runAnimation();
 
-    // Thêm sự kiện chuyển màn hình sau 3 giây
     const timer = setTimeout(() => {
-      navigation.navigate(Screens.MenuAuth); // Thay 'NextScreen' bằng tên màn hình bạn muốn chuyển đến
+      navigation.navigate(Screens.MenuAuth); // Thay 'Next' bằng tên màn hình bạn muốn chuyển đến
     }, 2000);
 
     // Dọn dẹp timer khi component bị unmount
     return () => clearTimeout(timer);
   }, [animations, navigation]);
 
+  const renderLetters = () => {
+    return letters.map((letter, index) => {
+      const translateY = animations[index].interpolate({
+        inputRange: [0, 1],
+        outputRange: [50, 0],
+      });
+
+      const rotate = animations[index].interpolate({
+        inputRange: [0, 1],
+        outputRange: ['30deg', '0deg'],
+      });
+
+      const opacity = animations[index].interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, 1],
+      });
+
+      return (
+        <Animated.Text
+          key={index}
+          style={[
+            st.letter,
+            {
+              transform: [{ translateY }, { rotate }],
+              opacity: opacity,
+            },
+          ]}>
+          {letter}
+        </Animated.Text>
+      );
+    });
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Welcome to CAMPUSPOLY</Text>
-      <View style={styles.lettersContainer}>
-        {letters.map((letter, index) => (
-          <Animated.Text
-            key={index}
-            style={[
-              styles.letter,
-              {
-                opacity: animations[index],
-                transform: [
-                  {
-                    translateY: animations[index].interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [20, 0],
-                    }),
-                  },
-                ],
-              },
-            ]}
-          >
-            {letter}
-          </Animated.Text>
-        ))}
-      </View>
-      <Animated.Image
-        source={require('../../assets/images/logowelcome.png')}
-        style={[styles.logo, { opacity: fadeAnim }]}
-        resizeMode="contain"
-      />
+    <View style={st.container}>
+      {/* Logo với hiệu ứng fade-in */}
+      <Animated.View style={{ opacity: fadeAnim }}>
+        <Image
+          source={require('../../assets/images/black_bee.png')}
+          style={st.logo}
+        />
+      </Animated.View>
+
+      <View style={st.textContainer}>{renderLetters()}</View>
+      <Text style={st.sinceText}>SINCE 2024</Text>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
+export default WelcomeScreen;
+
+const st = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: 'white',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
+  logo: {
+    width: 500,
+    height: 500,
+    resizeMode: 'contain',
+    marginBottom: 40,
   },
-  lettersContainer: {
+  textContainer: {
+    position: 'absolute',
+    top: '60%',
+    zIndex: 1,
     flexDirection: 'row',
   },
   letter: {
     fontSize: 48,
-    color: '#333',
+    // fontWeight: 'bold',
+    color: 'black',
     marginHorizontal: 2,
-    fontFamily: 'rubik'
+    fontFamily: 'rubik',
   },
-  logo: {
-    width: 100,
-    height: 100,
-    marginTop: 20,
+  sinceText: {
+    fontSize: 16,
+    fontWeight: '400',
+    color: 'black',
+    top: '-13%',
   },
 });
-
-export default WelcomeScreen;
