@@ -17,6 +17,8 @@ import 'react-native-gesture-handler';
 
 
 import { name as appName } from './app.json';
+import CreatePostScreen from './src/workspaces/CreatePost/CreatePostScreen';
+import CommentScreen from './src/workspaces/Comment/commentScreen';
 
 // Đăng ký component
-AppRegistry.registerComponent(appName, () => App);
+AppRegistry.registerComponent(appName, () => CreatePostScreen);
