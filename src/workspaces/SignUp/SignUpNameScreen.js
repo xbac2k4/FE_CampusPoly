@@ -4,10 +4,11 @@ import Feather from 'react-native-vector-icons/Feather';
 import TwoButtonBottom from '../../components/TwoButtonBottom';
 import CustomInput from '../../components/CustomInput';
 import ErrorMessage from '../../components/ErrorMessage';
+import Screens from '../../navigation/Screens';
 
 
 
-const SignUpNameScreen = () => {
+const SignUpNameScreen = ({navigation}) => {
   const [username, setUsername] = useState('')
   const [usernameErrorText, setUsernameErrorText] = useState('')
 
@@ -18,11 +19,11 @@ const SignUpNameScreen = () => {
       return
     }
 
-    alert('tiếp theo')
+    navigation.navigate(Screens.SignUpImage)
   }
 
   const abandon = () => {
-    alert('Bỏ qua bây giờ')
+    navigation.navigate(Screens.SignUpImage)
   }
 
   const suggestedNames = [

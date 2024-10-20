@@ -2,20 +2,24 @@ import { Image, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'reac
 import React, { useState } from 'react'
 import { launchImageLibrary } from 'react-native-image-picker';
 import TwoButtonBottom from '../../components/TwoButtonBottom';
+import Screens from '../../navigation/Screens';
 
-const SignUpImageScreen = () => {
+const SignUpImageScreen = ({ navigation }) => {
 
   // lưu trữ uri ảnh người dùng chọn
   const [imageUri, setImageUri] = useState(null);
 
   // Hàm xử lý khi người dùng ấn nút tiếp theo
-  const handleName = () => {
-    alert('tiếp theo')
+  const handleImage = () => {
+    if (!imageUri) {
+      return alert('Vui lòng chọn một ảnh hồ sơ');
+    }
+    navigation.navigate(Screens.EmailInputLogin)
   }
 
   // Hàm xử lý khi người dùng ấn nút bỏ qua
   const abandon = () => {
-    alert('Bỏ qua bây giờ')
+    navigation.navigate(Screens.EmailInputLogin)
   }
 
   // Hàm chọn ảnh từ thư viện
@@ -78,7 +82,7 @@ const SignUpImageScreen = () => {
         <TwoButtonBottom
           text2="Tiếp theo"
           text1="Bỏ qua bây giờ"
-          onPress2={handleName}
+          onPress2={handleImage}
           onPress1={abandon}
         />
       </View>

@@ -1,14 +1,14 @@
 import React from 'react';
 import { View, StyleSheet, Image } from 'react-native';
 import ProfileScreen from './src/workspaces/ProfileScreen/profileScreen';
-import CommentScreen from './src/workspaces/Comment/commentScreen';
+import CommentScreen from './src/workspaces/Comment/CommentScreen';
 import HomeScreen from './src/workspaces/Home/homeScreen';
 import { Home, Search, Profile,Alert } from './src/workspaces/Home/index';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import LinearGradient from 'react-native-linear-gradient';
 import { Provider } from 'react-redux';
-import { store } from './src/workspaces/alert/store';
+import { store } from './src/workspaces/Notification/store';
 const Tab = createBottomTabNavigator();
 
 const App = () => {

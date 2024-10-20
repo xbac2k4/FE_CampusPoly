@@ -26,7 +26,10 @@ export default StoryComponent;
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center', // Center the content horizontally
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginRight: -40,
   },
   storyContainer: {
     position: 'relative', // Use relative position to allow absolute positioning of imgUser

@@ -6,9 +6,10 @@ import AuthenticationHeader from '../../components/AuthHeader';
 import OneButtonBottom from '../../components/OneButtonBottom';
 import CustomInput from '../../components/CustomInput';
 import ErrorMessage from '../../components/ErrorMessage';
+import Screens from '../../navigation/Screens';
 
 
-const LoginScreen = () => {
+const SignUpScreen = ({ navigation }) => {
   const [name, setName] = useState('')
   const [nameErrorText, setNameErrorText] = useState('')
 
@@ -42,11 +43,11 @@ const LoginScreen = () => {
       return
     }
 
-    alert('Đăng ký thành công')
+    navigation.navigate(Screens.OTP)
   }
   return (
     <View style={st.container}>
-      <AuthenticationHeader />
+      <AuthenticationHeader navigation={navigation} />
 
       {/* form thông tin */}
       <View style={st.form}>
@@ -86,7 +87,7 @@ const LoginScreen = () => {
           flexDirection: 'row',
           justifyContent: 'space-between'
         }}>
-          <Text style={{ color: 'red' }}>{nameErrorText}</Text>
+          <Text style={{ color: 'red', fontWeight: 'bold' }}>{nameErrorText}</Text>
           <Text style={{ color: name.length > 50 ? 'red' : 'gray' }}>{name.length}/50</Text>
         </View>
 
@@ -154,7 +155,7 @@ const LoginScreen = () => {
   )
 }
 
-export default LoginScreen
+export default SignUpScreen
 
 const st = StyleSheet.create({
   container: {

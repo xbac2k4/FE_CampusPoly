@@ -59,7 +59,7 @@ const ProfileTabs = ({ onTabSelect }) => {
 const styles = StyleSheet.create({
   tabsContainer: {
     width: '100%',
-    backgroundColor: '#000',
+    backgroundColor: '#181A1C',
     paddingVertical: 20,
     paddingHorizontal: 20,
   },
