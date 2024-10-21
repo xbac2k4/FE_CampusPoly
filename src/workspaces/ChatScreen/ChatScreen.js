@@ -5,7 +5,9 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import LinearGradient from 'react-native-linear-gradient';
 
 
+// Component ChatScreen dùng để hiển thị giao diện chat
 const ChatScreen = () => {
+  // Khai báo state để lưu trữ nội dung tin nhắn nhập vào
   const [inputText, setInputText] = useState('');
 
   return (
@@ -15,12 +17,13 @@ const ChatScreen = () => {
       <View style={styles.header}>
         {/* View trống để đẩy ảnh vào giữa */}
         <View style={{ flex: 1 }}>
+          {/* Icon quay lại */}
           <TouchableOpacity style={styles.iconContainer}  >
             <AntDesign name="arrowleft" size={24} color="white" />
           </TouchableOpacity>
         </View>
 
-        {/* Phần chứa ảnh và tên */}
+        {/* Phần chứa ảnh và tên người chat */}
         <View style={styles.profileContainer}>
           <Image
             source={require('../../assets/anhchatview.png')} // Đảm bảo đường dẫn đến ảnh là chính xác
@@ -31,17 +34,21 @@ const ChatScreen = () => {
 
         {/* View trống để đẩy ảnh vào giữa */}
         <View style={{ flex: 1, alignItems: 'flex-end' }}>
+          {/* Icon thêm chức năng */}
           <TouchableOpacity style={styles.iconContainer} >
             <MaterialIcons name="more-vert" size={24} color="white" />
           </TouchableOpacity>
         </View>
       </View>
+      {/* Đường kẻ ngang ngăn cách header và nội dung chat */}
       <View style={styles.divider} />
+      {/* Nội dung các tin nhắn */}
       <ScrollView contentContainerStyle={styles.chatContainer}>
+         {/* Dòng phân cách ngày tháng */}
         <View style={styles.dateSeparator}>
           <Text style={styles.dateText}>SEP 14, 2021</Text>
         </View>
-
+         {/* Tin nhắn bên trái (người khác gửi) */}
         <View style={styles.messageLeftContainer}>
           <Image
             source={require('../../assets/anhchatview.png')}
@@ -54,7 +61,7 @@ const ChatScreen = () => {
         <View style={styles.messageTimeContainerLeft}>
           <Text style={styles.messageTime}>8:27 PM</Text>
         </View>
-
+        {/* Tin nhắn bên phải (người dùng gửi) */}
         <View style={styles.messageRight}>
           <Text style={styles.messageText}>Sure. Let’s aim for saturday</Text>
         </View>
@@ -64,7 +71,7 @@ const ChatScreen = () => {
         <View style={styles.messageTimeContainerRight}>
           <Text style={styles.messageTime}>8:56 PM</Text>
         </View>
-
+        {/* Tin nhắn bên trái */}
         <View style={styles.messageLeftContainer}>
           <Image
             source={require('../../assets/anhchatview.png')}
@@ -78,18 +85,18 @@ const ChatScreen = () => {
           <Text style={styles.messageTime}>8:56 PM</Text>
         </View>
 
-
+        {/* Tin nhắn dạng emoji bên phải */}
         <View style={styles.messageRight}>
           <Text>❤️</Text>
         </View>
         <View style={styles.messageTimeContainerRight}>
           <Text style={styles.messageTime}>8:56 PM</Text>
         </View>
-
+        {/* Dòng phân cách ngày tháng */}
         <View style={styles.dateSeparator}>
           <Text style={styles.dateText}>TODAY</Text>
         </View>
-
+        {/* Tin nhắn bên trái */}
         <View style={styles.messageLeftContainer}>
           <Image
             source={require('../../assets/anhchatview.png')}
@@ -99,6 +106,7 @@ const ChatScreen = () => {
             <Text style={styles.messageText}>Hey you! Are you there?</Text>
           </View>
         </View>
+        {/* Tin nhắn bên phải */}
         <View style={styles.messageTimeContainerLeft2}>
           <Text style={styles.messageTime}>8:56 PM</Text>
         </View>
@@ -111,8 +119,9 @@ const ChatScreen = () => {
         </View>
       </ScrollView>
 
-
+      {/* Đường kẻ ngang trên thanh nhập tin nhắn */}
       <View style={styles.dividerAboveBlackBar} />
+      {/* Thanh nhập tin nhắn */}
       <View style={styles.blackBar}>
         <View style={styles.Textting}>
           <TextInput
@@ -122,9 +131,11 @@ const ChatScreen = () => {
             value={inputText}
             onChangeText={setInputText}
           />
+           {/* Nút thêm file */}
           <TouchableOpacity style={{ marginRight: 16 }}>
             <AntDesign name="plus" size={24} color="#727477" />
           </TouchableOpacity>
+          {/* Nút gửi tin nhắn hoặc nút thích */}
           <TouchableOpacity>
             <LinearGradient
               colors={['#F62E8E', '#AC1AF0']}
@@ -132,7 +143,11 @@ const ChatScreen = () => {
               end={{ x: 1, y: 1 }}
               style={{ borderRadius: 32, padding: 6 }}
             >
-              <AntDesign name={inputText ? "enter" : "like1"} size={24} color="white" />
+              {inputText ? (
+                <MaterialIcons name="send" size={24} color="white" />
+              ) : (
+                <AntDesign name="like1" size={24} color="white" />
+              )}
             </LinearGradient>
           </TouchableOpacity>
         </View>
@@ -141,14 +156,16 @@ const ChatScreen = () => {
 
   );
 };
-
+// Định dạng CSS cho các thành phần của màn hình chat
 export default ChatScreen;
 
 const styles = StyleSheet.create({
+  // Toàn bộ màn hình
   container: {
     flex: 1,
     backgroundColor: '#181A1C',
   },
+  // Header chứa thông tin người dùng và các icon
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -158,6 +175,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#181A1C',
     marginTop: 16,
   },
+  // Phần hiển thị ảnh và tên người chat
   profileContainer: {
     flexDirection: 'column', // Sắp xếp các phần tử theo cột
     alignItems: 'center', // Căn giữa theo chiều ngang
@@ -203,9 +221,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#727477',
   },
+  // Định dạng cho các tin nhắn bên trái (tin nhắn từ người khác)
   messageLeft: {
     flexDirection: 'row', // Căn ảnh và văn bản cùng hàng
-    position: 'relative', // Add this line
+    position: 'relative', 
     flexDirection: 'row',
     alignItems: 'center',
     marginVertical: 10,
@@ -228,6 +247,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     marginBottom: -3,
   },
+  // Container thời gian hiển thị bên phải
   messageTimeContainerRight: {
     alignItems: 'flex-end',
     marginRight: 5,
@@ -243,6 +263,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#727477',
   },
+  // Container thời gian hiển thị bên trái
   messageTimeContainerLeft: {
     position: 'relative', // Sử dụng 'absolute' để có thể điều chỉnh vị trí
     top: -1, // Điều chỉnh giá trị này để đẩy lên hoặc xuống
@@ -267,6 +288,7 @@ const styles = StyleSheet.create({
   chatContainer: {
 
   },
+  // Thanh nhập tin nhắn
   blackBar: {
     position: 'absolute',
     bottom: 0,
@@ -274,6 +296,7 @@ const styles = StyleSheet.create({
     height: 82,
     backgroundColor: 'black',
   },
+  // Đường kẻ ngang phía trên thanh nhập tin nhắn
   dividerAboveBlackBar: {
     height: 1,
     backgroundColor: '#323436',
@@ -309,4 +332,3 @@ const styles = StyleSheet.create({
     alignItems: 'baseline', // Đảm bảo ảnh và tin nhắn đều căn trên cùng
   },
 });
-
