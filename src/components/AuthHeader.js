@@ -1,14 +1,13 @@
 import { Image, StatusBar, StyleSheet, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 
-const AuthenticationHeader = () => { 
-    
+const AuthenticationHeader = () => {
+
     return (
         <View style={{
             alignItems: 'center',
-            width: '100%' 
-
-            // comemt
+            width: '100%'
+            // fdfdf
         }}>
             {/* thanh statusbar */}
             <StatusBar backgroundColor="transparent" barStyle={'dark-content'} />

@@ -14,7 +14,7 @@ const WelcomeScreen = () => {
 
     return (
         <View style={st.container}>
-            <Image source={require('../assets/images/landinglogo.png')}/>
+            <Image source={require('../../assets/images/landinglogo.png')}/>
         </View>
     )
 }

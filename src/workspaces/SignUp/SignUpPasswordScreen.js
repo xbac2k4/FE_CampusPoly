@@ -1,10 +1,10 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
-import AuthenticationHeader from '../components/AuthenticationHeader';
+import AuthenticationHeader from '../../components/AuthHeader';
 import Feather from 'react-native-vector-icons/Feather';
-import OneButtonBottom from '../components/OneButtonBottom';
-import CustomInput from '../components/CustomInput';
-import ErrorMessage from '../components/ErrorMessage';
+import OneButtonBottom from '../../components/OneButtonBottom';
+import CustomInput from '../../components/CustomInput';
+import ErrorMessage from '../../components/ErrorMessage';
 
 
 

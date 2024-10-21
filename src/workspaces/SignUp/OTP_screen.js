@@ -1,10 +1,10 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import AuthenticationHeader from '../components/AuthenticationHeader';
-import OneButtonBottom from '../components/OneButtonBottom';
-import CustomInput from '../components/CustomInput';
-import ErrorMessage from '../components/ErrorMessage';
+import AuthenticationHeader from '../../components/AuthHeader';
+import OneButtonBottom from '../../components/OneButtonBottom';
+import CustomInput from '../../components/CustomInput';
+import ErrorMessage from '../../components/ErrorMessage';
 
 
 const inputLoginScreen = () => {
@@ -66,7 +66,7 @@ const inputLoginScreen = () => {
           />
 
           {/* thông báo lỗi mã OTP */}
-          <ErrorMessage message={OTPErrorText}/>
+          <ErrorMessage message={OTPErrorText} />
 
           {/* không nhận được email */}
           <TouchableOpacity onPress={handleForgetPassword}>
