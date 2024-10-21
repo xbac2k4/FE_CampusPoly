@@ -5,9 +5,10 @@ import AuthenticationHeader from '../../components/AuthHeader';
 import TwoButtonBottom from '../../components/TwoButtonBottom';
 import CustomInput from '../../components/CustomInput';
 import ErrorMessage from '../../components/ErrorMessage';
+import Screens from '../../navigation/Screens';
 
-const LoginScreen = () => {
-  const [email, setEmail] = useState('')
+const LoginScreen = ({ route, navigation }) => {
+  const [email, setEmail] = useState(route.params?.email ?? '')
   const [password, setPassword] = useState('')
   const [emailErrorText, setEmailErrorText] = useState('')
   const [passErrorText, setPassErrorText] = useState('')
@@ -30,12 +31,12 @@ const LoginScreen = () => {
       return
     }
 
-    alert('Đăng nhập thành công')
+    navigation.navigate(Screens.BottomTab)
   }
   return (
     <View style={st.container}>
 
-      <AuthenticationHeader />
+      <AuthenticationHeader navigation={navigation}/>
 
       {/* form đăng nhập */}
       <View style={st.loginForm}>

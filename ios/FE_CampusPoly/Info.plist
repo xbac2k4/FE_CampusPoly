@@ -49,23 +49,6 @@
 	<false/>
 	<key>UIAppFonts</key>
 	<array>
-		<string>HankenGrotesk-Black.ttf</string>
-		<string>HankenGrotesk-BlackItalic.ttf</string>
-		<string>HankenGrotesk-Bold.ttf</string>
-		<string>HankenGrotesk-BoldItalic.ttf</string>
-		<string>HankenGrotesk-ExtraBold.ttf</string>
-		<string>HankenGrotesk-ExtraBoldItalic.ttf</string>
-		<string>HankenGrotesk-ExtraLight.ttf</string>
-		<string>HankenGrotesk-ExtraLightItalic.ttf</string>
-		<string>HankenGrotesk-Italic.ttf</string>
-		<string>HankenGrotesk-Light.ttf</string>
-		<string>HankenGrotesk-LightItalic.ttf</string>
-		<string>HankenGrotesk-Medium.ttf</string>
-		<string>HankenGrotesk-MediumItalic.ttf</string>
-		<string>HankenGrotesk-SemiBold.ttf</string>
-		<string>HankenGrotesk-SemiBoldItalic.ttf</string>
-		<string>HankenGrotesk-Thin.ttf</string>
-		<string>HankenGrotesk-ThinItalic.ttf</string>
 		<string>rgl1.ttf</string>
 		<string>rubik.ttf</string>
 	</array>
