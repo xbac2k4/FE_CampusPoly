@@ -7,6 +7,7 @@ const AuthenticationHeader = () => {
         <View style={{
             alignItems: 'center',
             width: '100%' 
+            
 
             // comemt
         }}>

@@ -1,11 +1,16 @@
-import { StyleSheet, Text, View, TextInput, Image, ScrollView, TouchableOpacity } from 'react-native';
-import React from 'react';
+import { StyleSheet, Text, View, TextInput, Image, ScrollView, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
+import React, { useState } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import LinearGradient from 'react-native-linear-gradient';
+
 
 const ChatScreen = () => {
+  const [inputText, setInputText] = useState('');
+
   return (
-    <View style={styles.container}>
+    // KeyboardAvoidingView vẫn không đẩy được container
+    <KeyboardAvoidingView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         {/* View trống để đẩy ảnh vào giữa */}
@@ -37,13 +42,17 @@ const ChatScreen = () => {
           <Text style={styles.dateText}>SEP 14, 2021</Text>
         </View>
 
-        <View>
+        <View style={styles.messageLeftContainer}>
+          <Image
+            source={require('../../assets/anhchatview.png')}
+            style={styles.messageImage}
+          />
           <View style={styles.messageLeft}>
             <Text style={styles.messageText}>Alex, let’s meet this weekend. I’ll check with Dave too 😎</Text>
           </View>
-          <View style={styles.messageTimeContainerLeft}>
-            <Text style={styles.messageTime}>8:27 PM</Text>
-          </View>
+        </View>
+        <View style={styles.messageTimeContainerLeft}>
+          <Text style={styles.messageTime}>8:27 PM</Text>
         </View>
 
         <View style={styles.messageRight}>
@@ -56,12 +65,19 @@ const ChatScreen = () => {
           <Text style={styles.messageTime}>8:56 PM</Text>
         </View>
 
-        <View style={styles.messageLeft}>
-          <Text style={styles.messageText}>Alrighty! Will give you a call shortly 🤗</Text>
+        <View style={styles.messageLeftContainer}>
+          <Image
+            source={require('../../assets/anhchatview.png')}
+            style={styles.messageImage}
+          />
+          <View style={styles.messageLeft}>
+            <Text style={styles.messageText}>Alrighty! Will give you a call shortly 🤗</Text>
+          </View>
         </View>
         <View style={styles.messageTimeContainerLeft1}>
           <Text style={styles.messageTime}>8:56 PM</Text>
         </View>
+
 
         <View style={styles.messageRight}>
           <Text>❤️</Text>
@@ -74,8 +90,14 @@ const ChatScreen = () => {
           <Text style={styles.dateText}>TODAY</Text>
         </View>
 
-        <View style={styles.messageLeft}>
-          <Text style={styles.messageText}>Hey you! Are you there?</Text>
+        <View style={styles.messageLeftContainer}>
+          <Image
+            source={require('../../assets/anhchatview.png')}
+            style={styles.messageImage}
+          />
+          <View style={styles.messageLeft}>
+            <Text style={styles.messageText}>Hey you! Are you there?</Text>
+          </View>
         </View>
         <View style={styles.messageTimeContainerLeft2}>
           <Text style={styles.messageTime}>8:56 PM</Text>
@@ -97,10 +119,25 @@ const ChatScreen = () => {
             style={styles.input}
             placeholder="Type your message here..."
             placeholderTextColor="#ECEBED"
+            value={inputText}
+            onChangeText={setInputText}
           />
+          <TouchableOpacity style={{ marginRight: 16 }}>
+            <AntDesign name="plus" size={24} color="#727477" />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <LinearGradient
+              colors={['#F62E8E', '#AC1AF0']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={{ borderRadius: 32, padding: 6 }}
+            >
+              <AntDesign name={inputText ? "enter" : "like1"} size={24} color="white" />
+            </LinearGradient>
+          </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
 
   );
 };
@@ -111,7 +148,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#181A1C',
-
   },
   header: {
     flexDirection: 'row',
@@ -149,7 +185,7 @@ const styles = StyleSheet.create({
     padding: 4,
     justifyContent: 'center',
     alignItems: 'center',
-    
+
   },
   divider: {
     height: 1, // Độ dày của đường kẻ
@@ -163,10 +199,12 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   dateText: {
+    top : 'auto',
     fontSize: 14,
     color: '#727477',
   },
   messageLeft: {
+    flexDirection: 'row', // Căn ảnh và văn bản cùng hàng
     position: 'relative', // Add this line
     flexDirection: 'row',
     alignItems: 'center',
@@ -179,6 +217,7 @@ const styles = StyleSheet.create({
     marginBottom: 1,
   },
   messageRight: {
+    top : -12,
     flexDirection: 'row',
     alignItems: 'center',
     marginVertical: 10,
@@ -191,33 +230,37 @@ const styles = StyleSheet.create({
   },
   messageTimeContainerRight: {
     alignItems: 'flex-end',
-    marginRight: 10,
+    marginRight: 5,
     marginTop: 5,
-    marginBottom: 4, // Add this line to create space below the time
+    marginBottom: 4, 
   },
   messageText: {
     fontSize: 14, // Thay đổi kích thước chữ thành 20
     color: '#fff', // Màu chữ (có thể thay đổi theo ý muốn)
   },
   messageTime: {
+    top : -13,
     fontSize: 16,
     color: '#727477',
   },
   messageTimeContainerLeft: {
-    position: 'relative', // Add this line
-    left: 270,
+    position: 'relative', // Sử dụng 'absolute' để có thể điều chỉnh vị trí
+    top: -1, // Điều chỉnh giá trị này để đẩy lên hoặc xuống
+    left: 308,
     fontSize: 16,
     color: '#727477',
   },
   messageTimeContainerLeft1: {
-    position: 'relative', // Add this line
-    left: 198,
+    position: 'relative',
+    top : -10,
+    left: 238,
     fontSize: 16,
     color: '#727477',
   },
   messageTimeContainerLeft2: {
-    position: 'relative', // Add this line
-    left: 106,
+    position: 'relative', 
+    top : -10,
+    left: 145,
     fontSize: 16,
     color: '#727477',
   },
@@ -242,16 +285,28 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: '#323436',
     borderRadius: 32,
-    paddingHorizontal: 15, // Giảm giá trị này để thu nhỏ chiều dài
+    paddingHorizontal: 7, // Giảm giá trị này để thu nhỏ chiều dài
     alignItems: 'center',
     height: 44,
     marginTop: 10,
-    width: '90%', // Thêm thuộc tính này để điều chỉnh chiều dài
+    width: '96%', // Thêm thuộc tính này để điều chỉnh chiều dài
     alignSelf: 'center', // Căn giữa trong blackBar
   },
-  input:{
+  input: {
+    marginLeft: 7,
     flex: 1,
     fontSize: 16,
     color: '#ECEBED',
-  }
+  },
+  messageImage: {
+    width: 35,
+    height: 35,
+    borderRadius: 20,
+    marginRight: 4, // Thêm khoảng cách giữa ảnh và văn bản
+  },
+  messageLeftContainer: {
+    flexDirection: 'row', // Căn ảnh và khung tin nhắn cùng hàng
+    alignItems: 'baseline', // Đảm bảo ảnh và tin nhắn đều căn trên cùng
+  },
 });
+
