@@ -40,7 +40,7 @@ const st = StyleSheet.create({
         padding: 15,
         borderRadius: 40,
         borderWidth: 1,
-        borderColor: 'black',
+        borderColor: 'white',
         height: 55,
         elevation: 5
     },

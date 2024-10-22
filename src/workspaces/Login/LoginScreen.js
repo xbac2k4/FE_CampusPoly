@@ -8,7 +8,7 @@ import ErrorMessage from '../../components/ErrorMessage';
 import Screens from '../../navigation/Screens';
 
 const LoginScreen = ({ route, navigation }) => {
-  const [email, setEmail] = useState(route.params?.email ?? '')
+  const [email, setEmail] = useState(route?.params?.email ?? '')
   const [password, setPassword] = useState('')
   const [emailErrorText, setEmailErrorText] = useState('')
   const [passErrorText, setPassErrorText] = useState('')
@@ -36,7 +36,7 @@ const LoginScreen = ({ route, navigation }) => {
   return (
     <View style={st.container}>
 
-      <AuthenticationHeader navigation={navigation}/>
+      <AuthenticationHeader navigation={navigation} />
 
       {/* form đăng nhập */}
       <View style={st.loginForm}>
@@ -56,6 +56,7 @@ const LoginScreen = ({ route, navigation }) => {
             <Feather
               name="user"
               size={20}
+              color="white"
               style={{ marginLeft: 10 }}
             />
           )}
@@ -78,6 +79,7 @@ const LoginScreen = ({ route, navigation }) => {
             <Feather
               name="lock"
               size={20}
+              color="white"
               style={{ marginLeft: 10 }}
             />
           )}
@@ -91,7 +93,7 @@ const LoginScreen = ({ route, navigation }) => {
           placeholder={'Mật khẩu'}
           trailingIcon={() => (
             <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={st.iconContainer}>
-              <Feather name={showPassword ? 'eye' : 'eye-off'} size={20} />
+              <Feather name={showPassword ? 'eye' : 'eye-off'} color="white" size={20} />
             </TouchableOpacity>
           )}
           secureTextEntry={!showPassword}
@@ -121,7 +123,7 @@ const st = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: 'white'
+    backgroundColor: '#181a1c'
   },
   loginForm: {
     width: '100%',
@@ -131,7 +133,7 @@ const st = StyleSheet.create({
   title: {
     fontWeight: 'bold',
     fontSize: 35,
-    color: 'black',
+    color: 'white',
   },
   iconContainer: {
     padding: 10,

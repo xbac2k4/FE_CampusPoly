@@ -21,4 +21,4 @@ import CommentScreen from './src/workspaces/Comment/CommentScreen';
 import FrProfileScreen from './src/workspaces/FrProfileScreen/frProfileScreen';
 import MenuAuthenticationScreen from './src/workspaces/MenuAuth/MenuAuthenticationScreen';
 
-AppRegistry.registerComponent(appName, () => EmailInputLoginScreen);
+AppRegistry.registerComponent(appName, () => LoginScreen);
