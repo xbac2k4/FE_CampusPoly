@@ -38,6 +38,7 @@ const MenuAuthenticationScreen = ({ navigation }) => {
           {/* nút đăng nhập với google */}
           <TouchableOpacity
             style={st.btn}
+            onPress={() => navigation.navigate(Screens.BottomTab)}
           >
             <Image
               style={{ width: 30, height: 30 }}

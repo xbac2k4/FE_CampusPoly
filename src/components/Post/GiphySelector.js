@@ -57,6 +57,7 @@ const GiphySelector = ({ onGifSelect }) => {
         placeholder="Tìm kiếm GIF..."
         value={query}
         onChangeText={handleSearch}
+        placeholderTextColor={"#ffff"}
       />
       <FlatList
         data={gifs}
@@ -74,6 +75,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+    backgroundColor:"#181A1C"
   },
   searchInput: {
     height: 40,
@@ -88,5 +90,7 @@ const styles = StyleSheet.create({
     height: 150,
     margin: 5,
     borderRadius: 8,
+    alignItems:'center',
+    justifyContent:'center'
   },
 });

@@ -205,6 +205,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 40,
     flexDirection: 'row',
+    paddingHorizontal:24
   },
   circleIcon: {
     width: 32,

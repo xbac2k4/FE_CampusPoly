@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Image, StyleSheet, TextInput, TouchableOpacity, View, Text, Animated, Alert, Modal } from 'react-native';
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
-import DocumentPicker from 'react-native-document-picker'; // Nhập thư viện
+import DocumentPicker from 'react-native-document-picker';
 import GiphySelector from './GiphySelector';
 
 const PostComponent = () => {
@@ -38,38 +38,32 @@ const PostComponent = () => {
     ],
   };
 
+  const handleImageResponse = (response) => {
+    if (response.didCancel) {
+      Alert.alert('Bạn đã hủy chọn ảnh');
+    } else if (response.errorMessage) {
+      console.error(response.errorMessage); // Ghi lại lỗi
+      Alert.alert('Lỗi', response.errorMessage);
+    } else if (response.assets && response.assets.length > 0) {
+      setSelectedImage(response.assets[0].uri);
+      Alert.alert('Thành công', 'Ảnh đã được chọn!');
+    }
+  };
+
   const openImageLibrary = () => {
     const options = { mediaType: 'photo', selectionLimit: 1 };
-    launchImageLibrary(options, (response) => {
-      if (response.didCancel) {
-        Alert.alert('Bạn đã hủy chọn ảnh');
-      } else if (response.errorMessage) {
-        Alert.alert('Lỗi', response.errorMessage);
-      } else if (response.assets && response.assets.length > 0) {
-        setSelectedImage(response.assets[0].uri);
-        Alert.alert('Thành công', 'Ảnh đã được chọn!');
-      }
-    });
+    launchImageLibrary(options, handleImageResponse);
   };
 
   const openCamera = () => {
     const options = { mediaType: 'photo', saveToPhotos: true };
-    launchCamera(options, (response) => {
-      if (response.didCancel) {
-        Alert.alert('Bạn đã hủy chụp ảnh');
-      } else if (response.errorMessage) {
-        Alert.alert('Lỗi', response.errorMessage);
-      } else if (response.assets && response.assets.length > 0) {
-        setSelectedImage(response.assets[0].uri);
-        Alert.alert('Thành công', 'Ảnh đã được chụp!');
-      }
-    });
+    launchCamera(options, handleImageResponse);
   };
 
   const openFilePicker = async () => {
     try {
       const res = await DocumentPicker.pick({
-        type: [DocumentPicker.types.allFiles], // Cho phép chọn tất cả các loại file
+        type: [DocumentPicker.types.allFiles],
       });
       Alert.alert('File đã được chọn!', `Tên file: ${res.name}`);
       // Thực hiện hành động với file đã chọn, chẳng hạn như upload lên server
@@ -80,6 +74,16 @@ const PostComponent = () => {
         Alert.alert('Lỗi', err.message);
       }
     }
+  };
+
+  // Hàm xóa ảnh đã chọn
+  const clearSelectedImage = () => {
+    setSelectedImage(null);
+  };
+
+  // Hàm xóa GIF đã chọn
+  const clearSelectedGif = () => {
+    setSelectedGif(null);
   };
 
   return (
@@ -103,6 +107,27 @@ const PostComponent = () => {
         </View>
       </View>
 
+      {/** Chỗ chứa ảnh và gif khi đẩy lên */}
+      <View style={styles.imageContent}>
+        {selectedImage && (
+          <View style={styles.imageWrapper}>
+            <Image source={{ uri: selectedImage }} style={styles.selectedImage} />
+            <TouchableOpacity style={styles.removeImageButton} onPress={clearSelectedImage}>
+              <Image source={require('../../assets/images/x.png')} style={styles.removeImageIcon} />
+            </TouchableOpacity>
+          </View>
+        )}
+        {selectedGif && (
+          <View style={styles.imageWrapper}>
+            <Image source={{ uri: selectedGif }} style={styles.selectedGif} />
+            <TouchableOpacity style={styles.removeImageButton} onPress={clearSelectedGif}>
+              <Image source={require('../../assets/images/x.png')} style={styles.removeImageIcon} />
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
+
+      {/** Thanh công cụ lựa chọn chức năng */}
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <TouchableOpacity style={styles.addButton} onPress={toggleImages}>
           <Image
@@ -128,10 +153,6 @@ const PostComponent = () => {
                   style={styles.image}
                 />
               </TouchableOpacity>
-
-              {selectedGif && (
-                <Image source={{ uri: selectedGif }} style={styles.selectedGif} />
-              )}
 
               <Modal visible={isGifModalVisible} animationType="slide">
                 <GiphySelector onGifSelect={handleGifSelect} />
@@ -210,9 +231,39 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
   },
+  selectedImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 10,
+  },
   selectedGif: {
-    width: 100,
-    height: 100,
-    marginTop: 10,
+    width: 60,
+    height: 60,
+    borderRadius: 10,
+    marginLeft: 5,
+  },
+  imageContent: {
+    marginBottom: 10,
+    flexDirection: 'row',
+  },
+  imageWrapper: {
+    position: 'relative', // Để có thể đặt icon x lên góc của ảnh
+    marginRight: 5, // Khoảng cách giữa các ảnh
+  },
+  removeImageButton: {
+    position: 'absolute',
+    top: -3.5,
+    right: -8,
+    
+    width: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    
+  },
+  removeImageIcon: {
+    width: 20,
+    height: 20,
+    
   },
 });

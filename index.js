@@ -22,4 +22,4 @@ import FrProfileScreen from './src/workspaces/FrProfileScreen/frProfileScreen';
 import PostComponent from './src/components/Post/PostComponent';
 import CreatePostScreen from './src/workspaces/CreatePost/CreatePostScreen';
 
-AppRegistry.registerComponent(appName, () => CreatePostScreen);
+AppRegistry.registerComponent(appName, () => App);

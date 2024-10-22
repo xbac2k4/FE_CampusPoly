@@ -1,35 +1,35 @@
-
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import React, { useEffect, useState } from 'react'
-import { Image, Keyboard, StyleSheet, View } from 'react-native';
+import { createStackNavigator } from '@react-navigation/stack';
+import React, { useEffect, useState } from 'react';
+import { Image, Keyboard, StyleSheet, TouchableOpacity, View } from 'react-native';
 import HomeScreen from '../workspaces/Home/homeScreen';
 import SearchScreen from '../workspaces/SearchScreen/SearchScreen';
+import CreatePostScreen from '../workspaces/CreatePost/CreatePostScreen';
 import NotificationScreen from '../workspaces/Notification/NotificationScreen';
 import ProfileScreen from '../workspaces/ProfileScreen/profileScreen';
 import LinearGradient from 'react-native-linear-gradient';
 import Screens from './Screens';
 
-
 const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 
-const BottomTabNavigator = () => {
+const BottomTabNavigator = ({ navigation }) => {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
   useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      'keyboardDidShow',
-      () => setKeyboardVisible(true)
+    const showListener = Keyboard.addListener('keyboardDidShow', () =>
+      setKeyboardVisible(true)
     );
-    const keyboardDidHideListener = Keyboard.addListener(
-      'keyboardDidHide',
-      () => setKeyboardVisible(false)
+    const hideListener = Keyboard.addListener('keyboardDidHide', () =>
+      setKeyboardVisible(false)
     );
 
     return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
+      showListener.remove();
+      hideListener.remove();
     };
   }, []);
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -39,8 +39,8 @@ const BottomTabNavigator = () => {
           position: 'absolute',
           bottom: 0,
           height: 60,
-          backgroundColor: '#000000',
-          display: isKeyboardVisible ? 'none' : 'flex', // Ẩn/Hiện tab bar dựa trên bàn phím
+          backgroundColor: '#000',
+          display: isKeyboardVisible ? 'none' : 'flex',
         },
       }}
     >
@@ -79,10 +79,10 @@ const BottomTabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="AddPost"
-        component={SearchScreen}
+        name="CreatePost"
+        component={CreatePostScreen} // Placeholder
         options={{
-          tabBarIcon: ({ focused }) => (
+          tabBarIcon: () => (
             <View style={styles.iconContainer}>
               <LinearGradient
                 colors={['#F7B733', '#FC4A1A']}
@@ -95,6 +95,12 @@ const BottomTabNavigator = () => {
                 />
               </LinearGradient>
             </View>
+          ),
+          tabBarButton: (props) => (
+            <TouchableOpacity
+              {...props}
+              onPress={() => navigation.navigate('CreatePostModal')}
+            />
           ),
         }}
       />
@@ -133,10 +139,23 @@ const BottomTabNavigator = () => {
         }}
       />
     </Tab.Navigator>
-  )
-}
+  );
+};
 
-export default BottomTabNavigator
+const AppNavigator = () => (
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="MainTabs" component={BottomTabNavigator} />
+    <Stack.Screen
+      name="CreatePostModal"
+      component={CreatePostScreen}
+      options={{
+        presentation: 'modal', // Hiệu ứng modal
+      }}
+    />
+  </Stack.Navigator>
+);
+
+export default AppNavigator;
 
 const styles = StyleSheet.create({
   iconContainer: {
