@@ -1,5 +1,5 @@
 import { AppRegistry } from 'react-native';
-import AlertScreen from './src/workspaces/Notification/NotificationScreen';
+import NotificationScreen from './src/workspaces/Notification/NotificationScreen';
 import App from './App';
 import LoginScreen from './src/workspaces/Login/LoginScreen'
 import OTP_screen from './src/workspaces/SignUp/OTP_screen'
@@ -21,4 +21,4 @@ import CommentScreen from './src/workspaces/Comment/CommentScreen';
 import FrProfileScreen from './src/workspaces/FrProfileScreen/frProfileScreen';
 import MenuAuthenticationScreen from './src/workspaces/MenuAuth/MenuAuthenticationScreen';
 
-AppRegistry.registerComponent(appName, () => MenuAuthenticationScreen);
+AppRegistry.registerComponent(appName, () => EmailInputLoginScreen);

@@ -15,6 +15,7 @@ const CustomInput = ({ name, placeholder, leadIcon, onChangeText, trailingIcon, 
                 onChangeText={onChangeText}
                 value={name}
                 placeholder={placeholder}
+                placeholderTextColor="white"
                 style={st.input}
                 secureTextEntry={secureTextEntry == null ? false : secureTextEntry}
             />
@@ -31,15 +32,16 @@ const st = StyleSheet.create({
         alignItems: 'center',
         width: '90%',
         borderWidth: 1,
-        borderColor: 'black',
+        borderColor: 'white',
         marginTop: 10,
         borderRadius: 10,
     },
     label: {
+        color: 'white',
         position: 'absolute',
         left: 50,
         top: -10,
-        backgroundColor: 'white',
+        backgroundColor: '#181a1c',
         fontSize: 15,
         paddingHorizontal: 5,
     },
@@ -48,6 +50,7 @@ const st = StyleSheet.create({
         padding: 20,
         fontWeight: 'bold',
         fontSize: 15,
+        color: 'white',
     },
     iconContainer: {
         padding: 10,

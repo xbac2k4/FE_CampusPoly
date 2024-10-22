@@ -42,6 +42,7 @@ const EmailInputLoginScreen = ({navigation}) => {
             <Feather
               name="user"
               size={20}
+              color="white"
               style={{ marginLeft: 10 }}
             />
           )}
@@ -81,7 +82,7 @@ const st = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: 'white'
+    backgroundColor: '#181a1c'
   },
   loginForm: {
     width: '100%',
@@ -91,7 +92,7 @@ const st = StyleSheet.create({
   title: {
     fontWeight: 'bold',
     fontSize: 30,
-    color: 'black',
+    color: 'white',
   },
   bottomContainer: {
     width: '100%',

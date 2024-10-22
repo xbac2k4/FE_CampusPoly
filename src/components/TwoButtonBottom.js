@@ -6,7 +6,7 @@ const TwoButtonBottom = ({ onPress1, text1, onPress2, text2 }) => {
         <View style={st.bottomBar}>
             <TouchableOpacity
                 onPress={onPress1}
-                style={[st.bottomBtn, { backgroundColor: 'white' }]}>
+                style={[st.bottomBtn, { backgroundColor: '#181a1c' }]}>
                 <Text
                     style={st.btnText}>
                     {text1}
@@ -17,7 +17,7 @@ const TwoButtonBottom = ({ onPress1, text1, onPress2, text2 }) => {
                 onPress={onPress2}
                 style={[st.bottomBtn, { backgroundColor: '#D9D9D9' }]}>
                 <Text
-                    style={st.btnText}>
+                    style={st.btnRightText}>
                     {text2}
                 </Text>
             </TouchableOpacity>
@@ -45,6 +45,12 @@ const st = StyleSheet.create({
         elevation: 5
     },
     btnText: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+
+    btnRightText: {
         color: 'black',
         fontWeight: 'bold',
         fontSize: 16,

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated, Easing, Image } from 'react-native';
+import { View, Text, StyleSheet, Animated, Easing, Image, StatusBar } from 'react-native';
 import Screens from '../../navigation/Screens';
 
 const WelcomeScreen = ({ navigation }) => {
@@ -91,6 +91,7 @@ const WelcomeScreen = ({ navigation }) => {
   return (
     <View style={st.container}>
       {/* Logo với hiệu ứng fade-in */}
+      <StatusBar translucent backgroundColor="transparent" barStyle={'light-content'} />
       <Animated.View style={{ opacity: fadeAnim }}>
         <Image
           source={require('../../assets/images/white_bee.png')}
