@@ -8,7 +8,7 @@ const MenuAuthenticationScreen = ({ navigation }) => {
     return (
       <View
         style={{
-          backgroundColor: 'black',
+          backgroundColor: 'white',
           height: 1,
           width: '40%',
         }}
@@ -24,8 +24,8 @@ const MenuAuthenticationScreen = ({ navigation }) => {
       {/* phần nội dung */}
       <View style={st.content}>
 
-        {/* logo ứng dụng */}
-        <Image source={require('../../assets/images/logo.png')} />
+        {/* tên ứng dụng */}
+        <Text style={st.name}>CAMPUSPOLY</Text>
 
         {/* tiêu đề */}
         <Text style={st.title}>Cùng xem điều gì đang diễn ra ngay bây giờ</Text>
@@ -56,7 +56,7 @@ const MenuAuthenticationScreen = ({ navigation }) => {
               width: '80%',
             }}>
             {thanhNgang()}
-            <Text style={{ color: 'black', fontWeight: 'bold' }}>hoặc</Text>
+            <Text style={{ color: 'white', fontWeight: 'bold' }}>hoặc</Text>
             {thanhNgang()}
           </View>
 
@@ -76,9 +76,9 @@ const MenuAuthenticationScreen = ({ navigation }) => {
               width: '80%',
               textAlign: 'center',
             }}>
-            <Text style={{ color: 'black' }}>Bằng cách đăng ký bạn đồng ý với </Text>
+            <Text style={{ color: 'white' }}>Bằng cách đăng ký bạn đồng ý với </Text>
             <Text style={{ color: '#2412ed', }}>Điều khoản, Chính sách riêng tư và Sử dụng cookie </Text>
-            <Text style={{ color: 'black' }}>của chúng tôi</Text>
+            <Text style={{ color: 'white' }}>của chúng tôi</Text>
           </Text>
         </View>
 
@@ -89,7 +89,7 @@ const MenuAuthenticationScreen = ({ navigation }) => {
             textAlign: 'center',
             padding: 10
           }}>
-          <Text style={{ color: 'black' }}>Bạn đã có một tài khoản? </Text>
+          <Text style={{ color: 'white' }}>Bạn đã có một tài khoản? </Text>
           <Text onPress={() => navigation.navigate(Screens.EmailInputLogin)} style={{ color: '#57b5f4', fontWeight: 'bold' }}>Đăng nhập</Text>
         </Text>
       </View>
@@ -104,7 +104,7 @@ export default MenuAuthenticationScreen
 const st = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: '#181a1c',
   },
   content: {
     flex: 1,
@@ -112,10 +112,15 @@ const st = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  name: {
+    color: 'white',
+    fontSize: 50,
+    fontFamily: 'rubik',
+  },
   title: {
     fontWeight: 'bold',
     fontSize: 30,
-    color: 'black',
+    color: 'white',
     marginHorizontal: 20,
   },
   buttonContainer: {
@@ -131,11 +136,11 @@ const st = StyleSheet.create({
     width: '80%',
     padding: 10,
     borderRadius: 30,
-    borderColor: 'black',
+    borderColor: 'white',
     borderWidth: 1,
   },
   btnText: {
-    color: 'black',
+    color: 'white',
     fontWeight: 'bold',
     fontSize: 18,
     marginLeft: 10

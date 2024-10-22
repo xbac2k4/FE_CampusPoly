@@ -48,7 +48,7 @@ const WelcomeScreen = ({ navigation }) => {
     runAnimation();
 
     const timer = setTimeout(() => {
-      navigation.navigate(Screens.MenuAuth); // Thay 'Next' bằng tên màn hình bạn muốn chuyển đến
+      navigation.navigate(Screens.MenuAuth);
     }, 2000);
 
     // Dọn dẹp timer khi component bị unmount
@@ -93,7 +93,7 @@ const WelcomeScreen = ({ navigation }) => {
       {/* Logo với hiệu ứng fade-in */}
       <Animated.View style={{ opacity: fadeAnim }}>
         <Image
-          source={require('../../assets/images/black_bee.png')}
+          source={require('../../assets/images/white_bee.png')}
           style={st.logo}
         />
       </Animated.View>
@@ -111,11 +111,11 @@ const st = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'white',
+    backgroundColor: '#181a1c',
   },
   logo: {
-    width: 500,
-    height: 500,
+    width: 250,
+    height: 250,
     resizeMode: 'contain',
     marginBottom: 40,
   },
@@ -127,15 +127,15 @@ const st = StyleSheet.create({
   },
   letter: {
     fontSize: 48,
-    // fontWeight: 'bold',
-    color: 'black',
+    color: 'white',
     marginHorizontal: 2,
     fontFamily: 'rubik',
   },
   sinceText: {
     fontSize: 16,
     fontWeight: '400',
-    color: 'black',
-    top: '-13%',
+    color: 'white',
+    fontFamily: 'rubik',
+    marginTop: 50,
   },
 });

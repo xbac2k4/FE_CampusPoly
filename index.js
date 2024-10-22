@@ -19,5 +19,6 @@ import 'react-native-gesture-handler';
 import { name as appName } from './app.json';
 import CommentScreen from './src/workspaces/Comment/CommentScreen';
 import FrProfileScreen from './src/workspaces/FrProfileScreen/frProfileScreen';
+import MenuAuthenticationScreen from './src/workspaces/MenuAuth/MenuAuthenticationScreen';
 
-AppRegistry.registerComponent(appName, () => App);
+AppRegistry.registerComponent(appName, () => MenuAuthenticationScreen);
