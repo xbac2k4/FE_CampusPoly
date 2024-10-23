@@ -5,10 +5,11 @@ import TwoButtonBottom from '../../components/TwoButtonBottom';
 import CustomInput from '../../components/CustomInput';
 import ErrorMessage from '../../components/ErrorMessage';
 import Screens from '../../navigation/Screens';
+import Colors from '../../constants/Color';
 
 
 
-const SignUpNameScreen = ({navigation}) => {
+const SignUpNameScreen = ({ navigation }) => {
   const [username, setUsername] = useState('')
   const [usernameErrorText, setUsernameErrorText] = useState('')
 
@@ -36,94 +37,94 @@ const SignUpNameScreen = ({navigation}) => {
     <View style={st.container}>
 
       {/* thanh statusbar */}
-      <StatusBar backgroundColor="transparent" barStyle={'dark-content'} />
+      <StatusBar backgroundColor="transparent" barStyle={'light-content'} />
 
-      {/* logo */}
-      <Image
-        source={require('../../assets/images/logo.png')}
-        style={st.logo}
-        resizeMode="contain"
-      />
+      <View style={st.content}>
+        {/* logo */}
+        <Text style={st.name}>CAMPUSPOLY</Text>
 
-      {/* form nhập mã OTP */}
-      <View style={st.form}>
+        {/* form nhập mã OTP */}
+        <View style={st.form}>
 
-        {/* tiêu đề */}
-        <View
-          style={{ width: '90%' }}>
-          <Text
-            style={st.title}>
-            Chúng tôi nên gọi bạn là gì
-          </Text>
-          <Text
-            style={st.description}>
-            @tên người dùng phải độc nhất. Sau này bạn có thể thay đổi nó.
-          </Text>
-        </View>
+          {/* tiêu đề */}
+          <View
+            style={{ width: '90%' }}>
+            <Text
+              style={st.title}>
+              Chúng tôi nên gọi bạn là gì
+            </Text>
+            <Text
+              style={st.description}>
+              @tên người dùng phải độc nhất. Sau này bạn có thể thay đổi nó.
+            </Text>
+          </View>
 
-        {/* nhập tên người dùng */}
-        <CustomInput
-          name={username}
-          leadIcon={() => (
-            <Feather
-              name="user"
-              size={20}
-              style={{ marginLeft: 10 }}
-            />
-          )}
-          onChangeText={(text) => {
-            setUsername(text)
-            if (usernameErrorText !== '') {
-              setUsernameErrorText('')
-            }
-          }}
-          placeholder={'Tên người dùng'}
-        />
-
-        {/* thông báo lỗi tên người dùng */}
-        <ErrorMessage message={usernameErrorText} />
-
-        {/* danh sách gợi ý tên và hiển thị thêm  */}
-
-        <View style={{
-          width: '90%',
-          height: 50,
-          justifyContent: 'space-between',
-        }}>
-
-          <FlatList
-            data={suggestedNames}
-            keyExtractor={item => item.id.toString()}
-            renderItem={({ item }) => (
-              <Text
-                onPress={() => setUsername(item.name)}
-                style={st.suggestedName}>
-                {item.name}
-              </Text>
+          {/* nhập tên người dùng */}
+          <CustomInput
+            name={username}
+            leadIcon={() => (
+              <Feather
+                name="user"
+                size={20}
+                color='white'
+                style={{ marginLeft: 10 }}
+              />
             )}
-            horizontal
+            onChangeText={(text) => {
+              setUsername(text)
+              if (usernameErrorText !== '') {
+                setUsernameErrorText('')
+              }
+            }}
+            placeholder={'Tên người dùng'}
           />
 
-          <Text
-            onPress={() => alert('Hiển thị thêm')}
-            style={{
-              color: '#57B5F4',
-              fontSize: 15
-            }}>
-            Hiện thị thêm
-          </Text>
+          {/* thông báo lỗi tên người dùng */}
+          <ErrorMessage message={usernameErrorText} />
+
+          {/* danh sách gợi ý tên và hiển thị thêm  */}
+
+          <View style={{
+            width: '90%',
+            height: 50,
+            justifyContent: 'space-between',
+          }}>
+
+            <FlatList
+              data={suggestedNames}
+              keyExtractor={item => item.id.toString()}
+              renderItem={({ item }) => (
+                <Text
+                  onPress={() => setUsername(item.name)}
+                  style={st.suggestedName}>
+                  {item.name}
+                </Text>
+              )}
+              horizontal
+            />
+
+            <Text
+              onPress={() => alert('Hiển thị thêm')}
+              style={{
+                color: '#57B5F4',
+                fontSize: 15
+              }}>
+              Hiện thị thêm
+            </Text>
+          </View>
+        </View>
+
+        {/* nút tiếp theo */}
+        <View style={st.bottomContainer}>
+          <TwoButtonBottom
+            text2="Tiếp theo"
+            text1="Bỏ qua bây giờ"
+            onPress2={handleName}
+            onPress1={abandon}
+          />
         </View>
       </View>
 
-      {/* nút tiếp theo */}
-      <View style={st.bottomContainer}>
-        <TwoButtonBottom
-          text2="Tiếp theo"
-          text1="Bỏ qua bây giờ"
-          onPress2={handleName}
-          onPress1={abandon}
-        />
-      </View>
 
     </View>
   )
@@ -134,10 +135,19 @@ export default SignUpNameScreen
 const st = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    backgroundColor: 'white'
+    backgroundColor: Colors.background
   },
-  logo: { width: 180, height: 50 },
+  content: {
+    flex: 1,
+    alignItems: 'center',
+    width: '100%',
+    marginTop: 30,
+  },
+  name: {
+    color: 'white',
+    fontSize: 25,
+    fontFamily: 'rubik',
+  },
   form: {
     width: '100%',
     alignItems: 'center',
@@ -146,10 +156,10 @@ const st = StyleSheet.create({
   title: {
     fontWeight: 'bold',
     fontSize: 30,
-    color: 'black',
+    color: 'white',
   },
   description: {
-    color: '#71767B',
+    color: 'white',
     fontSize: 15,
     marginTop: 10,
   },
