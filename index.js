@@ -22,4 +22,4 @@ import FrProfileScreen from './src/workspaces/FrProfileScreen/frProfileScreen';
 import MenuAuthenticationScreen from './src/workspaces/MenuAuth/MenuAuthenticationScreen';
 import Example from './src/workspaces/SignUp/Example';
 
-AppRegistry.registerComponent(appName, () => SignUpScreen);
+AppRegistry.registerComponent(appName, () => App);
