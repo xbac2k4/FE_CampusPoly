@@ -7,6 +7,7 @@ import CustomInput from '../../components/CustomInput';
 import ErrorMessage from '../../components/ErrorMessage';
 import Screens from '../../navigation/Screens';
 import { BlurView } from '@react-native-community/blur';
+import Colors from '../../constants/Color';
 
 const LoginScreen = ({ route, navigation }) => {
   const [email, setEmail] = useState(route?.params?.email ?? '')
@@ -184,7 +185,7 @@ const st = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: '#181a1c'
+    backgroundColor: Colors.background
   },
   loginForm: {
     width: '100%',

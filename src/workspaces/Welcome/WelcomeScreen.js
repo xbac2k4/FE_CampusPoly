@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, Easing, Image, StatusBar } from 'react-native';
 import Screens from '../../navigation/Screens';
+import Colors from '../../constants/Color';
 
 const WelcomeScreen = ({ navigation }) => {
   const letters = 'CAMPUSPOLY'.split('');
@@ -112,7 +113,7 @@ const st = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#181a1c',
+    backgroundColor: Colors.background,
   },
   logo: {
     width: 250,

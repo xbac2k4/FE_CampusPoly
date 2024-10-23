@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, StatusBar, Image, TouchableOpacity } from 'react-native'
 import React from 'react'
 import Screens from '../../navigation/Screens'
+import Colors from '../../constants/Color'
 
 const MenuAuthenticationScreen = ({ navigation }) => {
 
@@ -104,7 +105,7 @@ export default MenuAuthenticationScreen
 const st = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#181a1c',
+    backgroundColor: Colors.background,
   },
   content: {
     flex: 1,

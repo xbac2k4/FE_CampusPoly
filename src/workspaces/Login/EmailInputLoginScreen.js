@@ -6,6 +6,7 @@ import TwoButtonBottom from '../../components/TwoButtonBottom';
 import CustomInput from '../../components/CustomInput';
 import ErrorMessage from '../../components/ErrorMessage';
 import Screens from '../../navigation/Screens';
+import Colors from '../../constants/Color';
 
 const EmailInputLoginScreen = ({navigation}) => {
   const [email, setEmail] = useState('')
@@ -82,7 +83,7 @@ const st = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: '#181a1c'
+    backgroundColor: Colors.background
   },
   loginForm: {
     width: '100%',
