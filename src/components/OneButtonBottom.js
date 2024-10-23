@@ -31,6 +31,8 @@ const st = StyleSheet.create({
     },
     bottomBtn: {
         padding: 15,
+        minWidth: 80,
+        alignItems: 'center',
         borderRadius: 40,
         borderWidth: 1,
         borderColor: 'white',

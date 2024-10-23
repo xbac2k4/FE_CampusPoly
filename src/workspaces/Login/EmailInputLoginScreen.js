@@ -21,6 +21,15 @@ const EmailInputLoginScreen = ({navigation}) => {
 
     navigation.navigate(Screens.Login, { email })
   }
+
+  const forgetPassword = () => {
+    if (email === '') {
+      setEmailErrorText('Vui lòng nhập email')
+      return
+    }
+
+    navigation.navigate(Screens.ResetPass, { email })
+  }
   return (
     <View style={st.container}>
       <AuthenticationHeader navigation={navigation}/>
@@ -64,7 +73,7 @@ const EmailInputLoginScreen = ({navigation}) => {
         <TwoButtonBottom
           text1='Quên mật khẩu?'
           text2='Tiếp theo'
-          onPress1={() => alert('Quên mật khẩu')}
+          onPress1={forgetPassword}
           onPress2={handleLogin}
         />
 

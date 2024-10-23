@@ -14,6 +14,7 @@ import BottomTabNavigator from './BottomTabNavigator';
 import Screens from './Screens';
 import CommentScreen from '../workspaces/Comment/CommentScreen';
 import MessagesScreen from '../workspaces/messages/MessagesScreen';
+import ResetPasswordScreen from '../workspaces/ResetPassword/ResetPasswordScreen';
 
 
 
@@ -26,6 +27,7 @@ const MainStackNavigator = () => {
       <Stack.Screen name={Screens.MenuAuth} component={MenuAuthenticationScreen} />
       <Stack.Screen name={Screens.EmailInputLogin} component={EmailInputLoginScreen} />
       <Stack.Screen name={Screens.Login} component={LoginScreen} />
+      <Stack.Screen name={Screens.ResetPass} component={ResetPasswordScreen} />
       <Stack.Screen name={Screens.SignUp} component={SignUpScreen} />
       <Stack.Screen name={Screens.OTP} component={OTPScreen} />
       <Stack.Screen name={Screens.SignUpPassword} component={SignUpPasswordScreen} />
