@@ -6,10 +6,11 @@ import OneButtonBottom from '../../components/OneButtonBottom';
 import CustomInput from '../../components/CustomInput';
 import ErrorMessage from '../../components/ErrorMessage';
 import Screens from '../../navigation/Screens';
+import Colors from '../../constants/Color';
 
 
 
-const SignUpPasswordScreen = ({navigation}) => {
+const SignUpPasswordScreen = ({ navigation }) => {
   const [password, setPassword] = useState('')
   const [passErrorText, setPassErrorText] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -52,7 +53,7 @@ const SignUpPasswordScreen = ({navigation}) => {
   return (
     <View style={st.container}>
 
-      <AuthenticationHeader navigation={navigation}/>
+      <AuthenticationHeader navigation={navigation} />
 
       {/* form nhập mật khẩu */}
       <View style={st.form}>
@@ -77,6 +78,7 @@ const SignUpPasswordScreen = ({navigation}) => {
           leadIcon={() => (
             <Feather
               name="lock"
+              color='white'
               size={20}
               style={{ marginLeft: 10 }}
             />
@@ -104,7 +106,7 @@ const SignUpPasswordScreen = ({navigation}) => {
           width: '90%'
         }}>
 
-          <Text style={{ color: 'black', fontSize: 15 }}>Khi đăng kí nghĩa là bạn đồng ý với
+          <Text style={{ color: 'white', fontSize: 15 }}>Khi đăng kí nghĩa là bạn đồng ý với
             <Text onPress={openTermsOfService} style={st.policyText}> Điều khoản dịch vụ</Text> và
             <Text onPress={openPrivacyPolicy} style={st.policyText}> Chính sách riêng tư</Text> , bao gồm cả
             <Text onPress={openUseOfCookies} style={st.policyText}> Hoạt động sử dụng Cookie</Text>. Chúng tôi có thể sử dụng thông tin liên hệ của bạn , bao gồm email và số điện thoại nhằm các mục đích nêu trong Chính sách riêng tư , như giữ an toàn cho tài khoản của bạn và làm cho các dịch vụ của chúng tôi phù hợp hơn với bạn , bao gồm quảng cáo.
@@ -132,7 +134,7 @@ const st = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: 'white'
+    backgroundColor: Colors.background
   },
   form: {
     width: '100%',
@@ -142,10 +144,10 @@ const st = StyleSheet.create({
   title: {
     fontWeight: 'bold',
     fontSize: 30,
-    color: 'black',
+    color: 'white',
   },
   description: {
-    color: 'black',
+    color: 'white',
     fontSize: 15,
     marginTop: 10,
   },

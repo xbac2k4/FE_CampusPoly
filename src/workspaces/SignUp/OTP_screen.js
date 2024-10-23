@@ -49,7 +49,9 @@ const OTPScreen = ({ route, navigation }) => {
         </View>
 
         {/* nhập mã OTP */}
-        <View>
+        <View style={{
+          marginTop: 20
+        }}>
           <CustomInput
             name={OTP}
             placeholder='Mã xác nhận'
