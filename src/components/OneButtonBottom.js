@@ -1,5 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
+import Colors from '../constants/Color'
 
 const OneButtonBottom = ({onPress,text}) => {
     return (
@@ -24,7 +25,7 @@ const st = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'flex-end',
         paddingVertical: 20,
-        borderTopColor: 'black',
+        borderTopColor: 'white',
         borderTopWidth: 2,
         paddingHorizontal: 20,
     },
@@ -32,13 +33,13 @@ const st = StyleSheet.create({
         padding: 15,
         borderRadius: 40,
         borderWidth: 1,
-        borderColor: 'black',
+        borderColor: 'white',
         height: 55,
         elevation: 5,
-        backgroundColor: '#D9D9D9'
+        backgroundColor: Colors.background
     },
     btnText: {
-        color: 'black',
+        color: 'white',
         fontWeight: 'bold',
         fontSize: 16,
     }

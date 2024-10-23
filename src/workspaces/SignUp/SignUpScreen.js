@@ -7,6 +7,7 @@ import OneButtonBottom from '../../components/OneButtonBottom';
 import CustomInput from '../../components/CustomInput';
 import ErrorMessage from '../../components/ErrorMessage';
 import Screens from '../../navigation/Screens';
+import Colors from '../../constants/Color';
 
 
 const SignUpScreen = ({ navigation }) => {
@@ -76,6 +77,7 @@ const SignUpScreen = ({ navigation }) => {
             <Feather
               name="user"
               size={20}
+              color='white'
               style={{ marginLeft: 10 }}
             />
           )}
@@ -88,7 +90,7 @@ const SignUpScreen = ({ navigation }) => {
           justifyContent: 'space-between'
         }}>
           <Text style={{ color: 'red', fontWeight: 'bold' }}>{nameErrorText}</Text>
-          <Text style={{ color: name.length > 50 ? 'red' : 'gray' }}>{name.length}/50</Text>
+          <Text style={{ color: name.length >= 50 ? 'red' : 'gray' }}>{name.length}/50</Text>
         </View>
 
         {/* nhập email */}
@@ -105,6 +107,7 @@ const SignUpScreen = ({ navigation }) => {
             <Entypo
               name="email"
               size={20}
+              color='white'
               style={{ marginLeft: 10 }}
             />
           )}
@@ -129,6 +132,7 @@ const SignUpScreen = ({ navigation }) => {
             <Feather
               name="calendar"
               size={20}
+              color='white'
               style={{ marginLeft: 10 }}
             />
           )} />
@@ -161,7 +165,7 @@ const st = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: 'white'
+    backgroundColor: Colors.background
   },
   form: {
     width: '100%',
@@ -171,7 +175,7 @@ const st = StyleSheet.create({
   title: {
     fontWeight: 'bold',
     fontSize: 30,
-    color: 'black',
+    color: 'white',
   },
   bottomContainer: {
     width: '100%',
