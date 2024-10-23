@@ -20,5 +20,6 @@ import { name as appName } from './app.json';
 import CommentScreen from './src/workspaces/Comment/CommentScreen';
 import FrProfileScreen from './src/workspaces/FrProfileScreen/frProfileScreen';
 import MenuAuthenticationScreen from './src/workspaces/MenuAuth/MenuAuthenticationScreen';
+import Example from './src/workspaces/SignUp/Example';
 
-AppRegistry.registerComponent(appName, () => App);
+AppRegistry.registerComponent(appName, () => SignUpScreen);

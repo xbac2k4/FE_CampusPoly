@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Animated, StyleSheet, TextInput, View } from 'react-native'
 
 
-const CustomInput = ({ name, placeholder, leadIcon, onChangeText, trailingIcon, secureTextEntry }) => {
+const CustomInput = ({ name, placeholder, leadIcon, onChangeText, trailingIcon, secureTextEntry, editable }) => {
     const [isFocused, setIsFocused] = useState(false)
     const animatedPlaceholder = useRef(new Animated.Value(0)).current
 
@@ -39,6 +39,7 @@ const CustomInput = ({ name, placeholder, leadIcon, onChangeText, trailingIcon, 
             </Animated.Text>
             {leadIcon && leadIcon()}
             <TextInput
+                editable={editable == null ? true : editable}
                 onChangeText={onChangeText}
                 value={name}
                 style={st.input}

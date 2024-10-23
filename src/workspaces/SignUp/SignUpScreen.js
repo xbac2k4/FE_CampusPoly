@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
 import React, { useState } from 'react'
 import Feather from 'react-native-vector-icons/Feather';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -8,20 +8,28 @@ import CustomInput from '../../components/CustomInput';
 import ErrorMessage from '../../components/ErrorMessage';
 import Screens from '../../navigation/Screens';
 import Colors from '../../constants/Color';
+import DatePicker from 'react-native-date-picker';
+
 
 
 const SignUpScreen = ({ navigation }) => {
+
   const [name, setName] = useState('')
   const [nameErrorText, setNameErrorText] = useState('')
 
   const [email, setEmail] = useState('')
   const [emailErrorText, setEmailErrorText] = useState('')
 
-  const [birthDay, setBirthDay] = useState('')
+  const [birthDay, setBirthDay] = useState(new Date())
   const [birthDayErrorText, setBirthDayErrorText] = useState('')
+
+  const [isShowDate, setIsShowDate] = useState(false)
+
+
 
   // Hàm xử lý khi người dùng ấn nút đăng nhập
   const handleSignUp = () => {
+
     if (email === '' && name === '' && birthDay === '') {
       setEmailErrorText('Vui lòng nhập email')
       setNameErrorText('Vui lòng nhập tên')
@@ -46,6 +54,29 @@ const SignUpScreen = ({ navigation }) => {
 
     navigation.navigate(Screens.OTP, { email: email })
   }
+
+  const togggleDatePicker = () => {
+    setIsShowDate(!isShowDate)
+  }
+
+  const formatDate = (date) => {
+    const d = new Date(date);
+    let day = d.getDate();
+    let month = d.getMonth() + 1; // Tháng bắt đầu từ 0
+    const year = d.getFullYear();
+  
+    // Thêm số 0 vào trước ngày và tháng nếu cần
+    if (day < 10) {
+      day = `0${day}`;
+    }
+    if (month < 10) {
+      month = `0${month}`;
+    }
+  
+    return `${day}/${month}/${year}`;
+  };
+
+
   return (
     <View style={st.container}>
       <AuthenticationHeader navigation={navigation} />
@@ -119,23 +150,27 @@ const SignUpScreen = ({ navigation }) => {
         />
 
         {/* nhập ngày sinh */}
-        <CustomInput
-          name={birthDay}
-          placeholder='Ngày sinh'
-          onChangeText={(text) => {
-            setBirthDay(text)
-            if (birthDayErrorText !== '') {
-              setBirthDayErrorText('')
-            }
-          }}
-          leadIcon={() => (
-            <Feather
-              name="calendar"
-              size={20}
-              color='white'
-              style={{ marginLeft: 10 }}
-            />
-          )} />
+        <Pressable onPress={togggleDatePicker}>
+          <CustomInput
+            name={formatDate(birthDay)}
+            editable={false}
+            placeholder='Ngày sinh'
+            onChangeText={(text) => {
+              setBirthDay(text)
+              if (birthDayErrorText !== '') {
+                setBirthDayErrorText('')
+              }
+            }}
+            leadIcon={() => (
+              <Feather
+                name="calendar"
+                size={20}
+                color='white'
+                style={{ marginLeft: 10 }}
+              />
+            )} />
+        </Pressable>
+
 
         {/* thông báo lỗi ngày sinh */}
         <ErrorMessage
@@ -151,6 +186,26 @@ const SignUpScreen = ({ navigation }) => {
         />
 
       </View>
+
+      <DatePicker
+        modal
+        title={'Chọn ngày sinh'}
+        open={isShowDate}
+        date={birthDay}
+        mode='date'
+        theme='dark'
+        onConfirm={(date) => {
+          setBirthDay(date)
+          setIsShowDate(false)
+          console.log(date);
+
+        }}
+        onCancel={togggleDatePicker}
+        locale='vi'
+        confirmText='Xác nhận'
+        cancelText='Hủy'
+        maximumDate={new Date()}
+      />
 
 
 
