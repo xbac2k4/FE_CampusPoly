@@ -44,7 +44,7 @@ const SignUpScreen = ({ navigation }) => {
       return
     }
 
-    navigation.navigate(Screens.OTP)
+    navigation.navigate(Screens.OTP, { email: email })
   }
   return (
     <View style={st.container}>
