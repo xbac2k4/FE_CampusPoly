@@ -20,10 +20,10 @@ const SignUpScreen = ({ navigation }) => {
   const [email, setEmail] = useState('')
   const [emailErrorText, setEmailErrorText] = useState('')
 
-  const [birthDay, setBirthDay] = useState(new Date())
+  const [birthDay, setBirthDay] = useState(new Date()) // ngày mặc định là ngày hiện tại
   const [birthDayErrorText, setBirthDayErrorText] = useState('')
 
-  const [isShowDate, setIsShowDate] = useState(false)
+  const [isShowDate, setIsShowDate] = useState(false) // Trạng thái hiển thị date picker
 
 
 
@@ -34,6 +34,12 @@ const SignUpScreen = ({ navigation }) => {
       setEmailErrorText('Vui lòng nhập email')
       setNameErrorText('Vui lòng nhập tên')
       setBirthDayErrorText('Vui lòng nhập ngày sinh')
+      return
+    }
+
+    if (name === '' && email === '') {
+      setNameErrorText('Vui lòng nhập tên')
+      setEmailErrorText('Vui lòng nhập email')
       return
     }
 
@@ -52,19 +58,49 @@ const SignUpScreen = ({ navigation }) => {
       return
     }
 
+    // chuyển màn hình và truyền email
     navigation.navigate(Screens.OTP, { email: email })
   }
 
+  // Hàm hiển thị hoặc ẩn date picker
   const togggleDatePicker = () => {
     setIsShowDate(!isShowDate)
   }
 
+  // Hàm xử lý khi người dùng xác nhận ngày sinh
+  const handleConfirmDate = (date) => {
+    setBirthDay(date)
+    setIsShowDate(false)
+  }
+
+  // Hàm xử lý nhập tên
+  const inputName = (text) => {
+    if (text.length > 50) {
+      setNameErrorText('Tên không được quá 50 ký tự')
+      return
+    }
+    setName(text)
+    if (nameErrorText !== '') {
+      setNameErrorText('')
+    }
+  }
+
+  // Hàm xử lý nhập email
+  const inputEmail = (text) => {
+    setEmail(text)
+    if (emailErrorText !== '') {
+      setEmailErrorText('')
+    }
+  }
+
+
+  // Hàm chuyển đổi ngày tháng năm thành dạng dd/mm/yyyy
   const formatDate = (date) => {
     const d = new Date(date);
     let day = d.getDate();
     let month = d.getMonth() + 1; // Tháng bắt đầu từ 0
     const year = d.getFullYear();
-  
+
     // Thêm số 0 vào trước ngày và tháng nếu cần
     if (day < 10) {
       day = `0${day}`;
@@ -72,7 +108,7 @@ const SignUpScreen = ({ navigation }) => {
     if (month < 10) {
       month = `0${month}`;
     }
-  
+
     return `${day}/${month}/${year}`;
   };
 
@@ -94,16 +130,7 @@ const SignUpScreen = ({ navigation }) => {
         <CustomInput
           name={name}
           placeholder='Tên'
-          onChangeText={(text) => {
-            if (text.length > 50) {
-              setNameErrorText('Tên không được quá 50 ký tự')
-              return
-            }
-            setName(text)
-            if (nameErrorText !== '') {
-              setNameErrorText('')
-            }
-          }}
+          onChangeText={inputName}
           leadIcon={() => (
             <Feather
               name="user"
@@ -128,12 +155,7 @@ const SignUpScreen = ({ navigation }) => {
         <CustomInput
           name={email}
           placeholder='Email'
-          onChangeText={(text) => {
-            setEmail(text)
-            if (emailErrorText !== '') {
-              setEmailErrorText('')
-            }
-          }}
+          onChangeText={inputEmail}
           leadIcon={() => (
             <Entypo
               name="email"
@@ -155,12 +177,6 @@ const SignUpScreen = ({ navigation }) => {
             name={formatDate(birthDay)}
             editable={false}
             placeholder='Ngày sinh'
-            onChangeText={(text) => {
-              setBirthDay(text)
-              if (birthDayErrorText !== '') {
-                setBirthDayErrorText('')
-              }
-            }}
             leadIcon={() => (
               <Feather
                 name="calendar"
@@ -194,21 +210,13 @@ const SignUpScreen = ({ navigation }) => {
         date={birthDay}
         mode='date'
         theme='dark'
-        onConfirm={(date) => {
-          setBirthDay(date)
-          setIsShowDate(false)
-          console.log(date);
-
-        }}
+        onConfirm={handleConfirmDate}
         onCancel={togggleDatePicker}
         locale='vi'
         confirmText='Xác nhận'
         cancelText='Hủy'
         maximumDate={new Date()}
       />
-
-
-
 
     </View>
   )
