@@ -96,10 +96,9 @@ const SignUpScreen = ({ navigation }) => {
 
   // Hàm chuyển đổi ngày tháng năm thành dạng dd/mm/yyyy
   const formatDate = (date) => {
-    const d = new Date(date);
-    let day = d.getDate();
-    let month = d.getMonth() + 1; // Tháng bắt đầu từ 0
-    const year = d.getFullYear();
+    let day = date.getDate();
+    let month = date.getMonth() + 1; // Tháng bắt đầu từ 0
+    const year = date.getFullYear();
 
     // Thêm số 0 vào trước ngày và tháng nếu cần
     if (day < 10) {
