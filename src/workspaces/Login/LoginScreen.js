@@ -1,5 +1,5 @@
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import Feather from 'react-native-vector-icons/Feather';
 import AuthenticationHeader from '../../components/AuthHeader';
 import TwoButtonBottom from '../../components/TwoButtonBottom';
@@ -35,10 +35,9 @@ const LoginScreen = ({ route, navigation }) => {
 
     // đoạn này chỉ để test dialog block (36-43)
     const blockRandom = Math.floor(Math.random() * 2)
-    console.log(blockRandom);
 
     if (blockRandom === 1) {
-      showDialog()
+      toggleShowDialog()
       return
     }
 
@@ -46,9 +45,10 @@ const LoginScreen = ({ route, navigation }) => {
   }
 
   // Hàm hiển thị dialog block
-  const showDialog = () => {
-    setIsShowDialog(!isShowDialog)
-  }
+  const toggleShowDialog = useCallback(() => {
+    setIsShowDialog(prevState => !prevState);
+  }, []);
+  
   return (
     <View style={st.container}>
 
@@ -134,7 +134,7 @@ const LoginScreen = ({ route, navigation }) => {
       <Modal animationType='fade'
         transparent={true}
         visible={isShowDialog}
-        onRequestClose={showDialog}
+        onRequestClose={toggleShowDialog}
       >
 
         {/* làm mờ màn hình */}
@@ -162,7 +162,7 @@ const LoginScreen = ({ route, navigation }) => {
             </Text>
 
             <TouchableOpacity
-              onPress={showDialog}
+              onPress={toggleShowDialog}
               style={st.modalButton}>
               <Text style={st.modalBtnText}>
                 Tôi hiểu
