@@ -198,7 +198,7 @@ const st = StyleSheet.create({
     color: 'white',
   },
   iconContainer: {
-    padding: 10,
+    paddingRight: 15,
   },
   bottomContainer: {
     width: '100%',
