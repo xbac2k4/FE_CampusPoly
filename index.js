@@ -23,4 +23,4 @@ import MenuAuthenticationScreen from './src/workspaces/MenuAuth/MenuAuthenticati
 import Example from './src/workspaces/SignUp/Example';
 import ResetPasswordScreen from './src/workspaces/ResetPassword/ResetPasswordScreen';
 
-AppRegistry.registerComponent(appName, () => App);
+AppRegistry.registerComponent(appName, () => SignUpScreen);

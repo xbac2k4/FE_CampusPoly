@@ -64,23 +64,11 @@ const st = StyleSheet.create({
         marginTop: 10,
         borderRadius: 10,
     },
-    label: {
-        color: 'white',
-        position: 'absolute',
-        left: 50,
-        top: -10,
-        backgroundColor: '#181a1c',
-        fontSize: 15,
-        paddingHorizontal: 5,
-    },
     input: {
         flex: 1,
         padding: 20,
         fontWeight: 'bold',
         fontSize: 15,
         color: 'white',
-    },
-    iconContainer: {
-        padding: 10,
-    },
+    }
 })

@@ -11,7 +11,7 @@ import ArticleComponent from '../../components/Home/articleComponent';
 import CommentComponent from '../../components/Comment/CommentComponent';
 import CommentInputComponent from '../../components/Comment/CommentInputComponent';
 
-const CommentScreen = ({navigation}) => {
+const CommentScreen = ({ navigation }) => {
 
   const handleSendComment = comment => {
     console.log('Comment gửi:', comment);
@@ -115,72 +115,72 @@ const CommentScreen = ({navigation}) => {
 
   return (
     <>
-    <ScrollView style={styles.container}>
-      <View style={styles.barHeader}>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.goBack();
-          }}
-          style={styles.circleIcon}>
-          <Image
-            source={require('../../assets/images/arowleft.png')}
-            resizeMode="contain"
-            style={{ width: 15, height: 15 }}
-          />
-        </TouchableOpacity>
-        <Text style={styles.textHeader}>POST</Text>
-        <Text style={[styles.textHeader, { color: '#181A1C' }]}>Post</Text>
-      </View>
-
-      {/* Hiển thị bài viết từ fakeArticles */}
-      {fakeArticles.map(article => (
-        <ArticleComponent
-          key={article.id}
-          id={article.id}
-          imgavatar={article.imgavatar}
-          username={article.username}
-          time={article.time}
-          content={article.content}
-          imgcontent={article.imgcontent}
-          likecount={article.likecount}
-          commentcount={article.commentcount}
-        />
-      ))}
-
-      {/* Header cho phần Comment */}
-      <View style={styles.barComment}>
-        <Text style={styles.commentTitle}>
-          COMMENTS (<Text>20</Text>)
-        </Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Text style={styles.recentText}>Recent</Text>
-          <TouchableOpacity onPress={() => {
-            /* Xử lý hành động khi click vào Recent */
-          }}>
+      <ScrollView style={styles.container}>
+        <View style={styles.barHeader}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.goBack();
+            }}
+            style={styles.circleIcon}>
             <Image
-              source={require("../../assets/images/arrowbottom.png")}
-              style={{ width: 20, height: 20 }}
+              source={require('../../assets/images/arowleft.png')}
+              resizeMode="contain"
+              style={{ width: 15, height: 15 }}
             />
           </TouchableOpacity>
+          <Text style={styles.textHeader}>POST</Text>
+          <Text style={[styles.textHeader, { color: '#181A1C' }]}>Post</Text>
         </View>
-      </View>
 
-      {/* Hiển thị danh sách bình luận */}
-      {fakeComments.map(comment => (
-        <CommentComponent
-          key={comment.id}
-          avatar={comment.avatar}
-          name={comment.name}
-          content={comment.content}
-          time={comment.time}
-          likes={comment.likes}
-        />
-      ))}
-    </ScrollView>
+        {/* Hiển thị bài viết từ fakeArticles */}
+        {fakeArticles.map(article => (
+          <ArticleComponent
+            key={article.id}
+            id={article.id}
+            imgavatar={article.imgavatar}
+            username={article.username}
+            time={article.time}
+            content={article.content}
+            imgcontent={article.imgcontent}
+            likecount={article.likecount}
+            commentcount={article.commentcount}
+          />
+        ))}
+
+        {/* Header cho phần Comment */}
+        <View style={styles.barComment}>
+          <Text style={styles.commentTitle}>
+            COMMENTS (<Text>20</Text>)
+          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={styles.recentText}>Recent</Text>
+            <TouchableOpacity onPress={() => {
+              /* Xử lý hành động khi click vào Recent */
+            }}>
+              <Image
+                source={require("../../assets/images/arrowbottom.png")}
+                style={{ width: 20, height: 20 }}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Hiển thị danh sách bình luận */}
+        {fakeComments.map(comment => (
+          <CommentComponent
+            key={comment.id}
+            avatar={comment.avatar}
+            name={comment.name}
+            content={comment.content}
+            time={comment.time}
+            likes={comment.likes}
+          />
+        ))}
+      </ScrollView>
 
       {/* Input để gửi comment */}
       <CommentInputComponent onSend={handleSendComment} />
-      </>
+    </>
   );
 };
 

@@ -2,7 +2,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import Colors from '../constants/Color'
 
-const OneButtonBottom = ({onPress,text}) => {
+const OneButtonBottom = ({ onPress, text }) => {
     return (
         <View style={st.bottomBar}>
 
@@ -28,6 +28,7 @@ const st = StyleSheet.create({
         borderTopColor: 'white',
         borderTopWidth: 2,
         paddingHorizontal: 20,
+        backgroundColor: Colors.background
     },
     bottomBtn: {
         padding: 15,

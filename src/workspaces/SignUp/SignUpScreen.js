@@ -1,14 +1,15 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native'
-import React, { useState } from 'react'
-import Feather from 'react-native-vector-icons/Feather';
+import React, { useEffect, useState } from 'react';
+import { Keyboard, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import DatePicker from 'react-native-date-picker';
 import Entypo from 'react-native-vector-icons/Entypo';
+import Feather from 'react-native-vector-icons/Feather';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import AuthenticationHeader from '../../components/AuthHeader';
-import OneButtonBottom from '../../components/OneButtonBottom';
 import CustomInput from '../../components/CustomInput';
 import ErrorMessage from '../../components/ErrorMessage';
-import Screens from '../../navigation/Screens';
+import OneButtonBottom from '../../components/OneButtonBottom';
 import Colors from '../../constants/Color';
-import DatePicker from 'react-native-date-picker';
+import Screens from '../../navigation/Screens';
 
 
 
@@ -25,21 +26,46 @@ const SignUpScreen = ({ navigation }) => {
 
   const [isShowDate, setIsShowDate] = useState(false) // Trạng thái hiển thị date picker
 
+  const [gender, setGender] = useState('')
+  const [genderErrorText, setGenderErrorText] = useState('')
 
+  const [password, setPassword] = useState('')
+  const [passErrorText, setPassErrorText] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+
+  const [confirm, setConfirm] = useState('')
+  const [confirmErrorText, setConfirmErrorText] = useState('')
+  const [showConfirm, setShowConfirm] = useState(false)
+
+
+
+
+  const [keyboardVisible, setKeyboardVisible] = useState(false); // Trạng thái bàn phím hiển thị hay ẩn
+
+  // Lắng nghe sự kiện hiển thị hoặc ẩn bàn phím
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
+      setKeyboardVisible(true);
+    });
+    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboardVisible(false);
+    });
+
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, []);
 
   // Hàm xử lý khi người dùng ấn nút đăng nhập
   const handleSignUp = () => {
 
-    if (email === '' && name === '' && birthDay === '') {
-      setEmailErrorText('Vui lòng nhập email')
-      setNameErrorText('Vui lòng nhập tên')
-      setBirthDayErrorText('Vui lòng nhập ngày sinh')
-      return
-    }
-
-    if (name === '' && email === '') {
+    if (name === '' && email === '' && gender === '' && password === '' && confirm === '') {
       setNameErrorText('Vui lòng nhập tên')
       setEmailErrorText('Vui lòng nhập email')
+      setGenderErrorText('Vui lòng chọn giới tính')
+      setPassErrorText('Vui lòng nhập mật khẩu')
+      setConfirmErrorText('Vui lòng xác nhận mật khẩu')
       return
     }
 
@@ -57,6 +83,39 @@ const SignUpScreen = ({ navigation }) => {
       setBirthDayErrorText('Vui lòng nhập ngày sinh')
       return
     }
+
+    if (gender === '') {
+      setGenderErrorText('Vui lòng chọn giới tính')
+      return
+    }
+
+    if (password === '') {
+      setPassErrorText('Vui lòng nhập mật khẩu')
+      return
+    }
+
+    if (confirm === '') {
+      setConfirmErrorText('Vui lòng xác nhận mật khẩu')
+      return
+    }
+
+    if (password.length < 8) {
+      setPassErrorText('Mật khẩu phải có ít nhất 8 ký tự')
+      return
+    }
+
+    if (password !== confirm) {
+      setConfirmErrorText('Mật khẩu không khớp')
+      return
+    }
+
+    // Kiểm tra email có đúng định dạng không (chỉ lấy email có dạng đuôi là fpt.edu.vn hoặc fe.edu.vn)
+    const emailPattern = /^[a-zA-Z0-9._-]+@(fpt|fe)\.edu\.vn$/;
+    if (!emailPattern.test(email)) {
+      setEmailErrorText('Email không hợp lệ')
+      return
+    }
+
 
     // chuyển màn hình và truyền email
     navigation.navigate(Screens.OTP, { email: email })
@@ -93,6 +152,12 @@ const SignUpScreen = ({ navigation }) => {
     }
   }
 
+  // chọn giới tính
+  const changeGender = (text) => {
+    setGender(text)
+    setGenderErrorText('')
+  }
+
 
   // Hàm chuyển đổi ngày tháng năm thành dạng dd/mm/yyyy
   const formatDate = (date) => {
@@ -114,93 +179,216 @@ const SignUpScreen = ({ navigation }) => {
 
   return (
     <View style={st.container}>
+
       <AuthenticationHeader navigation={navigation} />
 
-      {/* form thông tin */}
-      <View style={st.form}>
+      <ScrollView style={{
+        width: '100%',
+        height: '67%'
+      }}>
+        {/* form thông tin */}
+        <View style={st.form}>
 
-        {/* tiêu đề */}
-        <Text
-          style={st.title}>
-          Tạo tài khoản của bạn
-        </Text>
+          {/* tiêu đề */}
+          <Text
+            style={st.title}>
+            Tạo tài khoản của bạn
+          </Text>
 
-        {/* nhập tên */}
-        <CustomInput
-          name={name}
-          placeholder='Tên'
-          onChangeText={inputName}
-          leadIcon={() => (
-            <Feather
-              name="user"
-              size={20}
-              color='white'
-              style={{ marginLeft: 10 }}
-            />
-          )}
-        />
+          <Text style={st.description}>Nhanh chóng và dễ dàng</Text>
 
-        {/* thông báo lỗi tên */}
-        <View style={{
-          width: '90%',
-          flexDirection: 'row',
-          justifyContent: 'space-between'
-        }}>
-          <Text style={{ color: 'red', fontWeight: 'bold' }}>{nameErrorText}</Text>
-          <Text style={{ color: name.length >= 50 ? 'red' : 'gray' }}>{name.length}/50</Text>
-        </View>
-
-        {/* nhập email */}
-        <CustomInput
-          name={email}
-          placeholder='Email'
-          onChangeText={inputEmail}
-          leadIcon={() => (
-            <Entypo
-              name="email"
-              size={20}
-              color='white'
-              style={{ marginLeft: 10 }}
-            />
-          )}
-        />
-
-        {/* thông báo lỗi email */}
-        <ErrorMessage
-          message={emailErrorText}
-        />
-
-        {/* nhập ngày sinh */}
-        <Pressable onPress={togggleDatePicker}>
+          {/* nhập tên */}
           <CustomInput
-            name={formatDate(birthDay)}
-            editable={false}
-            placeholder='Ngày sinh'
+            name={name}
+            placeholder='Tên'
+            onChangeText={inputName}
             leadIcon={() => (
               <Feather
-                name="calendar"
+                name="user"
                 size={20}
                 color='white'
                 style={{ marginLeft: 10 }}
               />
-            )} />
-        </Pressable>
+            )}
+          />
+
+          {/* thông báo lỗi tên */}
+          <View style={{
+            width: '90%',
+            flexDirection: 'row',
+            justifyContent: 'space-between'
+          }}>
+            <Text style={{ color: 'red', fontWeight: 'bold' }}>{nameErrorText}</Text>
+            <Text style={{ color: name.length >= 50 ? 'red' : 'gray' }}>{name.length}/50</Text>
+          </View>
+
+          {/* nhập ngày sinh */}
+          <Pressable onPress={togggleDatePicker}>
+            <CustomInput
+              name={formatDate(birthDay)}
+              editable={false}
+              placeholder='Ngày sinh'
+              leadIcon={() => (
+                <Feather
+                  name="calendar"
+                  size={20}
+                  color='white'
+                  style={{ marginLeft: 10 }}
+                />
+              )} />
+          </Pressable>
 
 
-        {/* thông báo lỗi ngày sinh */}
-        <ErrorMessage
-          message={birthDayErrorText}
-        />
-      </View>
+          {/* thông báo lỗi ngày sinh */}
+          <ErrorMessage
+            message={birthDayErrorText}
+          />
+
+          {/* nhập email */}
+          <CustomInput
+            name={email}
+            placeholder='Email'
+            onChangeText={inputEmail}
+            leadIcon={() => (
+              <Entypo
+                name="email"
+                size={20}
+                color='white'
+                style={{ marginLeft: 10 }}
+              />
+            )}
+          />
+
+          {/* thông báo lỗi email */}
+          <ErrorMessage
+            message={emailErrorText}
+          />
+
+          {/* chọn giới tính */}
+          <View style={{
+            width: '90%',
+            marginTop: 10,
+          }}>
+            <Text style={{
+              color: 'white',
+              fontSize: 16,
+              fontWeight: 'bold',
+            }}>Giới tính</Text>
+
+            <View style={{
+              flexDirection: 'row',
+              marginTop: 10
+            }}>
+              <TouchableOpacity
+                onPress={() => changeGender('nam')}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center'
+                }}>
+                <MaterialIcons name={gender == 'nam' ? 'radio-button-on' : 'radio-button-unchecked'} size={25} color='white' />
+                <Text style={{ color: 'white', fontSize: 16, marginLeft: 5 }}>Nam</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => changeGender('nu')}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginLeft: 20
+                }}>
+                <MaterialIcons name={gender == 'nu' ? 'radio-button-on' : 'radio-button-unchecked'} size={25} color='white' />
+                <Text style={{ color: 'white', fontSize: 16, marginLeft: 5 }}>Nữ</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => changeGender('khac')}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginLeft: 20
+                }}>
+                <MaterialIcons name={gender == 'khac' ? 'radio-button-on' : 'radio-button-unchecked'} size={25} color='white' />
+                <Text style={{ color: 'white', fontSize: 16, marginLeft: 5 }}>Khác</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* thông báo lỗi giới tính */}
+          <ErrorMessage
+            message={genderErrorText}
+          />
+
+          <CustomInput
+            name={password}
+            placeholder='Mật khẩu'
+            leadIcon={() => (
+              <Feather
+                name="lock"
+                color='white'
+                size={20}
+                style={{ marginLeft: 10 }}
+              />
+            )}
+            onChangeText={(text) => {
+              setPassword(text)
+              if (passErrorText !== '') {
+                setPassErrorText('')
+              }
+            }}
+            trailingIcon={() => (
+              <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={st.iconContainer}>
+                <Feather name={showPassword ? 'eye' : 'eye-off'} size={20} color='white' />
+              </TouchableOpacity>
+            )}
+            secureTextEntry={!showPassword}
+          />
+
+          {/* thông báo lỗi mật khẩu */}
+          <ErrorMessage message={passErrorText} />
+
+          <CustomInput
+            name={confirm}
+            placeholder='Xác nhận mật khẩu'
+            leadIcon={() => (
+              <Feather
+                name="lock"
+                color='white'
+                size={20}
+                style={{ marginLeft: 10 }}
+              />
+            )}
+            onChangeText={(text) => {
+              setConfirm(text)
+              if (confirmErrorText !== '') {
+                setConfirmErrorText('')
+              }
+            }}
+            trailingIcon={() => (
+              <TouchableOpacity onPress={() => setShowConfirm(!showConfirm)} style={st.iconContainer}>
+                <Feather name={showConfirm ? 'eye' : 'eye-off'} size={20} color='white' />
+              </TouchableOpacity>
+            )}
+            secureTextEntry={!showConfirm}
+          />
+
+          {/* thông báo lỗi mật khẩu */}
+          <ErrorMessage message={confirmErrorText} />
+
+
+
+        </View>
+      </ScrollView>
+
 
       {/* nút tiếp theo */}
-      <View style={st.bottomContainer}>
-        <OneButtonBottom
-          text='Tiếp theo'
-          onPress={handleSignUp}
-        />
-
-      </View>
+      {!keyboardVisible && (
+        <View style={st.bottomContainer}>
+          <OneButtonBottom
+            text='Tiếp theo'
+            onPress={handleSignUp}
+          />
+        </View>
+      )}
 
       <DatePicker
         modal
@@ -239,9 +427,17 @@ const st = StyleSheet.create({
     fontSize: 30,
     color: 'white',
   },
+  description: {
+    color: 'white',
+    fontSize: 16,
+    marginBottom: 20
+  },
   bottomContainer: {
     width: '100%',
     flex: 1,
     justifyContent: 'flex-end',
-  }
+  },
+  iconContainer: {
+    paddingRight: 15,
+  },
 })
