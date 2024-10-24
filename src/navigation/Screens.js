@@ -6,8 +6,6 @@ const Screens = {
     Login: "LoginScreen",
     SignUp:'SignUp',
     OTP:'OTP',
-    SignUpPassword:'SignUpPassword',
-    SignUpName:'SignUpName',
     SignUpImage:'SignUpImage',
     BottomTab: "BottomTab",
     Home: "Home",

@@ -4,8 +4,6 @@ import App from './App';
 import LoginScreen from './src/workspaces/Login/LoginScreen'
 import OTP_screen from './src/workspaces/SignUp/OTP_screen'
 import SignUpScreen from './src/workspaces/SignUp/SignUpScreen'
-import SignUpPasswordScreen from './src/workspaces/SignUp/SignUpPasswordScreen'
-import SignUpNameScreen from './src/workspaces/SignUp/SignUpNameScreen'
 import SignUpImageScreen from './src/workspaces/SignUp/SignUpImageScreen'
 import EmailInputLoginScreen from './src/workspaces/Login/EmailInputLoginScreen'
 import SearchScreen from './src/workspaces/SearchScreen/SearchScreen'
@@ -20,7 +18,6 @@ import { name as appName } from './app.json';
 import CommentScreen from './src/workspaces/Comment/CommentScreen';
 import FrProfileScreen from './src/workspaces/FrProfileScreen/frProfileScreen';
 import MenuAuthenticationScreen from './src/workspaces/MenuAuth/MenuAuthenticationScreen';
-import Example from './src/workspaces/SignUp/Example';
 import ResetPasswordScreen from './src/workspaces/ResetPassword/ResetPasswordScreen';
 
-AppRegistry.registerComponent(appName, () => SignUpScreen);
+AppRegistry.registerComponent(appName, () => App);

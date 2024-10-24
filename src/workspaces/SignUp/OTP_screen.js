@@ -21,7 +21,7 @@ const OTPScreen = ({ route, navigation }) => {
       return
     }
 
-    navigation.navigate(Screens.SignUpPassword)
+    navigation.navigate(Screens.SignUpImage)
   }
 
   const handleForgetPassword = () => {

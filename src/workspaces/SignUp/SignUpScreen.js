@@ -176,6 +176,26 @@ const SignUpScreen = ({ navigation }) => {
     return `${day}/${month}/${year}`;
   };
 
+  const openTermsOfService = () => {
+    alert('Điều khoản dịch vụ')
+  }
+
+  const openPrivacyPolicy = () => {
+    alert('Chính sách riêng tư')
+  }
+
+  const openUseOfCookies = () => {
+    alert('Hoạt động sử dụng cookie')
+  }
+
+  const openLearnMore = () => {
+    alert('Tìm hiểu thêm')
+  }
+
+  const opentHere = () => {
+    alert('Tại đây')
+  }
+
 
   return (
     <View style={st.container}>
@@ -374,6 +394,20 @@ const SignUpScreen = ({ navigation }) => {
           {/* thông báo lỗi mật khẩu */}
           <ErrorMessage message={confirmErrorText} />
 
+          {/* Chính sách */}
+
+          <View style={{
+            width: '90%'
+          }}>
+
+            <Text style={{ color: 'white', fontSize: 15 }}>Khi đăng kí nghĩa là bạn đồng ý với
+              <Text onPress={openTermsOfService} style={st.policyText}> Điều khoản dịch vụ</Text> và
+              <Text onPress={openPrivacyPolicy} style={st.policyText}> Chính sách riêng tư</Text> , bao gồm cả
+              <Text onPress={openUseOfCookies} style={st.policyText}> Hoạt động sử dụng Cookie</Text>. Chúng tôi có thể sử dụng thông tin liên hệ của bạn , bao gồm email và số điện thoại nhằm các mục đích nêu trong Chính sách riêng tư , như giữ an toàn cho tài khoản của bạn và làm cho các dịch vụ của chúng tôi phù hợp hơn với bạn , bao gồm quảng cáo.
+              <Text onPress={openLearnMore} style={st.policyText}> Tìm hiểu thêm</Text>. Những người khác sẽ có thể tìm thấy bạn qua email hoặc số điện thoại khi được cung cấp , trừ phi bạn chọn các khác
+              <Text onPress={opentHere} style={st.policyText}> tại đây</Text>.</Text>
+          </View>
+
 
 
         </View>
@@ -439,5 +473,8 @@ const st = StyleSheet.create({
   },
   iconContainer: {
     paddingRight: 15,
+  },
+  policyText: {
+    color: '#57B5F4'
   },
 })
