@@ -4,14 +4,38 @@ import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 import DocumentPicker from 'react-native-document-picker';
 import GiphySelector from './GiphySelector';
 
-const PostComponent = () => {
+const PostComponent = ({ onContentChange }) => {
   const [inputHeight, setInputHeight] = useState(40);
   const [isVisible, setIsVisible] = useState(false);
   const [animation] = useState(new Animated.Value(0));
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedGif, setSelectedGif] = useState(null);
   const [isGifModalVisible, setGifModalVisible] = useState(false);
-
+  const handleContentChange = (text) => {
+    setContent(text);
+    onContentChange(text); // Gọi hàm truyền từ màn hình cha
+  };
+  const user = {
+    id: "1",
+    name: "Linh Nguyễn",
+    location: "Hà Nội, Việt Nam",
+    bio: "Nhà văn yêu thích thiên nhiên.",
+    profileImage: "https://unsplash.com/photos/NRQV-hBF10M/download?force=true",
+    backgroundImage: "https://images.unsplash.com/photo-1726768619030-9eafbc5788b2?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    friends: 1500,
+    posts: [
+      {
+        id: 1,
+        text: "Hoàng hôn đẹp quá!",
+        likes: 300,
+        comments: 20,
+        images: [
+          "https://unsplash.com/photos/NRQV-hBF10M/download?force=true"
+        ],
+        time: "1h ago"
+      }
+    ]
+  };
   const handleGifSelect = (gifUrl) => {
     setSelectedGif(gifUrl);
     setGifModalVisible(false);
@@ -90,7 +114,7 @@ const PostComponent = () => {
     <View style={styles.container}>
       <View style={styles.postRow}>
         <Image
-          source={require('../../assets/images/venice1.png')}
+          source={{ uri: user.profileImage }}
           style={styles.avatar}
         />
         <View style={styles.inputContainer}>
@@ -99,6 +123,7 @@ const PostComponent = () => {
             placeholder="What’s on your mind?"
             placeholderTextColor="#888"
             multiline
+            onChangeText={handleContentChange} // Cập nhật nội dung
             onContentSizeChange={(event) =>
               setInputHeight(event.nativeEvent.contentSize.height)
             }

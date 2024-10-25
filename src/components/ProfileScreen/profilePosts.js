@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, Text, StyleSheet, TouchableOpacity, Image, Dimensions } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
-
+import { View, ScrollView, Text, StyleSheet, TouchableOpacity, Image, Dimensions, ActivityIndicator } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import Screens from '../../navigation/Screens';
 const { width: screenWidth } = Dimensions.get('window');
 
 // Import các hình ảnh
@@ -13,46 +13,76 @@ import heart from '../../assets/images/heart.png';
 import heartFilled from '../../assets/images/hear2.png';
 import share from '../../assets/images/share.png';
 
-const ProfilePosts = ({ user }) => {
-  const [likedPosts, setLikedPosts] = useState([]); 
-  const [savedPosts, setSavedPosts] = useState([]); 
-  const [activeImageIndex, setActiveImageIndex] = useState({}); 
+const ProfilePosts = ({ post }) => {
+  const [user, setUser] = useState([]); // Chứa các bài viết
+  const [loading, setLoading] = useState(true); // Quản lý trạng thái loading
+  const [error, setError] = useState(null); // Quản lý lỗi
+  const [likedPosts, setLikedPosts] = useState([]); // Lưu trạng thái các bài viết đã thích
+  const [savedPosts, setSavedPosts] = useState([]); // Lưu trạng thái các bài viết đã lưu
+  const [activeImageIndex, setActiveImageIndex] = useState({}); // Quản lý chỉ số ảnh đang hiển thị cho mỗi bài có nhiều ảnh
+  const navigation = useNavigation(); // Hook to access navigation
 
-  if (!user) {
-    return null; 
-  }
 
+  
+  // Fetch dữ liệu từ API khi component được mount
   useEffect(() => {
-    const initialIndices = {};
-    user.posts.forEach((post) => {
-      if (post.images && post.images.length > 1) {
-        initialIndices[post.id] = 0; // Thiết lập chỉ mục đầu tiên cho các bài có nhiều ảnh
+    const fetchUserData = async () => {
+      try {
+
+        const response = await fetch("http://192.168.1.101:3000/api/v1/posts/get-all-post");
+        const data = await response.json();
+        setUser(data.data); // Lưu bài viết vào state (giả sử data.data chứa danh sách bài viết)
+        setLoading(false); // Tắt loading
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        setError(error); // Lưu lỗi vào state
+        setLoading(false); // Tắt loading
       }
-    });
-    setActiveImageIndex(initialIndices);
-  }, [user.posts]);
+    };
+
+    fetchUserData();
+  }, []);
+
+  // Đặt chỉ mục hình ảnh đầu tiên cho các bài viết có nhiều hình ảnh
+  useEffect(() => {
+    if (user && user.length > 0) {
+      const initialIndices = {};
+      user.forEach((post) => {
+        if (post.image && post.image.length > 1) {
+          initialIndices[post._id] = 0; // Thiết lập chỉ mục đầu tiên cho các bài có nhiều ảnh
+        }
+      });
+      setActiveImageIndex(initialIndices);
+    }
+  }, [user]);
 
   const toggleLike = (postId) => {
-    setLikedPosts((prevLikedPosts) => 
+    setLikedPosts((prevLikedPosts) =>
       prevLikedPosts.includes(postId)
         ? prevLikedPosts.filter((id) => id !== postId)
         : [...prevLikedPosts, postId]
-    ); // Chuyển đổi trạng thái thích của bài đăng
+    );
   };
 
   const toggleSave = (postId) => {
-    setSavedPosts((prevSavedPosts) => 
+    setSavedPosts((prevSavedPosts) =>
       prevSavedPosts.includes(postId)
         ? prevSavedPosts.filter((id) => id !== postId)
         : [...prevSavedPosts, postId]
-    ); // Chuyển đổi trạng thái lưu của bài đăng
+    );
   };
 
+  // Hiển thị hình ảnh của bài viết
   const renderImages = (images, postId) => {
+    if (!images || images.length === 0) return null; // Handle cases where image is missing
+  
     if (images.length === 1) {
-      return <Image source={images[0]} style={styles.postImage} />;
+      const imageUrl = images[0];
+      return imageUrl ? (
+        <Image source={{ uri: imageUrl }} style={styles.postImage} />
+      ) : null;
     }
-
+  
     return (
       <>
         <ScrollView
@@ -69,14 +99,15 @@ const ProfilePosts = ({ user }) => {
           }}
         >
           {images.map((image, index) => (
-            <Image key={index} source={image} style={styles.postImage} />
+            <Image key={index} source={{ uri: image || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' }} style={styles.postImage} />
           ))}
         </ScrollView>
         <View style={styles.paginationContainer}>
           {images.map((_, index) => (
             <View
               key={index}
-              style={[styles.paginationDot,
+              style={[
+                styles.paginationDot,
                 activeImageIndex[postId] === index ? styles.activeDot : styles.inactiveDot,
               ]}
             />
@@ -86,63 +117,80 @@ const ProfilePosts = ({ user }) => {
     );
   };
 
+  // Xử lý khi đang tải dữ liệu
+  if (loading) {
+    return <ActivityIndicator size="large" color="#FFF" style={{ marginTop: 20 }} />;
+  }
+
+  // Xử lý lỗi
+  if (error) {
+    return <Text style={{ color: 'red', marginTop: 20 }}>Error loading data: {error.message}</Text>;
+  }
+
+  // Hiển thị dữ liệu các bài viết
   return (
     <ScrollView contentContainerStyle={styles.flatListContent}>
-      {user.posts.map((item) => (
-        <View key={item.id} style={styles.postContainer}>
-          <View style={styles.postHeader}>
-            <Image source={user.profileImage} style={styles.profileImage} />
-            <View style={styles.headerText}>
-              <Text style={styles.profileName}>{user.name}</Text>
-              <Text style={styles.postTime}>{item.time}</Text>
+      {user && user.length > 0 ? (
+        user.map((item) => (
+          <View key={item._id} style={styles.postContainer}>
+            <View style={styles.postHeader}>
+              <Image source={{ uri: item.user_id.avatar || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' }} style={styles.profileImage} />
+              <View style={styles.headerText}>
+                <Text style={styles.profileName}>{item.user_id.full_name}</Text>
+                <Text style={styles.postTime}>{new Date(item.createdAt).toLocaleString()}</Text>
+              </View>
+              <TouchableOpacity style={styles.moreIcon}>
+                <Text style={styles.moreText}>⋮</Text>
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity style={styles.moreIcon}>
-              <Text style={styles.moreText}>⋮</Text>
-            </TouchableOpacity>
-          </View>
-          <Text style={styles.postText}>{item.text}</Text>
-          {item.images && renderImages(item.images, item.id)}
-          <View style={styles.postMeta}>
-            <View style={styles.leftMetaIcons}>
+            <Text style={styles.postText}>{item.title}</Text>
+            {item.image && renderImages(item.image, item._id)}
+            <View style={styles.postMeta}>
+              <View style={styles.leftMetaIcons}>
+                <View style={styles.iconLike}>
+                  <TouchableOpacity onPress={() => toggleLike(item._id)}>
+                    <Image
+                      source={likedPosts.includes(item._id) ? heartFilled : heart}
+                      style={styles.iconImage}
+                    />
+                  </TouchableOpacity>
+                  <Text style={styles.metaText}>{item.like_count}</Text>
+                </View>
+
+                <View style={styles.iconLike}>
+                  <TouchableOpacity onPress={() => navigation.navigate(Screens.Comment, { postId: item._id })}
+                  
+                    >
+                    
+                    <Image source={comment} style={styles.iconImage} />
+                  </TouchableOpacity>
+                  <Text style={styles.metaText}>{item.comment_count}</Text>
+                </View>
+
+                <View style={styles.iconLike}>
+                  <TouchableOpacity>
+                    <Image source={share} style={styles.iconImage} />
+                  </TouchableOpacity>
+                </View>
+              </View>
               <View style={styles.iconLike}>
-                <TouchableOpacity onPress={() => toggleLike(item.id)}>
+                <TouchableOpacity style={styles.iconButton} onPress={() => toggleSave(item._id)}>
                   <Image
-                    source={likedPosts.includes(item.id) ? heartFilled : heart}
+                    source={savedPosts.includes(item._id) ? bookmarkFilled : bookmark}
                     style={styles.iconImage}
                   />
                 </TouchableOpacity>
-                <Text style={styles.metaText}>{item.likes}</Text>
-              </View>
-
-              <View style={styles.iconLike}>
-                <TouchableOpacity>
-                  <Image source={comment} style={styles.iconImage} />
-                </TouchableOpacity>
-                <Text style={styles.metaText}>{item.comments}</Text>
-              </View>
-
-              <View style={styles.iconLike}>
-                <TouchableOpacity>
-                  <Image source={share} style={styles.iconImage} />
-                </TouchableOpacity>
               </View>
             </View>
-            <View style={styles.iconLike}>
-            <TouchableOpacity style={styles.iconButton} onPress={() => toggleSave(item.id)}>
-              <Image
-                source={savedPosts.includes(item.id) ? bookmarkFilled : bookmark}
-                style={styles.iconImage}
-              />
-            </TouchableOpacity>
-            </View>
+            <View style={styles.separator} />
           </View>
-          <View style={styles.separator} />
-        </View>
-      ))}
+        ))
+      ) : (
+        <Text style={{ color: 'gray', marginTop: 20 }}>No posts available</Text>
+      )}
     </ScrollView>
   );
 };
-
 const styles = StyleSheet.create({
   postContainer: {
     width: '100%',
