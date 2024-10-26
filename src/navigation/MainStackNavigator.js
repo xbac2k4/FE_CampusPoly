@@ -14,7 +14,7 @@ import BottomTabNavigator from './BottomTabNavigator';
 import Screens from './Screens';
 import CommentScreen from '../workspaces/Comment/CommentScreen';
 import MessagesScreen from '../workspaces/messages/MessagesScreen';
-
+import EditProfileScreen from '../workspaces/EditProfile/EditProfileScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -34,6 +34,7 @@ const MainStackNavigator = () => {
       <Stack.Screen name={Screens.BottomTab} component={BottomTabNavigator} />
       <Stack.Screen name={Screens.Comment} component={CommentScreen} />
       <Stack.Screen name={Screens.Message} component={MessagesScreen} />
+      <Stack.Screen name={Screens.EditProfile} component={EditProfileScreen} />
 
 
     </Stack.Navigator>

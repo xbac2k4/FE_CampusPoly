@@ -23,7 +23,6 @@ const Header = ({ user }) => (
       </TouchableOpacity>
     </View>
     
-    <Text style={styles.location}>{user.location}</Text>
     <Text style={styles.bio}>{user.bio}</Text>
   </View>
 );
@@ -66,7 +65,7 @@ const styles = StyleSheet.create({
     width: 30, 
     height: 30, 
     borderRadius: 15, 
-    backgroundColor: '#333', // Optional: You can change this to match the UI theme
+    backgroundColor: '#333', 
     justifyContent: 'center', 
     alignItems: 'center',
     marginLeft: 8, 

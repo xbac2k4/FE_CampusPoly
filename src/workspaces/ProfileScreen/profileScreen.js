@@ -54,8 +54,7 @@ const ProfileScreen = () => {
       <ScrollView stickyHeaderIndices={[2]}>
         {/* Header and ProfileStats */}
         <Header user={user} />
-        <ProfileStats friends={user.friends} />
-        
+        <ProfileStats friends={user.friends} user={user}/>
         {/* ProfileTabs (Sticky) */}
         <ProfileTabs onTabSelect={setActiveTab} />
 
