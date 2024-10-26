@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, StatusBar, Image, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, StatusBar, TouchableOpacity } from 'react-native'
 import React from 'react'
 import Screens from '../../navigation/Screens'
 import Colors from '../../constants/Color'
@@ -39,13 +39,11 @@ const MenuAuthenticationScreen = ({ navigation }) => {
           {/* nút đăng nhập với google */}
           <TouchableOpacity
             style={st.btn}
+            onPress={() => navigation.navigate(Screens.EmailInputLogin)}
           >
-            <Image
-              style={{ width: 30, height: 30 }}
-              source={require('../../assets/images/GoogleLogo.png')} />
             <Text
               style={st.btnText}
-            >Tiếp tục với Google</Text>
+            >Bạn đã có một tài khoản? <Text style={{ color: 'red' }}>Đăng nhập</Text></Text>
           </TouchableOpacity>
 
           {/* hoặc */}
@@ -71,27 +69,19 @@ const MenuAuthenticationScreen = ({ navigation }) => {
             >Tạo tài khoản</Text>
           </TouchableOpacity>
 
-          {/* Điều khoản */}
-          <Text
-            style={{
-              width: '80%',
-              textAlign: 'center',
-            }}>
-            <Text style={{ color: 'white' }}>Bằng cách đăng ký bạn đồng ý với </Text>
-            <Text style={{ color: '#2412ed', }}>Điều khoản, Chính sách riêng tư và Sử dụng cookie </Text>
-            <Text style={{ color: 'white' }}>của chúng tôi</Text>
-          </Text>
+
         </View>
 
-        {/* đăng nhập */}
+        {/* Điều khoản */}
         <Text
           style={{
             width: '80%',
             textAlign: 'center',
-            padding: 10
+            marginBottom: 20,
           }}>
-          <Text style={{ color: 'white' }}>Bạn đã có một tài khoản? </Text>
-          <Text onPress={() => navigation.navigate(Screens.EmailInputLogin)} style={{ color: '#57b5f4', fontWeight: 'bold' }}>Đăng nhập</Text>
+          <Text style={{ color: 'white' }}>Bằng cách đăng ký bạn đồng ý với </Text>
+          <Text style={{ color: '#2412ed', }}>Điều khoản, Chính sách riêng tư và Sử dụng cookie </Text>
+          <Text style={{ color: 'white' }}>của chúng tôi</Text>
         </Text>
       </View>
 
@@ -126,7 +116,7 @@ const st = StyleSheet.create({
   },
   buttonContainer: {
     width: '100%',
-    height: '30%',
+    height: '25%',
     alignItems: 'center',
     justifyContent: 'space-around',
   },
@@ -134,11 +124,12 @@ const st = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    width: '80%',
+    width: '90%',
     padding: 10,
     borderRadius: 30,
     borderColor: 'white',
     borderWidth: 1,
+    minHeight: 60,
   },
   btnText: {
     color: 'white',
