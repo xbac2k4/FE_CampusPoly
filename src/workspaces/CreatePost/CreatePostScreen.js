@@ -1,7 +1,7 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
-import PostComponent from '../../components/Post/PostComponent';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import PostComponent from '../../components/Post/PostComponent';
 
 const CreatePostScreen = () => {
   const navigation = useNavigation(); // Khởi tạo navigation
@@ -16,13 +16,13 @@ const CreatePostScreen = () => {
     // Chuẩn bị dữ liệu để gửi lên API
     const postData = {
       content,
-      image: selectedImage, // Bạn có thể cần xử lý lại hình ảnh nếu là đường dẫn
+      image: selectedImage, // Xử lý lại hình ảnh nếu cần
       gif: selectedGif, // Tương tự như trên
     };
 
     try {
       // Gửi yêu cầu POST lên API
-      const response = await fetch('http://192.168.1.7:3000/users', {
+      const response = await fetch('http://192.168.1.101:3000/api/v1/posts/add-post', { // Thay đổi endpoint ở đây
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -91,7 +91,6 @@ const styles = StyleSheet.create({
     color: '#ECEBED',
     fontSize: 18,
     fontWeight: 'bold',
-    fontFamily: 'rgl1',
   },
   buttonContainer: {
     backgroundColor: "#F62E8E",
@@ -99,5 +98,8 @@ const styles = StyleSheet.create({
     width: 70,
     height: 24,
     alignItems: 'center',
-  }
+  },
+  createContainer: {
+    flex: 1,
+  },
 });

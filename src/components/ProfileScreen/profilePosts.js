@@ -29,7 +29,7 @@ const ProfilePosts = ({ post }) => {
     const fetchUserData = async () => {
       try {
 
-        const response = await fetch("http://192.168.1.101:3000/api/v1/posts/get-all-post");
+        const response = await fetch(process.env.GET_ALL_POST)
         const data = await response.json();
         setUser(data.data); // Lưu bài viết vào state (giả sử data.data chứa danh sách bài viết)
         setLoading(false); // Tắt loading
@@ -159,7 +159,7 @@ const ProfilePosts = ({ post }) => {
 
                 <View style={styles.iconLike}>
                   <TouchableOpacity onPress={() => navigation.navigate(Screens.Comment, { postId: item._id })}
-                  
+
                     >
                     
                     <Image source={comment} style={styles.iconImage} />

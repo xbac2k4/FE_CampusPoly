@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, TextInput, TouchableOpacity, View, Text, Animated, Alert, Modal } from 'react-native';
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 import DocumentPicker from 'react-native-document-picker';
@@ -11,31 +11,39 @@ const PostComponent = ({ onContentChange }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedGif, setSelectedGif] = useState(null);
   const [isGifModalVisible, setGifModalVisible] = useState(false);
-  const handleContentChange = (text) => {
-    setContent(text);
-    onContentChange(text); // Gọi hàm truyền từ màn hình cha
-  };
-  const user = {
-    id: "1",
-    name: "Linh Nguyễn",
-    location: "Hà Nội, Việt Nam",
-    bio: "Nhà văn yêu thích thiên nhiên.",
-    profileImage: "https://unsplash.com/photos/NRQV-hBF10M/download?force=true",
-    backgroundImage: "https://images.unsplash.com/photo-1726768619030-9eafbc5788b2?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    friends: 1500,
-    posts: [
-      {
-        id: 1,
-        text: "Hoàng hôn đẹp quá!",
-        likes: 300,
-        comments: 20,
-        images: [
-          "https://unsplash.com/photos/NRQV-hBF10M/download?force=true"
-        ],
-        time: "1h ago"
+  const [user, setUser] = useState(null); // State để lưu thông tin người dùng
+  const [content, setContent] = useState(''); // State để lưu nội dung bài viết
+
+ 
+
+  // Hàm để gọi API lấy thông tin người dùng
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch('http://192.168.1.101:3000/api/v1/users/get-user-by-id/670ca3898cfc1be4b41b183b');
+      const data = await response.json();
+      
+      // Log toàn bộ dữ liệu để kiểm tra
+      console.log('Dữ liệu người dùng:', data);
+  
+      setUser(data); // Cập nhật state với thông tin người dùng
+      
+      // Log thông tin avatar nếu có
+      if (data && data.avatar) {
+        console.log('Avatar:', data.avatar);
+      } else {
+        console.log('Không tìm thấy avatar trong dữ liệu.');
       }
-    ]
+  
+    } catch (error) {
+      console.error('Lỗi khi lấy dữ liệu người dùng:', error);
+      Alert.alert('Lỗi', 'Không thể lấy dữ liệu người dùng.');
+    }
   };
+  
+  useEffect(() => {
+    fetchUserData(); // Gọi hàm lấy dữ liệu khi component mount
+  }, []);
+
   const handleGifSelect = (gifUrl) => {
     setSelectedGif(gifUrl);
     setGifModalVisible(false);
@@ -113,17 +121,17 @@ const PostComponent = ({ onContentChange }) => {
   return (
     <View style={styles.container}>
       <View style={styles.postRow}>
-        <Image
-          source={{ uri: user.profileImage }}
-          style={styles.avatar}
-        />
+        {user && user.avatar ? ( // Kiểm tra nếu user và avatar không null
+          <Image source={{ uri: user.avatar }} style={styles.avatar} />
+        ) : (
+          <View style={styles.avatarPlaceholder} />
+        )}
         <View style={styles.inputContainer}>
           <TextInput
             style={[styles.textInput, { height: Math.max(40, inputHeight) }]}
             placeholder="What’s on your mind?"
             placeholderTextColor="#888"
             multiline
-            onChangeText={handleContentChange} // Cập nhật nội dung
             onContentSizeChange={(event) =>
               setInputHeight(event.nativeEvent.contentSize.height)
             }
@@ -207,6 +215,11 @@ const PostComponent = ({ onContentChange }) => {
 export default PostComponent;
 
 const styles = StyleSheet.create({
+  container: {
+    padding: 10,
+    backgroundColor: '#2B2B2B',
+    borderRadius: 10,
+  },
   postRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -217,6 +230,13 @@ const styles = StyleSheet.create({
     height: 32,
     borderRadius: 32,
     marginRight: 12,
+  },
+  avatarPlaceholder: {
+    width: 32,
+    height: 32,
+    borderRadius: 32,
+    marginRight: 12,
+    backgroundColor: '#888', // Màu nền placeholder
   },
   inputContainer: {
     flex: 1,
@@ -265,30 +285,26 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 10,
-    marginLeft: 5,
   },
   imageContent: {
-    marginBottom: 10,
     flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
   },
   imageWrapper: {
-    position: 'relative', // Để có thể đặt icon x lên góc của ảnh
-    marginRight: 5, // Khoảng cách giữa các ảnh
+    position: 'relative',
+    marginRight: 10,
   },
   removeImageButton: {
     position: 'absolute',
-    top: -3.5,
-    right: -8,
-    
-    width: 20,
-    height: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    
+    top: 0,
+    right: 0,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    borderRadius: 12,
+    padding: 2,
   },
   removeImageIcon: {
-    width: 20,
-    height: 20,
-    
+    width: 14,
+    height: 14,
   },
 });
