@@ -8,6 +8,7 @@ import ErrorMessage from '../../components/ErrorMessage';
 import Screens from '../../navigation/Screens';
 import { BlurView } from '@react-native-community/blur';
 import Colors from '../../constants/Color';
+import { login } from '../../services/Login';
 
 const LoginScreen = ({ route, navigation }) => {
   const [email, setEmail] = useState(route?.params?.email ?? '')
@@ -18,7 +19,7 @@ const LoginScreen = ({ route, navigation }) => {
   const [isShowDialog, setIsShowDialog] = useState(false)
 
   // Hàm xử lý khi người dùng ấn nút đăng nhập
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (email === '' && password === '') {
       setEmailErrorText('Vui lòng nhập email')
       setPassErrorText('Vui lòng nhập mật khẩu')
@@ -35,12 +36,15 @@ const LoginScreen = ({ route, navigation }) => {
     }
 
     // đoạn này chỉ để test dialog block (36-43)
-    const blockRandom = Math.floor(Math.random() * 2)
+    // const blockRandom = Math.floor(Math.random() * 2)
 
-    if (blockRandom === 1) {
-      toggleShowDialog()
-      return
-    }
+    // if (blockRandom === 1) {
+    //   toggleShowDialog()
+    //   return
+    // }
+
+    const data = await login(email, password)
+    console.log(data);
 
     navigation.navigate(Screens.BottomTab)
   }
@@ -49,7 +53,7 @@ const LoginScreen = ({ route, navigation }) => {
   const toggleShowDialog = useCallback(() => {
     setIsShowDialog(prevState => !prevState);
   }, []);
-  
+
   return (
     <View style={st.container}>
 
