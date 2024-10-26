@@ -23,7 +23,7 @@ const ResetPasswordScreen = ({ route, navigation }) => {
 
         alert('Xử lý hành động gửi mã OTP')
 
-        navigation.navigate(Screens.MenuAuth)
+        navigation.navigate(Screens.NewPass)
     }
 
     const handleForgetPassword = () => {

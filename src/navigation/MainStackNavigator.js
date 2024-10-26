@@ -13,6 +13,7 @@ import Screens from './Screens';
 import CommentScreen from '../workspaces/Comment/CommentScreen';
 import MessagesScreen from '../workspaces/messages/MessagesScreen';
 import ResetPasswordScreen from '../workspaces/ResetPassword/ResetPasswordScreen';
+import NewPasswordScreen from '../workspaces/ResetPassword/NewPasswordScreen';
 
 
 
@@ -32,6 +33,8 @@ const MainStackNavigator = () => {
       <Stack.Screen name={Screens.BottomTab} component={BottomTabNavigator} />
       <Stack.Screen name={Screens.Comment} component={CommentScreen} />
       <Stack.Screen name={Screens.Message} component={MessagesScreen} />
+      <Stack.Screen name={Screens.NewPass} component={NewPasswordScreen} />
+
 
 
     </Stack.Navigator>

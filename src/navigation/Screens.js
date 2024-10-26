@@ -16,6 +16,7 @@ const Screens = {
     Comment: "Comment",
     Message:'Message',
     ResetPass:'ResetPassword',
+    NewPass:'NewPassword',
 };
 
 export default Screens;

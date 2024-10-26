@@ -19,5 +19,6 @@ import CommentScreen from './src/workspaces/Comment/CommentScreen';
 import FrProfileScreen from './src/workspaces/FrProfileScreen/frProfileScreen';
 import MenuAuthenticationScreen from './src/workspaces/MenuAuth/MenuAuthenticationScreen';
 import ResetPasswordScreen from './src/workspaces/ResetPassword/ResetPasswordScreen';
+import NewPasswordScreen from './src/workspaces/ResetPassword/NewPasswordScreen';
 
 AppRegistry.registerComponent(appName, () => App);
