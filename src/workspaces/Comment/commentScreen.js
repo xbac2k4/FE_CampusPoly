@@ -13,7 +13,7 @@ const CommentScreen = () => {
   const [error, setError] = useState(null);
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmark, setIsBookmark] = useState(false);
-  // State để theo dõi số lượng lượt thích
+  // State để theo dõi số lượng lượt thíchhhh
   useEffect(() => {
     const fetchPostById = async () => {
       try {
