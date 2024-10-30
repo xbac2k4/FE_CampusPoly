@@ -17,6 +17,7 @@ const Screens = {
     Alert: "Alert",
     Comment: "Comment",
     Message:'Message',
+    EditProfile: "EditProfile",
 };
 
 export default Screens;
