@@ -21,6 +21,8 @@ const CommentScreen = () => {
         const data = await response.json();
         setPost(data.data);
         setLoading(false);
+        console.log(data);
+        
       } catch (error) {
         console.error('Error fetching post data:', error);
         setError(error);
@@ -79,11 +81,11 @@ const CommentScreen = () => {
         <View style={styles.headerContent}>
           <View style={{ flexDirection: 'row' }}>
             <TouchableOpacity onPress={() => { /* Xử lý avatar */ }}>
-              <Image source={{ uri: post.user_id.avatar || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' }}
+              <Image source={{ uri: post.postData.user_id.avatar || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' }}
                 style={styles.imageavatar} />
             </TouchableOpacity>
             <View style={{ marginLeft: 6, marginTop: -5 }}>
-              <Text style={{ color: '#fff', fontWeight: 'semibold', fontSize: 14, fontFamily: "HankenGrotesk-Regular" }}>{post.user_id.full_name}</Text>
+              <Text style={{ color: '#fff', fontWeight: 'semibold', fontSize: 14, fontFamily: "HankenGrotesk-Regular" }}>{post.postData.user_id.full_name}</Text>
               <Text style={{ fontSize: 12, fontFamily: 'HankenGrotesk-Regular', fontWeight: "medium", color: '#727477' }}>{new Date(post.createdAt).toLocaleString()}</Text>
             </View>
           </View>
@@ -94,15 +96,15 @@ const CommentScreen = () => {
         <View style={styles.bodyContent}>
 
             <Text style={{ fontFamily: 'rgl1', fontSize: 16, fontWeight: '500', color: "#fff" }}>
-             {post.title}
+             {post.postData.title}
             </Text>
             <Text style={{ fontFamily: 'rgl1', fontSize: 16, fontWeight: '500', color: "#fff" }}>
-             {post.content}
+             {post.postData.content}
             </Text>
 
 
-{post.image && post.image.length > 0 && (
-          <Image source={{ uri: post.image[0] }} style={styles.postImage} />
+{post.postData.image && post.postData.image.length > 0 && (
+          <Image source={{ uri: post.postData.image[0] }} style={styles.postImage} />
         )}
         </View>
 
@@ -118,13 +120,13 @@ const CommentScreen = () => {
                   style={{ width: 20, height: 20, marginLeft: 3 }}
                 />
               </TouchableOpacity>
-              <Text style={styles.textInteract}>{post.like_count}</Text>
+              <Text style={styles.textInteract}>{post.postData.like_count}</Text>
             </View>
             <View style={styles.iconLike}>
               <TouchableOpacity onPress={() => { /* Xử lý nút comment */ }}>
                 <Image source={require("../../assets/images/comment.png")} resizeMode='contain' style={{ width: 20, height: 20, marginLeft: 3 }} />
               </TouchableOpacity>
-              <Text style={styles.textInteract}>{post.comment_count}</Text>
+              <Text style={styles.textInteract}>{post.postData.comment_count}</Text>
             </View>
             <TouchableOpacity onPress={() => { /* Xử lý nút share */ }} style={[styles.iconLike, { marginLeft: 4 }]}>
               <Image source={require('../../assets/images/share.png')} resizeMode='contain' style={{ width: 20, height: 20 }} />
