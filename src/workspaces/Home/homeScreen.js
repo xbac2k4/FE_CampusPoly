@@ -7,11 +7,9 @@ import { useNavigation } from '@react-navigation/native';
 import Screens from '../../navigation/Screens';
 
 const HomeScreen = () => {
-
   const [userName, setUserName] = useState(''); // State to store the user's name
   const [greeting, setGreeting] = useState(''); // State to store the greeting message
   const [stories, setStories] = useState([]); // State to store the list of stories
-  const [users, setUsers] = useState([]); // State to store the list of users
   const navigation = useNavigation(); // Hook to access navigation
 
   // Simulate fetching the user's name from an API
@@ -57,94 +55,22 @@ const HomeScreen = () => {
     setStories(fakeStories);
   };
 
-  // Simulate fetching the list of users from an API
-  const fetchUsers = async () => {
-    const fakeUsers = [
-      {
-        id: '1',
-        name: 'Alex Tsimikas',
-        location: 'Brooklyn, NY',
-        bio: 'Writer by Profession. Artist by Passion!',
-        profileImage: require('../../assets/images/avt.png'),
-        backgroundImage: require('../../assets/images/background.png'),
-        friends: 4056,
-        posts: [
-          {
-            id: 1,
-            text: 'Exploring the canals of Venice!',
-            likes: 8998,
-            comments: 145,
-            images: [
-              require('../../assets/images/car2.jpg'),
-              require('../../assets/images/venice2.png'),
-              require('../../assets/images/venice3.png'),
-            ],
-            time: '1h ago',
-          },
-        ],
-      },
-      {
-        id: '2',
-        name: 'Đào Việt Anh',
-        location: 'Hanoi, Vietnam',
-        bio: 'Software Developer and Music Lover',
-        profileImage: require('../../assets/images/avt.png'),
-        backgroundImage: require('../../assets/images/background.png'),
-        friends: 1200,
-        posts: [
-          {
-            id: 2,
-            text: 'Coding and coffee, my perfect combo!',
-            likes: 500,
-            comments: 60,
-            images: [require('../../assets/images/background.png')],
-            time: '2h ago',
-          },
-        ],
-      },
-      {
-        id: '3',
-        name: 'Nguyễn Anh Tuấn',
-        location: 'Ho Chi Minh City, Vietnam',
-        bio: 'Traveler and Photographer',
-        profileImage: require('../../assets/images/avt.png'),
-        backgroundImage: require('../../assets/images/background.png'),
-        friends: 3000,
-        posts: [
-          {
-            id: 3,
-            text: 'Sunset at the beach is breathtaking!',
-            likes: 1000,
-            comments: 100,
-            images: [require('../../assets/images/venice1.png')],
-            time: '1d ago',
-          },
-        ],
-      },
-    ];
-    setUsers(fakeUsers);
-  };
-
   useEffect(() => {
     fetchUserName();
     setGreeting(getGreeting());
-    fetchStories();
-    fetchUsers(); // Fetch users on mount
+    fetchStories(); // Fetch stories on mount
   }, []);
 
   // Handle user avatar press
   const handleUserPress = userId => {
-    const selectedUser = users.find(user => user.id === userId);
-    if (selectedUser) {
-      navigation.navigate('Profile', { user: selectedUser });
-    }
+    navigation.navigate('Profile', { userId });
   };
 
   // Render a single story item
   const renderStoryItem = ({ item }) => (
     <StoryComponent
       imgStory={item.imgStory}
-      onStoryPress={() => { }} // Define what happens when the story is pressed
+      onStoryPress={() => {}} // Define what happens when the story is pressed
       onUserPress={() => handleUserPress(item.userId)} // Pass user data on press
       imgUser={item.imgUser}
     />
@@ -153,7 +79,7 @@ const HomeScreen = () => {
   return (
     <FlatList
       style={styles.container}
-      data={users} // Data for the main FlatList (users list)
+      data={stories} // Use stories for the main list
       keyExtractor={item => item.id}
       nestedScrollEnabled={true}
       ListHeaderComponent={
@@ -168,7 +94,9 @@ const HomeScreen = () => {
               }}>
               {greeting}, {userName || 'User'}
             </Text>
-            <TouchableOpacity style={styles.circleIcon} onPress={() => navigation.navigate(Screens.Message)}>
+            <TouchableOpacity
+              style={styles.circleIcon}
+              onPress={() => navigation.navigate(Screens.Message)}>
               <Icon name="mail-outline" size={15} color="#fff" />
             </TouchableOpacity>
           </View>
@@ -186,9 +114,7 @@ const HomeScreen = () => {
         </View>
       }
       renderItem={({ item }) => (
-        <TouchableOpacity onPress={() => navigation.navigate(Screens.Comment)}>
-          <ProfilePosts user={item} />
-        </TouchableOpacity>
+          <ProfilePosts />
       )}
     />
   );
@@ -205,6 +131,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 40,
     flexDirection: 'row',
+    paddingHorizontal: 24,
   },
   circleIcon: {
     width: 32,

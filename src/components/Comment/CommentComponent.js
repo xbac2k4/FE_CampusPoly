@@ -1,16 +1,13 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { useState } from 'react';
-
 // Component nhận dữ liệu từ props
 const CommentComponent = ({ 
   avatar, name, content, time, likes, initialLiked = false 
 }) => {
   // State để lưu trạng thái "đã thích" (liked)
   const [isLiked, setIsLiked] = useState(initialLiked);
-
   // Hàm xử lý khi nhấn vào biểu tượng heart
   const toggleHeart = () => setIsLiked(!isLiked);
-
   return (
     <View style={styles.commentContainer}>
       <View style={styles.userContainer}>
@@ -24,7 +21,6 @@ const CommentComponent = ({
           {/* Hiển thị tên và nội dung bình luận */}
           <Text style={styles.textName}>{name}</Text>
           <Text style={styles.textContent}>{content}</Text>
-
           {/* Thời gian và số lượt thích */}
           <View style={styles.timeLikeContainer}>
             <Text style={styles.textTime}>{time} <Text>Ago</Text></Text>
@@ -33,7 +29,6 @@ const CommentComponent = ({
           </View>
         </View>
       </View>
-
       {/* Biểu tượng heart có thể nhấn */}
       <TouchableOpacity onPress={toggleHeart}>
         <Image 
@@ -49,9 +44,7 @@ const CommentComponent = ({
     </View>
   );
 };
-
 export default CommentComponent;
-
 const styles = StyleSheet.create({
   commentContainer: {
     flexDirection: 'row',

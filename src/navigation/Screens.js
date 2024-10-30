@@ -1,4 +1,5 @@
 
+
 const Screens = {
     Welcome: "Welcome",
     MenuAuth: "MenuAuthentication",
@@ -18,6 +19,7 @@ const Screens = {
     Comment: "Comment",
     Message:'Message',
     EditProfile: "EditProfile",
+    CreatPost:"CreatPost"
 };
 
 export default Screens;

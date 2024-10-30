@@ -7,10 +7,8 @@ import {
   StyleSheet,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-
 const CommentInputComponent = ({ onSend }) => {
   const [comment, setComment] = useState('');
-
   return (
     <View style={styles.container}>
       <View style={styles.inputWrapper}>
@@ -47,14 +45,11 @@ const CommentInputComponent = ({ onSend }) => {
         </TouchableOpacity>
       </LinearGradient>
       </View>
-
       
     </View>
   );
 };
-
 export default CommentInputComponent;
-
 const styles = StyleSheet.create({
   container: {
     height: 88,

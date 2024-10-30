@@ -1,148 +1,241 @@
-import {
-  Dimensions,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { View, ScrollView, Text, StyleSheet, TouchableOpacity, Image, Dimensions } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-const { width: screenWidth } = Dimensions.get('window'); // Lấy chiều rộng màn hình để điều chỉnh kích thước hình ảnh
+const { width: screenWidth } = Dimensions.get('window');
 
-const ArticleComponent = ({
-  id,
-  imgavatar,
-  username,
-  time,
-  content,
-  imgcontent,
-  likecount,
-  commentcount,
-}) => {
-  // Trạng thái để theo dõi có thích hay không
-  const [isLiked, setIsLiked] = useState(false);
-  //Trạng thái để theo dõi bookmark
-  const [isBookmark, setIsBookmark] = useState(false);
-  // State để theo dõi số lượng lượt thích
-  const [likes, setLikes] = useState(likecount);
+// Import các hình ảnh
+import avt from '../../assets/images/avt.png';
+import bookmark from '../../assets/images/bookmark.png';
+import bookmarkFilled from '../../assets/images/bookmark2.png';
+import comment from '../../assets/images/comment.png';
+import heart from '../../assets/images/heart.png';
+import heartFilled from '../../assets/images/hear2.png';
+import share from '../../assets/images/share.png';
 
-  // Hàm xử lý khi nhấn nút thích
-  const handleLikePress = () => {
-    setIsLiked(!isLiked); // Đảo trạng thái thích
-    setLikes(prevLikes => (isLiked ? prevLikes - 1 : prevLikes + 1)); // Cập nhật số lượng lượt thích
+const CommentArticle = ({ user }) => {
+  const [likedPosts, setLikedPosts] = useState([]); 
+  const [savedPosts, setSavedPosts] = useState([]); 
+  const [activeImageIndex, setActiveImageIndex] = useState({}); 
+
+  if (!user) {
+    return null; 
+  }
+
+  useEffect(() => {
+    const initialIndices = {};
+    user.posts.forEach((post) => {
+      if (post.images && post.images.length > 1) {
+        initialIndices[post.id] = 0; // Thiết lập chỉ mục đầu tiên cho các bài có nhiều ảnh
+      }
+    });
+    setActiveImageIndex(initialIndices);
+  }, [user.posts]);
+
+  const toggleLike = (postId) => {
+    setLikedPosts((prevLikedPosts) => 
+      prevLikedPosts.includes(postId)
+        ? prevLikedPosts.filter((id) => id !== postId)
+        : [...prevLikedPosts, postId]
+    ); // Chuyển đổi trạng thái thích của bài đăng
+  };
+
+  const toggleSave = (postId) => {
+    setSavedPosts((prevSavedPosts) => 
+      prevSavedPosts.includes(postId)
+        ? prevSavedPosts.filter((id) => id !== postId)
+        : [...prevSavedPosts, postId]
+    ); // Chuyển đổi trạng thái lưu của bài đăng
+  };
+
+  const renderImages = (images, postId) => {
+    if (images.length === 1) {
+      return <Image source={images[0]} style={styles.postImage} />;
+    }
+
+    return (
+      <>
+        <ScrollView
+          horizontal
+          pagingEnabled
+          style={styles.imageList}
+          showsHorizontalScrollIndicator={false}
+          onScroll={(event) => {
+            const index = Math.round(event.nativeEvent.contentOffset.x / screenWidth);
+            setActiveImageIndex((prevState) => ({
+              ...prevState,
+              [postId]: index,
+            }));
+          }}
+        >
+          {images.map((image, index) => (
+            <Image key={index} source={image} style={styles.postImage} />
+          ))}
+        </ScrollView>
+        <View style={styles.paginationContainer}>
+          {images.map((_, index) => (
+            <View
+              key={index}
+              style={[
+                styles.paginationDot,
+                activeImageIndex[postId] === index ? styles.activeDot : styles.inactiveDot,
+              ]}
+            />
+          ))}
+        </View>
+      </>
+    );
   };
 
   return (
-    <View style={styles.container}>
-      
-      <View style={{ height: 1, backgroundColor: '#323436', marginBottom: 15 }} />
-      
-      <View style={styles.headerContent}>
-        <View style={{ flexDirection: 'row' }}>
-          <TouchableOpacity onPress={() => { /* Xử lý avatar */ }}>
-            <Image source={imgavatar} style={styles.imageavatar} />
-          </TouchableOpacity>
-          <View style={{ marginLeft: 6, marginTop: -5 }}>
-            <Text style={{ color: '#fff', fontWeight: 'semibold', fontSize: 14, fontFamily: "HankenGrotesk-Regular" }}>{username}</Text>
-            <Text style={{ fontSize: 12, fontFamily: 'HankenGrotesk-Regular', fontWeight: "medium", color: '#727477' }}>{time}</Text>
+    <ScrollView contentContainerStyle={styles.flatListContent}>
+      {user.posts.map((item) => (
+        <View key={item.id} style={styles.postContainer}>
+          <View style={styles.postHeader}>
+            <Image source={user.profileImage} style={styles.profileImage} />
+            <View style={styles.headerText}>
+              <Text style={styles.profileName}>{user.name}</Text>
+              <Text style={styles.postTime}>{item.time}</Text>
+            </View>
+            <TouchableOpacity style={styles.moreIcon}>
+              <Text style={styles.moreText}>⋮</Text>
+            </TouchableOpacity>
           </View>
-        </View>
-        <TouchableOpacity onPress={() => { /* Xử lý nút menu */ }}>
-          <Image source={require('../../assets/images/dot.png')} resizeMode='contain' style={{ width: 20, height: 20 }} />
-        </TouchableOpacity>
-      </View>
-      <View style={styles.bodyContent}>
-        {content ? (
-          <Text style={{ fontFamily: 'rgl1', fontSize: 16, fontWeight: '500', color: "#fff" }}>
-            {content}
-          </Text>
-        ) : null}
-        
-        {imgcontent ? (
-          <TouchableOpacity>
-            <Image source={imgcontent} style={styles.imgContent} />
-          </TouchableOpacity>
-        ) : null}
-      </View>
-      
-      <View style={styles.interactContainer}>
-        <View style={{ flexDirection: "row" }}>
-          <View style={styles.iconLike}>
-            <TouchableOpacity onPress={handleLikePress}>
+          <Text style={styles.postText}>{item.text}</Text>
+          {item.images && renderImages(item.images, item.id)}
+          <View style={styles.postMeta}>
+            <View style={styles.leftMetaIcons}>
+              <TouchableOpacity style={styles.iconButton} onPress={() => toggleLike(item.id)}>
+                <Image
+                  source={likedPosts.includes(item.id) ? heartFilled : heart}
+                  style={styles.iconImage}
+                />
+                <Text style={styles.metaText}>{item.likes}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.iconButton}>
+                <Image source={comment} style={styles.iconImage} />
+                <Text style={styles.metaText}>{item.comments}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.iconButton}>
+                <Image source={share} style={styles.iconImage} />
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity style={styles.iconButton} onPress={() => toggleSave(item.id)}>
               <Image
-                source={isLiked
-                  ? require('../../assets/images/hear2.png') 
-                  : require('../../assets/images/heart.png')}
-                resizeMode='contain'
-                style={{ width: 20, height: 20, marginLeft: 3 }}
+                source={savedPosts.includes(item.id) ? bookmarkFilled : bookmark}
+                style={styles.iconImage}
               />
             </TouchableOpacity>
-            <Text style={styles.textInteract}>{likes}</Text>
           </View>
-          <View style={styles.iconLike}>
-            <TouchableOpacity onPress={() => { /* Xử lý nút comment */ }}>
-              <Image source={require("../../assets/images/comment.png")} resizeMode='contain' style={{ width: 20, height: 20, marginLeft: 3 }} />
-            </TouchableOpacity>
-            <Text style={styles.textInteract}>{commentcount}</Text>
-          </View>
-          <TouchableOpacity onPress={() => { /* Xử lý nút share */ }} style={[styles.iconLike, { marginLeft: 4 }]}>
-            <Image source={require('../../assets/images/share.png')} resizeMode='contain' style={{ width: 20, height: 20 }} />
-          </TouchableOpacity>
+          <View style={styles.separator} />
         </View>
-        <TouchableOpacity onPress={() => setIsBookmark(!isBookmark)}  style={{ marginTop: 5 }}>
-        <Image
-                source={isBookmark
-                  ? require('../../assets/images/bookmark2.png') 
-                  : require('../../assets/images/bookmark.png')}
-                resizeMode='contain'
-                style={{ width: 20, height: 20}}
-              />
-        </TouchableOpacity>
-      </View>
-      <View style={{ height: 1, backgroundColor: '#323436', marginTop: 15 }} />
-    </View>
+      ))}
+    </ScrollView>
   );
 };
 
-export default ArticleComponent;
-
 const styles = StyleSheet.create({
-  headerContent: {
+  postContainer: {
+    width: '100%',
+    backgroundColor: '#000',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  postHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
   },
-  imageavatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 100,
+  profileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 10,
   },
-  bodyContent: {
-    marginTop: 10,
+  headerText: {
+    flex: 1,
   },
-  imgContent: {
+  profileName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#FFF',
+  },
+  postTime: {
+    fontSize: 12,
+    color: '#B3B3B3',
+  },
+  moreIcon: {
+    paddingLeft: 10,
+  },
+  moreText: {
+    fontSize: 20,
+    color: '#B3B3B3',
+  },
+  postText: {
+    color: '#FFF',
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  postImage: {
     width: screenWidth - 50,
     height: 200,
-    borderRadius: 16,
+    borderRadius: 8,
+    marginRight: 10,
+  },
+  postMeta: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 5,
+  },
+  leftMetaIcons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 15,
     marginTop: 10,
   },
-  interactContainer: {
-    flexDirection: 'row',
-    marginTop: 17,
-    paddingHorizontal: 5,
-    justifyContent: 'space-between',
-  },
-  iconLike: {
-    marginLeft: 1,
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginRight: 9,
-  },
-  textInteract: {
-    fontFamily: 'rgl1',
-    fontSize: 16,
-    color: '#fff',
+  metaText: {
+    color: '#B3B3B3',
+    fontSize: 14,
     marginLeft: 5,
-    fontWeight: 'bold',
+  },
+  flatListContent: {
+    paddingBottom: 20,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: '#B3B3B3',
+    marginTop: 15,
+    marginBottom: 10,
+  },
+  imageList: {
+    marginBottom: 10,
+  },
+  paginationContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 10,
+  },
+  iconImage: {
+    width: 20,
+    height: 20,
+  },
+  paginationDot: {
+    height: 8,
+    width: 8,
+    borderRadius: 4,
+    marginHorizontal: 4,
+  },
+  activeDot: {
+    backgroundColor: '#FF0000',
+  },
+  inactiveDot: {
+    backgroundColor: '#B3B3B3',
   },
 });
+
+export default CommentArticle;

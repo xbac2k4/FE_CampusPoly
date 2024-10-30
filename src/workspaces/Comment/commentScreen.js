@@ -1,34 +1,37 @@
-import {
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import React from 'react';
-import ArticleComponent from '../../components/Home/articleComponent';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Image, ScrollView, ActivityIndicator, TouchableOpacity, Dimensions } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import CommentComponent from '../../components/Comment/CommentComponent';
 import CommentInputComponent from '../../components/Comment/CommentInputComponent';
+const { width: screenWidth } = Dimensions.get('window'); // Lấy chiều rộng màn hình để điều chỉnh kích thước hình ảnh
+const CommentScreen = () => {
+  const route = useRoute();
+  const { postId } = route.params;
+  const navigation = useNavigation();
+  const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isLiked, setIsLiked] = useState(false);
+  const [isBookmark, setIsBookmark] = useState(false);
+  // State để theo dõi số lượng lượt thích
+  useEffect(() => {
+    const fetchPostById = async () => {
+      try {
+        const response = await fetch(`http://10.0.2.2:3000/api/v1/posts/get-post-by-id/${postId}`);
+        const data = await response.json();
+        setPost(data.data);
+        setLoading(false);
+        console.log(data);
+        
+      } catch (error) {
+        console.error('Error fetching post data:', error);
+        setError(error);
+        setLoading(false);
+      }
+    };
 
-const CommentScreen = ({navigation}) => {
-
-  const handleSendComment = comment => {
-    console.log('Comment gửi:', comment);
-    // Xử lý khi gửi comment (thêm vào danh sách, đẩy lên server, v.v.)
-  };
-  const fakeArticles = [
-    {
-      id: '1',
-      imgavatar: require('../../assets/images/car1.jpg'),
-      username: 'Đào Việt Anh',
-      time: '2h ago',
-      content: 'This is the first article content.',
-      imgcontent: require('../../assets/images/car2.jpg'),
-      likecount: 150,
-      commentcount: 20,
-    },
-  ];
+    fetchPostById();
+  }, [postId]);
 
   const fakeComments = [
     {
@@ -39,162 +42,200 @@ const CommentScreen = ({navigation}) => {
       time: '2m',
       likes: 10,
     },
-    {
-      id: '2',
-      avatar: 'https://randomuser.me/api/portraits/women/2.jpg',
-      name: 'Trần Huyền',
-      content: 'Đồng ý với bài viết này!',
-      time: '5m',
-      likes: 12,
-    },
-    {
-      id: '3',
-      avatar: 'https://randomuser.me/api/portraits/men/3.jpg',
-      name: 'Lê Anh Tuấn',
-      content: 'Thông tin rất hữu ích.',
-      time: '10m',
-      likes: 20,
-    },
-    {
-      id: '4',
-      avatar: 'https://randomuser.me/api/portraits/men/4.jpg',
-      name: 'Phạm Thanh',
-      content: 'Rất hay, cảm ơn bạn.',
-      time: '15m',
-      likes: 8,
-    },
-    {
-      id: '5',
-      avatar: 'https://randomuser.me/api/portraits/women/5.jpg',
-      name: 'Linh Chi',
-      content: 'Mong có thêm bài viết mới.',
-      time: '30m',
-      likes: 5,
-    },
-    {
-      id: '6',
-      avatar: 'https://randomuser.me/api/portraits/men/6.jpg',
-      name: 'Bùi Công',
-      content: 'Bài viết này giúp tôi rất nhiều.',
-      time: '45m',
-      likes: 7,
-    },
-    {
-      id: '7',
-      avatar: 'https://randomuser.me/api/portraits/women/7.jpg',
-      name: 'Hồng Hà',
-      content: 'Tôi rất thích bài viết này.',
-      time: '1h',
-      likes: 14,
-    },
-    {
-      id: '8',
-      avatar: 'https://randomuser.me/api/portraits/men/8.jpg',
-      name: 'Văn Hải',
-      content: 'Cảm ơn bạn đã chia sẻ!',
-      time: '1h 30m',
-      likes: 9,
-    },
-    {
-      id: '9',
-      avatar: 'https://randomuser.me/api/portraits/women/9.jpg',
-      name: 'Thanh Tâm',
-      content: 'Quá tuyệt!',
-      time: '2h',
-      likes: 18,
-    },
-    {
-      id: '10',
-      avatar: 'https://randomuser.me/api/portraits/men/10.jpg',
-      name: 'Đức Minh',
-      content: 'Rất hay, tôi sẽ theo dõi.',
-      time: '2h 15m',
-      likes: 11,
-    },
   ];
 
+  if (loading) {
+    return <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 20 }} />;
+  }
+
+  if (error) {
+    return <Text style={styles.errorText}>Error loading post: {error.message}</Text>;
+  }
+
+  if (!post) {
+    return <Text style={styles.errorText}>No post found</Text>;
+  }
+
   return (
-    <>
-    <ScrollView style={styles.container}>
-      <View style={styles.barHeader}>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.goBack();
-          }}
-          style={styles.circleIcon}>
-          <Image
-            source={require('../../assets/images/arowleft.png')}
-            resizeMode="contain"
-            style={{ width: 15, height: 15 }}
-          />
-        </TouchableOpacity>
-        <Text style={styles.textHeader}>POST</Text>
-        <Text style={[styles.textHeader, { color: '#181A1C' }]}>Post</Text>
-      </View>
-
-      {/* Hiển thị bài viết từ fakeArticles */}
-      {fakeArticles.map(article => (
-        <ArticleComponent
-          key={article.id}
-          id={article.id}
-          imgavatar={article.imgavatar}
-          username={article.username}
-          time={article.time}
-          content={article.content}
-          imgcontent={article.imgcontent}
-          likecount={article.likecount}
-          commentcount={article.commentcount}
-        />
-      ))}
-
-      {/* Header cho phần Comment */}
-      <View style={styles.barComment}>
-        <Text style={styles.commentTitle}>
-          COMMENTS (<Text>20</Text>)
-        </Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Text style={styles.recentText}>Recent</Text>
-          <TouchableOpacity onPress={() => {
-            /* Xử lý hành động khi click vào Recent */
-          }}>
+    <View style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.barHeader}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.circleIcon}
+          >
             <Image
-              source={require("../../assets/images/arrowbottom.png")}
+              source={require('../../assets/images/arowleft.png')}
+              resizeMode="contain"
+              style={{ width: 15, height: 15 }}
+            />
+          </TouchableOpacity>
+          <Text style={styles.textHeader}>POST</Text>
+          <Text style={[styles.textHeader, { color: '#181A1C' }]}>Post</Text>
+        </View>
+
+
+
+        <View style={{ height: 1, backgroundColor: '#323436', marginBottom: 15 }} />
+
+        <View style={styles.headerContent}>
+          <View style={{ flexDirection: 'row' }}>
+            <TouchableOpacity onPress={() => { /* Xử lý avatar */ }}>
+              <Image source={{ uri: post.postData.user_id.avatar || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' }}
+                style={styles.imageavatar} />
+            </TouchableOpacity>
+            <View style={{ marginLeft: 6, marginTop: -5 }}>
+              <Text style={{ color: '#fff', fontWeight: 'semibold', fontSize: 14, fontFamily: "HankenGrotesk-Regular" }}>{post.postData.user_id.full_name}</Text>
+              <Text style={{ fontSize: 12, fontFamily: 'HankenGrotesk-Regular', fontWeight: "medium", color: '#727477' }}>{new Date(post.createdAt).toLocaleString()}</Text>
+            </View>
+          </View>
+          <TouchableOpacity onPress={() => { /* Xử lý nút menu */ }}>
+            <Image source={require('../../assets/images/dot.png')} resizeMode='contain' style={{ width: 20, height: 20 }} />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.bodyContent}>
+
+            <Text style={{ fontFamily: 'rgl1', fontSize: 16, fontWeight: '500', color: "#fff" }}>
+             {post.postData.title}
+            </Text>
+            <Text style={{ fontFamily: 'rgl1', fontSize: 16, fontWeight: '500', color: "#fff" }}>
+             {post.postData.content}
+            </Text>
+
+
+{post.postData.image && post.postData.image.length > 0 && (
+          <Image source={{ uri: post.postData.image[0] }} style={styles.postImage} />
+        )}
+        </View>
+
+        <View style={styles.interactContainer}>
+          <View style={{ flexDirection: "row" }}>
+            <View style={styles.iconLike}>
+              <TouchableOpacity>
+                <Image
+                  source={isLiked
+                    ? require('../../assets/images/hear2.png')
+                    : require('../../assets/images/heart.png')}
+                  resizeMode='contain'
+                  style={{ width: 20, height: 20, marginLeft: 3 }}
+                />
+              </TouchableOpacity>
+              <Text style={styles.textInteract}>{post.postData.like_count}</Text>
+            </View>
+            <View style={styles.iconLike}>
+              <TouchableOpacity onPress={() => { /* Xử lý nút comment */ }}>
+                <Image source={require("../../assets/images/comment.png")} resizeMode='contain' style={{ width: 20, height: 20, marginLeft: 3 }} />
+              </TouchableOpacity>
+              <Text style={styles.textInteract}>{post.postData.comment_count}</Text>
+            </View>
+            <TouchableOpacity onPress={() => { /* Xử lý nút share */ }} style={[styles.iconLike, { marginLeft: 4 }]}>
+              <Image source={require('../../assets/images/share.png')} resizeMode='contain' style={{ width: 20, height: 20 }} />
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity onPress={() => setIsBookmark(!isBookmark)} style={{ marginTop: 5 }}>
+            <Image
+              source={isBookmark
+                ? require('../../assets/images/bookmark2.png')
+                : require('../../assets/images/bookmark.png')}
+              resizeMode='contain'
               style={{ width: 20, height: 20 }}
             />
           </TouchableOpacity>
         </View>
-      </View>
+        <View style={{ height: 1, backgroundColor: '#323436', marginTop: 15 }} />
 
-      {/* Hiển thị danh sách bình luận */}
-      {fakeComments.map(comment => (
-        <CommentComponent
-          key={comment.id}
-          avatar={comment.avatar}
-          name={comment.name}
-          content={comment.content}
-          time={comment.time}
-          likes={comment.likes}
-        />
-      ))}
-    </ScrollView>
 
-      {/* Input để gửi comment */}
-      <CommentInputComponent onSend={handleSendComment} />
-      </>
+
+
+
+
+
+
+
+
+
+
+
+        {/** Sử lí phầm comment */}
+        <View style={styles.barComment}>
+          <Text style={styles.commentTitle}>
+            COMMENTS (<Text>{fakeComments.length}</Text>)
+          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={styles.recentText}>Recent</Text>
+            <TouchableOpacity onPress={() => {
+              // Handle action when click on Recent
+            }}>
+              <Image
+                source={require("../../assets/images/arrowbottom.png")}
+                style={{ width: 20, height: 20 }}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {fakeComments.map(comment => (
+          <CommentComponent key={comment.id} comment={comment} />
+        ))}
+      </ScrollView>
+      <CommentInputComponent style={styles.commentInput} />
+    </View>
   );
 };
 
-export default CommentScreen;
-
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    paddingHorizontal: 24,
+    padding: 20,
     backgroundColor: '#181A1C',
+    flexGrow: 1,
+  },
+  postHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  profileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 10,
+  },
+  headerText: {
+    flex: 1,
+  },
+  profileName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#FFF',
+  },
+  postTime: {
+    fontSize: 12,
+    color: '#B3B3B3',
+  },
+  postTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#FFF',
+    marginVertical: 10,
+  },
+  postContent: {
+    fontSize: 16,
+    color: '#FFF',
+    marginBottom: 10,
+  },
+  postImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: 8,
+    marginTop: 10,
+  },
+  errorText: {
+    color: 'red',
+    textAlign: 'center',
+    marginTop: 20,
   },
   barHeader: {
     flexDirection: 'row',
-    marginTop: 40,
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingBottom: 20,
@@ -217,7 +258,6 @@ const styles = StyleSheet.create({
   barComment: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 20,
   },
   commentTitle: {
     fontFamily: 'rgl1',
@@ -232,4 +272,51 @@ const styles = StyleSheet.create({
     color: '#ECEBED',
     marginRight: 3,
   },
+  commentInput: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#181A1C', // Set background color for visibility
+    padding: 10,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  imageavatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 100,
+  },
+  bodyContent: {
+    marginTop: 10,
+  },
+  imgContent: {
+    width: screenWidth - 50,
+    height: 200,
+    borderRadius: 16,
+    marginTop: 10,
+  },
+  interactContainer: {
+    flexDirection: 'row',
+    marginTop: 17,
+    paddingHorizontal: 5,
+    justifyContent: 'space-between',
+  },
+  iconLike: {
+    marginLeft: 1,
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginRight: 9,
+  },
+  textInteract: {
+    fontFamily: 'rgl1',
+    fontSize: 16,
+    color: '#fff',
+    marginLeft: 5,
+    fontWeight: 'bold',
+  },
 });
+
+export default CommentScreen;
