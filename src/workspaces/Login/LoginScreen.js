@@ -35,16 +35,15 @@ const LoginScreen = ({ route, navigation }) => {
       return
     }
 
-    // đoạn này chỉ để test dialog block (36-43)
-    // const blockRandom = Math.floor(Math.random() * 2)
+    const result = await login(email, password)
 
-    // if (blockRandom === 1) {
-    //   toggleShowDialog()
-    //   return
-    // }
+    // Kiểm tra tài khoản có bị block không
+    const blockCheck = result?.data?.user_status_id?.status_name
 
-    const data = await login(email, password)
-    console.log(data);
+    if (blockCheck === 'Bị chặn') {
+      toggleShowDialog()
+      return
+    }
 
     navigation.navigate(Screens.BottomTab)
   }
