@@ -11,8 +11,10 @@ const user = {
   location: 'Brooklyn, NY',
   bio: 'Writer by Profession. Artist by Passion!',
   profileImage: require('../../assets/images/avt.png'),
-  backgroundImage: require('../../assets/images/background.png'), 
-  friends: 4056, 
+  backgroundImage: require('../../assets/images/background.png'),
+  birthday: new Date('2024-10-14T04:15:12.857+00:00'),
+  friends: 4056,
+  sex:'female',
   posts: [
     {
       id: 1,

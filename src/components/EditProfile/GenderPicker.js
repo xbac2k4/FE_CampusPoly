@@ -14,11 +14,25 @@ const GenderPicker = ({ selectedGender, onGenderChange }) => {
     toggleModal(); 
   };
 
+  const translate = (sex)=>{
+    if(sex == 'female'){
+      return 'Nữ'
+    }
+
+    if(sex == 'male'){
+      return 'Nam'
+    }
+
+    if (sex == 'other') {
+      return 'Khác'
+    }
+  }
+
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={toggleModal} style={styles.picker}>
         <Text style={styles.pickerText}>
-          {selectedGender ? selectedGender.charAt(0).toUpperCase() + selectedGender.slice(1) : "Select Gender"}
+          {selectedGender ? translate(selectedGender) : "Chọn giới tính"}
         </Text>
       </TouchableOpacity>
 
@@ -28,15 +42,15 @@ const GenderPicker = ({ selectedGender, onGenderChange }) => {
         style={styles.modal}
       >
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Select Gender</Text>
+          <Text style={styles.modalTitle}>Chọn giới tính</Text>
           <TouchableOpacity onPress={() => handleGenderSelect('male')} style={styles.modalItem}>
-            <Text style={styles.modalItemText}>Male</Text>
+            <Text style={styles.modalItemText}>Nam</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => handleGenderSelect('female')} style={styles.modalItem}>
-            <Text style={styles.modalItemText}>Female</Text>
+            <Text style={styles.modalItemText}>Nữ</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => handleGenderSelect('other')} style={styles.modalItem}>
-            <Text style={styles.modalItemText}>Other</Text>
+            <Text style={styles.modalItemText}>Khác</Text>
           </TouchableOpacity>
         
         </View>

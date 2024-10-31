@@ -1,102 +1,58 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Modal, StyleSheet, TouchableWithoutFeedback, PanResponder } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import DatePicker from 'react-native-date-picker';
 
-const BirthdayPicker = ({ onDateChange }) => {
-  const [day, setDay] = useState(1);
-  const [month, setMonth] = useState(1);
-  const [year, setYear] = useState(new Date().getFullYear());
-  const [showPicker, setShowPicker] = useState(false);
-  const [formattedDate, setFormattedDate] = useState('Select Birthday');
+const BirthdayPicker = ({ selectedDate, onDateChange }) => {
 
-  const openPicker = () => setShowPicker(true);
-  const closePicker = () => setShowPicker(false);
+  const [isShowDate, setIsShowDate] = useState(false)
 
-  const confirmDate = () => {
-    const selectedDate = new Date(year, month - 1, day);
-    onDateChange(selectedDate);
-    setFormattedDate(formatDate(selectedDate));
-    closePicker();
-  };
+  const handleConfirmDate = (date) => {
+    setIsShowDate(false)
+    onDateChange(date)
+    console.log(date);
+    
+  }
+
+  const togggleDatePicker = () => {
+    setIsShowDate(!isShowDate)
+  }
 
   const formatDate = (date) => {
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
+    let day = date.getDate();
+    let month = date.getMonth() + 1; // Tháng bắt đầu từ 0
+    const year = date.getFullYear();
 
-  const panResponder = PanResponder.create({
-    onMoveShouldSetPanResponder: (_, gestureState) => {
-      return gestureState.dy > 10;
-    },
-    onPanResponderRelease: (_, gestureState) => {
-      if (gestureState.dy > 50) {
-        closePicker();
-      }
-    },
-  });
+    // Thêm số 0 vào trước ngày và tháng nếu cần
+    if (day < 10) {
+      day = `0${day}`;
+    }
+    if (month < 10) {
+      month = `0${month}`;
+    }
+
+    return `${day}/${month}/${year}`;
+  };
 
   return (
     <View>
-      <TouchableOpacity onPress={openPicker} style={styles.dateButton}>
-        <Text style={styles.dateText}>{formattedDate}</Text>
+      <TouchableOpacity onPress={togggleDatePicker} style={styles.dateButton}>
+        <Text style={styles.dateText}>{formatDate(selectedDate)}</Text>
       </TouchableOpacity>
 
-      <Modal
-        visible={showPicker}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={closePicker}
-      >
-        <TouchableWithoutFeedback onPress={closePicker}>
-          <View style={styles.modalContainer}>
-            <View
-              style={styles.pickerContainer}
-              {...panResponder.panHandlers}
-            >
-              <Text style={styles.modalTitle}>Select Date of Birth</Text>
-
-              <View style={styles.pickerRow}>
-                <Picker
-                  selectedValue={day}
-                  style={styles.picker}
-                  onValueChange={(itemValue) => setDay(itemValue)}
-                >
-                  {[...Array(31)].map((_, i) => (
-                    <Picker.Item key={i} label={`${i + 1}`} value={i + 1} />
-                  ))}
-                </Picker>
-
-                <Picker
-                  selectedValue={month}
-                  style={styles.picker}
-                  onValueChange={(itemValue) => setMonth(itemValue)}
-                >
-                  {[...Array(12)].map((_, i) => (
-                    <Picker.Item key={i} label={`${i + 1}`} value={i + 1} />
-                  ))}
-                </Picker>
-
-                <Picker
-                  selectedValue={year}
-                  style={styles.picker}
-                  onValueChange={(itemValue) => setYear(itemValue)}
-                >
-                  {[...Array(100)].map((_, i) => (
-                    <Picker.Item key={i} label={`${new Date().getFullYear() - i}`} value={new Date().getFullYear() - i} />
-                  ))}
-                </Picker>
-              </View>
-
-              <TouchableOpacity onPress={confirmDate} style={styles.confirmButton}>
-                <Text style={styles.confirmText}>Confirm</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
+      <DatePicker
+        modal
+        title={'Chọn ngày sinh'}
+        open={isShowDate}
+        date={selectedDate}
+        mode='date'
+        theme='dark'
+        onConfirm={handleConfirmDate}
+        onCancel={togggleDatePicker}
+        locale='vi'
+        confirmText='Xác nhận'
+        cancelText='Hủy'
+        maximumDate={new Date()}
+      />
     </View>
   );
 };

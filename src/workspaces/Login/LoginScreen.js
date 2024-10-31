@@ -35,15 +35,15 @@ const LoginScreen = ({ route, navigation }) => {
       return
     }
 
-    const result = await login(email, password)
+    // const result = await login(email, password)
 
     // Kiểm tra tài khoản có bị block không
-    const blockCheck = result?.data?.user_status_id?.status_name
+    // const blockCheck = result?.data?.user_status_id?.status_name
 
-    if (blockCheck === 'Bị chặn') {
-      toggleShowDialog()
-      return
-    }
+    // if (blockCheck === 'Bị chặn') {
+    //   toggleShowDialog()
+    //   return
+    // }
 
     navigation.navigate(Screens.BottomTab)
   }

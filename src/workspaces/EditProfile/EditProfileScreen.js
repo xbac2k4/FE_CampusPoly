@@ -1,7 +1,7 @@
-import React, {useRef, useState, useEffect} from 'react';
-import {View, Text, Image, TouchableOpacity} from 'react-native';
+import React, { useRef, useState, useEffect } from 'react';
+import { View, Text, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {launchImageLibrary} from 'react-native-image-picker';
+import { launchImageLibrary } from 'react-native-image-picker';
 import ProfileInput from '../../components/EditProfile/ProfileInput';
 import ImageOptionsSheet from '../../components/EditProfile/ImageOptionsSheet';
 import DeleteConfirmationModal from '../../components/EditProfile/DeleteConfirmationModal';
@@ -10,15 +10,15 @@ import GenderPicker from '../../components/EditProfile/GenderPicker';
 import BirthdayPicker from '../../components/EditProfile/BirthdayPicker';
 import styles from './styles';
 
-const EditProfileScreen = ({route, navigation}) => {
-  const {user} = route.params || {};
+const EditProfileScreen = ({ route, navigation }) => {
+  const { user } = route.params || {};
   const profileSheetRef = useRef(null);
   const backgroundSheetRef = useRef(null);
 
   const [name, setName] = useState(user ? user.name : '');
   const [bio, setBio] = useState(user ? user.bio : '');
-  const [gender, setGender] = useState(user ? user.gender : '');
-  const [birthday, setBirthday] = useState(user ? user.birthday : null);
+  const [gender, setGender] = useState(user ? user.sex : '');
+  const [birthday, setBirthday] = useState(user ? new Date(user.birthday) : null);
   const [profileImage, setProfileImage] = useState(
     user ? user.profileImage : require('../../assets/images/default-profile.png')
   );
@@ -89,7 +89,7 @@ const EditProfileScreen = ({route, navigation}) => {
       name,
       bio,
       gender,
-      birthday: birthday ? birthday.toLocaleDateString('en-US', {
+      birthday: birthday ? birthday.toLocaleDateString('vi', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
@@ -105,14 +105,13 @@ const EditProfileScreen = ({route, navigation}) => {
     }, 100);
   };
 
-  const clearName = () => setName('');
   const clearBio = () => setBio('');
 
   const handleProfileImageEdit = type => {
     if (type === 'upload') {
-      launchImageLibrary({mediaType: 'photo'}, response => {
+      launchImageLibrary({ mediaType: 'photo' }, response => {
         if (!response.didCancel && !response.error) {
-          const source = {uri: response.assets[0].uri};
+          const source = { uri: response.assets[0].uri };
           setProfileImage(source);
           profileSheetRef.current.close();
         }
@@ -125,9 +124,9 @@ const EditProfileScreen = ({route, navigation}) => {
 
   const handleBackgroundImageEdit = type => {
     if (type === 'upload') {
-      launchImageLibrary({mediaType: 'photo'}, response => {
+      launchImageLibrary({ mediaType: 'photo' }, response => {
         if (!response.didCancel && !response.error) {
-          const source = {uri: response.assets[0].uri};
+          const source = { uri: response.assets[0].uri };
           setBackgroundImage(source);
           backgroundSheetRef.current.close();
         }
@@ -190,10 +189,13 @@ const EditProfileScreen = ({route, navigation}) => {
         <ProfileInput label="Name" value={name} onChangeText={text => {
           setName(text);
           validateName(text);
-        }} clearText={() => {setName(''); validateName('');}} maxLength={50} errorMessage={errorMessage} />
+        }} clearText={() => { setName(''); validateName(''); }} maxLength={50} errorMessage={errorMessage} />
         <ProfileInput label="Bio" value={bio} onChangeText={setBio} clearText={clearBio} maxLength={50} />
         <GenderPicker selectedGender={gender} onGenderChange={setGender} />
-        <BirthdayPicker selectedDate={birthday} onDateChange={setBirthday} />
+        <BirthdayPicker
+          selectedDate={birthday}
+          onDateChange={(date) => setBirthday(date)} 
+          />
       </View>
 
       {/* Image Options */}
