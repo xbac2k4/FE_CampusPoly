@@ -1,21 +1,25 @@
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React, { useCallback, useState } from 'react'
 import Feather from 'react-native-vector-icons/Feather';
 import AuthenticationHeader from '../../components/AuthHeader';
 import TwoButtonBottom from '../../components/TwoButtonBottom';
 import CustomInput from '../../components/CustomInput';
 import ErrorMessage from '../../components/ErrorMessage';
 import Screens from '../../navigation/Screens';
+import { BlurView } from '@react-native-community/blur';
+import Colors from '../../constants/Color';
+import { login } from '../../services/Login';
 
 const LoginScreen = ({ route, navigation }) => {
-  const [email, setEmail] = useState(route.params?.email ?? '')
+  const [email, setEmail] = useState(route?.params?.email ?? '')
   const [password, setPassword] = useState('')
   const [emailErrorText, setEmailErrorText] = useState('')
   const [passErrorText, setPassErrorText] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [isShowDialog, setIsShowDialog] = useState(false)
 
   // Hàm xử lý khi người dùng ấn nút đăng nhập
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (email === '' && password === '') {
       setEmailErrorText('Vui lòng nhập email')
       setPassErrorText('Vui lòng nhập mật khẩu')
@@ -31,12 +35,28 @@ const LoginScreen = ({ route, navigation }) => {
       return
     }
 
+    const result = await login(email, password)
+
+    // Kiểm tra tài khoản có bị block không
+    const blockCheck = result?.data?.user_status_id?.status_name
+
+    if (blockCheck === 'Bị chặn') {
+      toggleShowDialog()
+      return
+    }
+
     navigation.navigate(Screens.BottomTab)
   }
+
+  // Hàm hiển thị dialog block
+  const toggleShowDialog = useCallback(() => {
+    setIsShowDialog(prevState => !prevState);
+  }, []);
+
   return (
     <View style={st.container}>
 
-      <AuthenticationHeader navigation={navigation}/>
+      <AuthenticationHeader navigation={navigation} />
 
       {/* form đăng nhập */}
       <View style={st.loginForm}>
@@ -56,6 +76,7 @@ const LoginScreen = ({ route, navigation }) => {
             <Feather
               name="user"
               size={20}
+              color="white"
               style={{ marginLeft: 10 }}
             />
           )}
@@ -78,6 +99,7 @@ const LoginScreen = ({ route, navigation }) => {
             <Feather
               name="lock"
               size={20}
+              color="white"
               style={{ marginLeft: 10 }}
             />
           )}
@@ -91,7 +113,7 @@ const LoginScreen = ({ route, navigation }) => {
           placeholder={'Mật khẩu'}
           trailingIcon={() => (
             <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={st.iconContainer}>
-              <Feather name={showPassword ? 'eye' : 'eye-off'} size={20} />
+              <Feather name={showPassword ? 'eye' : 'eye-off'} color="white" size={20} />
             </TouchableOpacity>
           )}
           secureTextEntry={!showPassword}
@@ -111,6 +133,51 @@ const LoginScreen = ({ route, navigation }) => {
         />
       </View>
 
+
+      {/* thông báo block */}
+      <Modal animationType='fade'
+        transparent={true}
+        visible={isShowDialog}
+        onRequestClose={toggleShowDialog}
+      >
+
+        {/* làm mờ màn hình */}
+        <BlurView
+          style={st.blur}
+          blurType="dark"
+          blurAmount={10}
+          reducedTransparencyFallbackColor="rgba(0, 0, 0, 0.5)"
+        />
+
+        {/* nền xung quanh dialog */}
+        <View style={st.modalContainer}>
+
+          {/* dialog */}
+          <View style={st.modalContent}>
+
+            <View style={{
+              flexDirection: 'row',
+            }}>
+              <Feather name='alert-triangle' size={30} color='red' />
+              <Text style={st.modalHeader}>Tạm thời tài khoản của bạn bị vô hiệu hóa</Text>
+            </View>
+            <Text style={st.modalTitle}>
+              Cần hỗ trợ vui lòng liên hệ qua địa chỉ: email@gmail.com
+            </Text>
+
+            <TouchableOpacity
+              onPress={toggleShowDialog}
+              style={st.modalButton}>
+              <Text style={st.modalBtnText}>
+                Tôi hiểu
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+
+      </Modal>
+
     </View>
   )
 }
@@ -121,7 +188,7 @@ const st = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: 'white'
+    backgroundColor: Colors.background
   },
   loginForm: {
     width: '100%',
@@ -131,14 +198,63 @@ const st = StyleSheet.create({
   title: {
     fontWeight: 'bold',
     fontSize: 35,
-    color: 'black',
+    color: 'white',
   },
   iconContainer: {
-    padding: 10,
+    paddingRight: 15,
   },
   bottomContainer: {
     width: '100%',
     flex: 1,
     justifyContent: 'flex-end',
+  },
+  blur: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#181a1c',
+    width: '70%',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'white',
+    padding: 20,
+    alignItems: 'center'
+  },
+  modalHeader: {
+    color: 'red',
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginLeft: 10,
+    width: '90%'
+  },
+  modalTitle: {
+    color: 'white',
+    fontSize: 15,
+    textAlign: 'center',
+    marginTop: 10,
+    paddingHorizontal: 10
+  },
+  modalButton: {
+    backgroundColor: '#181a1c',
+    padding: 10,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'white',
+    marginTop: 20,
+    width: '50%',
+    alignItems: 'center',
+  },
+  modalBtnText: {
+    color: 'white',
+    fontSize: 16
   }
 })

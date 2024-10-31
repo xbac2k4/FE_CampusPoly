@@ -7,8 +7,6 @@ const Screens = {
     Login: "LoginScreen",
     SignUp:'SignUp',
     OTP:'OTP',
-    SignUpPassword:'SignUpPassword',
-    SignUpName:'SignUpName',
     SignUpImage:'SignUpImage',
     BottomTab: "BottomTab",
     Home: "Home",
@@ -19,7 +17,9 @@ const Screens = {
     Comment: "Comment",
     Message:'Message',
     EditProfile: "EditProfile",
-    CreatPost:"CreatPost"
+    CreatPost:"CreatPost",
+    ResetPass:'ResetPassword',
+    NewPass:'NewPassword',
 };
 
 export default Screens;

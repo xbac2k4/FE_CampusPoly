@@ -6,9 +6,11 @@ import OneButtonBottom from '../../components/OneButtonBottom';
 import CustomInput from '../../components/CustomInput';
 import ErrorMessage from '../../components/ErrorMessage';
 import Screens from '../../navigation/Screens';
+import Colors from '../../constants/Color';
 
 
-const OTPScreen = ({navigation}) => {
+const OTPScreen = ({ route, navigation }) => {
+  const email = route?.params?.email ?? '12@gmail.com'
   const [OTP, setOTP] = useState('')
   const [OTPErrorText, setOTPErrorText] = useState('')
 
@@ -19,16 +21,16 @@ const OTPScreen = ({navigation}) => {
       return
     }
 
-    navigation.navigate(Screens.SignUpPassword)
+    navigation.navigate(Screens.SignUpImage)
   }
 
   const handleForgetPassword = () => {
-    alert('Quên mật khẩu')
+    alert('Xử lý hành động không nhận được email')
   }
   return (
     <View style={st.container}>
 
-      <AuthenticationHeader navigation={navigation}/>
+      <AuthenticationHeader navigation={navigation} />
 
       {/* form nhập mã OTP */}
       <View style={st.form}>
@@ -42,12 +44,14 @@ const OTPScreen = ({navigation}) => {
           </Text>
           <Text
             style={st.description}>
-            Nhập vào bên dưới để xác thực 123@gmail.com
+            Nhập vào bên dưới để xác thực {email}
           </Text>
         </View>
 
         {/* nhập mã OTP */}
-        <View>
+        <View style={{
+          marginTop: 20
+        }}>
           <CustomInput
             name={OTP}
             placeholder='Mã xác nhận'
@@ -55,6 +59,7 @@ const OTPScreen = ({navigation}) => {
               <MaterialCommunityIcons
                 name="onepassword"
                 size={20}
+                color="white"
                 style={{ marginLeft: 10 }}
               />
             )}
@@ -98,7 +103,7 @@ const st = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: 'white'
+    backgroundColor: Colors.background
   },
   form: {
     width: '100%',
@@ -108,10 +113,10 @@ const st = StyleSheet.create({
   title: {
     fontWeight: 'bold',
     fontSize: 30,
-    color: 'black',
+    color: 'white',
   },
   description: {
-    color: 'black',
+    color: 'white',
     fontSize: 15,
     marginTop: 10,
   },

@@ -9,11 +9,12 @@ const CommentScreen = () => {
   const { postId } = route.params;
   const navigation = useNavigation();
   const [post, setPost] = useState(null);
+  const [comment, setComment] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmark, setIsBookmark] = useState(false);
-  // State để theo dõi số lượng lượt thíchhhh
+  // State để theo dõi số lượng lượt thích
   useEffect(() => {
     const fetchPostById = async () => {
       try {
@@ -21,7 +22,8 @@ const CommentScreen = () => {
         const data = await response.json();
         setPost(data.data);
         setLoading(false);
-        console.log(data);
+        // console.log(data);
+        
         
       } catch (error) {
         console.error('Error fetching post data:', error);
@@ -29,10 +31,24 @@ const CommentScreen = () => {
         setLoading(false);
       }
     };
+    const fetchCommentsByPostId = async () => {
+      try {
+        const response = await fetch(`http://10.0.2.2:3000/api/v1/comments/get-comment-by-post?post_id=${postId}`);
+        const data = await response.json();
+        setComment(data.data); // Giả sử API trả về dữ liệu trong `data.data`
+      } catch (error) {
+        console.error('Error fetching comments:', error);
+        setError(error);
+      }
+    };
 
     fetchPostById();
+    fetchCommentsByPostId();
   }, [postId]);
 
+
+
+  
   const fakeComments = [
     {
       id: '1',
@@ -101,10 +117,9 @@ const CommentScreen = () => {
             <Text style={{ fontFamily: 'rgl1', fontSize: 16, fontWeight: '500', color: "#fff" }}>
              {post.postData.content}
             </Text>
-
-
-{post.postData.image && post.postData.image.length > 0 && (
-          <Image source={{ uri: post.postData.image[0] }} style={styles.postImage} />
+            {/**Hiển thị ảnh content */}
+        {post.postData.image && post.postData.image.length > 0 && (
+          <Image source={{ uri: "http://192.168.1.103:3000/uploads/1729743681721Logo-doi-bong-MU.png" }} style={styles.postImage} />
         )}
         </View>
 
@@ -143,19 +158,6 @@ const CommentScreen = () => {
           </TouchableOpacity>
         </View>
         <View style={{ height: 1, backgroundColor: '#323436', marginTop: 15 }} />
-
-
-
-
-
-
-
-
-
-
-
-
-
         {/** Sử lí phầm comment */}
         <View style={styles.barComment}>
           <Text style={styles.commentTitle}>
@@ -174,8 +176,15 @@ const CommentScreen = () => {
           </View>
         </View>
 
-        {fakeComments.map(comment => (
-          <CommentComponent key={comment.id} comment={comment} />
+        {comment.map((comment) => (
+          <CommentComponent 
+            key={comment._id} 
+            avatar={comment.user_id_comment.avatar || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg'}
+            name={comment.user_id_comment.full_name}
+            content={comment.comment_content}
+            time={new Date(comment.createdAt).toLocaleString()} // Format thời gian nếu cần
+            likes={0} // Bạn có thể chỉnh sửa nếu cần thêm thông tin về lượt thích
+          />
         ))}
       </ScrollView>
       <CommentInputComponent style={styles.commentInput} />

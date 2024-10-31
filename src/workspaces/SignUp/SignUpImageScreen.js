@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { launchImageLibrary } from 'react-native-image-picker';
 import TwoButtonBottom from '../../components/TwoButtonBottom';
 import Screens from '../../navigation/Screens';
+import Colors from '../../constants/Color';
 
 const SignUpImageScreen = ({ navigation }) => {
 
@@ -40,52 +41,51 @@ const SignUpImageScreen = ({ navigation }) => {
     <View style={st.container}>
 
       {/* thanh statusbar */}
-      <StatusBar backgroundColor="transparent" barStyle={'dark-content'} />
+      <StatusBar backgroundColor="transparent" barStyle={'light-content'} />
 
-      {/* logo */}
-      <Image
-        source={require('../../assets/images/logo.png')}
-        style={st.logo}
-        resizeMode="contain"
-      />
+      <View style={st.content}>
+        {/* logo */}
+        <Text style={st.name}>CAMPUSPOLY</Text>
 
-      {/* form nhập */}
-      <View style={st.form}>
+        {/* form nhập */}
+        <View style={st.form}>
 
-        {/* tiêu đề */}
-        <View
-          style={{ width: '90%' }}>
-          <Text
-            style={st.title}>
-            Chọn một ảnh hồ sơ
-          </Text>
-          <Text
-            style={st.description}>
-            Có một tấm ảnh selfie yêu thích? Hãy tải lên ngay bây giờ.
-          </Text>
+          {/* tiêu đề */}
+          <View
+            style={{ width: '90%' }}>
+            <Text
+              style={st.title}>
+              Chọn một ảnh hồ sơ
+            </Text>
+            <Text
+              style={st.description}>
+              Có một tấm ảnh selfie yêu thích? Hãy tải lên ngay bây giờ.
+            </Text>
+          </View>
+
+          {/* nút tải ảnh */}
+          <TouchableOpacity onPress={selectImage}>
+            {imageUri ? (
+              // nếu có ảnh thì hiển thị ảnh
+              <Image source={{ uri: imageUri }} style={st.image} />
+            ) : (
+              // nếu không có ảnh thì hiển thị nút tải ảnh
+              <Image source={require('../../assets/images/upload-image.png')} />)}
+
+          </TouchableOpacity>
         </View>
 
-        {/* nút tải ảnh */}
-        <TouchableOpacity onPress={selectImage}>
-          {imageUri ? (
-            // nếu có ảnh thì hiển thị ảnh
-            <Image source={{ uri: imageUri }} style={st.image} />
-          ) : (
-            // nếu không có ảnh thì hiển thị nút tải ảnh
-            <Image source={require('../../assets/images/upload-image.png')} />)}
-
-        </TouchableOpacity>
+        {/* nút tiếp theo */}
+        <View style={st.bottomContainer}>
+          <TwoButtonBottom
+            text2="Tiếp theo"
+            text1="Bỏ qua bây giờ"
+            onPress2={handleImage}
+            onPress1={abandon}
+          />
+        </View>
       </View>
 
-      {/* nút tiếp theo */}
-      <View style={st.bottomContainer}>
-        <TwoButtonBottom
-          text2="Tiếp theo"
-          text1="Bỏ qua bây giờ"
-          onPress2={handleImage}
-          onPress1={abandon}
-        />
-      </View>
 
     </View>
   )
@@ -97,9 +97,19 @@ const st = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: 'white'
+    backgroundColor: Colors.background
   },
-  logo: { width: 180, height: 50 },
+  content: {
+    flex: 1,
+    alignItems: 'center',
+    width: '100%',
+    marginTop: 30,
+  },
+  name: {
+    color: 'white',
+    fontSize: 25,
+    fontFamily: 'rubik',
+  },
   form: {
     width: '100%',
     alignItems: 'center',
@@ -108,7 +118,7 @@ const st = StyleSheet.create({
   title: {
     fontWeight: 'bold',
     fontSize: 30,
-    color: 'black',
+    color: 'white',
   },
   description: {
     color: '#71767B',

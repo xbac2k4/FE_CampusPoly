@@ -6,6 +6,7 @@ import TwoButtonBottom from '../../components/TwoButtonBottom';
 import CustomInput from '../../components/CustomInput';
 import ErrorMessage from '../../components/ErrorMessage';
 import Screens from '../../navigation/Screens';
+import Colors from '../../constants/Color';
 
 const EmailInputLoginScreen = ({navigation}) => {
   const [email, setEmail] = useState('')
@@ -19,6 +20,15 @@ const EmailInputLoginScreen = ({navigation}) => {
     }
 
     navigation.navigate(Screens.Login, { email })
+  }
+
+  const forgetPassword = () => {
+    if (email === '') {
+      setEmailErrorText('Vui lòng nhập email')
+      return
+    }
+
+    navigation.navigate(Screens.ResetPass, { email })
   }
   return (
     <View style={st.container}>
@@ -42,6 +52,7 @@ const EmailInputLoginScreen = ({navigation}) => {
             <Feather
               name="user"
               size={20}
+              color="white"
               style={{ marginLeft: 10 }}
             />
           )}
@@ -62,7 +73,7 @@ const EmailInputLoginScreen = ({navigation}) => {
         <TwoButtonBottom
           text1='Quên mật khẩu?'
           text2='Tiếp theo'
-          onPress1={() => alert('Quên mật khẩu')}
+          onPress1={forgetPassword}
           onPress2={handleLogin}
         />
 
@@ -81,7 +92,7 @@ const st = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: 'white'
+    backgroundColor: Colors.background
   },
   loginForm: {
     width: '100%',
@@ -91,7 +102,7 @@ const st = StyleSheet.create({
   title: {
     fontWeight: 'bold',
     fontSize: 30,
-    color: 'black',
+    color: 'white',
   },
   bottomContainer: {
     width: '100%',

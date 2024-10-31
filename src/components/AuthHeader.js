@@ -1,23 +1,16 @@
-import { Image, StatusBar, StyleSheet, TouchableOpacity, View } from 'react-native'
+import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 const AuthenticationHeader = ({ navigation }) => {
 
     return (
-        <View style={{
-            alignItems: 'center',
-            width: '100%'
-            // fdfdf
-        }}>
+        <View style={st.container}>
             {/* thanh statusbar */}
-            <StatusBar backgroundColor="transparent" barStyle={'dark-content'} />
+            <StatusBar translucent backgroundColor="transparent" barStyle={'light-content'} />
 
-            {/* logo 123*/}
-            <Image
-                source={require('../assets/images/logo.png')}
-                style={st.logo}
-                resizeMode="contain"
-            />
+
+            <Text style={st.name}>CAMPUSPOLY</Text>
 
             {/* nút trở lại */}
             <View
@@ -25,8 +18,7 @@ const AuthenticationHeader = ({ navigation }) => {
                     width: '90%',
                 }}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Image
-                        source={require('../assets/images/left-arrow.png')} />
+                    <AntDesign name="arrowleft" size={30} color="white" />
                 </TouchableOpacity>
             </View>
         </View>
@@ -36,5 +28,14 @@ const AuthenticationHeader = ({ navigation }) => {
 export default AuthenticationHeader
 
 const st = StyleSheet.create({
-    logo: { width: 180, height: 50 },
+    container: {
+        alignItems: 'center',
+        width: '100%',
+        marginTop: 30,
+    },
+    name: {
+        color: 'white',
+        fontSize: 25,
+        fontFamily: 'rubik',
+    }
 })
