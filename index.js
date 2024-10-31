@@ -21,4 +21,4 @@ import PostComponent from './src/components/Post/PostComponent';
 import CreatePostScreen from './src/workspaces/CreatePost/CreatePostScreen';
 import EditProfileScreen from './src/workspaces/EditProfile/EditProfileScreen';
 
-AppRegistry.registerComponent(appName, () => App);
+AppRegistry.registerComponent(appName, () => ChatScreen);
