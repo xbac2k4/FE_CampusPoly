@@ -15,6 +15,7 @@ import MessagesScreen from '../workspaces/messages/MessagesScreen';
 import EditProfileScreen from '../workspaces/EditProfile/EditProfileScreen';
 import ResetPasswordScreen from '../workspaces/ResetPassword/ResetPasswordScreen';
 import NewPasswordScreen from '../workspaces/ResetPassword/NewPasswordScreen';
+import ChatScreen from '../workspaces/ChatScreen/ChatScreen';
 
 
 
@@ -36,6 +37,8 @@ const MainStackNavigator = () => {
       <Stack.Screen name={Screens.Message} component={MessagesScreen} />
       <Stack.Screen name={Screens.EditProfile} component={EditProfileScreen} />
       <Stack.Screen name={Screens.NewPass} component={NewPasswordScreen} />
+      <Stack.Screen name={Screens.ChatView} component={ChatScreen} />
+
 
 
 

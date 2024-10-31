@@ -20,6 +20,7 @@ const Screens = {
     CreatPost:"CreatPost",
     ResetPass:'ResetPassword',
     NewPass:'NewPassword',
+    ChatView:'ChatView',
 };
 
 export default Screens;

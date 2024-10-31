@@ -48,7 +48,7 @@ const DATA = [
 ];
 
 // Component ChatScreen dùng để hiển thị giao diện chat
-const ChatScreen = () => {
+const ChatScreen = ({ navigation }) => {
   // Khai báo state để lưu trữ nội dung tin nhắn nhập vào
   const [inputText, setInputText] = useState('');
   const [isShowOption, setIsShowOption] = useState(false);
@@ -135,7 +135,7 @@ const ChatScreen = () => {
   };
 
   const handleArrowLeft = () => {
-    Alert.alert("Thông báo", "Ok");
+    navigation.goBack();
   };
 
   return (
@@ -219,7 +219,7 @@ const ChatScreen = () => {
         transparent={true}
         visible={isShowOption}>
         <Pressable style={{ flex: 1, flexDirection: 'row-reverse' }} onPress={() => setIsShowOption(false)} >
-          <View style={{ backgroundColor: "#252B30", width: 180, height: 270, borderTopStartRadius: 20, borderBottomStartRadius: 20, alignItems: 'center', paddingVertical: 20 , marginTop : 80 }}>
+          <View style={{ backgroundColor: "#252B30", width: 180, height: 270, borderTopStartRadius: 20, borderBottomStartRadius: 20, alignItems: 'center', paddingVertical: 20, marginTop: '15%' }}>
             <TouchableOpacity style={{ marginBottom: 20 }}>
               <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold' }}>Xem Trang Cá Nhân
               </Text>

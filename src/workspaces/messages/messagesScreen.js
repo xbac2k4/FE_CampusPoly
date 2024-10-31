@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, FlatList, Image, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Screens from '../../navigation/Screens';
 
 const users = [
   { id: '1', name: 'Huy', avatar: 'https://ispacedanang.edu.vn/wp-content/uploads/2024/05/hinh-anh-dep-ve-hoc-sinh-cap-3-1.jpg', online: true, isPinned: true },
@@ -13,7 +14,7 @@ const users = [
   { id: '8', name: 'Vũ Quang Huy', avatar: 'https://ispacedanang.edu.vn/wp-content/uploads/2024/05/hinh-anh-dep-ve-hoc-sinh-cap-3-1.jpg', online: false, message: 'CampusPoly.....', time: '20/9/2024' },
 ];
 
-const MessengerScreen = ({ navigation }) => {
+const MessageScreen = ({ navigation }) => {
   // Hiển thị người dùng theo trạng thái hoạt động (online trước, offline sau)
   const renderPinnedUsers = () => (
     <FlatList
@@ -39,7 +40,7 @@ const MessengerScreen = ({ navigation }) => {
 
   // Hiển thị người dùng có tin nhắn
   const renderMessage = ({ item }) => (
-    <TouchableOpacity style={styles.messageContainer}>
+    <TouchableOpacity style={styles.messageContainer} onPress={()=> navigation.navigate(Screens.ChatView)}>
       <Image source={{ uri: item.avatar }} style={styles.messageAvatar} />
 
       <View style={styles.messageContent}>
@@ -212,4 +213,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MessengerScreen;
+export default MessageScreen;
