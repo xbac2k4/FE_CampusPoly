@@ -1,21 +1,17 @@
-import { StyleSheet, Text, View, StatusBar, TouchableOpacity } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View, StatusBar, TouchableOpacity, Image } from 'react-native'
+import React, { useCallback, useState } from 'react'
 import Screens from '../../navigation/Screens'
 import Colors from '../../constants/Color'
+import BlockDialog from '../../components/MenuAuth/BlockDialog'
 
 const MenuAuthenticationScreen = ({ navigation }) => {
 
-  const thanhNgang = () => {
-    return (
-      <View
-        style={{
-          backgroundColor: 'white',
-          height: 1,
-          width: '40%',
-        }}
-      />
-    )
-  }
+  const [isShowDialog, setIsShowDialog] = useState(false)
+
+  const toggleShowDialog = useCallback(() => {
+    setIsShowDialog(prevState => !prevState);
+  }, []);
+
   return (
     <View style={st.container}>
 
@@ -39,34 +35,14 @@ const MenuAuthenticationScreen = ({ navigation }) => {
           {/* nút đăng nhập với google */}
           <TouchableOpacity
             style={st.btn}
-            onPress={() => navigation.navigate(Screens.EmailInputLogin)}
+            onPress={toggleShowDialog}
           >
+            <Image
+              style={{ width: 30, height: 30 }}
+              source={require('../../assets/images/GoogleLogo.png')} />
             <Text
               style={st.btnText}
-            >Bạn đã có một tài khoản? <Text style={{ color: 'red' }}>Đăng nhập</Text></Text>
-          </TouchableOpacity>
-
-          {/* hoặc */}
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              width: '80%',
-            }}>
-            {thanhNgang()}
-            <Text style={{ color: 'white', fontWeight: 'bold' }}>hoặc</Text>
-            {thanhNgang()}
-          </View>
-
-          {/* nút tạo tài khoản */}
-          <TouchableOpacity
-            style={st.btn}
-            onPress={() => navigation.navigate(Screens.SignUp)}
-          >
-            <Text
-              style={st.btnText}
-            >Tạo tài khoản</Text>
+            >Đăng nhập với Google</Text>
           </TouchableOpacity>
 
 
@@ -77,15 +53,15 @@ const MenuAuthenticationScreen = ({ navigation }) => {
           style={{
             width: '80%',
             textAlign: 'center',
-            marginBottom: 20,
+            marginBottom: 100,
           }}>
           <Text style={{ color: 'white' }}>Bằng cách đăng ký bạn đồng ý với </Text>
-          <Text style={{ color: '#2412ed', }}>Điều khoản, Chính sách riêng tư và Sử dụng cookie </Text>
+          <Text style={{ color: '#57B5F4', }}>Điều khoản, Chính sách riêng tư và Sử dụng cookie </Text>
           <Text style={{ color: 'white' }}>của chúng tôi</Text>
         </Text>
       </View>
 
-
+      <BlockDialog isShowDialog={isShowDialog} toggleShowDialog={toggleShowDialog} />
     </View>
   )
 }
