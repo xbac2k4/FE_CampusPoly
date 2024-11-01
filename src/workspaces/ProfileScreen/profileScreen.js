@@ -60,7 +60,7 @@ const ProfileScreen = () => {
 
         const response = await fetch(`${process.env.GET_USER_ID}${id}`)
         const data = await response.json();
-        console.log('user:',data.data);
+        // console.log('user:',data.data);
         setUser(data.data); // Lưu người dùng vào state (giả sử data.data)
         // setLoading(false); // Tắt loading
         // console.log(user1);

@@ -14,7 +14,6 @@ import styles from './styles';
 const EditProfileScreen = () => {
   const route = useRoute();
   const user = route?.params?.user;
-  console.log('123123: ', user);
 
   const navigation = useNavigation();
 
@@ -149,18 +148,18 @@ const EditProfileScreen = () => {
     }
 
     try {
-      const response = await fetch(`http://10.0.2.2:3000/api/v1/users/update-user/${userId}`, {
+      const response = await fetch(`http://10.0.2.2:3000/api/v1/users/update-user/${user._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name,
+          full_name: name,
           bio,
-          gender,
-          birthday: birthday ? birthday.toISOString() : null,
-          profileImage,
-          backgroundImage,
+          sex: gender,
+          birthday: birthday,
+          avatar: profileImage,
+          background: backgroundImage,
         }),
       });
 
