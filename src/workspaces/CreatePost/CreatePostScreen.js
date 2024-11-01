@@ -1,10 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import PostComponent from '../../components/Post/PostComponent';
 
-const CreatePostScreen = () => {
-  const navigation = useNavigation(); // Khởi tạo navigation
+const CreatePostScreen = ({ navigation }) => {
 
   const handlePublish = async (content, selectedImage, selectedGif) => {
     // Kiểm tra nội dung và hình ảnh/GIF
@@ -41,7 +39,7 @@ const CreatePostScreen = () => {
       alert("Bài viết đã được đăng thành công!");
 
       // Quay lại màn hình trước
-      navigation.goBack(); 
+      navigation.goBack();
     } catch (error) {
       alert(error.message);
     }
