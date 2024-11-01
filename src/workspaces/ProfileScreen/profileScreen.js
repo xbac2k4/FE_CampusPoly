@@ -61,7 +61,7 @@ const ProfileScreen = () => {
         const response = await fetch(`${process.env.GET_USER_ID}${id}`)
         const data = await response.json();
         // console.log(data.data);
-        setUser(data.data); // Lưu bài viết vào state (giả sử data.data chứa danh sách bài viết)
+        setUser(data.data); // Lưu người dùng vào state (giả sử data.data)
         // setLoading(false); // Tắt loading
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -82,8 +82,8 @@ const ProfileScreen = () => {
       ) : (
         <ScrollView stickyHeaderIndices={[2]}>
           {/* Header and ProfileStats */}
-          <Header user={user} />
-          <ProfileStats friends={user.friends} user={user} />
+          <Header data={user1} />
+          <ProfileStats data={user1} />
           {/* ProfileTabs (Sticky) */}
           <ProfileTabs onTabSelect={setActiveTab} />
 

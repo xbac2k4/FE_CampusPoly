@@ -12,7 +12,7 @@ import 'react-native-gesture-handler';
 
 
 import { name as appName } from './app.json';
-import FrProfileScreen from './src/workspaces/FrProfileScreen/frProfileScreen';
+import FrProfileScreen from './src/workspaces/FrProfileScreen/FrProfileScreen';
 import PostComponent from './src/components/Post/PostComponent';
 import CreatePostScreen from './src/workspaces/CreatePost/CreatePostScreen';
 import EditProfileScreen from './src/workspaces/EditProfile/EditProfileScreen';

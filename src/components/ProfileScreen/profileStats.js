@@ -3,25 +3,28 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Screens from '../../navigation/Screens';
 
-const ProfileStats = ({ user }) => { // Accept 'user' prop
-  const navigation = useNavigation(); // Initialize navigation
+const ProfileStats = ({ data }) => {
+  const navigation = useNavigation();
 
+  // Ensure data.friends is an array before counting
+  const friendsCount = Array.isArray(data?.friends) ? data.friends.length : 0;
+  
   return (
     <View style={styles.statsContainer}>
       <View style={styles.stat}>
-        <Text style={styles.statNumber}>{user.friends.toLocaleString()}</Text>
+        <Text style={styles.statNumber}>{friendsCount.toLocaleString()}</Text>
         <Text style={styles.statText}>Friends</Text>
       </View>
 
-      {/* Pass 'user' data when navigating to EditProfile */}
       <TouchableOpacity
         style={styles.editButton}
         onPress={() => navigation.navigate(Screens.EditProfile, {
-          user: {
-            ...user,
-            birthday: user.birthday.toISOString(), // Chuyển đổi Date thành chuỗi ISO 8601
-          },
-        })} // Pass user as a parameter
+          userId: data._id, // Sending the _id directly
+          // user: {
+          //   ...data,
+          //   birthday: data.date_of_birth ? data.date_of_birth.toISOString() : null,
+          // },
+        })}
       >
         <Text style={styles.editButtonText}>Edit Profile</Text>
       </TouchableOpacity>
