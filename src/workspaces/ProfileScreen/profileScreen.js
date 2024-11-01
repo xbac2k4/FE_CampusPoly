@@ -60,7 +60,7 @@ const ProfileScreen = () => {
 
         const response = await fetch(`${process.env.GET_USER_ID}${id}`)
         const data = await response.json();
-        console.log(data.data);
+        // console.log(data.data);
         setUser(data.data); // Lưu bài viết vào state (giả sử data.data chứa danh sách bài viết)
         // setLoading(false); // Tắt loading
       } catch (error) {

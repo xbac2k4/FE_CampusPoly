@@ -62,9 +62,6 @@ const ProfilePosts = props => {
     }
   }, [user]);
 
-  useEffect(() => {
-    console.log(activeImageIndex);
-  })
   const toggleLike = (postId) => {
     setLikedPosts((prevLikedPosts) =>
       prevLikedPosts.includes(postId)
