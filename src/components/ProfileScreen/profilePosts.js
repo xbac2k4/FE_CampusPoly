@@ -13,8 +13,9 @@ import heart from '../../assets/images/heart.png';
 import heartFilled from '../../assets/images/hear2.png';
 import share from '../../assets/images/share.png';
 
-const ProfilePosts = ({ post }) => {
-  const [user, setUser] = useState([]); // Chứa các bài viết
+const ProfilePosts = props => {
+
+  const [user, setUser] = useState(props.data); // Chứa các bài viết
   const [loading, setLoading] = useState(true); // Quản lý trạng thái loading
   const [error, setError] = useState(null); // Quản lý lỗi
   const [likedPosts, setLikedPosts] = useState([]); // Lưu trạng thái các bài viết đã thích
@@ -23,25 +24,30 @@ const ProfilePosts = ({ post }) => {
   const navigation = useNavigation(); // Hook to access navigation
 
 
-  
+  // console.log(post);
+
   // Fetch dữ liệu từ API khi component được mount
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
+  // useEffect(() => {
+  //   const fetchUserData = async () => {
+  //     try {
 
-        const response = await fetch(process.env.GET_ALL_POST)
-        const data = await response.json();
-        setUser(data.data); // Lưu bài viết vào state (giả sử data.data chứa danh sách bài viết)
-        setLoading(false); // Tắt loading
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-        setError(error); // Lưu lỗi vào state
-        setLoading(false); // Tắt loading
-      }
-    };
+  //       const response = await fetch(process.env.GET_ALL_POST)
+  //       const data = await response.json();
+  //       // console.log(data.data);
 
-    fetchUserData();
-  }, []);
+  //       setUser(data.data); // Lưu bài viết vào state (giả sử data.data chứa danh sách bài viết)
+  //       // setLoading(false); // Tắt loading
+  //     } catch (error) {
+  //       console.error('Error fetching user data:', error);
+  //       setError(error); // Lưu lỗi vào state
+  //       // setLoading(false); // Tắt loading
+  //     } finally {
+  //       setLoading(false); // Tắt loading
+  //     }
+  //   };
+
+  //   fetchUserData();
+  // }, []);
 
   // Đặt chỉ mục hình ảnh đầu tiên cho các bài viết có nhiều hình ảnh
   useEffect(() => {
@@ -56,6 +62,9 @@ const ProfilePosts = ({ post }) => {
     }
   }, [user]);
 
+  useEffect(() => {
+    console.log(activeImageIndex);
+  })
   const toggleLike = (postId) => {
     setLikedPosts((prevLikedPosts) =>
       prevLikedPosts.includes(postId)
@@ -71,18 +80,19 @@ const ProfilePosts = ({ post }) => {
         : [...prevSavedPosts, postId]
     );
   };
+  // console.log(user);
 
   // Hiển thị hình ảnh của bài viết
   const renderImages = (images, postId) => {
     if (!images || images.length === 0) return null; // Handle cases where image is missing
-  
+
     if (images.length === 1) {
       const imageUrl = images[0];
       return imageUrl ? (
         <Image source={{ uri: imageUrl }} style={styles.postImage} />
       ) : null;
     }
-  
+
     return (
       <>
         <ScrollView
@@ -99,7 +109,7 @@ const ProfilePosts = ({ post }) => {
           }}
         >
           {images.map((image, index) => (
-            <Image key={index} source={{ uri: image || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' }} style={styles.postImage} />
+            <Image key={index} source={{ uri: image.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' }} style={styles.postImage} />
           ))}
         </ScrollView>
         <View style={styles.paginationContainer}>
@@ -118,15 +128,28 @@ const ProfilePosts = ({ post }) => {
   };
 
   // Xử lý khi đang tải dữ liệu
-  if (loading) {
-    return <ActivityIndicator size="large" color="#FFF" style={{ marginTop: 20 }} />;
-  }
+  // if (loading) {
+  //   return <ActivityIndicator size="large" color="#FFF" style={{ marginTop: 20 }} />;
+  // }
 
   // Xử lý lỗi
-  if (error) {
-    return <Text style={{ color: 'red', marginTop: 20 }}>Error loading data: {error.message}</Text>;
-  }
+  // if (error) {
+  //   return <Text style={{ color: 'red', marginTop: 20 }}>Error loading data: {error.message}</Text>;
+  // }
+  // hàm format thời gian
+  const timeAgo = (date) => {
+    const now = new Date();
+    const postDate = new Date(date);
+    const diff = Math.floor((now - postDate) / 1000); // Chênh lệch thời gian tính bằng giây
 
+    if (diff < 60) return `${diff} seconds ago`;
+    const minutes = Math.floor(diff / 60);
+    if (minutes < 60) return `${minutes} minutes ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours} hours ago`;
+    const days = Math.floor(hours / 24);
+    return `${days} days ago`;
+  }
   // Hiển thị dữ liệu các bài viết
   return (
     <ScrollView contentContainerStyle={styles.flatListContent}>
@@ -134,10 +157,10 @@ const ProfilePosts = ({ post }) => {
         user.map((item) => (
           <View key={item._id} style={styles.postContainer}>
             <View style={styles.postHeader}>
-              <Image source={{ uri: item.user_id.avatar || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' }} style={styles.profileImage} />
+              <Image source={{ uri: item.user_id.avatar.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' }} style={styles.profileImage} />
               <View style={styles.headerText}>
                 <Text style={styles.profileName}>{item.user_id.full_name}</Text>
-                <Text style={styles.postTime}>{new Date(item.createdAt).toLocaleString()}</Text>
+                <Text style={styles.postTime}>{timeAgo(item.createdAt)}</Text>
               </View>
               <TouchableOpacity style={styles.moreIcon}>
                 <Text style={styles.moreText}>⋮</Text>
@@ -158,10 +181,7 @@ const ProfilePosts = ({ post }) => {
                 </View>
 
                 <View style={styles.iconLike}>
-                  <TouchableOpacity onPress={() => navigation.navigate(Screens.Comment, { postId: item._id })}
-
-                    >
-                    
+                  <TouchableOpacity onPress={() => navigation.navigate(Screens.Comment, { postId: item._id })}>
                     <Image source={comment} style={styles.iconImage} />
                   </TouchableOpacity>
                   <Text style={styles.metaText}>{item.comment_count}</Text>

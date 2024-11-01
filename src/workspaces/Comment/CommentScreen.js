@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, ActivityIndicator, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, ActivityIndicator, TouchableOpacity, Dimensions, FlatList } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import CommentComponent from '../../components/Comment/CommentComponent';
 import CommentInputComponent from '../../components/Comment/CommentInputComponent';
@@ -14,17 +14,27 @@ const CommentScreen = () => {
   const [error, setError] = useState(null);
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmark, setIsBookmark] = useState(false);
+  const [activeImageIndex, setActiveImageIndex] = useState({}); // Quản lý chỉ số ảnh đang hiển thị cho mỗi bài có nhiều ảnh
+
   // State để theo dõi số lượng lượt thích
   useEffect(() => {
     const fetchPostById = async () => {
       try {
-        const response = await fetch(`http://10.0.2.2:3000/api/v1/posts/get-post-by-id/${postId}`);
+        const response = await fetch(`http://10.0.2.2:3000/api/v1/posts/get-post-by-id/${postId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json', // nếu API yêu cầu JSON
+          }
+        });
+
+        // const response = await fetch(`http://10.0.2.2:3000/api/v1/posts/get-post-by-id/${postId}`);
         const data = await response.json();
         setPost(data.data);
+        setComment(data.data.commentData);
         setLoading(false);
-        // console.log(data);
-        
-        
+        // console.log(data.data.commentData);
+
+
       } catch (error) {
         console.error('Error fetching post data:', error);
         setError(error);
@@ -35,6 +45,8 @@ const CommentScreen = () => {
       try {
         const response = await fetch(`http://10.0.2.2:3000/api/v1/comments/get-comment-by-post?post_id=${postId}`);
         const data = await response.json();
+        // console.log(data);
+
         setComment(data.data); // Giả sử API trả về dữ liệu trong `data.data`
       } catch (error) {
         console.error('Error fetching comments:', error);
@@ -43,12 +55,23 @@ const CommentScreen = () => {
     };
 
     fetchPostById();
-    fetchCommentsByPostId();
+    // fetchCommentsByPostId();
   }, [postId]);
 
+  // Đặt chỉ mục hình ảnh đầu tiên cho các bài viết có nhiều hình ảnh
+  useEffect(() => {
+    if (post) {
+      console.log(post);
+      const initialIndices = {};
+      if (post.postData.image && post.postData.image.length > 1) {
+        initialIndices[post.postData._id] = 0; // Thiết lập chỉ mục đầu tiên cho các bài có nhiều ảnh
+      }
+      setActiveImageIndex(initialIndices);
+    }
+  }, [post]);
+  // console.log(post);
 
 
-  
   const fakeComments = [
     {
       id: '1',
@@ -70,6 +93,67 @@ const CommentScreen = () => {
 
   if (!post) {
     return <Text style={styles.errorText}>No post found</Text>;
+  }
+
+  const renderImages = (images, postId) => {
+    // console.log(images);
+
+    if (!images || images.length === 0) return null; // Handle cases where image is missing
+
+    if (images.length === 1) {
+      const imageUrl = images[0];
+      return imageUrl ? (
+        <Image source={{ uri: imageUrl }} style={styles.postImage} />
+      ) : null;
+    }
+
+    return (
+      <>
+        <ScrollView
+          horizontal
+          pagingEnabled
+          style={styles.imageList}
+          showsHorizontalScrollIndicator={false}
+          onScroll={(event) => {
+            const index = Math.round(event.nativeEvent.contentOffset.x / screenWidth);
+            setActiveImageIndex((prevState) => ({
+              ...prevState,
+              [postId]: index,
+            }));
+          }}
+        >
+          {images.map((image, index) => (
+            <Image key={index} source={{ uri: image.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' }} style={styles.postImage} />
+          ))}
+        </ScrollView>
+        <View style={styles.paginationContainer}>
+          {images.map((_, index) => (
+            <View
+              key={index}
+              style={[
+                styles.paginationDot,
+                activeImageIndex[postId] === index ? styles.activeDot : styles.inactiveDot,
+              ]}
+            />
+          ))}
+        </View>
+      </>
+    );
+  };
+
+  // hàm format thời gian
+  const timeAgo = (date) => {
+    const now = new Date();
+    const postDate = new Date(date);
+    const diff = Math.floor((now - postDate) / 1000); // Chênh lệch thời gian tính bằng giây
+
+    if (diff < 60) return `${diff} seconds ago`;
+    const minutes = Math.floor(diff / 60);
+    if (minutes < 60) return `${minutes} minutes ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours} hours ago`;
+    const days = Math.floor(hours / 24);
+    return `${days} days ago`;
   }
 
   return (
@@ -97,12 +181,12 @@ const CommentScreen = () => {
         <View style={styles.headerContent}>
           <View style={{ flexDirection: 'row' }}>
             <TouchableOpacity onPress={() => { /* Xử lý avatar */ }}>
-              <Image source={{ uri: post.postData.user_id.avatar || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' }}
+              <Image source={{ uri: post?.postData?.user_id?.avatar.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' }}
                 style={styles.imageavatar} />
             </TouchableOpacity>
             <View style={{ marginLeft: 6, marginTop: -5 }}>
-              <Text style={{ color: '#fff', fontWeight: 'semibold', fontSize: 14, fontFamily: "HankenGrotesk-Regular" }}>{post.postData.user_id.full_name}</Text>
-              <Text style={{ fontSize: 12, fontFamily: 'HankenGrotesk-Regular', fontWeight: "medium", color: '#727477' }}>{new Date(post.createdAt).toLocaleString()}</Text>
+              <Text style={{ color: '#fff', fontWeight: 'semibold', fontSize: 14, fontFamily: "HankenGrotesk-Regular" }}>{post?.postData?.user_id?.full_name}</Text>
+              <Text style={{ fontSize: 12, fontFamily: 'HankenGrotesk-Regular', fontWeight: "medium", color: '#727477' }}>{timeAgo(post.postData.createdAt)}</Text>
             </View>
           </View>
           <TouchableOpacity onPress={() => { /* Xử lý nút menu */ }}>
@@ -111,16 +195,17 @@ const CommentScreen = () => {
         </View>
         <View style={styles.bodyContent}>
 
-            <Text style={{ fontFamily: 'rgl1', fontSize: 16, fontWeight: '500', color: "#fff" }}>
-             {post.postData.title}
-            </Text>
-            <Text style={{ fontFamily: 'rgl1', fontSize: 16, fontWeight: '500', color: "#fff" }}>
-             {post.postData.content}
-            </Text>
-            {/**Hiển thị ảnh content */}
-        {post.postData.image && post.postData.image.length > 0 && (
-          <Image source={{ uri: "http://192.168.1.103:3000/uploads/1729743681721Logo-doi-bong-MU.png" }} style={styles.postImage} />
-        )}
+          <Text style={{ fontFamily: 'rgl1', fontSize: 16, fontWeight: '500', color: "#fff" }}>
+            {post?.postData?.title}
+          </Text>
+          <Text style={{ fontFamily: 'rgl1', fontSize: 16, fontWeight: '500', color: "#fff" }}>
+            {post?.postData?.content}
+          </Text>
+          {/**Hiển thị ảnh content */}
+          {/* {post?.postData?.image && post?.postData?.image.length > 0 && (
+            <Image source={{ uri: post?.postData?.image.replace('localhost', '10.0.2.2') }} style={styles.postImage} />
+          )} */}
+          {post?.postData?.image && renderImages(post?.postData?.image, post?.postData?._id)}
         </View>
 
         <View style={styles.interactContainer}>
@@ -135,13 +220,13 @@ const CommentScreen = () => {
                   style={{ width: 20, height: 20, marginLeft: 3 }}
                 />
               </TouchableOpacity>
-              <Text style={styles.textInteract}>{post.postData.like_count}</Text>
+              <Text style={styles.textInteract}>{post?.postData?.like_count}</Text>
             </View>
             <View style={styles.iconLike}>
               <TouchableOpacity onPress={() => { /* Xử lý nút comment */ }}>
                 <Image source={require("../../assets/images/comment.png")} resizeMode='contain' style={{ width: 20, height: 20, marginLeft: 3 }} />
               </TouchableOpacity>
-              <Text style={styles.textInteract}>{post.postData.comment_count}</Text>
+              <Text style={styles.textInteract}>{post?.postData?.comment_count}</Text>
             </View>
             <TouchableOpacity onPress={() => { /* Xử lý nút share */ }} style={[styles.iconLike, { marginLeft: 4 }]}>
               <Image source={require('../../assets/images/share.png')} resizeMode='contain' style={{ width: 20, height: 20 }} />
@@ -161,7 +246,7 @@ const CommentScreen = () => {
         {/** Sử lí phầm comment */}
         <View style={styles.barComment}>
           <Text style={styles.commentTitle}>
-            COMMENTS (<Text>{fakeComments.length}</Text>)
+            COMMENTS (<Text>{comment.length}</Text>)
           </Text>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text style={styles.recentText}>Recent</Text>
@@ -177,12 +262,12 @@ const CommentScreen = () => {
         </View>
 
         {comment.map((comment) => (
-          <CommentComponent 
-            key={comment._id} 
-            avatar={comment.user_id_comment.avatar || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg'}
+          <CommentComponent
+            key={comment._id}
+            avatar={comment.user_id_comment.avatar.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg'}
             name={comment.user_id_comment.full_name}
             content={comment.comment_content}
-            time={new Date(comment.createdAt).toLocaleString()} // Format thời gian nếu cần
+            time={timeAgo(comment.createdAt)} // Format thời gian nếu cần
             likes={0} // Bạn có thể chỉnh sửa nếu cần thêm thông tin về lượt thích
           />
         ))}
@@ -232,11 +317,34 @@ const styles = StyleSheet.create({
     color: '#FFF',
     marginBottom: 10,
   },
+  // postImage: {
+  //   width: '100%',
+  //   height: 200,
+  //   borderRadius: 8,
+  //   marginTop: 10,
+  // },
+  paginationContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 10,
+  },
+  paginationDot: {
+    height: 8,
+    width: 8,
+    borderRadius: 4,
+    marginHorizontal: 4,
+  },
+  activeDot: {
+    backgroundColor: '#FF0000',
+  },
+  inactiveDot: {
+    backgroundColor: '#B3B3B3',
+  },
   postImage: {
-    width: '100%',
+    width: screenWidth - 50,
     height: 200,
     borderRadius: 8,
-    marginTop: 10,
+    marginRight: 10,
   },
   errorText: {
     color: 'red',

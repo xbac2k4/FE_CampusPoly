@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View, FlatList } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, FlatList, ScrollView, ActivityIndicator } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import StoryComponent from '../../components/Home/storyComponent';
@@ -11,6 +11,8 @@ const HomeScreen = () => {
   const [greeting, setGreeting] = useState(''); // State to store the greeting message
   const [stories, setStories] = useState([]); // State to store the list of stories
   const navigation = useNavigation(); // Hook to access navigation
+  const [data, setData] = useState([]); // State to store the list of stories
+  const [loading, setLoading] = useState(true); // Quản lý trạng thái loading
 
   // Simulate fetching the user's name from an API
   const fetchUserName = async () => {
@@ -55,11 +57,34 @@ const HomeScreen = () => {
     setStories(fakeStories);
   };
 
+  // useEffect(() => {
+  //   fetchUserName();
+  //   setGreeting(getGreeting());
+  //   fetchStories(); // Fetch stories on mount
+  // }, []);
+
   useEffect(() => {
-    fetchUserName();
-    setGreeting(getGreeting());
-    fetchStories(); // Fetch stories on mount
+    const fetchUserData = async () => {
+      try {
+
+        const response = await fetch(process.env.GET_ALL_POST)
+        const data = await response.json();
+        // console.log(data.data);
+        setData(data.data); // Lưu bài viết vào state (giả sử data.data chứa danh sách bài viết)
+        // setLoading(false); // Tắt loading
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        setError(error); // Lưu lỗi vào state
+        // setLoading(false); // Tắt loading
+      } finally {
+        setLoading(false); // Tắt loading
+      }
+    };
+    
+    fetchStories()
+    fetchUserData();
   }, []);
+  // console.log(data);
 
   // Handle user avatar press
   const handleUserPress = userId => {
@@ -70,19 +95,15 @@ const HomeScreen = () => {
   const renderStoryItem = ({ item }) => (
     <StoryComponent
       imgStory={item.imgStory}
-      onStoryPress={() => {}} // Define what happens when the story is pressed
+      onStoryPress={() => { }} // Define what happens when the story is pressed
       onUserPress={() => handleUserPress(item.userId)} // Pass user data on press
       imgUser={item.imgUser}
     />
   );
 
   return (
-    <FlatList
-      style={styles.container}
-      data={stories} // Use stories for the main list
-      keyExtractor={item => item.id}
-      nestedScrollEnabled={true}
-      ListHeaderComponent={
+    <ScrollView style={styles.container}>
+      <View style={styles.container}>
         <View style={{ flex: 1 }}>
           <View style={styles.headerContent}>
             <Text
@@ -112,12 +133,14 @@ const HomeScreen = () => {
             style={styles.storyContainer}
           />
         </View>
-      }
-      renderItem={({ item }) => (
-          <ProfilePosts />
-      )}
-    />
-  );
+        {loading ? (
+          <ActivityIndicator size="large" color="#FFF" style={{ marginTop: 20 }} />
+        ) : (
+          <ProfilePosts data={data} />
+        )}
+      </View>
+    </ScrollView>
+  )
 };
 
 export default HomeScreen;
