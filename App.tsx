@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, Image } from 'react-native';
 import ProfileScreen from './src/workspaces/ProfileScreen/profileScreen';
-import CommentScreen from './src/workspaces/Comment/tempCommentScreen';
+import CommentScreen from './src/workspaces/Comment/CommentScreen';
 import HomeScreen from './src/workspaces/Home/homeScreen';
 import { Home, Search, Profile, Alert, CreatPost } from './src/workspaces/Home/index';
 import { NavigationContainer } from '@react-navigation/native';

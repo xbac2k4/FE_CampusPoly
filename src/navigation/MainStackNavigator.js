@@ -10,7 +10,7 @@ import OTPScreen from '../workspaces/SignUp/OTP_screen';
 import SignUpImageScreen from '../workspaces/SignUp/SignUpImageScreen';
 import BottomTabNavigator from './BottomTabNavigator';
 import Screens from './Screens';
-import CommentScreen from '../workspaces/Comment/tempCommentScreen';
+import CommentScreen from '../workspaces/Comment/CommentScreen';
 import MessagesScreen from '../workspaces/messages/MessagesScreen';
 import EditProfileScreen from '../workspaces/EditProfile/EditProfileScreen';
 import ResetPasswordScreen from '../workspaces/ResetPassword/ResetPasswordScreen';
