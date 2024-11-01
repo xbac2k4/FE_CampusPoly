@@ -13,16 +13,18 @@ import styles from './styles';
 
 const EditProfileScreen = () => {
   const route = useRoute();
-  const { userId } = route.params;
+  const user = route?.params?.user;
+  console.log('123123: ', user);
+
   const navigation = useNavigation();
 
   const profileSheetRef = useRef(null);
   const backgroundSheetRef = useRef(null);
 
-  const [name, setName] = useState('');
-  const [bio, setBio] = useState('');
-  const [gender, setGender] = useState('');
-  const [birthday, setBirthday] = useState(null);
+  const [name, setName] = useState(user.full_name || '');
+  const [bio, setBio] = useState(user.bio || '');
+  const [gender, setGender] = useState(user.sex || '');
+  const [birthday, setBirthday] = useState(user.date_of_birth ? new Date(user.date_of_birth) : null);
   const [profileImage, setProfileImage] = useState(require('../../assets/images/default-profile.png'));
   const [backgroundImage, setBackgroundImage] = useState(require('../../assets/images/default-bg.png'));
   const [isChanged, setIsChanged] = useState(false);
@@ -40,64 +42,64 @@ const EditProfileScreen = () => {
     backgroundImage: require('../../assets/images/default-bg.png'),
   });
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch(`${process.env.GET_USER_ID}${userId}`);
-        if (response.ok) {
-          const result = await response.json();
-          const user = result.data; // Access the user data under "data"
+  // useEffect(() => {
+  //   const fetchUserData = async () => {
+  //     try {
+  //       const response = await fetch(`${process.env.GET_USER_ID}${userId}`);
+  //       if (response.ok) {
+  //         const result = await response.json();
+  //         const user = result.data; // Access the user data under "data"
 
-          console.log('Fetched user data:', user);
+  //         console.log('Fetched user data:', user);
 
-          // Ensure correct value assignment
-          setName(user.full_name || ''); // Set name
-          setBio(user.bio || ''); // Set bio
-          setGender(user.sex || ''); // Set gender
-          setBirthday(user.date_of_birth ? new Date(user.date_of_birth) : null); // Set birthday
-          setProfileImage(
-            user.avatar ? { uri: user.avatar.replace('localhost', '10.0.2.2') } : require('../../assets/images/default-profile.png')
-          );
-          setBackgroundImage(
-            user.background ? { uri: user.background.replace('localhost', '10.0.2.2') } : require('../../assets/images/default-bg.png')
-          );
+  //         // Ensure correct value assignment
+  //         setName(user.full_name || ''); // Set name
+  //         setBio(user.bio || ''); // Set bio
+  //         setGender(user.sex || ''); // Set gender
+  //         setBirthday(user.date_of_birth ? new Date(user.date_of_birth) : null); // Set birthday
+  //         setProfileImage(
+  //           user.avatar ? { uri: user.avatar.replace('localhost', '10.0.2.2') } : require('../../assets/images/default-profile.png')
+  //         );
+  //         setBackgroundImage(
+  //           user.background ? { uri: user.background.replace('localhost', '10.0.2.2') } : require('../../assets/images/default-bg.png')
+  //         );
 
-          // Store initial data for unsaved changes modal
-          originalData.current = {
-            name: user.full_name || '',
-            bio: user.bio || '',
-            gender: user.sex || '',
-            birthday: user.date_of_birth ? new Date(user.date_of_birth) : null, // Add this line
-            profileImage: user.avatar ? { uri: user.avatar.replace('localhost', '10.0.2.2') } : require('../../assets/images/default-profile.png'),
-            backgroundImage: user.background ? { uri: user.background.replace('localhost', '10.0.2.2') } : require('../../assets/images/default-bg.png'),
-          };
-          
+  //         // Store initial data for unsaved changes modal
+  //         originalData.current = {
+  //           name: user.full_name || '',
+  //           bio: user.bio || '',
+  //           gender: user.sex || '',
+  //           birthday: user.date_of_birth ? new Date(user.date_of_birth) : null, // Add this line
+  //           profileImage: user.avatar ? { uri: user.avatar.replace('localhost', '10.0.2.2') } : require('../../assets/images/default-profile.png'),
+  //           backgroundImage: user.background ? { uri: user.background.replace('localhost', '10.0.2.2') } : require('../../assets/images/default-bg.png'),
+  //         };
 
-          console.log('Set state values:', {
-            name: user.full_name || '',
-            bio: user.bio || '',
-            gender: user.sex || '',
-            birthday: user.date_of_birth ? new Date(user.date_of_birth) : null, // Add this line
-            profileImage: user.avatar
-              ? { uri: user.avatar }
-              : require('../../assets/images/default-profile.png'),
-            backgroundImage: user.backgroundImage
-              ? { uri: user.backgroundImage }
-              : require('../../assets/images/default-bg.png'),
-          });
-        } else {
-          throw new Error('Failed to fetch user data');
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-        setErrorMessage('Unable to load user data.');
-      }
-    };
 
-    if (userId) {
-      fetchUserData();
-    }
-  }, [userId]);
+  //         console.log('Set state values:', {
+  //           name: user.full_name || '',
+  //           bio: user.bio || '',
+  //           gender: user.sex || '',
+  //           birthday: user.date_of_birth ? new Date(user.date_of_birth) : null, // Add this line
+  //           profileImage: user.avatar
+  //             ? { uri: user.avatar }
+  //             : require('../../assets/images/default-profile.png'),
+  //           backgroundImage: user.backgroundImage
+  //             ? { uri: user.backgroundImage }
+  //             : require('../../assets/images/default-bg.png'),
+  //         });
+  //       } else {
+  //         throw new Error('Failed to fetch user data');
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching user data:', error);
+  //       setErrorMessage('Unable to load user data.');
+  //     }
+  //   };
+
+  //   if (userId) {
+  //     fetchUserData();
+  //   }
+  // }, [userId]);
 
 
   useEffect(() => {
@@ -110,7 +112,7 @@ const EditProfileScreen = () => {
       backgroundImage !== originalData.current.backgroundImage;
     setIsChanged(hasChanges);
   }, [name, bio, gender, birthday, profileImage, backgroundImage]);
-  
+
 
   useEffect(() => {
     const backAction = e => {
@@ -268,8 +270,8 @@ const EditProfileScreen = () => {
         <GenderPicker selectedGender={gender} onGenderChange={setGender} />
         <BirthdayPicker
           selectedDate={birthday}
-          onDateChange={(date) => setBirthday(date)} 
-          />
+          onDateChange={(date) => setBirthday(date)}
+        />
       </View>
 
       {/* Image Options */}
@@ -279,7 +281,7 @@ const EditProfileScreen = () => {
       <ImageOptionsSheet ref={backgroundSheetRef} onUpload={() => handleBackgroundImageEdit('upload')}
         onDelete={() => handleBackgroundImageEdit('delete')}
         canDelete={backgroundImage !== require('../../assets/images/default-bg.png')} />
-     
+
       {/* Modals */}
       <DeleteConfirmationModal
         visible={showDeleteModal}

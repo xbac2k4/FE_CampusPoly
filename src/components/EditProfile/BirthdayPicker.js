@@ -17,6 +17,8 @@ const BirthdayPicker = ({ selectedDate, onDateChange }) => {
   }
 
   const formatDate = (date) => {
+    console.log('date: ' + typeof date);
+
     let day = date.getDate();
     let month = date.getMonth() + 1; // Tháng bắt đầu từ 0
     const year = date.getFullYear();

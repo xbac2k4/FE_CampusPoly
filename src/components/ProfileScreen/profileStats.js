@@ -19,11 +19,7 @@ const ProfileStats = ({ data }) => {
       <TouchableOpacity
         style={styles.editButton}
         onPress={() => navigation.navigate(Screens.EditProfile, {
-          userId: data._id, // Sending the _id directly
-          // user: {
-          //   ...data,
-          //   birthday: data.date_of_birth ? data.date_of_birth.toISOString() : null,
-          // },
+          user: data
         })}
       >
         <Text style={styles.editButtonText}>Edit Profile</Text>
