@@ -12,6 +12,11 @@ const MenuAuthenticationScreen = ({ navigation }) => {
     setIsShowDialog(prevState => !prevState);
   }, []);
 
+  const SignInWithGoogle = () => {
+    // toggleShowDialog()
+    navigation.navigate(Screens.BottomTab)
+  }
+
   return (
     <View style={st.container}>
 
@@ -35,7 +40,7 @@ const MenuAuthenticationScreen = ({ navigation }) => {
           {/* nút đăng nhập với google */}
           <TouchableOpacity
             style={st.btn}
-            onPress={toggleShowDialog}
+            onPress={SignInWithGoogle}
           >
             <Image
               style={{ width: 30, height: 30 }}

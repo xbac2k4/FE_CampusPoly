@@ -11,14 +11,6 @@ const BlockDialog = ({ isShowDialog, toggleShowDialog }) => {
             onRequestClose={toggleShowDialog}
         >
 
-            {/* làm mờ màn hình */}
-            <BlurView
-                style={st.blur}
-                blurType="dark"
-                blurAmount={10}
-                reducedTransparencyFallbackColor="rgba(0, 0, 0, 0.5)"
-            />
-
             {/* nền xung quanh dialog */}
             <View style={st.modalContainer}>
 
@@ -64,6 +56,7 @@ const st = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.5)'
     },
     modalContent: {
         backgroundColor: '#181a1c',
