@@ -10,7 +10,7 @@ import SearchScreen from './src/workspaces/SearchScreen/SearchScreen'
 import homeScreen from './src/workspaces/Home/homeScreen'
 import profileScreen from './src/workspaces/ProfileScreen/profileScreen'
 import Welcome from './src/workspaces/Welcome/WelcomeScreen'
-import CommentScreen from './src/workspaces/Comment/CommentScreen';
+import CommentScreen from './src/workspaces/Comment/tempCommentScreen';
 
 import 'react-native-gesture-handler';
 
