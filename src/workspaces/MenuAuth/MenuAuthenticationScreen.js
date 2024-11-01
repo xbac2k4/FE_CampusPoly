@@ -3,6 +3,7 @@ import React, { useCallback, useState } from 'react'
 import Screens from '../../navigation/Screens'
 import Colors from '../../constants/Color'
 import BlockDialog from '../../components/MenuAuth/BlockDialog'
+import { CommonActions } from '@react-navigation/native'
 
 const MenuAuthenticationScreen = ({ navigation }) => {
 
@@ -14,7 +15,14 @@ const MenuAuthenticationScreen = ({ navigation }) => {
 
   const SignInWithGoogle = () => {
     // toggleShowDialog()
-    navigation.navigate(Screens.BottomTab)
+
+    // chuyển màn hình và xóa các màn cũ khỏi ngăn xếp
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: Screens.BottomTab }],
+      })
+    );
   }
 
   return (

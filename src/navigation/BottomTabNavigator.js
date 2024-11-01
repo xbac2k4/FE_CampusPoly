@@ -1,5 +1,4 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStackNavigator } from '@react-navigation/stack';
 import React, { useEffect, useState } from 'react';
 import { Image, Keyboard, StyleSheet, TouchableOpacity, View } from 'react-native';
 import HomeScreen from '../workspaces/Home/homeScreen';
@@ -11,7 +10,6 @@ import LinearGradient from 'react-native-linear-gradient';
 import Screens from './Screens';
 
 const Tab = createBottomTabNavigator();
-const Stack = createStackNavigator();
 
 const BottomTabNavigator = ({ navigation }) => {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
@@ -79,7 +77,7 @@ const BottomTabNavigator = ({ navigation }) => {
         }}
       />
       <Tab.Screen
-        name="CreatePost"
+        name={Screens.CreatePost}
         component={CreatePostScreen} // Placeholder
         options={{
           tabBarIcon: () => (
@@ -99,7 +97,7 @@ const BottomTabNavigator = ({ navigation }) => {
           tabBarButton: (props) => (
             <TouchableOpacity
               {...props}
-              onPress={() => navigation.navigate('CreatePostModal')}
+              onPress={() => navigation.navigate(Screens.CreatePost)}
             />
           ),
         }}
@@ -142,20 +140,7 @@ const BottomTabNavigator = ({ navigation }) => {
   );
 };
 
-const AppNavigator = () => (
-  <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="MainTabs" component={BottomTabNavigator} />
-    <Stack.Screen
-      name="CreatePostModal"
-      component={CreatePostScreen}
-      options={{
-        presentation: 'modal', // Hiệu ứng modal
-      }}
-    />
-  </Stack.Navigator>
-);
-
-export default AppNavigator;
+export default BottomTabNavigator;
 
 const styles = StyleSheet.create({
   iconContainer: {
