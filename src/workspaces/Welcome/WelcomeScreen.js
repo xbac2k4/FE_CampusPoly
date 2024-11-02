@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, Easing, Image, StatusBar } from 'react-native';
 import Screens from '../../navigation/Screens';
 import Colors from '../../constants/Color';
+import { CommonActions } from '@react-navigation/native';
 
 const WelcomeScreen = ({ navigation }) => {
   const letters = 'CAMPUSPOLY'.split('');
@@ -49,7 +50,12 @@ const WelcomeScreen = ({ navigation }) => {
     runAnimation();
 
     const timer = setTimeout(() => {
-      navigation.navigate(Screens.MenuAuth);
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{ name: Screens.MenuAuth }],
+        })
+      );
     }, 2000);
 
     // Dọn dẹp timer khi component bị unmount

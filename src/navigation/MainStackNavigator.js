@@ -20,18 +20,14 @@ const MainStackNavigator = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name={Screens.Welcome} component={WelcomeScreen} />
-      <Stack.Screen name={Screens.MenuAuth} component={MenuAuthenticationScreen} />
-      <Stack.Screen name={Screens.OTP} component={OTPScreen} />
-      <Stack.Screen name={Screens.BottomTab} component={BottomTabNavigator} />
-      <Stack.Screen name={Screens.Comment} component={CommentScreen} />
-      <Stack.Screen name={Screens.Message} component={MessagesScreen} />
-      <Stack.Screen name={Screens.EditProfile} component={EditProfileScreen} />
-      <Stack.Screen name={Screens.ChatView} component={ChatScreen} />
-      <Stack.Screen name={Screens.CreatePost} component={CreatePostScreen} />
-
-
-
-
+      <Stack.Screen name={Screens.MenuAuth} component={MenuAuthenticationScreen} options={{ animation: 'slide_from_right' }}/>
+      <Stack.Screen name={Screens.OTP} component={OTPScreen} options={{ animation: 'slide_from_right' }}/>
+      <Stack.Screen name={Screens.BottomTab} component={BottomTabNavigator} options={{ animation: 'ios' }}/>
+      <Stack.Screen name={Screens.Comment} component={CommentScreen} options={{ animation: 'slide_from_bottom' }}/>
+      <Stack.Screen name={Screens.Message} component={MessagesScreen} options={{ animation: 'ios' }}/>
+      <Stack.Screen name={Screens.EditProfile} component={EditProfileScreen} options={{ animation: 'ios' }}/>
+      <Stack.Screen name={Screens.ChatView} component={ChatScreen} options={{ animation: 'ios' }}/>
+      <Stack.Screen name={Screens.CreatePost} component={CreatePostScreen} options={{ animation: 'slide_from_bottom' }}/>
 
     </Stack.Navigator>
   )
