@@ -61,7 +61,7 @@ const CommentScreen = () => {
   // Đặt chỉ mục hình ảnh đầu tiên cho các bài viết có nhiều hình ảnh
   useEffect(() => {
     if (post) {
-      console.log(post);
+      // console.log(post);
       const initialIndices = {};
       if (post.postData.image && post.postData.image.length > 1) {
         initialIndices[post.postData._id] = 0; // Thiết lập chỉ mục đầu tiên cho các bài có nhiều ảnh
