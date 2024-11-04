@@ -47,13 +47,20 @@ const user = {
   ],
 };
 
-const ProfileScreen = () => {
+const ProfileScreen = ({ route }) => {
   const [activeTab, setActiveTab] = useState('Posts');
   const [id, setID] = useState('670ca3898cfc1be4b41b183b');
   const [user1, setUser] = useState();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Nhận params từ điều hướng nếu có
+    if (route.params?.updatedUser) {
+      setUser(route.params.updatedUser);
+      setLoading(false); // Tắt loading khi có dữ liệu mới
+      return; // Thoát sớm nếu có dữ liệu mới
+    }
+
     const fetchUserData = async () => {
       try {
         console.log(`${process.env.GET_USER_ID}${id}`);
@@ -75,7 +82,7 @@ const ProfileScreen = () => {
     };
 
     fetchUserData();
-  }, []);
+  }, [route.params?.updatedUser]);// Thêm dependency để cập nhật khi có updatedUser
 
   return (
     <View style={styles.screen}>
