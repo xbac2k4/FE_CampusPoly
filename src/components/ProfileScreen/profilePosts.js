@@ -5,7 +5,7 @@ import Screens from '../../navigation/Screens';
 const { width: screenWidth } = Dimensions.get('window');
 import styles from '../../assets/style/PostStyle';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import ReportOptions from '../../components/Report/ReportOptions'; // Import the new component
+
 import ToastModal from '../../components/Notification/NotificationModal'
 // Import các hình ảnh
 import avt from '../../assets/images/avt.png';

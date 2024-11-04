@@ -1,26 +1,51 @@
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
 import PostComponent from '../../components/Post/PostComponent';
+import styles from '../../assets/style/CreatePostStyle';
 
 const CreatePostScreen = ({ navigation }) => {
+  const [user, setUser] = useState(null);
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [image, setImage] = useState(null);
+  const [gif, setGif] = useState(null);
 
-  const handlePublish = async (content, selectedImage, selectedGif) => {
-    // Kiểm tra nội dung và hình ảnh/GIF
-    if (!content && !selectedImage && !selectedGif) {
-      alert("Vui lòng nhập nội dung hoặc chọn ảnh/GIF!");
-      return;
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch('http://10.0.2.2:3000/api/v1/users/get-user-by-id/670ca3898cfc1be4b41b183b');
+      const data = await response.json();
+      setUser(data);
+    } catch (error) {
+      console.error('Lỗi khi lấy dữ liệu người dùng:', error);
+      Alert.alert('Lỗi', 'Không thể lấy dữ liệu người dùng.');
     }
+  };
 
-    // Chuẩn bị dữ liệu để gửi lên API
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  // Hàm để cập nhật dữ liệu từ PostComponent
+  const handleContentChange = (newTitle, newContent, newImage, newGif) => {
+    setTitle(newTitle);
+    setContent(newContent);
+    setImage(newImage);
+    setGif(newGif);
+  };
+
+  const handlePublish = async () => {
     const postData = {
-      content,
-      image: selectedImage, // Xử lý lại hình ảnh nếu cần
-      gif: selectedGif, // Tương tự như trên
+      title: title || "",
+      content: content || "",
+      image: image || null,
+      gif: gif || null,
+      userId: user?.data?.id,
     };
 
+    console.log('Dữ liệu bài đăng:', postData);
+
     try {
-      // Gửi yêu cầu POST lên API
-      const response = await fetch('http://192.168.1.101:3000/api/v1/posts/add-post', { // Thay đổi endpoint ở đây
+      const response = await fetch('http://10.0.2.2:3000/api/v1/posts', { // Địa chỉ API cập nhật tại đây
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -28,76 +53,42 @@ const CreatePostScreen = ({ navigation }) => {
         body: JSON.stringify(postData),
       });
 
-      // Kiểm tra phản hồi từ API
       if (!response.ok) {
-        throw new Error('Đăng bài thất bại!');
+        const errorResponse = await response.json();
+        throw new Error(errorResponse.message || 'Đăng bài thất bại!');
       }
 
-      const data = await response.json(); // Nếu cần, xử lý dữ liệu trả về từ API
-
-      // Thông báo thành công
-      alert("Bài viết đã được đăng thành công!");
-
-      // Quay lại màn hình trước
+      Alert.alert("Thông báo", "Bài viết đã được đăng thành công!");
       navigation.goBack();
     } catch (error) {
-      alert(error.message);
+      console.error('Lỗi khi đăng bài:', error);
+      Alert.alert('Lỗi', error.message);
     }
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.barHeader}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()} // Sử dụng navigation.goBack()
-          style={styles.circleIcon}>
-          <Text style={[styles.textHeader, { color: "#2E8AF6", fontSize: 16, }]}>Discard</Text>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.circleIcon}>
+          <Text style={[styles.textHeader, { color: "#2E8AF6", fontSize: 16 }]}>Discard</Text>
         </TouchableOpacity>
         <Text style={styles.textHeader}>CREATE</Text>
-        <TouchableOpacity
-          onPress={() => {
-            // Gọi hàm publish từ PostComponent
-            // Bạn không cần phải gọi hàm handlePublish ở đây nữa vì nó sẽ được gọi từ PostComponent
-          }}
-          style={styles.buttonContainer}>
-          <Text style={[styles.textHeader, { fontSize: 16, }]}>Publish</Text>
+        <TouchableOpacity onPress={handlePublish} style={styles.buttonContainer}>
+          <Text style={[styles.textHeader, { fontSize: 16 }]}>Publish</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.createContainer}>
-        <PostComponent onPublish={handlePublish} />
+        <PostComponent
+          title={title} 
+          content={content}
+          image={image}
+          gif={gif}
+          onContentChange={handleContentChange} // Truyền hàm vào PostComponent
+          user={user}
+        />
       </View>
     </View>
   );
 };
 
 export default CreatePostScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: 24,
-    backgroundColor: '#181A1C',
-  },
-  barHeader: {
-    flexDirection: 'row',
-    marginTop: 40,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingBottom: 20,
-  },
-  textHeader: {
-    color: '#ECEBED',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  buttonContainer: {
-    backgroundColor: "#F62E8E",
-    borderRadius: 24,
-    width: 70,
-    height: 24,
-    alignItems: 'center',
-  },
-  createContainer: {
-    flex: 1,
-  },
-});
