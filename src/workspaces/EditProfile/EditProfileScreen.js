@@ -28,10 +28,13 @@ const EditProfileScreen = () => {
   const [birthday, setBirthday] = useState(user.date_of_birth ? new Date(user.date_of_birth) : null);
   const defaultProfileImage = Image.resolveAssetSource(require('../../assets/images/default-profile.png')).uri;
   const defaultBackgroundImage = Image.resolveAssetSource(require('../../assets/images/default-bg.png')).uri;
-  const [profileImage, setProfileImage] = useState({ uri: user.avatar ? user.avatar.replace('localhost', '10.0.2.2') : defaultProfileImage });
-  const [backgroundImage, setBackgroundImage] = useState({ uri: user.background ? user.background.replace('localhost', '10.0.2.2') : defaultBackgroundImage });
-
+  
+  const [profileImage, setProfileImage] = useState({
+    uri: user.avatar ? user.avatar.replace('localhost', '10.0.2.2') : defaultProfileImage,
+  });
+    const [backgroundImage, setBackgroundImage] = useState({ uri: user.background ? user.background.replace('localhost', '10.0.2.2') : defaultBackgroundImage });
   const [isProfileImageChanged, setIsProfileImageChanged] = useState(false);
+
   const [isChanged, setIsChanged] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -82,37 +85,36 @@ const EditProfileScreen = () => {
 
   const validateName = text => {
     if (!text) {
-      setErrorMessage('Name is required.');
+      setErrorMessage('Tên là bắt buộc.');
     } else {
       setErrorMessage('');
     }
   };
 
+  // Điều kiện kiểm tra trước khi gửi ảnh đại diện lên API
   const handleSave = async () => {
     if (!name?.trim()) {
-      setErrorMessage('Name is required!');
+      setErrorMessage('Tên là bắt buộc.');
       return;
     }
-
+  
     setIsLoading(true);
-
+  
     const formData = new FormData();
     formData.append('full_name', name);
     formData.append('bio', bio);
     formData.append('sex', gender);
     formData.append('date_of_birth', birthday ? birthday.toISOString() : '');
-
-    console.log('FormData', formData);
-
-    // Append only if the profile image has changed and it's not the default image
-    if (profileImage.uri !== defaultProfileImage) {
+  
+    // Chỉ thêm ảnh nếu ảnh đã thay đổi
+    if (isProfileImageChanged) {
       formData.append('avatar', {
         uri: profileImage.uri,
         name: 'avatar.jpg',
         type: 'image/jpeg',
       });
     }
-
+  
     try {
       const response = await fetch(`http://10.0.2.2:3000/api/v1/users/update-user/${user._id}`, {
         method: 'PUT',
@@ -121,18 +123,18 @@ const EditProfileScreen = () => {
         },
         body: formData,
       });
-
+  
       if (!response.ok) {
         throw new Error('Failed to update profile');
       }
-
+  
       const updatedUser = await response.json();
       console.log('API response:', updatedUser);
-
+  
       setIsLoading(false);
       setIsSaved(true);
       setErrorMessage('');
-
+  
       // Gửi dữ liệu đã cập nhật trở lại ProfileScreen
       navigation.navigate(Screens.Profile, {
         userId: user._id,
@@ -142,35 +144,37 @@ const EditProfileScreen = () => {
           bio,
           sex: gender,
           date_of_birth: birthday ? birthday.toISOString() : user.date_of_birth.toString(),
-          avatar: profileImage.uri !== defaultProfileImage ? profileImage.uri.replace('localhost', '10.0.2.2') : '',
+          avatar: isProfileImageChanged ? profileImage.uri.replace('localhost', '10.0.2.2') : user.avatar,
         },
       });
-
+  
       setIsChanged(false);
     } catch (error) {
-      console.error('Error saving profile:', error);
-      setErrorMessage('Failed to save profile.');
+      console.error('Lỗi khi lưu hồ sơ:', error);
+      setErrorMessage('Không lưu được hồ sơ.');
       setIsLoading(false);
     }
   };
-
+  
 
   const clearBio = () => setBio('');
 
-  const handleProfileImageEdit = type => {
-    if (type === 'upload') {
-      launchImageLibrary({ mediaType: 'photo' }, response => {
-        if (!response.didCancel && !response.error && response.assets) {
-          const source = { uri: response.assets[0].uri };
-          setProfileImage(source);
-          profileSheetRef.current.close();
-        }
-      });
-    } else {
-      setDeleteTarget('profile');
-      setShowDeleteModal(true);
-    }
-  };
+// Cập nhật profileImage khi người dùng chọn ảnh mới
+const handleProfileImageEdit = type => {
+  if (type === 'upload') {
+    launchImageLibrary({ mediaType: 'photo' }, response => {
+      if (!response.didCancel && !response.error && response.assets) {
+        const source = { uri: response.assets[0].uri };
+        setProfileImage(source);
+        setIsProfileImageChanged(true); // Đánh dấu đã thay đổi ảnh đại diện
+        profileSheetRef.current.close();
+      }
+    });
+  } else {
+    setDeleteTarget('profile');
+    setShowDeleteModal(true);
+  }
+};
 
   const handleBackgroundImageEdit = type => {
     if (type === 'upload') {
@@ -204,14 +208,14 @@ const EditProfileScreen = () => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text style={styles.headerButton}>✖</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Edit Profile</Text>
+        <Text style={styles.headerTitle}>Chỉnh sửa trang cá nhân</Text>
 
         <TouchableOpacity onPress={handleSave} disabled={!isChanged || !name?.trim() || isLoading}>
           {isLoading ? (
             <ActivityIndicator size="small" color="#ffffff" />
           ) : (
             <Text style={[styles.headerButton, isChanged && name?.trim() && styles.headerButtonActive]}>
-              Save
+              Lưu
             </Text>
           )}
         </TouchableOpacity>
@@ -235,11 +239,11 @@ const EditProfileScreen = () => {
 
       {/* Inputs */}
       <View style={styles.inputWrapper}>
-        <ProfileInput label="Name" value={name} onChangeText={text => {
+        <ProfileInput label="Tên hiển thị" value={name} onChangeText={text => {
           setName(text);
           validateName(text);
         }} clearText={() => { setName(''); validateName(''); }} maxLength={50} errorMessage={errorMessage} />
-        <ProfileInput label="Bio" value={bio} onChangeText={setBio} clearText={clearBio} maxLength={50} />
+        <ProfileInput label="Tiểu sử" value={bio} onChangeText={setBio} clearText={clearBio} maxLength={50} />
         <GenderPicker selectedGender={gender} onGenderChange={setGender} />
         <BirthdayPicker
           selectedDate={birthday}

@@ -7,14 +7,14 @@ const DeleteConfirmationModal = ({ visible, onCancel, onDelete }) => {
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.modalOverlay}>
         <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle}>Confirm image deletion</Text>
-          <Text style={styles.modalText}>Are you sure you want to delete this photo?</Text>
+          <Text style={styles.modalTitle}>Xác nhận xóa hình ảnh</Text>
+          <Text style={styles.modalText}>Bạn có chắc chắn muốn xóa ảnh này không?</Text>
           <View style={styles.modalButtonContainer}>
             <TouchableOpacity style={[styles.modalButton, styles.modalCancelButton]} onPress={onCancel}>
-              <Text style={styles.modalButtonText}>Cancel</Text>
+              <Text style={styles.modalButtonText}>Hủy</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.modalButton, styles.modalDeleteButton]} onPress={onDelete}>
-              <Text style={styles.modalButtonText}>Delete</Text>
+              <Text style={styles.modalButtonText}>Xóa</Text>
             </TouchableOpacity>
           </View>
         </View>

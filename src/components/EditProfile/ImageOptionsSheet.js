@@ -25,7 +25,7 @@ const ImageOptionsSheet = React.forwardRef(({ onUpload, onDelete, canDelete }, r
       }}
     >
       <TouchableOpacity style={styles.bottomSheetButton} onPress={onUpload}>
-        <Text style={styles.bottomSheetButtonText}>Upload Image</Text>
+        <Text style={styles.bottomSheetButtonText}>Tải ảnh lên</Text>
       </TouchableOpacity>
 
       <View style={styles.separator} />
@@ -35,7 +35,7 @@ const ImageOptionsSheet = React.forwardRef(({ onUpload, onDelete, canDelete }, r
         onPress={canDelete ? onDelete : null} 
         disabled={!canDelete} 
       >
-        <Text style={styles.bottomSheetDeleteButton}>Remove Image</Text>
+        <Text style={styles.bottomSheetDeleteButton}>Xóa ảnh</Text>
       </TouchableOpacity>
     </RBSheet>
   );

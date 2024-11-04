@@ -13,7 +13,7 @@ const ProfileStats = ({ data }) => {
     <View style={styles.statsContainer}>
       <View style={styles.stat}>
         <Text style={styles.statNumber}>{friendsCount.toLocaleString()}</Text>
-        <Text style={styles.statText}>Friends</Text>
+        <Text style={styles.statText}>Bạn bè</Text>
       </View>
 
       <TouchableOpacity
@@ -22,7 +22,7 @@ const ProfileStats = ({ data }) => {
           user: data
         })}
       >
-        <Text style={styles.editButtonText}>Edit Profile</Text>
+        <Text style={styles.editButtonText}>Chỉnh sửa</Text>
       </TouchableOpacity>
     </View>
   );
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
   },
   editButtonText: {
     color: 'white',
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: 'bold',
   },
 });
