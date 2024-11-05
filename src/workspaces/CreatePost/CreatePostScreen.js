@@ -4,7 +4,9 @@ import PostComponent from '../../components/Post/PostComponent';
 import styles from '../../assets/style/CreatePostStyle';
 
 const CreatePostScreen = ({ navigation }) => {
+
   const [user, setUser] = useState(null);
+  const [id, setID] = useState('670ca3898cfc1be4b41b183b');
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [images, setImages] = useState([]);
@@ -12,7 +14,9 @@ const CreatePostScreen = ({ navigation }) => {
 
   const fetchUserData = async () => {
     try {
-      const response = await fetch('http://10.0.2.2:3000/api/v1/users/get-user-by-id/670ca3898cfc1be4b41b183b');
+      console.log(`${process.env.GET_USER_ID}${id}`);
+
+      const response = await fetch(`${process.env.GET_USER_ID}${id}`);
       const data = await response.json();
       setUser(data);
     } catch (error) {
@@ -60,7 +64,7 @@ const CreatePostScreen = ({ navigation }) => {
     }
   
     try {
-      const response = await fetch('http://10.0.2.2:3000/api/v1/posts/add-post', {
+      const response = await fetch(`${process.env.ADD_POST}`, {
         method: 'POST',
         body: formData, 
       });
