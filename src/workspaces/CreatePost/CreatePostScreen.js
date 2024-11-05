@@ -7,7 +7,7 @@ const CreatePostScreen = ({ navigation }) => {
   const [user, setUser] = useState(null);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [image, setImage] = useState(null);
+  const [images, setImages] = useState([]);
   const [gif, setGif] = useState(null);
 
   const fetchUserData = async () => {
@@ -26,45 +26,59 @@ const CreatePostScreen = ({ navigation }) => {
   }, []);
 
   // Hàm để cập nhật dữ liệu từ PostComponent
-  const handleContentChange = (newTitle, newContent, newImage, newGif) => {
+  const handleContentChange = (newTitle, newContent, newImages, newGif) => {
     setTitle(newTitle);
     setContent(newContent);
-    setImage(newImage);
+    setImages(newImages);
     setGif(newGif);
   };
 
   const handlePublish = async () => {
-    const postData = {
-      title: title || "",
-      content: content || "",
-      image: image || null,
-      gif: gif || null,
-      userId: user?.data?.id,
-    };
-
-    console.log('Dữ liệu bài đăng:', postData);
-
-    try {
-      const response = await fetch('http://10.0.2.2:3000/api/v1/posts', { // Địa chỉ API cập nhật tại đây
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(postData),
-      });
-
-      if (!response.ok) {
-        const errorResponse = await response.json();
-        throw new Error(errorResponse.message || 'Đăng bài thất bại!');
+    const formData = new FormData();
+    formData.append('user_id', '670ca3898cfc1be4b41b183b'); // Gia dinh khi chua co user_id
+    formData.append('title', title || "");
+    formData.append('content', content || "");
+    formData.append('post_type', 'text'); 
+  
+    // Thêm hình ảnh vào formData
+    images.forEach((imgUri, index) => {
+      if (imgUri) {
+        formData.append('image', {
+          uri: imgUri,
+          type: 'image/jpeg', // Đảm bảo điều này phù hợp với loại hình ảnh của bạn
+          name: `image_${index}.jpg`, // Tên cho mỗi ảnh
+        });
       }
-
-      Alert.alert("Thông báo", "Bài viết đã được đăng thành công!");
+    });
+  
+    if (gif) {
+      formData.append('gif', {
+        uri: gif,
+        name: 'gif.gif',
+        type: 'image/gif', 
+      });
+    }
+  
+    try {
+      const response = await fetch('http://10.0.2.2:3000/api/v1/posts/add-post', {
+        method: 'POST',
+        body: formData, 
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to publish post!');
+      }
+      const post = await response.json();
+      console.log('API response:', post);
+  
+      Alert.alert("Success", "Your post has been published!");
       navigation.goBack();
     } catch (error) {
-      console.error('Lỗi khi đăng bài:', error);
-      Alert.alert('Lỗi', error.message);
+      console.error('Error while publishing post:', error);
+      Alert.alert('Error', error.message);
     }
   };
+  
 
   return (
     <View style={styles.container}>
@@ -79,9 +93,9 @@ const CreatePostScreen = ({ navigation }) => {
       </View>
       <View style={styles.createContainer}>
         <PostComponent
-          title={title} 
+          title={title}
           content={content}
-          image={image}
+          image={images}
           gif={gif}
           onContentChange={handleContentChange} // Truyền hàm vào PostComponent
           user={user}

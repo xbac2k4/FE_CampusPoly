@@ -9,7 +9,7 @@ const PostComponent = ({ title: initialTitle, content: initialContent, image, gi
   const [inputHeight, setInputHeight] = useState(40);
   const [isVisible, setIsVisible] = useState(false);
   const [animation] = useState(new Animated.Value(0));
-  const [selectedImage, setSelectedImage] = useState(image || null);
+  const [selectedImages, setSelectedImages] = useState(image || []);
   const [selectedGif, setSelectedGif] = useState(gif || null);
   const [isGifModalVisible, setGifModalVisible] = useState(false);
   const [content, setContent] = useState(initialContent || ''); // State cho Content
@@ -19,25 +19,25 @@ const PostComponent = ({ title: initialTitle, content: initialContent, image, gi
   useEffect(() => {
     setTitle(initialTitle);
     setContent(initialContent);
-    setSelectedImage(image);
+    setSelectedImages(image);
     setSelectedGif(gif);
   }, [initialTitle, initialContent, image, gif]);
 
   // Xử lý sự thay đổi nội dung
   const handleTitleChange = (text) => {
     setTitle(text);
-    onContentChange(text, content, selectedImage, selectedGif);
+    onContentChange(text, content, selectedImages, selectedGif);
   };
 
   const handleContentChange = (text) => {
     setContent(text);
-    onContentChange(title, text, selectedImage, selectedGif);
+    onContentChange(title, text, selectedImages, selectedGif);
   };
 
   const handleGifSelect = (gifUrl) => {
     setSelectedGif(gifUrl);
     setGifModalVisible(false);
-    onContentChange(content, selectedImage, gifUrl);
+    onContentChange(content, selectedImages, gifUrl);
   };
 
   const toggleImages = () => {
@@ -62,23 +62,17 @@ const PostComponent = ({ title: initialTitle, content: initialContent, image, gi
   };
 
   const handleImageResponse = (response) => {
-    if (response.didCancel) {
-      Alert.alert('Bạn đã hủy chọn ảnh');
-    } else if (response.errorMessage) {
-      console.error(response.errorMessage);
-      Alert.alert('Lỗi', response.errorMessage);
-    } else if (response.assets && response.assets.length > 0) {
-      setSelectedImage(response.assets[0].uri);
-      Alert.alert('Thành công', 'Ảnh đã được chọn!');
-      onContentChange(title, content, response.assets[0].uri, selectedGif); // Cập nhật ảnh
+    if (response.assets && response.assets.length > 0) {
+      const newImages = response.assets.map(asset => asset.uri);
+      setSelectedImages([...selectedImages, ...newImages]);
+      onContentChange(title, content, [...selectedImages, ...newImages], selectedGif);
     }
   };
 
   const openImageLibrary = () => {
-    const options = { mediaType: 'photo', selectionLimit: 1 };
+    const options = { mediaType: 'photo', selectionLimit: 0 }; // Allow multiple images
     launchImageLibrary(options, handleImageResponse);
   };
-
   const openCamera = () => {
     const options = { mediaType: 'photo', saveToPhotos: true };
     launchCamera(options, handleImageResponse);
@@ -100,7 +94,7 @@ const PostComponent = ({ title: initialTitle, content: initialContent, image, gi
   };
 
   const clearSelectedImage = () => {
-    setSelectedImage(null);
+    setSelectedImages(null);
   };
 
   const clearSelectedGif = () => {
@@ -140,14 +134,18 @@ const PostComponent = ({ title: initialTitle, content: initialContent, image, gi
       </View>
 
       <View style={styles.imageContent}>
-        {selectedImage && (
-          <View style={styles.imageWrapper}>
-            <Image source={{ uri: selectedImage }} style={styles.selectedImage} />
-            <TouchableOpacity style={styles.removeImageButton} onPress={clearSelectedImage}>
+        {selectedImages.map((img, index) => (
+          <View key={index} style={styles.imageWrapper}>
+            <Image source={{ uri: img }} style={styles.selectedImage} />
+            <TouchableOpacity style={styles.removeImageButton} onPress={() => {
+              const newImages = selectedImages.filter((_, i) => i !== index);
+              setSelectedImages(newImages);
+              onContentChange(title, content, newImages, selectedGif);
+            }}>
               <Image source={require('../../assets/images/x.png')} style={styles.removeImageIcon} />
             </TouchableOpacity>
           </View>
-        )}
+        ))}
         {selectedGif && (
           <View style={styles.imageWrapper}>
             <Image source={{ uri: selectedGif }} style={styles.selectedGif} />
