@@ -10,7 +10,6 @@ const BirthdayPicker = ({ selectedDate, onDateChange }) => {
     setIsShowDate(false)
     onDateChange(date)
     console.log(date);
-    
   }
 
   const togggleDatePicker = () => {

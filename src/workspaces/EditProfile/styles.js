@@ -1,4 +1,6 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
+
+const { width, height } = Dimensions.get('window');
 
 export default StyleSheet.create({
   container: {
@@ -11,6 +13,7 @@ export default StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     backgroundColor: '#1e1f23',
+    marginTop: 12,
   },
   headerButton: {
     color: '#fff',
@@ -26,12 +29,12 @@ export default StyleSheet.create({
     fontWeight: 'bold',
   },
   backgroundContainer: {
-    height: 100,
+    height: height * 0.2, // 20% of screen height
     backgroundColor: '#2c2f33',
   },
   backgroundImage: {
     width: '100%',
-    height: 160,
+    height: '100%',
   },
   iconEditBackground: {
     position: 'absolute',
@@ -44,15 +47,15 @@ export default StyleSheet.create({
   profileImageContainer: {
     position: 'relative',
     alignItems: 'center',
-    marginTop: -50,
+    marginTop: -height * 0.07,
   },
   profileImage: {
-    width: 140,
-    height: 140,
-    borderRadius: 100,
+    width: width * 0.35,
+    height: width * 0.35,
+    borderRadius: (width * 0.35) / 2,
     borderWidth: 3,
     borderColor: '#fff',
-    marginTop: 35,
+    marginTop: -10,
     marginBottom: 12,
   },
   iconEditProfile: {

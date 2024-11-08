@@ -5,14 +5,14 @@ const UnsavedChangesModal = ({ visible, onCancel, onDiscard }) => (
   <Modal transparent visible={visible} animationType="fade">
     <View style={styles.overlay}>
       <View style={styles.container}>
-        <Text style={styles.title}>Unsaved Changes</Text>
-        <Text style={styles.text}>You have unsaved changes. Discard them?</Text>
+        <Text style={styles.title}>Thay đổi chưa lưu</Text>
+        <Text style={styles.text}>Bạn có những thay đổi chưa lưu. Hủy?</Text>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={onCancel}>
-            <Text style={styles.buttonText}>Continue Editing</Text>
+            <Text style={styles.buttonText}>Tiếp tục chỉnh sửa</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.button, styles.discardButton]} onPress={onDiscard}>
-            <Text style={styles.buttonText}>Discard</Text>
+            <Text style={styles.buttonText}>Bỏ</Text>
           </TouchableOpacity>
         </View>
       </View>

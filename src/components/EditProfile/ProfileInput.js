@@ -9,7 +9,7 @@ import {
 
 const ProfileInput = ({
   label,
-  value,
+  value = '', // Set default value to empty string
   onChangeText,
   clearText,
   maxLength,

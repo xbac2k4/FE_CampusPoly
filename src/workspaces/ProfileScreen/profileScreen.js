@@ -47,22 +47,31 @@ const user = {
   ],
 };
 
-const ProfileScreen = () => {
+const ProfileScreen = ({ route }) => {
   const [activeTab, setActiveTab] = useState('Posts');
   const [id, setID] = useState('670ca3898cfc1be4b41b183b');
   const [user1, setUser] = useState();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Nhận params từ điều hướng nếu có
+    if (route.params?.updatedUser) {
+      setUser(route.params.updatedUser);
+      setLoading(false); // Tắt loading khi có dữ liệu mới
+      return; // Thoát sớm nếu có dữ liệu mới
+    }
+
     const fetchUserData = async () => {
       try {
         console.log(`${process.env.GET_USER_ID}${id}`);
 
         const response = await fetch(`${process.env.GET_USER_ID}${id}`)
         const data = await response.json();
-        // console.log(data.data);
-        setUser(data.data); // Lưu bài viết vào state (giả sử data.data chứa danh sách bài viết)
+        // console.log('user:',data.data);
+        setUser(data.data); // Lưu người dùng vào state (giả sử data.data)
         // setLoading(false); // Tắt loading
+        // console.log(user1);
+        
       } catch (error) {
         console.error('Error fetching user data:', error);
         // setError(error); // Lưu lỗi vào state
@@ -73,7 +82,7 @@ const ProfileScreen = () => {
     };
 
     fetchUserData();
-  }, []);
+  }, [route.params?.updatedUser]);// Thêm dependency để cập nhật khi có updatedUser
 
   return (
     <View style={styles.screen}>
@@ -82,8 +91,8 @@ const ProfileScreen = () => {
       ) : (
         <ScrollView stickyHeaderIndices={[2]}>
           {/* Header and ProfileStats */}
-          <Header user={user} />
-          <ProfileStats friends={user.friends} user={user} />
+          <Header data={user1} />
+          <ProfileStats data={user1} />
           {/* ProfileTabs (Sticky) */}
           <ProfileTabs onTabSelect={setActiveTab} />
 

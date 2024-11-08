@@ -2,11 +2,11 @@ import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 
-const ImageOptionsSheet = React.forwardRef(({ onUpload, onDelete, canDelete }, ref) => {
+const ImageOptionsSheet = React.forwardRef(({ onUpload }, ref) => {
   return (
     <RBSheet
       ref={ref}
-      height={160}
+      height={100} // Adjusted height since delete option is removed
       closeOnDragDown={true}
       closeOnPressMask={true}
       customStyles={{
@@ -25,17 +25,7 @@ const ImageOptionsSheet = React.forwardRef(({ onUpload, onDelete, canDelete }, r
       }}
     >
       <TouchableOpacity style={styles.bottomSheetButton} onPress={onUpload}>
-        <Text style={styles.bottomSheetButtonText}>Upload Image</Text>
-      </TouchableOpacity>
-
-      <View style={styles.separator} />
-
-      <TouchableOpacity
-        style={[styles.bottomSheetButton, !canDelete && styles.disabledButton]} 
-        onPress={canDelete ? onDelete : null} 
-        disabled={!canDelete} 
-      >
-        <Text style={styles.bottomSheetDeleteButton}>Remove Image</Text>
+        <Text style={styles.bottomSheetButtonText}>Tải ảnh lên</Text>
       </TouchableOpacity>
     </RBSheet>
   );
@@ -51,19 +41,6 @@ const styles = StyleSheet.create({
   bottomSheetButtonText: {
     fontSize: 16,
     color: '#fff', 
-  },
-  bottomSheetDeleteButton: {
-    fontSize: 16,
-    color: '#F5535B',
-    textAlign: 'center',
-  },
-  disabledButton: {
-    opacity: 0.5, 
-  },
-  separator: {
-    height: 1,
-    backgroundColor: '#2A2D30',
-    marginVertical: 10,
   },
 });
 

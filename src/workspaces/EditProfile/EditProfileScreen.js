@@ -1,54 +1,62 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ActivityIndicator, SafeAreaView } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { launchImageLibrary } from 'react-native-image-picker';
 import ProfileInput from '../../components/EditProfile/ProfileInput';
 import ImageOptionsSheet from '../../components/EditProfile/ImageOptionsSheet';
-import DeleteConfirmationModal from '../../components/EditProfile/DeleteConfirmationModal';
 import UnsavedChangesModal from '../../components/EditProfile/UnsavedChangesModal';
 import GenderPicker from '../../components/EditProfile/GenderPicker';
 import BirthdayPicker from '../../components/EditProfile/BirthdayPicker';
 import styles from './styles';
+import Screens from '../../navigation/Screens';
 
-const EditProfileScreen = ({ route, navigation }) => {
-  const { user } = route.params || {};
+const EditProfileScreen = () => {
+  const route = useRoute();
+  const user = route?.params?.user;
+
+  const navigation = useNavigation();
+  const [isLoading, setIsLoading] = useState(false);
+
   const profileSheetRef = useRef(null);
   const backgroundSheetRef = useRef(null);
 
-  const [name, setName] = useState(user ? user.name : '');
-  const [bio, setBio] = useState(user ? user.bio : '');
-  const [gender, setGender] = useState(user ? user.sex : '');
-  const [birthday, setBirthday] = useState(user ? new Date(user.birthday) : null);
-  const [profileImage, setProfileImage] = useState(
-    user ? user.profileImage : require('../../assets/images/default-profile.png')
-  );
-  const [backgroundImage, setBackgroundImage] = useState(
-    user ? user.backgroundImage : require('../../assets/images/default-bg.png')
-  );
+  const [name, setName] = useState(user.full_name);
+  const [bio, setBio] = useState(user.bio);
+  const [gender, setGender] = useState(user.sex);
+  const [birthday, setBirthday] = useState(user.birthday ? new Date(user.birthday) : null);
+  const defaultProfileImage = Image.resolveAssetSource(require('../../assets/images/default-profile.png')).uri;
+  const defaultBackgroundImage = Image.resolveAssetSource(require('../../assets/images/default-bg.png')).uri;
+  
+  const [profileImage, setProfileImage] = useState({
+    uri: user.avatar ? user.avatar.replace('localhost', '10.0.2.2') : defaultProfileImage,
+  });
+    const [backgroundImage, setBackgroundImage] = useState({ uri: user.background ? user.background.replace('localhost', '10.0.2.2') : defaultBackgroundImage });
+  const [isProfileImageChanged, setIsProfileImageChanged] = useState(false);
+
   const [isChanged, setIsChanged] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState(null);
   const [showUnsavedChangesModal, setShowUnsavedChangesModal] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const originalData = {
-    name: user ? user.name : '',
-    bio: user ? user.bio : '',
-    gender: user ? user.gender : '',
-    birthday: user ? user.birthday : '',
-    profileImage: user ? user.profileImage : require('../../assets/images/default-profile.png'),
-    backgroundImage: user ? user.backgroundImage : require('../../assets/images/default-bg.png'),
-  };
+  const originalData = useRef({
+    name: user.full_name,
+    bio: user.bio,
+    gender: user.sex,
+    birthday: user.birthday ? new Date(user.birthday) : null,
+    profileImage: profileImage.uri,
+    backgroundImage: backgroundImage.uri,
+  });
 
   useEffect(() => {
     const hasChanges =
-      name !== originalData.name ||
-      bio !== originalData.bio ||
-      gender !== originalData.gender ||
-      birthday !== originalData.birthday ||
-      profileImage !== originalData.profileImage ||
-      backgroundImage !== originalData.backgroundImage;
+      name !== originalData.current.name ||
+      bio !== originalData.current.bio ||
+      gender !== originalData.current.gender ||
+      (birthday && birthday.toISOString()) !== (originalData.current.birthday && originalData.current.birthday.toISOString()) ||
+      profileImage.uri !== originalData.current.profileImage ||
+      backgroundImage.uri !== originalData.current.backgroundImage;
+
     setIsChanged(hasChanges);
   }, [name, bio, gender, birthday, profileImage, backgroundImage]);
 
@@ -74,58 +82,103 @@ const EditProfileScreen = ({ route, navigation }) => {
 
   const validateName = text => {
     if (!text) {
-      setErrorMessage('Name is required.');
+      setErrorMessage('Tên là bắt buộc.');
     } else {
       setErrorMessage('');
     }
   };
 
-  const handleSave = () => {
-    if (!name.trim()) {
-      setErrorMessage('Name is required!');
+  // Điều kiện kiểm tra trước khi gửi ảnh đại diện lên API
+  const handleSave = async () => {
+    if (!name?.trim()) {
+      setErrorMessage('Tên là bắt buộc.');
       return;
     }
-    console.log('Profile updated:', {
-      name,
-      bio,
-      gender,
-      birthday: birthday ? birthday.toLocaleDateString('vi', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      }) : null,
-      profileImage,
-      backgroundImage,
-    });
-    setIsSaved(true);
-    setErrorMessage('');
-    setTimeout(() => {
+  
+    setIsLoading(true);
+  
+    const formData = new FormData();
+    formData.append('full_name', name);
+    formData.append('bio', bio);
+    formData.append('sex', gender);
+    formData.append('birthday', birthday ? birthday.toISOString() : '');
+    console.log(formData);
+    
+  
+    // Chỉ thêm ảnh nếu ảnh đã thay đổi
+    if (isProfileImageChanged) {
+      formData.append('avatar', {
+        uri: profileImage.uri,
+        name: 'avatar.jpg',
+        type: 'image/jpeg',
+      });
+    }
+  
+    try {
+      const response = await fetch(`http://10.0.2.2:3000/api/v1/users/update-user/${user._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        body: formData,
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to update profile');
+      }
+  
+      const updatedUser = await response.json();
+      console.log('API response:', updatedUser);
+  
+      setIsLoading(false);
+      setIsSaved(true);
+      setErrorMessage('');
+  
+      // Gửi dữ liệu đã cập nhật trở lại ProfileScreen
+      navigation.navigate(Screens.Profile, {
+        userId: user._id,
+        updatedUser: {
+          ...user,
+          full_name: name,
+          bio,
+          sex: gender,
+          birthday: birthday ? birthday.toISOString() : user.birthday.toString(),
+          avatar: isProfileImageChanged ? profileImage.uri.replace('localhost', '10.0.2.2') : user.avatar,
+        },
+      });
+  
       setIsChanged(false);
-      navigation.goBack();
-    }, 100);
+    } catch (error) {
+      console.error('Lỗi khi lưu hồ sơ:', error);
+      setErrorMessage('Không lưu được hồ sơ.');
+      setIsLoading(false);
+    }
   };
+  
 
   const clearBio = () => setBio('');
 
-  const handleProfileImageEdit = type => {
-    if (type === 'upload') {
-      launchImageLibrary({ mediaType: 'photo' }, response => {
-        if (!response.didCancel && !response.error) {
-          const source = { uri: response.assets[0].uri };
-          setProfileImage(source);
-          profileSheetRef.current.close();
-        }
-      });
-    } else {
-      setDeleteTarget('profile');
-      setShowDeleteModal(true);
-    }
-  };
+// Cập nhật profileImage khi người dùng chọn ảnh mới
+const handleProfileImageEdit = type => {
+  if (type === 'upload') {
+    launchImageLibrary({ mediaType: 'photo' }, response => {
+      if (!response.didCancel && !response.error && response.assets) {
+        const source = { uri: response.assets[0].uri };
+        setProfileImage(source);
+        setIsProfileImageChanged(true); // Đánh dấu đã thay đổi ảnh đại diện
+        profileSheetRef.current.close();
+      }
+    });
+  } else {
+    setDeleteTarget('profile');
+    setShowDeleteModal(true);
+  }
+};
 
   const handleBackgroundImageEdit = type => {
     if (type === 'upload') {
       launchImageLibrary({ mediaType: 'photo' }, response => {
-        if (!response.didCancel && !response.error) {
+        if (!response.didCancel && !response.error && response.assets) {
           const source = { uri: response.assets[0].uri };
           setBackgroundImage(source);
           backgroundSheetRef.current.close();
@@ -137,34 +190,22 @@ const EditProfileScreen = ({ route, navigation }) => {
     }
   };
 
-  const handleDeleteImage = () => {
-    if (deleteTarget === 'profile') {
-      setProfileImage(require('../../assets/images/default-profile.png'));
-    } else if (deleteTarget === 'background') {
-      setBackgroundImage(require('../../assets/images/default-bg.png'));
-    }
-    setShowDeleteModal(false);
-    if (deleteTarget === 'profile') {
-      profileSheetRef.current.close();
-    } else if (deleteTarget === 'background') {
-      backgroundSheetRef.current.close();
-    }
-  };
-
   return (
-    <View style={styles.container}>
-      {/* Header */}
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text style={styles.headerButton}>✖</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Edit Profile</Text>
-        <TouchableOpacity
-          onPress={handleSave}
-          disabled={!isChanged || !name.trim()}>
-          <Text style={[styles.headerButton, isChanged && name.trim() && styles.headerButtonActive]}>
-            Save
-          </Text>
+        <Text style={styles.headerTitle}>Chỉnh sửa trang cá nhân</Text>
+
+        <TouchableOpacity onPress={handleSave} disabled={!isChanged || !name?.trim() || isLoading}>
+          {isLoading ? (
+            <ActivityIndicator size="small" color="#ffffff" />
+          ) : (
+            <Text style={[styles.headerButton, isChanged && name?.trim() && styles.headerButtonActive]}>
+              Lưu
+            </Text>
+          )}
         </TouchableOpacity>
       </View>
 
@@ -186,30 +227,39 @@ const EditProfileScreen = ({ route, navigation }) => {
 
       {/* Inputs */}
       <View style={styles.inputWrapper}>
-        <ProfileInput label="Name" value={name} onChangeText={text => {
+        <ProfileInput label="Tên hiển thị" value={name} onChangeText={text => {
           setName(text);
           validateName(text);
         }} clearText={() => { setName(''); validateName(''); }} maxLength={50} errorMessage={errorMessage} />
-        <ProfileInput label="Bio" value={bio} onChangeText={setBio} clearText={clearBio} maxLength={50} />
+        <ProfileInput label="Tiểu sử" value={bio} onChangeText={setBio} clearText={clearBio} maxLength={50} />
         <GenderPicker selectedGender={gender} onGenderChange={setGender} />
         <BirthdayPicker
           selectedDate={birthday}
-          onDateChange={(date) => setBirthday(date)} 
-          />
+          onDateChange={(date) => setBirthday(date)}
+        />
       </View>
 
       {/* Image Options */}
-      <ImageOptionsSheet ref={profileSheetRef} onUpload={() => handleProfileImageEdit('upload')}
+      <ImageOptionsSheet
+        ref={profileSheetRef}
+        onUpload={() => handleProfileImageEdit('upload')}
         onDelete={() => handleProfileImageEdit('delete')}
-        canDelete={profileImage !== require('../../assets/images/default-profile.png')} />
-      <ImageOptionsSheet ref={backgroundSheetRef} onUpload={() => handleBackgroundImageEdit('upload')}
-        onDelete={() => handleBackgroundImageEdit('delete')}
-        canDelete={backgroundImage !== require('../../assets/images/default-bg.png')} />
+        canDelete={profileImage.uri !== defaultProfileImage} // Điều kiện cho ảnh đại diện
+      />
 
-      {/* Modals */}
-      <DeleteConfirmationModal visible={showDeleteModal} onCancel={() => setShowDeleteModal(false)} onDelete={handleDeleteImage} />
-      <UnsavedChangesModal visible={showUnsavedChangesModal} onCancel={() => setShowUnsavedChangesModal(false)} onDiscard={handleDiscardChanges} />
-    </View>
+      <ImageOptionsSheet
+        ref={backgroundSheetRef}
+        onUpload={() => handleBackgroundImageEdit('upload')}
+        onDelete={() => handleBackgroundImageEdit('delete')}
+        canDelete={backgroundImage.uri !== defaultBackgroundImage} // Điều kiện cho ảnh nền
+      />
+
+      <UnsavedChangesModal
+        visible={showUnsavedChangesModal}
+        onDiscard={handleDiscardChanges}
+        onCancel={() => setShowUnsavedChangesModal(false)}
+      />
+    </SafeAreaView>
   );
 };
 
