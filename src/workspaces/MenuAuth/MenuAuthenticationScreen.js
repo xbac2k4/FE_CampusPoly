@@ -8,9 +8,13 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin'
 
 GoogleSignin.configure({
   webClientId: "248843730555-b6upovpdddfsbhqqldfgjl14p2khpgss.apps.googleusercontent.com",
-  scopes: ['profile', 'email',
-    // 'https://www.googleapis.com/auth/user.gender.read'
-  ]
+  scopes: [
+    'profile',
+    'email',
+    'https://www.googleapis.com/auth/userinfo.profile',
+    'https://www.googleapis.com/auth/user.birthday.read',
+    'https://www.googleapis.com/auth/user.gender.read',
+  ],
 })
 
 const MenuAuthenticationScreen = ({ navigation }) => {
@@ -23,24 +27,48 @@ const MenuAuthenticationScreen = ({ navigation }) => {
 
   const SignInWithGoogle = async () => {
     // toggleShowDialog()
-    
+
 
     try {
       await GoogleSignin.hasPlayServices({
         showPlayServicesUpdateDialog: true,
       })
-      const userInfo = await GoogleSignin.signIn()
+      const userInfo = await GoogleSignin.signIn();
+      const accessToken = (await GoogleSignin.getTokens()).accessToken;
 
-      await console.log(userInfo.data.user);
+      const data = userInfo.data.user;
+      const user = {
+        email: data.email,
+        full_name: data.name,
+        avatar: data.photo,
+        // provider: 'google',
+        accessToken,
+      }
 
+      const response = await fetch(`${process.env.LOGIN_WITH_GOOGLE}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json', // Định dạng JSON
+        },
+        body: JSON.stringify(user), // Chuyển `user` thành chuỗi JSON để gửi lên server
+      });
+
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.status}`);
+      }
+
+      const responseData = await response.json();
+      console.log('Login response:', responseData);
 
       // chuyển màn hình và xóa các màn cũ khỏi ngăn xếp
-      navigation.dispatch(
-        CommonActions.reset({
-          index: 0,
-          routes: [{ name: Screens.BottomTab }],
-        })
-      );
+      if (responseData.status === 200) {
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: Screens.BottomTab }],
+          })
+        );
+      }
 
     } catch (error) {
       if (JSON.stringify(error) == {}) {
