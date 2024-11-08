@@ -1,11 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ActivityIndicator, SafeAreaView } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { launchImageLibrary } from 'react-native-image-picker';
 import ProfileInput from '../../components/EditProfile/ProfileInput';
 import ImageOptionsSheet from '../../components/EditProfile/ImageOptionsSheet';
-import DeleteConfirmationModal from '../../components/EditProfile/DeleteConfirmationModal';
 import UnsavedChangesModal from '../../components/EditProfile/UnsavedChangesModal';
 import GenderPicker from '../../components/EditProfile/GenderPicker';
 import BirthdayPicker from '../../components/EditProfile/BirthdayPicker';
@@ -25,7 +24,7 @@ const EditProfileScreen = () => {
   const [name, setName] = useState(user.full_name);
   const [bio, setBio] = useState(user.bio);
   const [gender, setGender] = useState(user.sex);
-  const [birthday, setBirthday] = useState(user.date_of_birth ? new Date(user.date_of_birth) : null);
+  const [birthday, setBirthday] = useState(user.birthday ? new Date(user.birthday) : null);
   const defaultProfileImage = Image.resolveAssetSource(require('../../assets/images/default-profile.png')).uri;
   const defaultBackgroundImage = Image.resolveAssetSource(require('../../assets/images/default-bg.png')).uri;
   
@@ -36,8 +35,6 @@ const EditProfileScreen = () => {
   const [isProfileImageChanged, setIsProfileImageChanged] = useState(false);
 
   const [isChanged, setIsChanged] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState(null);
   const [showUnsavedChangesModal, setShowUnsavedChangesModal] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -46,7 +43,7 @@ const EditProfileScreen = () => {
     name: user.full_name,
     bio: user.bio,
     gender: user.sex,
-    birthday: user.date_of_birth ? new Date(user.date_of_birth) : null,
+    birthday: user.birthday ? new Date(user.birthday) : null,
     profileImage: profileImage.uri,
     backgroundImage: backgroundImage.uri,
   });
@@ -104,7 +101,9 @@ const EditProfileScreen = () => {
     formData.append('full_name', name);
     formData.append('bio', bio);
     formData.append('sex', gender);
-    formData.append('date_of_birth', birthday ? birthday.toISOString() : '');
+    formData.append('birthday', birthday ? birthday.toISOString() : '');
+    console.log(formData);
+    
   
     // Chỉ thêm ảnh nếu ảnh đã thay đổi
     if (isProfileImageChanged) {
@@ -143,7 +142,7 @@ const EditProfileScreen = () => {
           full_name: name,
           bio,
           sex: gender,
-          date_of_birth: birthday ? birthday.toISOString() : user.date_of_birth.toString(),
+          birthday: birthday ? birthday.toISOString() : user.birthday.toString(),
           avatar: isProfileImageChanged ? profileImage.uri.replace('localhost', '10.0.2.2') : user.avatar,
         },
       });
@@ -191,19 +190,8 @@ const handleProfileImageEdit = type => {
     }
   };
 
-  const handleDeleteImage = () => {
-    if (deleteTarget === 'profile') {
-      setProfileImage({ uri: defaultProfileImage }); // Set the state with the default image URI
-    } else if (deleteTarget === 'background') {
-      setBackgroundImage({ uri: defaultBackgroundImage }); // Set the state with the default image URI
-    }
-    setShowDeleteModal(false);
-  };
-
-
   return (
-    <View style={styles.container}>
-      {/* Header */}
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text style={styles.headerButton}>✖</Text>
@@ -266,18 +254,12 @@ const handleProfileImageEdit = type => {
         canDelete={backgroundImage.uri !== defaultBackgroundImage} // Điều kiện cho ảnh nền
       />
 
-      {/* Modals */}
-      <DeleteConfirmationModal
-        visible={showDeleteModal}
-        onDelete={handleDeleteImage}
-        onCancel={() => setShowDeleteModal(false)}
-      />
       <UnsavedChangesModal
         visible={showUnsavedChangesModal}
         onDiscard={handleDiscardChanges}
         onCancel={() => setShowUnsavedChangesModal(false)}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
