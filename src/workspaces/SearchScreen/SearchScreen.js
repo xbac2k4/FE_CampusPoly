@@ -126,7 +126,7 @@ const SearchScreen = () => {
           <AntDesign name="search1" size={20} color="#FFFFFF" style={styles.icon} />
           <TextInput
             style={styles.input}
-            placeholder="Search for people, posts, tags..."
+            placeholder="Tìm kiếm người, bài viết, thẻ..."
             placeholderTextColor="#ECEBED"
           />
         </View>

@@ -88,11 +88,11 @@ const CreatePostScreen = ({ navigation }) => {
     <View style={styles.container}>
       <View style={styles.barHeader}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.circleIcon}>
-          <Text style={[styles.textHeader, { color: "#2E8AF6", fontSize: 16 }]}>Discard</Text>
+          <Text style={[styles.textHeader, { color: "#2E8AF6", fontSize: 16 }]}>Hủy</Text>
         </TouchableOpacity>
-        <Text style={styles.textHeader}>CREATE</Text>
+        <Text style={styles.textHeader}>Tạo Bài Viết</Text>
         <TouchableOpacity onPress={handlePublish} style={styles.buttonContainer}>
-          <Text style={[styles.textHeader, { fontSize: 16 }]}>Publish</Text>
+          <Text style={[styles.textHeader, { fontSize: 16 }]}>Đăng</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.createContainer}>

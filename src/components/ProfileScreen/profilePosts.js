@@ -126,19 +126,25 @@ const ProfilePosts = (props) => {
   };
 
   // hàm format thời gian
-  const timeAgo = (date) => {
-    const now = new Date();
-    const postDate = new Date(date);
-    const diff = Math.floor((now - postDate) / 1000); // Chênh lệch thời gian tính bằng giây
+ // hàm format thời gian
+const timeAgo = (date) => {
+  const now = new Date();
+  const postDate = new Date(date);
+  const diff = Math.floor((now - postDate) / 1000); // Chênh lệch thời gian tính bằng giây
 
-    if (diff < 60) return `${diff} seconds ago`;
-    const minutes = Math.floor(diff / 60);
-    if (minutes < 60) return `${minutes} minutes ago`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours} hours ago`;
-    const days = Math.floor(hours / 24);
-    return `${days} days ago`;
-  };
+  if (diff < 60) return `${diff} giây trước`;
+  const minutes = Math.floor(diff / 60);
+  if (minutes < 60) return `${minutes} phút trước`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} giờ trước`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days} ngày trước`;
+  const months = Math.floor(days / 30);
+  if (months < 12) return `${months} tháng trước`;
+  const years = Math.floor(months / 12);
+  return `${years} năm trước`;
+};
+
 
   // Hiển thị dữ liệu các bài viết
   return (

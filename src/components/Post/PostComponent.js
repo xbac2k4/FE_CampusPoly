@@ -122,7 +122,7 @@ const PostComponent = ({ title: initialTitle, content: initialContent, image, gi
           />
           <TextInput
             style={[styles.textInput, { height: Math.max(40, inputHeight) }]}
-            placeholder="What’s on your mind?"
+            placeholder="Bạn đang nghĩ gì?"
             placeholderTextColor="#888"
             multiline
             value={content} // Sử dụng giá trị từ state

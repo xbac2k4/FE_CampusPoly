@@ -56,9 +56,9 @@ const NotificationScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Alerts</Text>
+        <Text style={styles.headerTitle}>Thông báo</Text>
         <TouchableOpacity onPress={() => dispatch(markAllAsRead())}>
-          <Text style={styles.markAllAsRead}>Mark all as read</Text>
+          <Text style={styles.markAllAsRead}>Đánh dấu tất cả là đã đọc</Text>
         </TouchableOpacity>
       </View>
       <SectionList

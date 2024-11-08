@@ -7,96 +7,61 @@ import { useNavigation } from '@react-navigation/native';
 import Screens from '../../navigation/Screens';
 
 const HomeScreen = () => {
-  const [userName, setUserName] = useState(''); // State to store the user's name
-  const [greeting, setGreeting] = useState(''); // State to store the greeting message
-  const [stories, setStories] = useState([]); // State to store the list of stories
-  const navigation = useNavigation(); // Hook to access navigation
-  const [data, setData] = useState([]); // State to store the list of stories
-  const [loading, setLoading] = useState(true); // Quản lý trạng thái loading
+  const [userName, setUserName] = useState('');
+  const [greeting, setGreeting] = useState('');
+  const [stories, setStories] = useState([]);
+  const navigation = useNavigation();
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedTab, setSelectedTab] = useState('Dành cho bạn'); // Trạng thái cho tab hiện tại
 
-  // Simulate fetching the user's name from an API
   const fetchUserName = async () => {
-    const fakeApiResponse = { name: 'Viet Anh' }; // Mock response
-    setUserName(fakeApiResponse.name); // Update user's name
+    const fakeApiResponse = { name: 'Viet Anh' };
+    setUserName(fakeApiResponse.name);
   };
 
-  // Determine the greeting message based on the current time
   const getGreeting = () => {
     const currentHour = new Date().getHours();
     if (currentHour >= 7 && currentHour < 10) {
-      return 'Good Morning';
+      return 'Chào buổi sáng🌞';
     } else if (currentHour >= 10 && currentHour < 18) {
-      return 'Good Afternoon';
+      return 'Chào buổi chiều😎';
     } else {
-      return 'Good Evening';
+      return 'Chào buổi tối🌚';
     }
   };
 
-  // Simulate fetching the list of stories from an API
-  const fetchStories = async () => {
-    const fakeStories = [
-      {
-        id: '1',
-        imgStory: require('../../assets/images/test3.jpg'),
-        imgUser: require('../../assets/images/test2.jpg'),
-        userId: '1',
-      },
-      {
-        id: '2',
-        imgStory: require('../../assets/images/test3.jpg'),
-        imgUser: require('../../assets/images/test2.jpg'),
-        userId: '2',
-      },
-      {
-        id: '3',
-        imgStory: require('../../assets/images/test3.jpg'),
-        imgUser: require('../../assets/images/test2.jpg'),
-        userId: '3',
-      },
-    ];
-    setStories(fakeStories);
-  };
-
-  // useEffect(() => {
-  //   fetchUserName();
-  //   setGreeting(getGreeting());
-  //   fetchStories(); // Fetch stories on mount
-  // }, []);
+  
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-
-        const response = await fetch(process.env.GET_ALL_POST)
-        const data = await response.json();
-        // console.log(data.data);
-        setData(data.data); // Lưu bài viết vào state (giả sử data.data chứa danh sách bài viết)
-        // setLoading(false); // Tắt loading
+        const response = await fetch(process.env.GET_ALL_POST);
+        const responseData = await response.json();
+        const sortedData = responseData.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        setData(sortedData);
       } catch (error) {
-        console.error('Error fetching user data:', error);
-        setError(error); // Lưu lỗi vào state
-        // setLoading(false); // Tắt loading
+        console.error('Lỗi khi lấy dữ liệu người dùng:', error);
       } finally {
-        setLoading(false); // Tắt loading
+        setLoading(false);
       }
     };
-    
-    fetchStories()
+
+   
+    fetchUserName();
+    setGreeting(getGreeting());
     fetchUserData();
   }, []);
-  // console.log(data);
 
-  // Handle user avatar press
-  const handleUserPress = userId => {
+  const handleUserPress = (userId) => {
     navigation.navigate('Profile', { userId });
   };
 
-  // Render a single story item
   const renderStoryItem = ({ item }) => (
     <StoryComponent
       imgStory={item.imgStory}
-      onStoryPress={() => { }} // Define what happens when the story is pressed
-      onUserPress={() => handleUserPress(item.userId)} // Pass user data on press
+      onStoryPress={() => {}}
+      onUserPress={() => handleUserPress(item.userId)}
       imgUser={item.imgUser}
     />
   );
@@ -106,41 +71,51 @@ const HomeScreen = () => {
       <View style={styles.container}>
         <View style={{ flex: 1 }}>
           <View style={styles.headerContent}>
-            <Text
-              style={{
-                color: '#ffff',
-                fontSize: 18,
-                fontFamily: 'HankenGrotesk-Regular',
-                fontWeight: '500',
-              }}>
+            <Text style={styles.greetingText}>
               {greeting}, {userName || 'User'}
             </Text>
             <TouchableOpacity
               style={styles.circleIcon}
-              onPress={() => navigation.navigate(Screens.Message)}>
+              onPress={() => navigation.navigate(Screens.Message)}
+            >
               <Icon name="mail-outline" size={15} color="#fff" />
             </TouchableOpacity>
           </View>
 
-          {/* FlatList for stories */}
-          <FlatList
-            data={stories}
-            renderItem={renderStoryItem}
-            keyExtractor={item => item.id}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            ItemSeparatorComponent={() => <View style={{ width: 10 }} />}
-            style={styles.storyContainer}
-          />
+          {/* Tab điều hướng */}
+          <View style={styles.tabContainer}>
+            <TouchableOpacity
+              style={[
+                styles.tab,
+                selectedTab === 'Dành cho bạn' && styles.activeTab,
+              ]}
+              onPress={() => setSelectedTab('Dành cho bạn')}
+            >
+              <Text style={styles.tabText}>Dành cho bạn</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.tab,
+                selectedTab === 'Đang theo dõi' && styles.activeTab,
+              ]}
+              onPress={() => {
+                setSelectedTab('Đang theo dõi');
+                // navigation.navigate(Screens.Alert);
+              }}
+            >
+              <Text style={styles.tabText}>Đang theo dõi</Text>
+            </TouchableOpacity>
+          </View>
+
+          {loading ? (
+            <ActivityIndicator size="large" color="#FFF" style={{ marginTop: 20 }} />
+          ) : selectedTab === 'Dành cho bạn' ? (
+            <ProfilePosts data={data} />
+          ) : null}
         </View>
-        {loading ? (
-          <ActivityIndicator size="large" color="#FFF" style={{ marginTop: 20 }} />
-        ) : (
-          <ProfilePosts data={data} />
-        )}
       </View>
     </ScrollView>
-  )
+  );
 };
 
 export default HomeScreen;
@@ -156,6 +131,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 24,
   },
+  greetingText: {
+    color: '#ffff',
+    fontSize: 18,
+    fontFamily: 'HankenGrotesk-Regular',
+    fontWeight: '500',
+  },
   circleIcon: {
     width: 32,
     height: 32,
@@ -165,7 +146,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  storyContainer: {
-    marginTop: 20,
+  tabContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginVertical: 20,
+  },
+  tab: {
+    paddingVertical: 10,
+    paddingHorizontal: 40,
+    borderRadius: 20,
+    
+    marginHorizontal: 10,
+  },
+  activeTab: {
+    backgroundColor: '#2E8AF6',
+  },
+  tabText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '500',
   },
 });
