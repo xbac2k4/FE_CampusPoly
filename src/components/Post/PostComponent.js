@@ -19,7 +19,7 @@ const PostComponent = ({ onContentChange }) => {
   // Hàm để gọi API lấy thông tin người dùng
   const fetchUserData = async () => {
     try {
-      const response = await fetch('http://192.168.1.101:3000/api/v1/users/get-user-by-id/670ca3898cfc1be4b41b183b');
+      const response = await fetch('http://10.0.2.2:3000/api/v1/users/get-user-by-id/670ca3898cfc1be4b41b183b');
       const data = await response.json();
       
       // Log toàn bộ dữ liệu để kiểm tra
