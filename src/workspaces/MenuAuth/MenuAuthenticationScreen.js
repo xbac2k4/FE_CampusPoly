@@ -4,6 +4,14 @@ import Screens from '../../navigation/Screens'
 import Colors from '../../constants/Color'
 import BlockDialog from '../../components/MenuAuth/BlockDialog'
 import { CommonActions } from '@react-navigation/native'
+import { GoogleSignin } from '@react-native-google-signin/google-signin'
+
+GoogleSignin.configure({
+  webClientId: "248843730555-b6upovpdddfsbhqqldfgjl14p2khpgss.apps.googleusercontent.com",
+  scopes: ['profile', 'email',
+    // 'https://www.googleapis.com/auth/user.gender.read'
+  ]
+})
 
 const MenuAuthenticationScreen = ({ navigation }) => {
 
@@ -13,16 +21,36 @@ const MenuAuthenticationScreen = ({ navigation }) => {
     setIsShowDialog(prevState => !prevState);
   }, []);
 
-  const SignInWithGoogle = () => {
+  const SignInWithGoogle = async () => {
     // toggleShowDialog()
+    
 
-    // chuyển màn hình và xóa các màn cũ khỏi ngăn xếp
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [{ name: Screens.BottomTab }],
+    try {
+      await GoogleSignin.hasPlayServices({
+        showPlayServicesUpdateDialog: true,
       })
-    );
+      const userInfo = await GoogleSignin.signIn()
+
+      await console.log(userInfo.data.user);
+
+
+      // chuyển màn hình và xóa các màn cũ khỏi ngăn xếp
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{ name: Screens.BottomTab }],
+        })
+      );
+
+    } catch (error) {
+      if (JSON.stringify(error) == {}) {
+        console.log('Không có thông tin người dùng');
+      } else {
+        console.log(error);
+      }
+    }
+
+
   }
 
   return (
