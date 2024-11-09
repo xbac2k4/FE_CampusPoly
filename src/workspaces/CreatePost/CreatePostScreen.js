@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
 import PostComponent from '../../components/Post/PostComponent';
 import { UserContext } from '../../services/provider/UseContext';
+import { ADD_POST } from '../../services/ApiConfig';
 
 const CreatePostScreen = ({ navigation }) => {
   // const [user, setUser] = useState(null);
@@ -47,7 +48,7 @@ const CreatePostScreen = ({ navigation }) => {
     // }
 
     try {
-      const response = await fetch(`${process.env.ADD_POST}`, {
+      const response = await fetch(ADD_POST, {
         method: 'POST',
         body: formData,
       });

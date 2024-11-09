@@ -7,9 +7,11 @@ import { CommonActions } from '@react-navigation/native'
 import { GoogleSignin } from '@react-native-google-signin/google-signin'
 import { UserContext } from '../../services/provider/UseContext';
 import { SocketContext } from '../../services/provider/SocketContext';
+import { Google_Client_ID } from '@env';
+import { LOGIN_WITH_GOOGLE } from '../../services/ApiConfig'
 
 GoogleSignin.configure({
-  webClientId: "248843730555-b6upovpdddfsbhqqldfgjl14p2khpgss.apps.googleusercontent.com",
+  webClientId: Google_Client_ID,
   scopes: [
     'profile',
     'email',
@@ -50,7 +52,7 @@ const MenuAuthenticationScreen = ({ navigation }) => {
         accessToken,
       }
 
-      const response = await fetch(`${process.env.LOGIN_WITH_GOOGLE}`, {
+      const response = await fetch(LOGIN_WITH_GOOGLE, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json', // Định dạng JSON

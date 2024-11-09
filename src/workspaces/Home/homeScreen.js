@@ -6,6 +6,7 @@ import ProfilePosts from '../../components/ProfileScreen/profilePosts';
 import { useNavigation } from '@react-navigation/native';
 import Screens from '../../navigation/Screens';
 import { UserContext } from '../../services/provider/UseContext';
+import { GET_ALL_POST } from '../../services/ApiConfig';
 
 const HomeScreen = () => {
   const [userName, setUserName] = useState(''); // State to store the user's name
@@ -69,7 +70,7 @@ const HomeScreen = () => {
     const fetchUserData = async () => {
       try {
 
-        const response = await fetch(process.env.GET_ALL_POST)
+        const response = await fetch(GET_ALL_POST)
         const data = await response.json();
         // console.log(data.data);
         setData(data.data); // Lưu bài viết vào state (giả sử data.data chứa danh sách bài viết)

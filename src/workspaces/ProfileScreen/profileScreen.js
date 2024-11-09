@@ -5,6 +5,7 @@ import ProfileStats from '../../components/ProfileScreen/profileStats';
 import ProfileTabs from '../../components/ProfileScreen/profileTabs';
 import ProfilePosts from '../../components/ProfileScreen/profilePosts';
 import { UserContext } from '../../services/provider/UseContext';
+import { GET_USER_ID } from '../../services/ApiConfig';
 // Sample data
 // const user = {
 //   name: 'Alex Tsimikas',
@@ -75,8 +76,8 @@ const ProfileScreen = ({ route }) => {
     // Chỉ fetch dữ liệu khi id đã được set
     const fetchUserData = async () => {
       try {
-        console.log(`${process.env.GET_USER_ID}${id}`);
-        const response = await fetch(`${process.env.GET_USER_ID}${id}`);
+        console.log(`${GET_USER_ID}${id}`);
+        const response = await fetch(`${GET_USER_ID}${id}`);
         const data = await response.json();
         setUserProfile(data.data);
       } catch (error) {
