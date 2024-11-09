@@ -1,10 +1,12 @@
 import { StyleSheet, Text, View, StatusBar, TouchableOpacity, Image } from 'react-native'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useState, useContext } from 'react'
 import Screens from '../../navigation/Screens'
 import Colors from '../../constants/Color'
 import BlockDialog from '../../components/MenuAuth/BlockDialog'
 import { CommonActions } from '@react-navigation/native'
 import { GoogleSignin } from '@react-native-google-signin/google-signin'
+import { UserContext } from '../../services/provider/UseContext';
+import { SocketContext } from '../../services/provider/SocketContext';
 
 GoogleSignin.configure({
   webClientId: "248843730555-b6upovpdddfsbhqqldfgjl14p2khpgss.apps.googleusercontent.com",
@@ -18,6 +20,9 @@ GoogleSignin.configure({
 })
 
 const MenuAuthenticationScreen = ({ navigation }) => {
+  const { setUser } = useContext(UserContext);
+  const { connectSocket } = useContext(SocketContext);
+
 
   const [isShowDialog, setIsShowDialog] = useState(false)
 
@@ -59,6 +64,8 @@ const MenuAuthenticationScreen = ({ navigation }) => {
 
       const responseData = await response.json();
       console.log('Login response:', responseData);
+      setUser(responseData.data);
+      connectSocket(responseData.data); // Kết nối với socket server
 
       // chuyển màn hình và xóa các màn cũ khỏi ngăn xếp
       if (responseData.status === 200) {

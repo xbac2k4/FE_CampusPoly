@@ -1,10 +1,11 @@
 import { StyleSheet, Text, TouchableOpacity, View, FlatList, ScrollView, ActivityIndicator } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import StoryComponent from '../../components/Home/storyComponent';
 import ProfilePosts from '../../components/ProfileScreen/profilePosts';
 import { useNavigation } from '@react-navigation/native';
 import Screens from '../../navigation/Screens';
+import { UserContext } from '../../services/provider/UseContext';
 
 const HomeScreen = () => {
   const [userName, setUserName] = useState(''); // State to store the user's name
@@ -13,12 +14,13 @@ const HomeScreen = () => {
   const navigation = useNavigation(); // Hook to access navigation
   const [data, setData] = useState([]); // State to store the list of stories
   const [loading, setLoading] = useState(true); // Quản lý trạng thái loading
+  const { user } = useContext(UserContext);
 
   // Simulate fetching the user's name from an API
-  const fetchUserName = async () => {
-    const fakeApiResponse = { name: 'Viet Anh' }; // Mock response
-    setUserName(fakeApiResponse.name); // Update user's name
-  };
+  // const fetchUserName = async () => {
+  //   const fakeApiResponse = { name: 'Viet Anh' }; // Mock response
+  //   setUserName(fakeApiResponse.name); // Update user's name
+  // };
 
   // Determine the greeting message based on the current time
   const getGreeting = () => {
@@ -80,8 +82,9 @@ const HomeScreen = () => {
         setLoading(false); // Tắt loading
       }
     };
-    
-    fetchStories()
+
+    setGreeting('Xin chào');
+    fetchStories();
     fetchUserData();
   }, []);
   // console.log(data);
@@ -113,7 +116,7 @@ const HomeScreen = () => {
                 fontFamily: 'HankenGrotesk-Regular',
                 fontWeight: '500',
               }}>
-              {greeting}, {userName || 'User'}
+              {greeting}, {user.full_name || 'User'}
             </Text>
             <TouchableOpacity
               style={styles.circleIcon}

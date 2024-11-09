@@ -11,6 +11,7 @@ import MessagesScreen from '../workspaces/Messages/MessagesScreen';
 import EditProfileScreen from '../workspaces/EditProfile/EditProfileScreen';
 import ChatScreen from '../workspaces/ChatScreen/ChatScreen';
 import CreatePostScreen from '../workspaces/CreatePost/CreatePostScreen';
+import FrProfileScreen from '../workspaces/FrProfileScreen/FrProfileScreen';
 
 
 
@@ -28,6 +29,7 @@ const MainStackNavigator = () => {
       <Stack.Screen name={Screens.EditProfile} component={EditProfileScreen} options={{ animation: 'ios' }} />
       <Stack.Screen name={Screens.ChatView} component={ChatScreen} options={{ animation: 'ios' }} />
       <Stack.Screen name={Screens.CreatePost} component={CreatePostScreen} options={{ animation: 'slide_from_bottom' }} />
+      {/* <Stack.Screen name="123" component={FrProfileScreen} options={{ animation: 'slide_from_bottom' }} /> */}
 
     </Stack.Navigator>
   )

@@ -3,50 +3,41 @@ import { Image, StyleSheet, TextInput, TouchableOpacity, View, Text, Animated, A
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 import DocumentPicker from 'react-native-document-picker';
 import GiphySelector from './GiphySelector';
+// import styles from '../../assets/style/CreatCPStyle';
 
-const PostComponent = ({ onContentChange }) => {
+const PostComponent = ({ title: initialTitle, content: initialContent, image, gif, onContentChange, user }) => {
   const [inputHeight, setInputHeight] = useState(40);
   const [isVisible, setIsVisible] = useState(false);
   const [animation] = useState(new Animated.Value(0));
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [selectedGif, setSelectedGif] = useState(null);
+  const [selectedImages, setSelectedImages] = useState(image || []);
+  const [selectedGif, setSelectedGif] = useState(gif || null);
   const [isGifModalVisible, setGifModalVisible] = useState(false);
-  const [user, setUser] = useState(null); // State để lưu thông tin người dùng
-  const [content, setContent] = useState(''); // State để lưu nội dung bài viết
+  const [content, setContent] = useState(initialContent || ''); // State cho Content
+  const [title, setTitle] = useState(initialTitle || ''); // State cho Title
 
- 
-
-  // Hàm để gọi API lấy thông tin người dùng
-  const fetchUserData = async () => {
-    try {
-      const response = await fetch('http://10.0.2.2:3000/api/v1/users/get-user-by-id/670ca3898cfc1be4b41b183b');
-      const data = await response.json();
-      
-      // Log toàn bộ dữ liệu để kiểm tra
-      console.log('Dữ liệu người dùng:', data);
-  
-      setUser(data); // Cập nhật state với thông tin người dùng
-      
-      // Log thông tin avatar nếu có
-      if (data && data.avatar) {
-        console.log('Avatar:', data.avatar);
-      } else {
-        console.log('Không tìm thấy avatar trong dữ liệu.');
-      }
-  
-    } catch (error) {
-      console.error('Lỗi khi lấy dữ liệu người dùng:', error);
-      Alert.alert('Lỗi', 'Không thể lấy dữ liệu người dùng.');
-    }
-  };
-  
+  // Cập nhật giá trị props vào state khi props thay đổi
   useEffect(() => {
-    fetchUserData(); // Gọi hàm lấy dữ liệu khi component mount
-  }, []);
+    setTitle(initialTitle);
+    setContent(initialContent);
+    setSelectedImages(image);
+    setSelectedGif(gif);
+  }, [initialTitle, initialContent, image, gif]);
+
+  // Xử lý sự thay đổi nội dung
+  const handleTitleChange = (text) => {
+    setTitle(text);
+    onContentChange(text, content, selectedImages, selectedGif);
+  };
+
+  const handleContentChange = (text) => {
+    setContent(text);
+    onContentChange(title, text, selectedImages, selectedGif);
+  };
 
   const handleGifSelect = (gifUrl) => {
     setSelectedGif(gifUrl);
     setGifModalVisible(false);
+    onContentChange(content, selectedImages, gifUrl);
   };
 
   const toggleImages = () => {
@@ -71,22 +62,17 @@ const PostComponent = ({ onContentChange }) => {
   };
 
   const handleImageResponse = (response) => {
-    if (response.didCancel) {
-      Alert.alert('Bạn đã hủy chọn ảnh');
-    } else if (response.errorMessage) {
-      console.error(response.errorMessage); // Ghi lại lỗi
-      Alert.alert('Lỗi', response.errorMessage);
-    } else if (response.assets && response.assets.length > 0) {
-      setSelectedImage(response.assets[0].uri);
-      Alert.alert('Thành công', 'Ảnh đã được chọn!');
+    if (response.assets && response.assets.length > 0) {
+      const newImages = response.assets.map(asset => asset.uri);
+      setSelectedImages([...selectedImages, ...newImages]);
+      onContentChange(title, content, [...selectedImages, ...newImages], selectedGif);
     }
   };
 
   const openImageLibrary = () => {
-    const options = { mediaType: 'photo', selectionLimit: 1 };
+    const options = { mediaType: 'photo', selectionLimit: 0 }; // Allow multiple images
     launchImageLibrary(options, handleImageResponse);
   };
-
   const openCamera = () => {
     const options = { mediaType: 'photo', saveToPhotos: true };
     launchCamera(options, handleImageResponse);
@@ -98,7 +84,6 @@ const PostComponent = ({ onContentChange }) => {
         type: [DocumentPicker.types.allFiles],
       });
       Alert.alert('File đã được chọn!', `Tên file: ${res.name}`);
-      // Thực hiện hành động với file đã chọn, chẳng hạn như upload lên server
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
         Alert.alert('Bạn đã hủy chọn file');
@@ -108,12 +93,10 @@ const PostComponent = ({ onContentChange }) => {
     }
   };
 
-  // Hàm xóa ảnh đã chọn
   const clearSelectedImage = () => {
-    setSelectedImage(null);
+    setSelectedImages(null);
   };
 
-  // Hàm xóa GIF đã chọn
   const clearSelectedGif = () => {
     setSelectedGif(null);
   };
@@ -121,35 +104,48 @@ const PostComponent = ({ onContentChange }) => {
   return (
     <View style={styles.container}>
       <View style={styles.postRow}>
-        {user && user.avatar ? ( // Kiểm tra nếu user và avatar không null
-          <Image source={{ uri: user.avatar }} style={styles.avatar} />
+        {user && user?.avatar ? (
+          <Image source={{ uri: user?.avatar.replace('localhost', '10.0.2.2') }} style={styles.avatar} />
         ) : (
           <View style={styles.avatarPlaceholder} />
         )}
         <View style={styles.inputContainer}>
           <TextInput
             style={[styles.textInput, { height: Math.max(40, inputHeight) }]}
-            placeholder="What’s on your mind?"
+            placeholder="Title?"
             placeholderTextColor="#888"
             multiline
-            onContentSizeChange={(event) =>
-              setInputHeight(event.nativeEvent.contentSize.height)
-            }
+            value={title} // Sử dụng giá trị từ state
+            onContentSizeChange={(event) => setInputHeight(event.nativeEvent.contentSize.height)}
+            onChangeText={handleTitleChange}
+            underlineColorAndroid="transparent"
+          />
+          <TextInput
+            style={[styles.textInput, { height: Math.max(40, inputHeight) }]}
+            placeholder="Bạn đang nghĩ gì?"
+            placeholderTextColor="#888"
+            multiline
+            value={content} // Sử dụng giá trị từ state
+            onContentSizeChange={(event) => setInputHeight(event.nativeEvent.contentSize.height)}
+            onChangeText={handleContentChange}
             underlineColorAndroid="transparent"
           />
         </View>
       </View>
 
-      {/** Chỗ chứa ảnh và gif khi đẩy lên */}
       <View style={styles.imageContent}>
-        {selectedImage && (
-          <View style={styles.imageWrapper}>
-            <Image source={{ uri: selectedImage }} style={styles.selectedImage} />
-            <TouchableOpacity style={styles.removeImageButton} onPress={clearSelectedImage}>
+        {selectedImages.map((img, index) => (
+          <View key={index} style={styles.imageWrapper}>
+            <Image source={{ uri: img }} style={styles.selectedImage} />
+            <TouchableOpacity style={styles.removeImageButton} onPress={() => {
+              const newImages = selectedImages.filter((_, i) => i !== index);
+              setSelectedImages(newImages);
+              onContentChange(title, content, newImages, selectedGif);
+            }}>
               <Image source={require('../../assets/images/x.png')} style={styles.removeImageIcon} />
             </TouchableOpacity>
           </View>
-        )}
+        ))}
         {selectedGif && (
           <View style={styles.imageWrapper}>
             <Image source={{ uri: selectedGif }} style={styles.selectedGif} />
@@ -160,31 +156,20 @@ const PostComponent = ({ onContentChange }) => {
         )}
       </View>
 
-      {/** Thanh công cụ lựa chọn chức năng */}
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <TouchableOpacity style={styles.addButton} onPress={toggleImages}>
-          <Image
-            source={require('../../assets/images/add.png')}
-            resizeMode="contain"
-            style={{ width: 12, height: 12 }}
-          />
+          <Image source={require('../../assets/images/add.png')} resizeMode="contain" style={{ width: 12, height: 12 }} />
         </TouchableOpacity>
 
         {isVisible && (
           <Animated.View style={[styles.imageContainer, animatedStyle]}>
             <View style={styles.imageRow}>
               <TouchableOpacity onPress={openImageLibrary}>
-                <Image
-                  source={require('../../assets/images/image.png')}
-                  style={styles.image}
-                />
+                <Image source={require('../../assets/images/image.png')} style={styles.image} />
               </TouchableOpacity>
 
               <TouchableOpacity onPress={() => setGifModalVisible(true)}>
-                <Image
-                  source={require('../../assets/images/GIF.png')}
-                  style={styles.image}
-                />
+                <Image source={require('../../assets/images/GIF.png')} style={styles.image} />
               </TouchableOpacity>
 
               <Modal visible={isGifModalVisible} animationType="slide">
@@ -192,17 +177,11 @@ const PostComponent = ({ onContentChange }) => {
               </Modal>
 
               <TouchableOpacity onPress={openCamera}>
-                <Image
-                  source={require('../../assets/images/Camera.png')}
-                  style={styles.image}
-                />
+                <Image source={require('../../assets/images/Camera.png')} style={styles.image} />
               </TouchableOpacity>
 
               <TouchableOpacity onPress={openFilePicker}>
-                <Image
-                  source={require('../../assets/images/Attachment.png')}
-                  style={styles.image}
-                />
+                <Image source={require('../../assets/images/Attachment.png')} style={styles.image} />
               </TouchableOpacity>
             </View>
           </Animated.View>

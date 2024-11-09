@@ -7,7 +7,7 @@ const ProfileStats = ({ data }) => {
   const navigation = useNavigation();
 
   // Ensure data.friends is an array before counting
-  const friendsCount = Array.isArray(data?.friends) ? data.friends.length : 0;
+  const friendsCount = Array.isArray(data?.friends) ? data?.friends.length : 0;
   
   return (
     <View style={styles.statsContainer}>

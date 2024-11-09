@@ -14,8 +14,8 @@ const Header = ({ data }) => {
       {/* Display background image or default image */}
       <Image
         source={
-          data.background
-            ? { uri: data.background.replace('localhost', '10.0.2.2') }
+          data?.background
+            ? { uri: data?.background.replace('localhost', '10.0.2.2') }
             : defaultBackgroundImage
         }
         style={styles.backgroundImage}
@@ -24,8 +24,8 @@ const Header = ({ data }) => {
       {/* Display profile image or default avatar */}
       <Image
         source={
-          data.avatar
-            ? { uri: data.avatar.replace('localhost', '10.0.2.2') }
+          data?.avatar
+            ? { uri: data?.avatar.replace('localhost', '10.0.2.2') }
             : defaultAvatar
         }
         style={styles.profileImage}
@@ -33,14 +33,14 @@ const Header = ({ data }) => {
 
       {/* Display name and email icon */}
       <View style={styles.nameContainer}>
-        <Text style={styles.name}>{data.full_name}</Text>
+        <Text style={styles.name}>{data?.full_name}</Text>
         <TouchableOpacity style={styles.circleIcon} onPress={() => { /* handle icon press */ }}>
           <Icon name="mail-outline" size={15} color="#fff" />
         </TouchableOpacity>
       </View>
 
       {/* Conditionally display bio if it exists */}
-      {data.bio ? <Text style={styles.bio}>{data.bio}</Text> : null}
+      {data?.bio ? <Text style={styles.bio}>{data?.bio}</Text> : null}
     </View>
   );
 };
