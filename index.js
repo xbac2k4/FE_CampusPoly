@@ -1,7 +1,6 @@
 import { AppRegistry } from 'react-native';
 import NotificationScreen from './src/workspaces/Notification/NotificationScreen';
 import App from './App';
-import OTP_screen from './src/workspaces/SignUp/OTP_screen'
 import SearchScreen from './src/workspaces/SearchScreen/SearchScreen'
 import homeScreen from './src/workspaces/Home/homeScreen'
 import profileScreen from './src/workspaces/ProfileScreen/profileScreen'
