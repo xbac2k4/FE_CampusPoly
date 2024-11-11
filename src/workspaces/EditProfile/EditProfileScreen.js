@@ -10,6 +10,8 @@ import GenderPicker from '../../components/EditProfile/GenderPicker';
 import BirthdayPicker from '../../components/EditProfile/BirthdayPicker';
 import styles from './styles';
 import Screens from '../../navigation/Screens';
+import ImageCropPicker from 'react-native-image-crop-picker';
+import { PUT_UPDATE_USER } from '../../services/ApiConfig';
 
 const EditProfileScreen = () => {
   const route = useRoute();
@@ -27,11 +29,11 @@ const EditProfileScreen = () => {
   const [birthday, setBirthday] = useState(user.birthday ? new Date(user.birthday) : null);
   const defaultProfileImage = Image.resolveAssetSource(require('../../assets/images/default-profile.png')).uri;
   const defaultBackgroundImage = Image.resolveAssetSource(require('../../assets/images/default-bg.png')).uri;
-  
+
   const [profileImage, setProfileImage] = useState({
-    uri: user.avatar ? user.avatar.replace('localhost', '10.0.2.2') : defaultProfileImage,
+    uri: user.avatar ? user.avatar : defaultProfileImage,
   });
-    const [backgroundImage, setBackgroundImage] = useState({ uri: user.background ? user.background.replace('localhost', '10.0.2.2') : defaultBackgroundImage });
+  const [backgroundImage, setBackgroundImage] = useState({ uri: user.background ? user.background : defaultBackgroundImage });
   const [isProfileImageChanged, setIsProfileImageChanged] = useState(false);
 
   const [isChanged, setIsChanged] = useState(false);
@@ -53,12 +55,12 @@ const EditProfileScreen = () => {
       name !== originalData.current.name ||
       bio !== originalData.current.bio ||
       gender !== originalData.current.gender ||
-      (birthday && birthday.toISOString()) !== (originalData.current.birthday && originalData.current.birthday.toISOString()) ||
-      profileImage.uri !== originalData.current.profileImage ||
-      backgroundImage.uri !== originalData.current.backgroundImage;
+      (birthday && birthday.toISOString()) !== (originalData.current.birthday && originalData.current.birthday.toISOString());
+    // profileImage.uri !== originalData.current.profileImage ||
+    // backgroundImage.uri !== originalData.current.backgroundImage;
 
     setIsChanged(hasChanges);
-  }, [name, bio, gender, birthday, profileImage, backgroundImage]);
+  }, [name, bio, gender, birthday]);
 
   useEffect(() => {
     const backAction = e => {
@@ -94,46 +96,45 @@ const EditProfileScreen = () => {
       setErrorMessage('Tên là bắt buộc.');
       return;
     }
-  
+
     setIsLoading(true);
-  
+
     const formData = new FormData();
     formData.append('full_name', name);
     formData.append('bio', bio);
     formData.append('sex', gender);
     formData.append('birthday', birthday ? birthday.toISOString() : '');
-    console.log(formData);
-    
-  
+    // console.log(formData);
     // Chỉ thêm ảnh nếu ảnh đã thay đổi
-    if (isProfileImageChanged) {
-      formData.append('avatar', {
-        uri: profileImage.uri,
-        name: 'avatar.jpg',
-        type: 'image/jpeg',
-      });
-    }
-  
+    // if (isProfileImageChanged) {
+    //   formData.append('avatar', {
+    //     uri: profileImage.uri,
+    //     name: 'avatar.jpg',
+    //     type: 'image/jpeg',
+    //   });
+    // }
+
     try {
-      const response = await fetch(`http://10.0.2.2:3000/api/v1/users/update-user/${user._id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-        body: formData,
-      });
-  
-      if (!response.ok) {
-        throw new Error('Failed to update profile');
-      }
-  
-      const updatedUser = await response.json();
-      console.log('API response:', updatedUser);
-  
+      // const response = await fetch(`http://10.0.2.2:3000/api/v1/users/update-user/${user._id}`, {
+      //   method: 'PUT',
+      //   headers: {
+      //     'Content-Type': 'multipart/form-data',
+      //   },
+      //   body: formData,
+      // });
+
+      // if (!response.ok) {
+      //   throw new Error('Failed to update profile');
+      // }
+
+      // const updatedUser = await response.json();
+      // console.log('API response:', updatedUser);
+      FetchUpdateUser(formData);
+
       setIsLoading(false);
       setIsSaved(true);
       setErrorMessage('');
-  
+
       // Gửi dữ liệu đã cập nhật trở lại ProfileScreen
       navigation.navigate(Screens.Profile, {
         userId: user._id,
@@ -143,10 +144,10 @@ const EditProfileScreen = () => {
           bio,
           sex: gender,
           birthday: birthday ? birthday.toISOString() : user.birthday.toString(),
-          avatar: isProfileImageChanged ? profileImage.uri.replace('localhost', '10.0.2.2') : user.avatar,
+          avatar: profileImage.uri,
         },
       });
-  
+
       setIsChanged(false);
     } catch (error) {
       console.error('Lỗi khi lưu hồ sơ:', error);
@@ -154,41 +155,99 @@ const EditProfileScreen = () => {
       setIsLoading(false);
     }
   };
-  
+
 
   const clearBio = () => setBio('');
 
-// Cập nhật profileImage khi người dùng chọn ảnh mới
-const handleProfileImageEdit = type => {
-  if (type === 'upload') {
-    launchImageLibrary({ mediaType: 'photo' }, response => {
-      if (!response.didCancel && !response.error && response.assets) {
-        const source = { uri: response.assets[0].uri };
-        setProfileImage(source);
-        setIsProfileImageChanged(true); // Đánh dấu đã thay đổi ảnh đại diện
+  // Cập nhật profileImage khi người dùng chọn ảnh mới
+  const handleProfileImageEdit = type => {
+    if (type === 'upload') {
+      ImageCropPicker.openPicker({
+        width: 300,
+        height: 300,
+        cropping: true,
+        cropperCircleOverlay: true,
+      }).then(image => {
+        // console.log(image);
+        const formData = new FormData();
+        formData.append('avatar', {
+          uri: image.path,
+          name: 'avatar.jpg',
+          type: 'image/jpeg',
+        });
+        // console.log(image.path);
+        FetchUpdateUser(formData);
+        setProfileImage({ uri: image.path });
         profileSheetRef.current.close();
-      }
-    });
-  } else {
-    setDeleteTarget('profile');
-    setShowDeleteModal(true);
-  }
-};
+      });
+      // launchImageLibrary({ mediaType: 'photo' }, response => {
+      //   if (!response.didCancel && !response.error && response.assets) {
+      //     const source = { uri: response.assets[0].uri };
+      //     setProfileImage(source);          
+      //     setIsProfileImageChanged(true); // Đánh dấu đã thay đổi ảnh đại diện
+      //     profileSheetRef.current.close();
+      //   }
+      // });
+    } else {
+      setDeleteTarget('profile');
+      setShowDeleteModal(true);
+    }
+  };
 
   const handleBackgroundImageEdit = type => {
     if (type === 'upload') {
-      launchImageLibrary({ mediaType: 'photo' }, response => {
-        if (!response.didCancel && !response.error && response.assets) {
-          const source = { uri: response.assets[0].uri };
-          setBackgroundImage(source);
-          backgroundSheetRef.current.close();
-        }
+      ImageCropPicker.openPicker({
+        width: 500,
+        height: 300,
+        cropping: true,
+      }).then(image => {
+        // console.log(image);
+        const formData = new FormData();
+        formData.append('avatar', {
+          uri: image.path,
+          name: 'background.jpg',
+          type: 'image/jpeg',
+        });
+        // console.log(image.path);
+        FetchUpdateUser(formData);
+        setBackgroundImage({ uri: image.path });
+        backgroundSheetRef.current.close();
       });
+      // launchImageLibrary({ mediaType: 'photo' }, response => {
+      //   if (!response.didCancel && !response.error && response.assets) {
+      //     const source = { uri: response.assets[0].uri };
+      //     setBackgroundImage(source);
+      //     backgroundSheetRef.current.close();
+      //   }
+      // });
     } else {
       setDeleteTarget('background');
       setShowDeleteModal(true);
     }
   };
+
+  const FetchUpdateUser = async (formData) => {
+    console.log(`${PUT_UPDATE_USER}${user._id}`);
+
+    const response = await fetch(`${PUT_UPDATE_USER}${user._id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update profile');
+    }
+
+    const updatedUser = await response.json();
+    console.log(updatedUser);
+
+    setIsLoading(false);
+    setIsSaved(true);
+    setErrorMessage('');
+  }
 
   return (
     <SafeAreaView style={styles.container}>

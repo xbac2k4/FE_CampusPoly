@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { View, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
 import Header from '../../components/ProfileScreen/header';
 import ProfileStats from '../../components/ProfileScreen/profileStats';
@@ -6,6 +6,7 @@ import ProfileTabs from '../../components/ProfileScreen/profileTabs';
 import ProfilePosts from '../../components/ProfileScreen/profilePosts';
 import { UserContext } from '../../services/provider/UseContext';
 import { GET_USER_ID } from '../../services/ApiConfig';
+import { useFocusEffect } from '@react-navigation/native';
 // Sample data
 // const user = {
 //   name: 'Alex Tsimikas',
@@ -56,15 +57,36 @@ const ProfileScreen = ({ route }) => {
   const [userProfile, setUserProfile] = useState();
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Gọi hàm async để set ID
-    const initializeID = async () => {
-      await setID(user._id);
-    };
+  // Gọi hàm async để set ID
+  const initializeID = async () => {
+    await setID(user._id);
+  };
+  const fetchUserData = async () => {
+    try {
+      // console.log(`${GET_USER_ID}${id}`);
+      const response = await fetch(`${GET_USER_ID}${id}`);
+      const data = await response.json();
+      setUserProfile(data.data);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    } finally {
+      setLoading(false); // Tắt loading
+    }
+  };
 
+  useEffect(() => {
     initializeID();
   }, [user._id]); // Chạy useEffect này khi user._id thay đổi
 
+  useFocusEffect(
+    useCallback(() => {
+      const handleUserData = async () => {
+        await initializeID();
+        fetchUserData(); // Gọi lại API khi màn hình được truy cập lại
+      }
+      handleUserData();
+    }, [id])
+  );
   useEffect(() => {
     // Nếu có updatedUser trong params, cập nhật userProfile
     if (route.params?.updatedUser) {
@@ -72,20 +94,6 @@ const ProfileScreen = ({ route }) => {
       setLoading(false); // Tắt loading khi có dữ liệu mới
       return;
     }
-
-    // Chỉ fetch dữ liệu khi id đã được set
-    const fetchUserData = async () => {
-      try {
-        console.log(`${GET_USER_ID}${id}`);
-        const response = await fetch(`${GET_USER_ID}${id}`);
-        const data = await response.json();
-        setUserProfile(data.data);
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      } finally {
-        setLoading(false); // Tắt loading
-      }
-    };
 
     if (id) {
       fetchUserData();
