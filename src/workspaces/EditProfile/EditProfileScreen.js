@@ -165,71 +165,69 @@ const EditProfileScreen = () => {
   const clearBio = () => setBio('');
 
   // Cập nhật profileImage khi người dùng chọn ảnh mới
-  const handleProfileImageEdit = type => {
+  const handleProfileImageEdit = (type) => {
     if (type === 'upload') {
       ImageCropPicker.openPicker({
         width: 300,
         height: 300,
         cropping: true,
         cropperCircleOverlay: true,
-      }).then(image => {
-        // console.log(image);
-        const formData = new FormData();
-        formData.append('avatar', {
-          uri: image.path,
-          name: 'avatar.jpg',
-          type: 'image/jpeg',
+      })
+        .then((image) => {
+          const formData = new FormData();
+          formData.append('avatar', {
+            uri: image.path,
+            name: 'avatar.jpg',
+            type: 'image/jpeg',
+          });
+          FetchUpdateUser(formData);
+          setProfileImage({ uri: image.path });
+          profileSheetRef.current.close();
+        })
+        .catch((error) => {
+          if (error.code === 'E_PICKER_CANCELLED') {
+            console.log('User cancelled image selection');
+          } else {
+            console.error('Image selection error:', error);
+          }
         });
-        // console.log(image.path);
-        FetchUpdateUser(formData);
-        setProfileImage({ uri: image.path });
-        profileSheetRef.current.close();
-      });
-      // launchImageLibrary({ mediaType: 'photo' }, response => {
-      //   if (!response.didCancel && !response.error && response.assets) {
-      //     const source = { uri: response.assets[0].uri };
-      //     setProfileImage(source);          
-      //     setIsProfileImageChanged(true); // Đánh dấu đã thay đổi ảnh đại diện
-      //     profileSheetRef.current.close();
-      //   }
-      // });
     } else {
       setDeleteTarget('profile');
       setShowDeleteModal(true);
     }
   };
-
-  const handleBackgroundImageEdit = type => {
+  
+  const handleBackgroundImageEdit = (type) => {
     if (type === 'upload') {
       ImageCropPicker.openPicker({
         width: 500,
         height: 300,
         cropping: true,
-      }).then(image => {
-        // console.log(image);
-        const formData = new FormData();
-        formData.append('avatar', {
-          uri: image.path,
-          name: 'background.jpg',
-          type: 'image/jpeg',
+      })
+        .then((image) => {
+          const formData = new FormData();
+          formData.append('avatar', {
+            uri: image.path,
+            name: 'background.jpg',
+            type: 'image/jpeg',
+          });
+          FetchUpdateUser(formData);
+          setBackgroundImage({ uri: image.path });
+          backgroundSheetRef.current.close();
+        })
+        .catch((error) => {
+          if (error.code === 'E_PICKER_CANCELLED') {
+            console.log('User cancelled image selection');
+          } else {
+            console.error('Image selection error:', error);
+          }
         });
-        // console.log(image.path);
-        FetchUpdateUser(formData);
-        setBackgroundImage({ uri: image.path });
-        backgroundSheetRef.current.close();
-      });
-      // launchImageLibrary({ mediaType: 'photo' }, response => {
-      //   if (!response.didCancel && !response.error && response.assets) {
-      //     const source = { uri: response.assets[0].uri };
-      //     setBackgroundImage(source);
-      //     backgroundSheetRef.current.close();
-      //   }
-      // });
     } else {
       setDeleteTarget('background');
       setShowDeleteModal(true);
     }
   };
+  
 
   const FetchUpdateUser = async (formData) => {
     // console.log(`${PUT_UPDATE_USER}${user._id}`);

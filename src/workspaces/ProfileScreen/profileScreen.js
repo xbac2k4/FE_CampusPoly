@@ -56,16 +56,19 @@ const ProfileScreen = ({ navigation, route }) => {
   const [id, setID] = useState();
   const [userProfile, setUserProfile] = useState();
   const [loading, setLoading] = useState(true);
+  const [refresh, setRefresh] = useState(false);
   // console.log(route.params?.id);
 
   // Gọi hàm async để set ID
-  const initializeID = async () => {
-    await setID(user._id);
+  const initializeID = () => {
+    if (user?._id) {
+      setID(user._id);  // Chỉ setID nếu user._id có giá trị hợp lệ
+    }
   };
-  const fetchUserData = async () => {
+  const fetchUserData = async (userID) => {
     try {
       // console.log(`${GET_USER_ID}${id}`);
-      const response = await fetch(`${GET_USER_ID}${id}`);
+      const response = await fetch(`${GET_USER_ID}${userID}`);
       const data = await response.json();
       setUserProfile(data.data);
     } catch (error) {
@@ -82,8 +85,13 @@ const ProfileScreen = ({ navigation, route }) => {
   useFocusEffect(
     useCallback(() => {
       const handleUserData = async () => {
-        await initializeID();
-        fetchUserData(); // Gọi lại API khi màn hình được truy cập lại
+        // initializeID();
+        const handleUserData = async () => {
+          initializeID();  // Đảm bảo ID được gán
+        };
+        handleUserData();
+        setRefresh(true);
+        // fetchUserData(id); // Gọi lại API khi màn hình được truy cập lại
         navigation.setParams({ refresh: false }); // Đặt lại refresh để tránh gọi lại không cần thiết
       }
       handleUserData();
@@ -96,11 +104,11 @@ const ProfileScreen = ({ navigation, route }) => {
     //   setLoading(false); // Tắt loading khi có dữ liệu mới
     //   return;
     // }
-
     if (id) {
-      fetchUserData();
+      fetchUserData(id);
+      setRefresh(false);
     }
-  }, [id, route.params?.updatedUser]); // Chạy lại khi id hoặc updatedUser thay đổi
+  }, [id, refresh]); // Chạy lại khi id hoặc updatedUser thay đổi
 
   return (
     <View style={styles.screen}>
