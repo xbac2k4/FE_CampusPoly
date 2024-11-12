@@ -1,34 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
 import PostComponent from '../../components/Post/PostComponent';
-import styles from '../../assets/style/CreatePostStyle';
+import { UserContext } from '../../services/provider/UseContext';
 import { ADD_POST } from '../../services/ApiConfig';
 
 const CreatePostScreen = ({ navigation }) => {
-
-  const [user, setUser] = useState(null);
-  const [id, setID] = useState('670ca3898cfc1be4b41b183b');
+  // const [user, setUser] = useState(null);
+  // const [id, setID] = useState('670ca3898cfc1be4b41b183b');
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [images, setImages] = useState([]);
   const [gif, setGif] = useState(null);
-
-  const fetchUserData = async () => {
-    try {
-      console.log(`${process.env.GET_USER_ID}${id}`);
-
-      const response = await fetch(`${process.env.GET_USER_ID}${id}`);
-      const data = await response.json();
-      setUser(data);
-    } catch (error) {
-      console.error('Lỗi khi lấy dữ liệu người dùng:', error);
-      Alert.alert('Lỗi', 'Không thể lấy dữ liệu người dùng.');
-    }
-  };
-
-  useEffect(() => {
-    fetchUserData();
-  }, []);
+  const { user } = useContext(UserContext);
 
   // Hàm để cập nhật dữ liệu từ PostComponent
   const handleContentChange = (newTitle, newContent, newImages, newGif) => {
@@ -40,11 +23,11 @@ const CreatePostScreen = ({ navigation }) => {
 
   const handlePublish = async () => {
     const formData = new FormData();
-    formData.append('user_id', '670ca3898cfc1be4b41b183b'); // Gia dinh khi chua co user_id
+    formData.append('user_id', user._id); // Gia dinh khi chua co user_id
     formData.append('title', title || "");
     formData.append('content', content || "");
-    formData.append('post_type', 'text'); 
-  
+    formData.append('post_type', 'text');
+
     // Thêm hình ảnh vào formData
     images.forEach((imgUri, index) => {
       if (imgUri) {
@@ -55,27 +38,27 @@ const CreatePostScreen = ({ navigation }) => {
         });
       }
     });
-  
-    if (gif) {
-      formData.append('gif', {
-        uri: gif,
-        name: 'gif.gif',
-        type: 'image/gif', 
-      });
-    }
-  
+
+    // if (gif) {
+    //   formData.append('gif', {
+    //     uri: gif,
+    //     name: 'gif.gif',
+    //     type: 'image/gif',
+    //   });
+    // }
+
     try {
-      const response = await fetch(`${ADD_POST}`, {
+      const response = await fetch(ADD_POST, {
         method: 'POST',
-        body: formData, 
+        body: formData,
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to publish post!');
       }
       const post = await response.json();
       console.log('API response:', post);
-  
+
       Alert.alert("Success", "Your post has been published!");
       navigation.goBack();
     } catch (error) {
@@ -83,7 +66,7 @@ const CreatePostScreen = ({ navigation }) => {
       Alert.alert('Error', error.message);
     }
   };
-  
+
 
   return (
     <View style={styles.container}>
@@ -101,7 +84,7 @@ const CreatePostScreen = ({ navigation }) => {
           title={title}
           content={content}
           image={images}
-          gif={gif}
+          // gif={gif}
           onContentChange={handleContentChange} // Truyền hàm vào PostComponent
           user={user}
         />
@@ -111,3 +94,33 @@ const CreatePostScreen = ({ navigation }) => {
 };
 
 export default CreatePostScreen;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingHorizontal: 24,
+    backgroundColor: '#181A1C',
+  },
+  barHeader: {
+    flexDirection: 'row',
+    marginTop: 40,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingBottom: 20,
+  },
+  textHeader: {
+    color: '#ECEBED',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  buttonContainer: {
+    backgroundColor: "#F62E8E",
+    borderRadius: 24,
+    width: 70,
+    height: 24,
+    alignItems: 'center',
+  },
+  createContainer: {
+    flex: 1,
+  },
+});

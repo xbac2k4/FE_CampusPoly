@@ -1,5 +1,7 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity, Dimensions, PixelRatio } from 'react-native';
 import React from 'react';
+import { useNavigation } from '@react-navigation/native';
+import Screens from '../../navigation/Screens';
 
 const { width } = Dimensions.get('window');
 const scale = width / 375;  // 375 is a standard width for scaling (like iPhone 11)
@@ -8,10 +10,13 @@ const normalize = (size) => {
   return PixelRatio.roundToNearestPixel(size * scale);
 };
 
-const UserComponent = ({ id, avatar, full_name, notification }) => {
+const UserComponent = ({ avatar, full_name }) => {
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
-      <View style={styles.profileSection}>
+      <TouchableOpacity style={styles.profileSection} onPress={()=>{
+        navigation.navigate(Screens.Profile);
+      }}>
         <Image source={{ uri: avatar }} style={styles.avatar} />
         <Text style={styles.fullName}>{full_name}</Text>
         <View style={styles.notificationContainer}>
@@ -22,13 +27,13 @@ const UserComponent = ({ id, avatar, full_name, notification }) => {
               resizeMode="contain"
             />
           </TouchableOpacity>
-          {notification > 0 && (
+          {1 > 0 && (
             <View style={styles.notificationBadge}>
-              <Text style={styles.notificationText}>{notification}</Text>
+              <Text style={styles.notificationText}>1</Text>
             </View>
           )}
         </View>
-      </View>
+      </TouchableOpacity>
       <View style={styles.divider} />
       <TouchableOpacity style={styles.createPageButton}>
         <View style={styles.addIconContainer}>

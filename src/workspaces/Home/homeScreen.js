@@ -1,7 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity, View, FlatList, ScrollView, ActivityIndicator } from 'react-native';
 import React, { useEffect, useState, useContext } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import StoryComponent from '../../components/Home/storyComponent';
 import ProfilePosts from '../../components/ProfileScreen/profilePosts';
 import { useNavigation } from '@react-navigation/native';
 import Screens from '../../navigation/Screens';
@@ -9,18 +8,12 @@ import { UserContext } from '../../services/provider/UseContext';
 import { GET_ALL_POST } from '../../services/ApiConfig';
 
 const HomeScreen = () => {
-  const [userName, setUserName] = useState('');
+  const { user } = useContext(UserContext);
   const [greeting, setGreeting] = useState('');
-  const [stories, setStories] = useState([]);
   const navigation = useNavigation();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState('Dành cho bạn'); // Trạng thái cho tab hiện tại
-
-  const fetchUserName = async () => {
-    const fakeApiResponse = { name: 'Viet Anh' };
-    setUserName(fakeApiResponse.name);
-  };
 
   const getGreeting = () => {
     const currentHour = new Date().getHours();
@@ -38,7 +31,7 @@ const HomeScreen = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch(process.env.GET_ALL_POST);
+        const response = await fetch(GET_ALL_POST);
         const responseData = await response.json();
         const sortedData = responseData.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         setData(sortedData);
@@ -50,7 +43,6 @@ const HomeScreen = () => {
     };
 
    
-    fetchUserName();
     setGreeting(getGreeting());
     fetchUserData();
   }, []);
@@ -59,22 +51,13 @@ const HomeScreen = () => {
     navigation.navigate('Profile', { userId });
   };
 
-  const renderStoryItem = ({ item }) => (
-    <StoryComponent
-      imgStory={item.imgStory}
-      onStoryPress={() => {}}
-      onUserPress={() => handleUserPress(item.userId)}
-      imgUser={item.imgUser}
-    />
-  );
-
   return (
     <ScrollView style={styles.container}>
       <View style={styles.container}>
         <View style={{ flex: 1 }}>
           <View style={styles.headerContent}>
             <Text style={styles.greetingText}>
-              {greeting}, {userName || 'User'}
+              {greeting}
             </Text>
             <TouchableOpacity
               style={styles.circleIcon}

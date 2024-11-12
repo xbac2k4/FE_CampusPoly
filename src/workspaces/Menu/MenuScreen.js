@@ -7,18 +7,21 @@ import {
   ScrollView,
   Dimensions,
 } from 'react-native';
-import React from 'react';
+import React, { useContext } from 'react';
 import UserComponent from '../../components/Menu/UserComponent';
 import SettingItem from '../../components/Menu/SettingItem';
+import { UserContext } from '../../services/provider/UseContext';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 const { width, height } = Dimensions.get('window'); // Get device dimensions
 
 const MenuScreen = () => {
-  const fakeUser = {
-    avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-    full_name: 'Đỗ Quang Giáp',
-    notification: 1,
-  };
+  // const fakeUser = {
+  //   avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
+  //   full_name: 'Đỗ Quang Giáp',
+  //   notification: 1,
+  // };
+  const { user } = useContext(UserContext);
 
   return (
     <View style={styles.container}>
@@ -36,9 +39,8 @@ const MenuScreen = () => {
 
         <View style={styles.userContainer}>
           <UserComponent
-            avatar={fakeUser.avatar}
-            full_name={fakeUser.full_name}
-            notification={fakeUser.notification}
+            avatar={user.avatar}
+            full_name={user.full_name}
           />
         </View>
 
@@ -52,11 +54,8 @@ const MenuScreen = () => {
               <Text style={styles.navText}>Bạn bè</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.navItem}>
-              <Image
-                source={require('../../assets/images/book.png')}
-                style={styles.imgGrid}
-              />
-              <Text style={styles.navText}>Đã Lưu</Text>
+              <AntDesign name="message1" size={width * 0.06} color="#ff7d97"/>
+              <Text style={styles.navText}>Tin nhắn</Text>
             </TouchableOpacity>
           </View>
         </View>

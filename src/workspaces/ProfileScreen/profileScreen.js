@@ -7,48 +7,6 @@ import ProfilePosts from '../../components/ProfileScreen/profilePosts';
 import { UserContext } from '../../services/provider/UseContext';
 import { GET_USER_ID } from '../../services/ApiConfig';
 import { useFocusEffect } from '@react-navigation/native';
-// Sample data
-// const user = {
-//   name: 'Alex Tsimikas',
-//   location: 'Brooklyn, NY',
-//   bio: 'Writer by Profession. Artist by Passion!',
-//   profileImage: require('../../assets/images/avt.png'),
-//   backgroundImage: require('../../assets/images/background.png'),
-//   birthday: new Date('2024-10-14T04:15:12.857+00:00'),
-//   friends: 4056,
-//   sex: 'female',
-//   posts: [
-//     {
-//       id: 1,
-//       text: 'Exploring the canals of Venice!',
-//       likes: 8998,
-//       comments: 145,
-//       images: [
-//         require('../../assets/images/car2.jpg'),
-//         require('../../assets/images/venice2.png'),
-//         require('../../assets/images/venice3.png'),
-//       ],
-//       time: '1h ago',
-//     },
-//     {
-//       id: 2,
-//       text: 'Looking forward to my trip!',
-//       likes: 215,
-//       comments: 8,
-//       images: [
-//         require('../../assets/images/background.png'),
-//       ],
-//       time: '1d ago',
-//     },
-//     {
-//       id: 3,
-//       text: 'Going on vacation! Catch you all in 10 days. No call!!!!!!',
-//       likes: 261,
-//       comments: 12,
-//       time: '3d ago'
-//     },
-//   ],
-// };
 
 const ProfileScreen = ({ navigation, route }) => {
   const [activeTab, setActiveTab] = useState('Posts');
