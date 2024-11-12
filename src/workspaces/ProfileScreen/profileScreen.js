@@ -50,12 +50,13 @@ import { useFocusEffect } from '@react-navigation/native';
 //   ],
 // };
 
-const ProfileScreen = ({ route }) => {
+const ProfileScreen = ({ navigation, route }) => {
   const [activeTab, setActiveTab] = useState('Posts');
   const { user } = useContext(UserContext);
   const [id, setID] = useState();
   const [userProfile, setUserProfile] = useState();
   const [loading, setLoading] = useState(true);
+  // console.log(route.params?.id);
 
   // Gọi hàm async để set ID
   const initializeID = async () => {
@@ -83,17 +84,18 @@ const ProfileScreen = ({ route }) => {
       const handleUserData = async () => {
         await initializeID();
         fetchUserData(); // Gọi lại API khi màn hình được truy cập lại
+        navigation.setParams({ refresh: false }); // Đặt lại refresh để tránh gọi lại không cần thiết
       }
       handleUserData();
-    }, [id])
+    }, [id, route.params?.refresh])
   );
   useEffect(() => {
     // Nếu có updatedUser trong params, cập nhật userProfile
-    if (route.params?.updatedUser) {
-      setUserProfile(route.params.updatedUser);
-      setLoading(false); // Tắt loading khi có dữ liệu mới
-      return;
-    }
+    // if (route.params?.updatedUser) {
+    //   setUserProfile(route.params.updatedUser);
+    //   setLoading(false); // Tắt loading khi có dữ liệu mới
+    //   return;
+    // }
 
     if (id) {
       fetchUserData();

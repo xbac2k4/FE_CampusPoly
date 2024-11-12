@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import DatePicker from 'react-native-date-picker';
 
-const BirthdayPicker = ({ selectedDate, onDateChange }) => {
+const BirthdayPicker = ({ label, selectedDate, onDateChange }) => {
 
   const [isShowDate, setIsShowDate] = useState(false)
 
   const handleConfirmDate = (date) => {
     setIsShowDate(false)
     onDateChange(date)
-    console.log(date);
+    // console.log(date);
   }
 
   const togggleDatePicker = () => {
@@ -17,9 +17,9 @@ const BirthdayPicker = ({ selectedDate, onDateChange }) => {
   }
 
   const formatDate = (date) => {
-    let day = date.getDate();
-    let month = date.getMonth() + 1; // Tháng bắt đầu từ 0
-    const year = date.getFullYear();
+    let day = date?.getDate();
+    let month = date?.getMonth() + 1; // Tháng bắt đầu từ 0
+    const year = date?.getFullYear();
 
     // Thêm số 0 vào trước ngày và tháng nếu cần
     if (day < 10) {
@@ -34,15 +34,16 @@ const BirthdayPicker = ({ selectedDate, onDateChange }) => {
 
   return (
     <View>
+      <Text style={styles.label}>{label}</Text>
       <TouchableOpacity onPress={togggleDatePicker} style={styles.dateButton}>
-        <Text style={styles.dateText}>{formatDate(selectedDate)}</Text>
+        <Text style={styles.dateText}>{!selectedDate ? 'Chưa cập nhật' : formatDate(selectedDate)}</Text>
       </TouchableOpacity>
 
       <DatePicker
         modal
         title={'Chọn ngày sinh'}
         open={isShowDate}
-        date={selectedDate}
+        date={selectedDate || new Date()}
         mode='date'
         theme='dark'
         onConfirm={handleConfirmDate}
@@ -64,6 +65,11 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#323436',
     alignItems: 'flex-start',
+  },
+  label: {
+    color: '#ffff',
+    fontSize: 16,
+    marginBottom: 5,
   },
   dateText: {
     color: '#FFFFFF',

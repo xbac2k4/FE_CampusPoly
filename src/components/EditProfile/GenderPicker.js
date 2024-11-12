@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Modal from 'react-native-modal';
 
-const GenderPicker = ({ selectedGender, onGenderChange }) => {
+const GenderPicker = ({ label, selectedGender, onGenderChange }) => {
   const [isVisible, setIsVisible] = useState(false);
 
   const toggleModal = () => {
@@ -11,15 +11,15 @@ const GenderPicker = ({ selectedGender, onGenderChange }) => {
 
   const handleGenderSelect = (gender) => {
     onGenderChange(gender);
-    toggleModal(); 
+    toggleModal();
   };
 
-  const translate = (sex)=>{
-    if(sex == 'female'){
+  const translate = (sex) => {
+    if (sex == 'female') {
       return 'Nữ'
     }
 
-    if(sex == 'male'){
+    if (sex == 'male') {
       return 'Nam'
     }
 
@@ -29,14 +29,16 @@ const GenderPicker = ({ selectedGender, onGenderChange }) => {
   }
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={toggleModal} style={styles.picker}>
-        <Text style={styles.pickerText}>
-          {selectedGender ? translate(selectedGender) : "Chọn giới tính"}
-        </Text>
-      </TouchableOpacity>
-
-      <Modal 
+    <View>
+      <Text style={styles.label}>{label}</Text>
+      <View style={styles.container}>
+        <TouchableOpacity onPress={toggleModal} style={styles.picker}>
+          <Text style={styles.pickerText}>
+            {selectedGender ? translate(selectedGender) : "Chọn giới tính"}
+          </Text>
+        </TouchableOpacity>
+      </View>
+      <Modal
         isVisible={isVisible}
         onBackdropPress={toggleModal}
         style={styles.modal}
@@ -52,7 +54,7 @@ const GenderPicker = ({ selectedGender, onGenderChange }) => {
           <TouchableOpacity onPress={() => handleGenderSelect('other')} style={styles.modalItem}>
             <Text style={styles.modalItemText}>Khác</Text>
           </TouchableOpacity>
-        
+
         </View>
       </Modal>
     </View>
@@ -66,6 +68,11 @@ const styles = StyleSheet.create({
     borderColor: '#323436',
     borderRadius: 8,
     overflow: 'hidden',
+  },
+  label: {
+    color: '#ffff',
+    fontSize: 16,
+    marginBottom: 5,
   },
   picker: {
     height: 50,
@@ -81,7 +88,7 @@ const styles = StyleSheet.create({
   modal: {
     justifyContent: 'flex-end',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    margin: 0, 
+    margin: 0,
   },
   modalContent: {
     backgroundColor: '#181A1C',

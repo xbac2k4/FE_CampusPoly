@@ -51,6 +51,8 @@ const EditProfileScreen = () => {
   });
 
   useEffect(() => {
+    // console.log(birthday);
+
     const hasChanges =
       name !== originalData.current.name ||
       bio !== originalData.current.bio ||
@@ -136,17 +138,20 @@ const EditProfileScreen = () => {
       setErrorMessage('');
 
       // Gửi dữ liệu đã cập nhật trở lại ProfileScreen
-      navigation.navigate(Screens.Profile, {
-        userId: user._id,
-        updatedUser: {
-          ...user,
-          full_name: name,
-          bio,
-          sex: gender,
-          birthday: birthday ? birthday.toISOString() : user.birthday.toString(),
-          avatar: profileImage.uri,
-        },
-      });
+      // Điều hướng trở lại Profile và cập nhật params
+      navigation.navigate(Screens.Profile, { refresh: true }); // Truyền refresh vào params khi điều hướng
+      // navigation.navigate(Screens.Profile, {
+      //   id: user._id,
+      //   updatedUser: {
+      //     ...user,
+      //     full_name: name,
+      //     bio,
+      //     sex: gender,
+      //     birthday: birthday ? birthday.toISOString() : user.birthday.toString(),
+      //     avatar: profileImage.uri,
+      //   },
+      // });
+      // navigation.goBack();
 
       setIsChanged(false);
     } catch (error) {
@@ -227,7 +232,7 @@ const EditProfileScreen = () => {
   };
 
   const FetchUpdateUser = async (formData) => {
-    console.log(`${PUT_UPDATE_USER}${user._id}`);
+    // console.log(`${PUT_UPDATE_USER}${user._id}`);
 
     const response = await fetch(`${PUT_UPDATE_USER}${user._id}`, {
       method: 'PUT',
@@ -242,7 +247,7 @@ const EditProfileScreen = () => {
     }
 
     const updatedUser = await response.json();
-    console.log(updatedUser);
+    // console.log(updatedUser);
 
     setIsLoading(false);
     setIsSaved(true);
@@ -291,8 +296,9 @@ const EditProfileScreen = () => {
           validateName(text);
         }} clearText={() => { setName(''); validateName(''); }} maxLength={50} errorMessage={errorMessage} />
         <ProfileInput label="Tiểu sử" value={bio} onChangeText={setBio} clearText={clearBio} maxLength={50} />
-        <GenderPicker selectedGender={gender} onGenderChange={setGender} />
+        <GenderPicker label="Giới tính" selectedGender={gender} onGenderChange={setGender} />
         <BirthdayPicker
+        label="Ngày sinh"
           selectedDate={birthday}
           onDateChange={(date) => setBirthday(date)}
         />
