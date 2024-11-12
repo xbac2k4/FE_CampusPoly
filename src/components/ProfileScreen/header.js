@@ -15,7 +15,7 @@ const Header = ({ data }) => {
       <Image
         source={
           data?.background
-            ? { uri: data?.background.replace('localhost', '10.0.2.2') }
+            ? { uri: data?.background }
             : defaultBackgroundImage
         }
         style={styles.backgroundImage}
@@ -25,7 +25,7 @@ const Header = ({ data }) => {
       <Image
         source={
           data?.avatar
-            ? { uri: data?.avatar.replace('localhost', '10.0.2.2') }
+            ? { uri: data?.avatar }
             : defaultAvatar
         }
         style={styles.profileImage}

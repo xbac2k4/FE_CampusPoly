@@ -29,6 +29,7 @@
     "react-native-document-picker": "^9.3.1",
     "react-native-dotenv": "^3.4.11",
     "react-native-gesture-handler": "^2.20.0",
+    "react-native-image-crop-picker": "^0.41.4",
     "react-native-image-picker": "^7.1.2",
     "react-native-linear-gradient": "^2.8.3",
     "react-native-modal": "^13.0.1",
