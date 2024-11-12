@@ -14,6 +14,7 @@ const Screens = {
     EditProfile: "EditProfile",
     CreatePost:"CreatPost",
     ChatView:'ChatView',
+    Menu: "Menu",
 };
 
 export default Screens;

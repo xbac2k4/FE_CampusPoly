@@ -8,6 +8,7 @@ import NotificationScreen from '../workspaces/Notification/NotificationScreen';
 import ProfileScreen from '../workspaces/ProfileScreen/profileScreen';
 import LinearGradient from 'react-native-linear-gradient';
 import Screens from './Screens';
+import MenuScreen from '../workspaces/Menu/MenuScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -120,17 +121,17 @@ const BottomTabNavigator = ({ navigation }) => {
         }}
       />
       <Tab.Screen
-        name={Screens.Profile}
-        component={ProfileScreen}
+        name={Screens.Menu}
+        component={MenuScreen}
         options={{
           tabBarIcon: ({ focused }) => (
             <Image
               source={
                 focused
-                  ? require('../assets/images/proffile.png')
-                  : require('../assets/images/profile2.png')
+                  ? require('../assets/images/Menu.png')
+                  : require('../assets/images/Menu2.png')
               }
-              style={{ width: 24, height: 24 }}
+              style={{ width: 20, height: 20 }}
               resizeMode="contain"
             />
           ),

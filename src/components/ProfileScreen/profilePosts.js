@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, ScrollView, Text, StyleSheet, TouchableOpacity, Image, Dimensions, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Screens from '../../navigation/Screens';
 const { width: screenWidth } = Dimensions.get('window');
+import styles from '../../assets/style/PostStyle';
+import RBSheet from 'react-native-raw-bottom-sheet';
 
+import ToastModal from '../../components/Notification/NotificationModal'
 // Import các hình ảnh
 import avt from '../../assets/images/avt.png';
 import bookmark from '../../assets/images/bookmark.png';
@@ -12,9 +15,13 @@ import comment from '../../assets/images/comment.png';
 import heart from '../../assets/images/heart.png';
 import heartFilled from '../../assets/images/hear2.png';
 import share from '../../assets/images/share.png';
-
-const ProfilePosts = props => {
-
+import report from '../../assets/images/report.png'
+import violet from '../../assets/images/violet.png'
+import racsim from '../../assets/images/racsim.png'
+import untrue from '../../assets/images/untrue.png'
+import rectionary from '../../assets/images/rectionary.png'
+import NotificationModal from '../../components/Notification/NotificationModal';
+const ProfilePosts = (props) => {
   const [user, setUser] = useState(props.data); // Chứa các bài viết
   const [loading, setLoading] = useState(true); // Quản lý trạng thái loading
   const [error, setError] = useState(null); // Quản lý lỗi
@@ -23,31 +30,26 @@ const ProfilePosts = props => {
   const [activeImageIndex, setActiveImageIndex] = useState({}); // Quản lý chỉ số ảnh đang hiển thị cho mỗi bài có nhiều ảnh
   const navigation = useNavigation(); // Hook to access navigation
 
+  const refRBSheet = useRef();
 
-  // console.log(post);
+  const openBottomSheet = () => {
+    refRBSheet.current.open();
+  };
 
-  // Fetch dữ liệu từ API khi component được mount
-  // useEffect(() => {
-  //   const fetchUserData = async () => {
-  //     try {
+  {/** Sử lí cái thông báo  */}
+  const [modalVisible, setModalVisible] = useState(false);
 
-  //       const response = await fetch(process.env.GET_ALL_POST)
-  //       const data = await response.json();
-  //       // console.log(data.data);
+  const handleConfirm = () => {
+    setModalVisible(false);
+    setTimeout(() => setModalVisible(false), 2000); // Ẩn thông báo sau 2 giây
+    console.log("Confirmed");
+  };
 
-  //       setUser(data.data); // Lưu bài viết vào state (giả sử data.data chứa danh sách bài viết)
-  //       // setLoading(false); // Tắt loading
-  //     } catch (error) {
-  //       console.error('Error fetching user data:', error);
-  //       setError(error); // Lưu lỗi vào state
-  //       // setLoading(false); // Tắt loading
-  //     } finally {
-  //       setLoading(false); // Tắt loading
-  //     }
-  //   };
-
-  //   fetchUserData();
-  // }, []);
+  const handleCancel = () => {
+    setModalVisible(false);
+    console.log("Cancelled");
+  };
+{/** Close thông báo */}
 
   // Đặt chỉ mục hình ảnh đầu tiên cho các bài viết có nhiều hình ảnh
   useEffect(() => {
@@ -77,7 +79,6 @@ const ProfilePosts = props => {
         : [...prevSavedPosts, postId]
     );
   };
-  // console.log(user);
 
   // Hiển thị hình ảnh của bài viết
   const renderImages = (images, postId) => {
@@ -124,196 +125,141 @@ const ProfilePosts = props => {
     );
   };
 
-  // Xử lý khi đang tải dữ liệu
-  // if (loading) {
-  //   return <ActivityIndicator size="large" color="#FFF" style={{ marginTop: 20 }} />;
-  // }
-
-  // Xử lý lỗi
-  // if (error) {
-  //   return <Text style={{ color: 'red', marginTop: 20 }}>Error loading data: {error.message}</Text>;
-  // }
   // hàm format thời gian
-  const timeAgo = (date) => {
-    const now = new Date();
-    const postDate = new Date(date);
-    const diff = Math.floor((now - postDate) / 1000); // Chênh lệch thời gian tính bằng giây
+ // hàm format thời gian
+const timeAgo = (date) => {
+  const now = new Date();
+  const postDate = new Date(date);
+  const diff = Math.floor((now - postDate) / 1000); // Chênh lệch thời gian tính bằng giây
 
-    if (diff < 60) return `${diff} seconds ago`;
-    const minutes = Math.floor(diff / 60);
-    if (minutes < 60) return `${minutes} minutes ago`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours} hours ago`;
-    const days = Math.floor(hours / 24);
-    return `${days} days ago`;
-  }
+  if (diff < 60) return `${diff} giây trước`;
+  const minutes = Math.floor(diff / 60);
+  if (minutes < 60) return `${minutes} phút trước`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} giờ trước`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days} ngày trước`;
+  const months = Math.floor(days / 30);
+  if (months < 12) return `${months} tháng trước`;
+  const years = Math.floor(months / 12);
+  return `${years} năm trước`;
+};
+
+
   // Hiển thị dữ liệu các bài viết
   return (
-    <ScrollView contentContainerStyle={styles.flatListContent}>
-      {user && user.length > 0 ? (
-        user.map((item) => (
-          <View key={item._id} style={styles.postContainer}>
-            <View style={styles.postHeader}>
-              <Image source={{ uri: item.user_id.avatar.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' }} style={styles.profileImage} />
-              <View style={styles.headerText}>
-                <Text style={styles.profileName}>{item.user_id.full_name}</Text>
-                <Text style={styles.postTime}>{timeAgo(item.createdAt)}</Text>
+    <View style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={styles.flatListContent}>
+        {user && user.length > 0 ? (
+          user.map((item) => (
+            <View key={item._id} style={styles.postContainer}>
+              <View style={styles.postHeader}>
+                <Image source={{ uri: item.user_id.avatar.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' }} style={styles.profileImage} />
+                <View style={styles.headerText}>
+                  <Text style={styles.profileName}>{item.user_id.full_name}</Text>
+                  <Text style={styles.postTime}>{timeAgo(item.createdAt)}</Text>
+                </View>
+                <TouchableOpacity
+                  onPress={openBottomSheet}
+                  style={styles.moreIcon}>
+                  <Text style={styles.moreText}>⋮</Text>
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity style={styles.moreIcon}>
-                <Text style={styles.moreText}>⋮</Text>
-              </TouchableOpacity>
-            </View>
-            <Text style={styles.postText}>{item.title}</Text>
-            {item.image && renderImages(item.image, item._id)}
-            <View style={styles.postMeta}>
-              <View style={styles.leftMetaIcons}>
+              <Text style={styles.postText}>{item.title}</Text>
+              {item.image && renderImages(item.image, item._id)}
+              <View style={styles.postMeta}>
+                <View style={styles.leftMetaIcons}>
+                  <View style={styles.iconLike}>
+                    <TouchableOpacity onPress={() => toggleLike(item._id)}>
+                      <Image
+                        source={likedPosts.includes(item._id) ? heartFilled : heart}
+                        style={styles.iconImage}
+                      />
+                    </TouchableOpacity>
+                    <Text style={styles.metaText}>{item.like_count}</Text>
+                  </View>
+
+                  <View style={styles.iconLike}>
+                    <TouchableOpacity onPress={() => navigation.navigate(Screens.Comment, { postId: item._id })}>
+                      <Image source={comment} style={styles.iconImage} />
+                    </TouchableOpacity>
+                    <Text style={styles.metaText}>{item.comment_count}</Text>
+                  </View>
+
+                  <View style={styles.iconLike}>
+                    <TouchableOpacity>
+                      <Image source={share} style={styles.iconImage} />
+                    </TouchableOpacity>
+                  </View>
+                </View>
                 <View style={styles.iconLike}>
-                  <TouchableOpacity onPress={() => toggleLike(item._id)}>
+                  <TouchableOpacity style={styles.iconButton} onPress={() => toggleSave(item._id)}>
                     <Image
-                      source={likedPosts.includes(item._id) ? heartFilled : heart}
+                      source={savedPosts.includes(item._id) ? bookmarkFilled : bookmark}
                       style={styles.iconImage}
                     />
                   </TouchableOpacity>
-                  <Text style={styles.metaText}>{item.like_count}</Text>
-                </View>
-
-                <View style={styles.iconLike}>
-                  <TouchableOpacity onPress={() => navigation.navigate(Screens.Comment, { postId: item._id })}>
-                    <Image source={comment} style={styles.iconImage} />
-                  </TouchableOpacity>
-                  <Text style={styles.metaText}>{item.comment_count}</Text>
-                </View>
-
-                <View style={styles.iconLike}>
-                  <TouchableOpacity>
-                    <Image source={share} style={styles.iconImage} />
-                  </TouchableOpacity>
                 </View>
               </View>
-              <View style={styles.iconLike}>
-                <TouchableOpacity style={styles.iconButton} onPress={() => toggleSave(item._id)}>
-                  <Image
-                    source={savedPosts.includes(item._id) ? bookmarkFilled : bookmark}
-                    style={styles.iconImage}
-                  />
-                </TouchableOpacity>
-              </View>
+              <View style={styles.separator} />
             </View>
-            <View style={styles.separator} />
-          </View>
-        ))
-      ) : (
-        <Text style={{ color: 'gray', marginTop: 20 }}>No posts available</Text>
-      )}
-    </ScrollView>
+          ))
+        ) : (
+          <Text style={{ color: 'gray', marginTop: 20 }}>No posts available</Text>
+        )}
+      </ScrollView>
+
+      {/* Bottom Sheet */}
+      <RBSheet
+        ref={refRBSheet}
+        height={250}
+        openDuration={300}
+        closeDuration={250}
+        closeOnDragDown={true} // Cho phép kéo xuống để đóng
+       
+        customStyles={{
+          wrapper: {
+            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+          },
+          draggableIcon: {
+            backgroundColor: '#ffff',
+          },
+          
+        }}
+      >
+        <View style={styles.inner}>
+          <TouchableOpacity 
+          onPress={() => setModalVisible(true)}
+          
+          style={styles.reporttextcontainer}>
+            <NotificationModal 
+            visible={modalVisible}
+            onConfirm={handleConfirm}
+            onCancel={handleCancel}
+            />
+          <Image source={report} style={{marginTop:'5.5%',width:20,height:20,marginRight:4}} />
+          <Text style={styles.textOne}>Bài viết xúc phạm người dùng khác</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.reporttextcontainer}>
+          <Image source={untrue} style={{marginTop:'5.5%',width:20,height:20,marginRight:4}} />
+          <Text style={styles.textOne}>Bài viết sai sự thật</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.reporttextcontainer}>
+          <Image source={violet} style={{marginTop:'5.5%',width:20,height:20,marginRight:4}} />
+          <Text style={styles.textOne}>Bài viết mang tính bạo lực - kích động</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.reporttextcontainer}>
+          <Image source={rectionary} style={{marginTop:'5.5%',width:20,height:20,marginRight:4}} />
+          <Text style={styles.textOne}>Bài viết mang tính phản động</Text>
+          </TouchableOpacity><TouchableOpacity style={styles.reporttextcontainer}>
+          <Image source={racsim} style={{marginTop:'5.5%',width:20,height:20,marginRight:4}} />
+          <Text style={styles.textOne}>Bài viết mang tính phân biệt</Text>
+          </TouchableOpacity>
+        </View>
+      </RBSheet>
+      
+    </View>
   );
 };
-const styles = StyleSheet.create({
-  postContainer: {
-    width: '100%',
-    backgroundColor: '#181A1C',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-  },
-  postHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  profileImage: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 10,
-  },
-  headerText: {
-    flex: 1,
-  },
-  profileName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#FFF',
-  },
-  postTime: {
-    fontSize: 12,
-    color: '#B3B3B3',
-  },
-  moreIcon: {
-    paddingLeft: 10,
-  },
-  moreText: {
-    fontSize: 20,
-    color: '#B3B3B3',
-  },
-  postText: {
-    color: '#FFF',
-    fontSize: 16,
-    marginBottom: 10,
-  },
-  postImage: {
-    width: screenWidth - 50,
-    height: 200,
-    borderRadius: 8,
-    marginRight: 10,
-  },
-  postMeta: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 5,
-  },
-  leftMetaIcons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  iconLike: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginRight: 15,
-  },
-  iconButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  metaText: {
-    color: '#B3B3B3',
-    fontSize: 14,
-    marginLeft: 5,
-  },
-  flatListContent: {
-    paddingBottom: 20,
-  },
-  separator: {
-    height: 1,
-    backgroundColor: '#B3B3B3',
-    marginTop: 15,
-    marginBottom: 10,
-  },
-  imageList: {
-    marginBottom: 10,
-  },
-  paginationContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 10,
-  },
-  iconImage: {
-    width: 20,
-    height: 20,
-  },
-  paginationDot: {
-    height: 8,
-    width: 8,
-    borderRadius: 4,
-    marginHorizontal: 4,
-  },
-  activeDot: {
-    backgroundColor: '#FF0000',
-  },
-  inactiveDot: {
-    backgroundColor: '#B3B3B3',
-  },
-});
 
 export default ProfilePosts;

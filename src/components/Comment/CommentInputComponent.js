@@ -14,7 +14,7 @@ const CommentInputComponent = ({ onSend }) => {
       <View style={styles.inputWrapper}>
         <TextInput
           style={styles.textInput}
-          placeholder="Type your comment here..."
+          placeholder="Nhập comment tại đây..."
           placeholderTextColor="#ECEBED"
           value={comment}
           onChangeText={setComment}

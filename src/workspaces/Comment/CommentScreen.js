@@ -61,7 +61,7 @@ const CommentScreen = () => {
   // Đặt chỉ mục hình ảnh đầu tiên cho các bài viết có nhiều hình ảnh
   useEffect(() => {
     if (post) {
-      console.log(post);
+      // console.log(post);
       const initialIndices = {};
       if (post.postData.image && post.postData.image.length > 1) {
         initialIndices[post.postData._id] = 0; // Thiết lập chỉ mục đầu tiên cho các bài có nhiều ảnh
@@ -170,7 +170,7 @@ const CommentScreen = () => {
               style={{ width: 15, height: 15 }}
             />
           </TouchableOpacity>
-          <Text style={styles.textHeader}>POST</Text>
+          <Text style={styles.textHeader}>Comment</Text>
           <Text style={[styles.textHeader, { color: '#181A1C' }]}>Post</Text>
         </View>
 
@@ -249,7 +249,7 @@ const CommentScreen = () => {
             COMMENTS (<Text>{comment.length}</Text>)
           </Text>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={styles.recentText}>Recent</Text>
+            <Text style={styles.recentText}>Mới nhất</Text>
             <TouchableOpacity onPress={() => {
               // Handle action when click on Recent
             }}>
