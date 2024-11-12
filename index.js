@@ -16,6 +16,5 @@ import PostComponent from './src/components/Post/PostComponent';
 import CreatePostScreen from './src/workspaces/CreatePost/CreatePostScreen';
 import EditProfileScreen from './src/workspaces/EditProfile/EditProfileScreen';
 import ChatScreen from './src/workspaces/ChatScreen/ChatScreen';
-import Demo from './src/workspaces/Home/Demo';
 
 AppRegistry.registerComponent(appName, () => App);

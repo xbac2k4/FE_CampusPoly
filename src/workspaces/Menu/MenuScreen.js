@@ -4,7 +4,6 @@ import {
   Text,
   TouchableOpacity,
   View,
-  FlatList,
   ScrollView,
   Dimensions,
 } from 'react-native';
@@ -20,14 +19,6 @@ const MenuScreen = () => {
     full_name: 'Đỗ Quang Giáp',
     notification: 1,
   };
-
-  const menuItems = [
-    { id: '1', title: 'Nhóm phim con heo', image: 'https://randomuser.me/api/portraits/men/1.jpg' },
-    { id: '2', title: 'Nhóm phim con bò', image: 'https://randomuser.me/api/portraits/men/1.jpg' },
-    { id: '3', title: 'Nhóm phim con chó', image: 'https://randomuser.me/api/portraits/men/1.jpg' },
-    { id: '4', title: 'Nhóm phim con chim', image: 'https://randomuser.me/api/portraits/men/1.jpg' },
-    { id: '5', title: 'Nhóm vớ vẩn', image: 'https://randomuser.me/api/portraits/men/1.jpg' },
-  ];
 
   return (
     <View style={styles.container}>

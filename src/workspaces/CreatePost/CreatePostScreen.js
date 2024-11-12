@@ -2,15 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
 import PostComponent from '../../components/Post/PostComponent';
 import styles from '../../assets/style/CreatePostStyle';
+import { ADD_POST } from '../../services/ApiConfig';
 
 const CreatePostScreen = ({ navigation }) => {
-  // const [user, setUser] = useState(null);
-  // const [id, setID] = useState('670ca3898cfc1be4b41b183b');
-  // const [title, setTitle] = useState('');
-  // const [content, setContent] = useState('');
-  // const [images, setImages] = useState([]);
-  // const [gif, setGif] = useState(null);
-  // const { user } = useContext(UserContext);
 
   const [user, setUser] = useState(null);
   const [id, setID] = useState('670ca3898cfc1be4b41b183b');
@@ -71,7 +65,7 @@ const CreatePostScreen = ({ navigation }) => {
     }
   
     try {
-      const response = await fetch(`${process.env.ADD_POST}`, {
+      const response = await fetch(`${ADD_POST}`, {
         method: 'POST',
         body: formData, 
       });
