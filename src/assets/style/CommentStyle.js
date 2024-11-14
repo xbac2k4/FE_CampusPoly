@@ -1,0 +1,162 @@
+import { StyleSheet, Dimensions } from 'react-native';
+const { width: screenWidth } = Dimensions.get('window'); // Lấy chiều rộng màn hình để điều chỉnh kích thước hình ảnh
+const CommentStyle = StyleSheet.create({
+    container: {
+        padding: 20,
+        backgroundColor: '#181A1C',
+        flexGrow: 1,
+      },
+      postHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 10,
+      },
+      profileImage: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        marginRight: 10,
+      },
+      headerText: {
+        flex: 1,
+      },
+      profileName: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#FFF',
+      },
+      postTime: {
+        fontSize: 12,
+        color: '#B3B3B3',
+      },
+      postTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#FFF',
+        marginVertical: 10,
+      },
+      postContent: {
+        fontSize: 16,
+        color: '#FFF',
+        marginBottom: 10,
+      },
+      // postImage: {
+      //   width: '100%',
+      //   height: 200,
+      //   borderRadius: 8,
+      //   marginTop: 10,
+      // },
+      paginationContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginTop: 10,
+      },
+      paginationDot: {
+        height: 8,
+        width: 8,
+        borderRadius: 4,
+        marginHorizontal: 4,
+      },
+      activeDot: {
+        backgroundColor: '#FF0000',
+      },
+      inactiveDot: {
+        backgroundColor: '#B3B3B3',
+      },
+      postImage: {
+        width: screenWidth - 50,
+        height: 200,
+        borderRadius: 8,
+        marginRight: 10,
+      },
+      errorText: {
+        color: 'red',
+        textAlign: 'center',
+        marginTop: 20,
+      },
+      barHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingBottom: 20,
+      },
+      circleIcon: {
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        borderWidth: 1,
+        borderColor: '#323436',
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      textHeader: {
+        color: '#ECEBED',
+        fontSize: 18,
+        fontWeight: 'bold',
+        fontFamily: 'rgl1',
+      },
+      barComment: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+      },
+      commentTitle: {
+        fontFamily: 'rgl1',
+        fontSize: 14,
+        fontWeight: 'regular',
+        color: '#ECEBED',
+      },
+      recentText: {
+        fontFamily: 'rgl1',
+        fontSize: 14,
+        fontWeight: 'semibold',
+        color: '#ECEBED',
+        marginRight: 3,
+      },
+      commentInput: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: '#181A1C', // Set background color for visibility
+        padding: 10,
+      },
+      headerContent: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+      },
+      imageavatar: {
+        width: 32,
+        height: 32,
+        borderRadius: 100,
+      },
+      bodyContent: {
+        marginTop: 10,
+      },
+      imgContent: {
+        width: screenWidth - 50,
+        height: 200,
+        borderRadius: 16,
+        marginTop: 10,
+      },
+      interactContainer: {
+        flexDirection: 'row',
+        marginTop: 17,
+        paddingHorizontal: 5,
+        justifyContent: 'space-between',
+      },
+      iconLike: {
+        marginLeft: 1,
+        alignItems: 'center',
+        flexDirection: 'row',
+        marginRight: 9,
+      },
+      textInteract: {
+        fontFamily: 'rgl1',
+        fontSize: 16,
+        color: '#fff',
+        marginLeft: 5,
+        fontWeight: 'bold',
+      },
+  });
+  
+  export default CommentStyle;

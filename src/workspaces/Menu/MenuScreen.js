@@ -16,11 +16,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 const { width, height } = Dimensions.get('window'); // Get device dimensions
 
 const MenuScreen = () => {
-  // const fakeUser = {
-  //   avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-  //   full_name: 'Đỗ Quang Giáp',
-  //   notification: 1,
-  // };
+
   const { user } = useContext(UserContext);
 
   return (
