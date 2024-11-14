@@ -66,7 +66,7 @@ const MenuAuthenticationScreen = ({ navigation }) => {
       }
 
       const responseData = await response.json();
-      console.log('Login response:', responseData);
+      // console.log('Login response:', responseData);
       setUser(responseData.data);
       connectSocket(responseData.data); // Kết nối với socket server
 

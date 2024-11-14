@@ -1,96 +1,197 @@
 import { StyleSheet, Text, View, TextInput, Image, ScrollView, TouchableOpacity, KeyboardAvoidingView, FlatList, Alert, Modal, Pressable } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState, useContext, useCallback, useRef } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import { ADD_MESSAGE, GET_MESSAGE_BY_CONVERSATION } from '../../services/ApiConfig';
+import { UserContext } from '../../services/provider/UseContext';
+import { SocketContext } from '../../services/provider/SocketContext';
+import { useFocusEffect } from '@react-navigation/native';
 
 // Dữ liệu giả lập cho chatView
-const DATA = [
-  {
-    "conversation_id": "conv_12345",
-    "users": [
-      {
-        "user_id": "user_001",
-        "full_name": "Nguyen Van A",
-        "avatar": require('../../assets/anhchatview.png'),
-      },
-      {
-        "user_id": "user_002",
-        "full_name": "Tran Thi B",
-        "avatar": require('../../assets/anhchatview.png'),
-      }
-    ],
-    "messages": [
-      {
-        "message_id": "msg_001",
-        "sender_id": "user_001",
-        "content": "Xin chào, bạn có khỏe không?",
-        "timestamp": "2024-10-23T09:30:00Z",
-        "likes": 0 // Thêm trường likes
-      },
-      {
-        "message_id": "msg_002",
-        "sender_id": "user_002",
-        "content": "Chào bạn, mình khỏe. Còn bạn thế nào?",
-        "timestamp": "2024-10-23T09:31:00Z",
-        "likes": 0 // Thêm trường likes
-      },
-      {
-        "message_id": "msg_003",
-        "sender_id": "user_001",
-        "content": "Mình cũng khỏe, cảm ơn nhé!",
-        "timestamp": "2024-10-23T09:32:00Z",
-        "likes": 0 // Thêm trường likes
-      }
-    ]
-  }
-];
 
 // Component ChatScreen dùng để hiển thị giao diện chat
-const ChatScreen = ({ navigation }) => {
+const ChatScreen = ({ navigation, route }) => {
   // Khai báo state để lưu trữ nội dung tin nhắn nhập vào
+  const { sendMessageSocket, getNotifySocket, socket } = useContext(SocketContext);
+  const { user } = useContext(UserContext);
   const [inputText, setInputText] = useState('');
   const [isShowOption, setIsShowOption] = useState(false);
+  const [page, setPage] = useState(1);
+  const [message, setMessage] = useState([]);
+  const [conversation, setConversation] = useState();
+
+  const [notify, setNotify] = useState(false);
 
   // Lấy dữ liệu tin nhắn và người dùng từ DATA
   const [selectedImages, setSelectedImages] = useState([]);
-  const messages = DATA[0].messages;
-  const currentUser = DATA[0].users[0].user_id; // Giả định người dùng hiện tại là user_001
+  const FetchMessge = async (conversation_id) => {
+    try {
+      const response = await fetch(`${GET_MESSAGE_BY_CONVERSATION}${conversation_id}?limit=50&page=${page}`, {
+        method: 'GET',  // Đảm bảo rằng phương thức là GET
+        headers: {
+          'Content-Type': 'application/json',  // Header cho loại nội dung
+          'Cache-Control': 'no-store',         // Tắt cache
+        }
+      });
+      const data = await response.json();
+      setConversation(data.data);
+      setMessage(data.data.messages);
+
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    } finally {
+      console.log(message);
+    }
+  }
+  useFocusEffect(
+    useCallback(() => {
+      FetchMessge(route?.params?.conversation_id);
+    }, [route?.params?.conversation_id])
+  );
+  useEffect(() => {
+    FetchMessge(route?.params?.conversation_id);
+  }, [route?.params?.conversation_id]);
+
+  const memberWithDifferentUserId = conversation?.conversation_id?.members.filter(member => member._id !== user._id)[0]
+  const avatarUrl = memberWithDifferentUserId ? memberWithDifferentUserId.avatar : "https://placehold.co/50x50";
+  // console.log(memberWithDifferentUserId);
 
   // Render mỗi tin nhắn
+  const MessageItem = React.memo(({ item, isCurrentUser, memberWithDifferentUserId }) => {
+    return (
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: isCurrentUser ? 'flex-start' : 'flex-end',
+        }}
+      >
+        {item.content === 'emoji::like::' ? (
+          <AntDesign name="like1" size={24} color="#FA7F26" />
+        ) : (
+          <>
+            {isCurrentUser && <Image source={{ uri: memberWithDifferentUserId.avatar }} style={styles.avatar} />}
+            <View style={isCurrentUser ? styles.messageLeft : styles.messageRight}>
+              <Text style={styles.messageText}>{item.content}</Text>
+            </View>
+          </>
+        )}
+      </View>
+    );
+  });
+
   const renderMessage = ({ item }) => {
-    const isCurrentUser = item.sender_id === currentUser;
-    const user = DATA[0].users.find(user => user.user_id === item.sender_id);
+    const isCurrentUser = item.sender_id._id !== user._id;
+    // console.log(isCurrentUser);
 
     return (
       <View
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: isCurrentUser ? 'flex-end' : 'flex-start',
-          marginVertical: 1,
-        }}
-      >
-        {!isCurrentUser && <Image source={user.avatar} style={styles.avatar} />}
-        <View style={isCurrentUser ? styles.messageRight : styles.messageLeft}>
-          <Text style={styles.messageText}>{item.content}</Text>
-        </View>
+          justifyContent: isCurrentUser ? 'flex-start' : 'flex-end',
+          // marginVertical: 1,
+        }}>
+        {item.content === 'emoji::like::' ? (
+          <AntDesign name="like1" size={24} color="#FA7F26" /> // Hiển thị biểu tượng like nếu item.content là 'emoji::like::'
+        ) : (
+          <>
+            {isCurrentUser && <Image source={{ uri: memberWithDifferentUserId.avatar }} style={styles.avatar} />}
+            <View style={isCurrentUser ? styles.messageLeft : styles.messageRight}>
+              <Text style={styles.messageText}>{item.content}</Text>
+            </View>
+          </>
+        )}
       </View>
     );
+    // return (
+    //   <MessageItem
+    //     item={item}
+    //     isCurrentUser={isCurrentUser}
+    //     memberWithDifferentUserId={memberWithDifferentUserId}
+    //   />
+    // );
   };
 
-  const handleSend = () => {
+  const handleSend = async () => {
+    let newMessage = {
+      conversation_id: route?.params?.conversation_id,
+      sender_id: user._id,
+    };
     if (inputText.trim()) {
-      const newMessage = {
-        message_id: `msg_${messages.length + 1}`,
-        sender_id: currentUser,
+      // const newMessage = {
+      //   message_id: `msg_${messages.length + 1}`,
+      //   sender_id: currentUser,
+      //   content: inputText,
+      //   // timestamp: new Date().toISOString(),
+      //   likes: 0, // Khởi tạo số lượng like là 0
+      // };
+      // DATA[0].messages.push(newMessage); // Thêm tin nhắn mới vào DATA
+      // console.log(inputText);
+      newMessage = {
+        ...newMessage,
         content: inputText,
-        // timestamp: new Date().toISOString(),
-        likes: 0, // Khởi tạo số lượng like là 0
+      }
+      // console.log(newMessage);
+    } else {
+      newMessage = {
+        ...newMessage,
+        content: 'emoji::like::',
+      }
+      // console.log(newMessage);
+    }
+    await FetchAddMessage(newMessage);
+    setInputText(''); // Đặt lại giá trị của TextInput
+    setNotify(!notify);  // Update notify for UI re-render if needed
+  };
+
+  useEffect(() => {
+    if (socket) {
+      socket.on('new_message', (data) => {
+        // console.log(data);
+        console.log('Nhận được tin nhắn mới từ:', data.sender_id);
+        console.log('Nội dung tin nhắn:', data.content);
+        FetchMessge(route?.params?.conversation_id);
+        // setMessage(prevMessages => [...prevMessages, data]);
+      });
+
+      return () => {
+        socket.off('new_message');
       };
-      DATA[0].messages.push(newMessage); // Thêm tin nhắn mới vào DATA
-      setInputText(''); // Đặt lại giá trị của TextInput
+    }
+  }, [socket]);
+
+  const FetchAddMessage = async (data) => {
+    // console.log(data);
+    let newMessage;
+    try {
+      const response = await fetch(`${ADD_MESSAGE}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data), // chuyển đổi đối tượng thành JSON string
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add message');
+      }
+      newMessage = await response.json();
+      // setMessage((prevMessages) => {
+      //   const newMessages = [...prevMessages, newMessage.data];
+      //   console.log('After setMessage:', newMessages);
+      //   return newMessages;
+      // });
+      // console.log(newMessage);
+    } catch (error) {
+      console.error('Error adding message:', error);
+    } finally {
+      // setMessage(prevMessages => [...prevMessages, data]);
+      await FetchMessge(route?.params?.conversation_id);
+      sendMessageSocket({ ...newMessage.data, receiver_id: memberWithDifferentUserId._id, });
+      // console.log(message);
     }
   };
 
@@ -134,10 +235,33 @@ const ChatScreen = ({ navigation }) => {
     });
   };
 
+  // Hàm getItemLayout khi các mục có chiều cao cố định
+  const getItemLayout = (data, index) => ({
+    length: 50,  // Chiều cao cố định của mỗi mục
+    offset: 50 * index,  // Vị trí của mục
+    index
+  });
+
+  const flatListRef = useRef(null);
+
+  const scrollToBottom = () => {
+    if (flatListRef.current && message.length > 0) {
+      const index = message.length - 1;
+      flatListRef.current.scrollToIndex({ index, animated: true });
+    }
+  };
+
+  useEffect(() => {
+    // Kiểm tra số lượng phần tử và cuộn đến phần tử cuối cùng
+    if (message.length > 0) {
+      scrollToBottom();
+    }
+  }, [message]);
+
+
   const handleArrowLeft = () => {
     navigation.goBack();
   };
-
   return (
     // KeyboardAvoidingView vẫn không đẩy được container
     <KeyboardAvoidingView style={styles.container}>
@@ -154,10 +278,10 @@ const ChatScreen = ({ navigation }) => {
         {/* Phần chứa ảnh và tên người chat */}
         <View style={styles.profileContainer}>
           <Image
-            source={require('../../assets/anhchatview.png')} // Đảm bảo đường dẫn đến ảnh là chính xác
+            source={{ uri: avatarUrl }} // Đảm bảo đường dẫn đến ảnh là chính xác
             style={styles.profileImage}
           />
-          <Text style={styles.profileName}>Jessica Thompson</Text>
+          <Text style={styles.profileName}>{memberWithDifferentUserId?.full_name}</Text>
         </View>
 
         {/* View trống để đẩy ảnh vào giữa */}
@@ -173,11 +297,17 @@ const ChatScreen = ({ navigation }) => {
 
       {/* Danh sách tin nhắn */}
       <FlatList
-        data={messages}
+        ref={flatListRef}
+        data={message}
         renderItem={renderMessage}
-        keyExtractor={(item) => item.message_id}
-        contentContainerStyle={{ paddingHorizontal: 12, paddingVertical: 10 }}
-        keyboardShouldPersistTaps="handled" // Đảm bảo người dùng có thể nhấn vào các mục trong danh sách mà không bị mất tiêu điểm nhập liệu
+        keyExtractor={(item) => item._id}  // Đảm bảo key duy nhất
+        contentContainerStyle={{ paddingHorizontal: 12, paddingTop: 10, paddingBottom: 75 }}
+        initialNumToRender={20}  // Số lượng item render ban đầu
+        maxToRenderPerBatch={20}  // Số lượng item render trong mỗi batch
+        keyboardShouldPersistTaps="handled"
+        initialScrollIndex={message.length > 0 ? message.length - 1 : 0} // Sử dụng messages.length - 1 để cuộn tới cuối
+        getItemLayout={getItemLayout}  // Cung cấp thông tin về layout
+        onContentSizeChange={() => scrollToBottom()}
       />
 
       {/* Thanh nhập tin nhắn */}
@@ -307,7 +437,7 @@ const styles = StyleSheet.create({
   messageLeft: {
     flexDirection: 'row', // Căn ảnh và văn bản cùng hàng
     alignItems: 'center',
-    marginVertical: 10,
+    marginVertical: 2,
     padding: 10,
     backgroundColor: '#323436',
     borderRadius: 15,
@@ -317,7 +447,7 @@ const styles = StyleSheet.create({
   messageRight: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 10,
+    marginVertical: 2,
     padding: 10,
     backgroundColor: '#2E8AF6',
     borderRadius: 15,

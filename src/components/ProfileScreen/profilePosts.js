@@ -84,7 +84,7 @@ const ProfilePosts = props => {
     if (!images || images.length === 0) return null; // Handle cases where image is missing
 
     if (images.length === 1) {
-      const imageUrl = images[0];
+      const imageUrl = images[0].replace('localhost', '10.0.2.2');
       return imageUrl ? (
         <Image source={{ uri: imageUrl }} style={styles.postImage} />
       ) : null;
