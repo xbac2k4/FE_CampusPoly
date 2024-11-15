@@ -1,27 +1,68 @@
-import React from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { View, Text, FlatList, Image, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Screens from '../../navigation/Screens';
+import { UserContext } from '../../services/provider/UseContext';
+import { GET_CONVERSATION_BY_USER } from '../../services/ApiConfig';
+import { useFocusEffect } from '@react-navigation/native';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import { SocketContext } from '../../services/provider/SocketContext';
 
-const users = [
-  { id: '1', name: 'Huy', avatar: 'https://ispacedanang.edu.vn/wp-content/uploads/2024/05/hinh-anh-dep-ve-hoc-sinh-cap-3-1.jpg', online: true, isPinned: true },
-  { id: '2', name: 'Huy', avatar: 'https://ispacedanang.edu.vn/wp-content/uploads/2024/05/hinh-anh-dep-ve-hoc-sinh-cap-3-1.jpg', online: true, isPinned: true },
-  { id: '3', name: 'Huy', avatar: 'https://ispacedanang.edu.vn/wp-content/uploads/2024/05/hinh-anh-dep-ve-hoc-sinh-cap-3-1.jpg', online: true, isPinned: true },
-  { id: '4', name: 'Vũ Quang Huy', avatar: 'https://ispacedanang.edu.vn/wp-content/uploads/2024/05/hinh-anh-dep-ve-hoc-sinh-cap-3-1.jpg', online: true, message: 'CampusPoly.....', time: '4h ago', isPinned: true },
-  { id: '5', name: 'Vũ Quang Huy', avatar: 'https://ispacedanang.edu.vn/wp-content/uploads/2024/05/hinh-anh-dep-ve-hoc-sinh-cap-3-1.jpg', online: false, message: 'CampusPoly.....', time: '5h ago', isPinned: true },
-  { id: '6', name: 'Vũ Quang Huy', avatar: 'https://ispacedanang.edu.vn/wp-content/uploads/2024/05/hinh-anh-dep-ve-hoc-sinh-cap-3-1.jpg', online: false, message: 'CampusPoly.....', time: '20/9/2024', isPinned: true },
-  { id: '7', name: 'Vũ Quang Huy', avatar: 'https://ispacedanang.edu.vn/wp-content/uploads/2024/05/hinh-anh-dep-ve-hoc-sinh-cap-3-1.jpg', online: false, message: 'CampusPoly.....', time: '20/9/2024', isPinned: true },
-  { id: '8', name: 'Vũ Quang Huy', avatar: 'https://ispacedanang.edu.vn/wp-content/uploads/2024/05/hinh-anh-dep-ve-hoc-sinh-cap-3-1.jpg', online: false, message: 'CampusPoly.....', time: '20/9/2024' },
-];
+// const users = [
+//   { id: '1', name: 'Huy', avatar: 'https://ispacedanang.edu.vn/wp-content/uploads/2024/05/hinh-anh-dep-ve-hoc-sinh-cap-3-1.jpg', online: true, isPinned: true },
+//   { id: '2', name: 'Huy', avatar: 'https://ispacedanang.edu.vn/wp-content/uploads/2024/05/hinh-anh-dep-ve-hoc-sinh-cap-3-1.jpg', online: true, isPinned: true },
+//   { id: '3', name: 'Huy', avatar: 'https://ispacedanang.edu.vn/wp-content/uploads/2024/05/hinh-anh-dep-ve-hoc-sinh-cap-3-1.jpg', online: true, isPinned: true },
+//   { id: '4', name: 'Vũ Quang Huy', avatar: 'https://ispacedanang.edu.vn/wp-content/uploads/2024/05/hinh-anh-dep-ve-hoc-sinh-cap-3-1.jpg', online: true, message: 'CampusPoly.....', time: '4h ago', isPinned: true },
+//   { id: '5', name: 'Vũ Quang Huy', avatar: 'https://ispacedanang.edu.vn/wp-content/uploads/2024/05/hinh-anh-dep-ve-hoc-sinh-cap-3-1.jpg', online: false, message: 'CampusPoly.....', time: '5h ago', isPinned: true },
+//   { id: '6', name: 'Vũ Quang Huy', avatar: 'https://ispacedanang.edu.vn/wp-content/uploads/2024/05/hinh-anh-dep-ve-hoc-sinh-cap-3-1.jpg', online: false, message: 'CampusPoly.....', time: '20/9/2024', isPinned: true },
+//   { id: '7', name: 'Vũ Quang Huy', avatar: 'https://ispacedanang.edu.vn/wp-content/uploads/2024/05/hinh-anh-dep-ve-hoc-sinh-cap-3-1.jpg', online: false, message: 'CampusPoly.....', time: '20/9/2024', isPinned: true },
+//   { id: '8', name: 'Vũ Quang Huy', avatar: 'https://ispacedanang.edu.vn/wp-content/uploads/2024/05/hinh-anh-dep-ve-hoc-sinh-cap-3-1.jpg', online: false, message: 'CampusPoly.....', time: '20/9/2024' },
+// ];
 
 const MessageScreen = ({ navigation }) => {
+  const { socket } = useContext(SocketContext);
+  const { user } = useContext(UserContext);
+  const [users, setUsers] = useState();
+
+  const FetchConversation = async (id) => {
+    try {
+      const response = await fetch(`${GET_CONVERSATION_BY_USER}${id}`);
+      const data = await response.json();
+      // console.log(data.data);
+
+      setUsers(data.data);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  }
+  useFocusEffect(
+    useCallback(() => {
+      const handleUserData = async () => {
+        FetchConversation(user._id);
+      }
+      handleUserData();
+    }, [])
+  );
+  useEffect(() => {
+    FetchConversation(user._id);
+  }, [])
+
+  useEffect(() => {
+    if (socket) {
+      socket.on('new_message', (data) => {
+        FetchConversation(user._id);
+      });
+
+      return () => {
+        socket.off('new_message');
+      };
+    }
+  }, [socket]);
+
   // Hiển thị người dùng theo trạng thái hoạt động (online trước, offline sau)
   const renderPinnedUsers = () => (
     <FlatList
-      data={users
-        .filter(user => user.isPinned) // Chỉ hiển thị người dùng đã được ghim
-        .sort((a, b) => b.online - a.online) // Sắp xếp theo trạng thái online (online trước, offline sau)
-      }
+      data={users}
       renderItem={renderPinnedUser}
       keyExtractor={item => item.id}
       horizontal
@@ -38,26 +79,60 @@ const MessageScreen = ({ navigation }) => {
     </View>
   );
 
-  // Hiển thị người dùng có tin nhắn
-  const renderMessage = ({ item }) => (
-    <TouchableOpacity style={styles.messageContainer} onPress={()=> navigation.navigate(Screens.ChatView)}>
-      <Image source={{ uri: item.avatar }} style={styles.messageAvatar} />
+  const timeAgo = (date) => {
+    const now = new Date();
+    const postDate = new Date(date);
+    const diff = Math.floor((now - postDate) / 1000); // Chênh lệch thời gian tính bằng giây
 
-      <View style={styles.messageContent}>
-        <Text style={styles.messageName}>{item.name}</Text>
-        <Text style={styles.messageText}>{item.message}</Text>
-      </View>
-      <Text style={styles.messageTime}>{item.time}</Text>
-    </TouchableOpacity>
-  );
+    if (diff < 60) return `${diff} giây`;
+
+    const minutes = Math.floor(diff / 60);
+    if (minutes < 60) return `${minutes} phút`;
+
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours} giờ`;
+
+    const days = Math.floor(hours / 24);
+    if (days < 7) return `${days} ngày`;
+
+    const weeks = Math.floor(days / 7);
+    return `${weeks} tuần`;
+  }
+
+  // Hiển thị người dùng có tin nhắn
+  const renderMessage = ({ item }) => {
+    // console.log(item);
+    const memberWithDifferentUserId = item.members.filter(member => member.user_id !== user._id)[0]
+    const avatarUrl = memberWithDifferentUserId ? memberWithDifferentUserId.avatar : "https://placehold.co/50x50";
+    const last_message = item.sender?._id !== user._id
+      ? (item.last_message === 'emoji::like::'
+        ? <AntDesign name="like1" size={24} color="#FA7F26" />
+        : item.last_message)
+      : (item.last_message === 'emoji::like::'
+        ? <Text>Bạn: <AntDesign name="like1" size={24} color="#FA7F26" /></Text>
+        : `Bạn: ${item.last_message}`);
+
+
+    return (
+      <TouchableOpacity style={styles.messageContainer} onPress={() => navigation.navigate(Screens.ChatView, { conversation_id: item.conversation_id })}>
+        <Image source={{ uri: avatarUrl }} style={styles.messageAvatar} />
+
+        <View style={styles.messageContent}>
+          <Text style={styles.messageName}>{memberWithDifferentUserId.full_name}</Text>
+          <Text style={styles.messageText}>{last_message}</Text>
+        </View>
+        <Text style={styles.messageTime}>{timeAgo(item.last_message_time)}</Text>
+      </TouchableOpacity>
+    )
+  };
 
   // Lọc và hiển thị người dùng có tin nhắn
-  const renderItem = ({ item }) => {
-    if (!item.message) {
-      return null; // Không hiển thị người dùng nếu họ không có tin nhắn
-    }
-    return renderMessage({ item });
-  };
+  // const renderItem = ({ item }) => {
+  //   if (!item.message) {
+  //     return null; // Không hiển thị người dùng nếu họ không có tin nhắn
+  //   }
+  //   return renderMessage({ item });
+  // };
 
   return (
     <View style={styles.container}>
@@ -84,18 +159,18 @@ const MessageScreen = ({ navigation }) => {
       <Text style={styles.pinnedTitle}>PINNED</Text>
 
       {/* Phần Pinned có chiều cao giới hạn */}
-      <View style={styles.pinnedContainer}>
+      {/* <View style={styles.pinnedContainer}>
         {renderPinnedUsers()}
-      </View>
+      </View> */}
 
       {/* Đường viền ngăn cách */}
       <View style={styles.divider} />
 
       {/* Phần danh sách tin nhắn */}
       <FlatList
-        data={users.filter(user => user.message)} // Chỉ hiển thị những người có tin nhắn
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
+        data={users} // Chỉ hiển thị những người có tin nhắn
+        renderItem={renderMessage}
+        keyExtractor={item => item.conversation_id}
         showsVerticalScrollIndicator={false}
         style={styles.messageList}
       />

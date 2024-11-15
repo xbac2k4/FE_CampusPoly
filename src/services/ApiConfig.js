@@ -7,3 +7,5 @@ export const LOGIN_WITH_GOOGLE = API_URL + 'users/login-with-google';
 export const PUT_UPDATE_USER = API_URL + 'users/update-user/';
 export const ADD_POST = API_URL + 'posts/add-post';
 export const GET_CONVERSATION_BY_USER = API_URL + 'conversations/get-user-conversation/';
+export const GET_MESSAGE_BY_CONVERSATION = API_URL + 'messages/get-message-by-conversation/';
+export const ADD_MESSAGE = API_URL + 'messages/add-message';

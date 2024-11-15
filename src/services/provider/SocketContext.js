@@ -31,6 +31,26 @@ export const SocketProvider = ({ children }) => {
         }
     };
 
+    const sendMessageSocket = (newMessage) => {
+        console.log(newMessage);
+        if (socket) {
+            socket.emit('send_message', newMessage);
+        }
+    };
+    // const getNotifySocket = () => {
+    //     if (socket) {
+    //         socket.on('new_message', (data) => {
+    //             const { sender_id, content } = data;
+    //             console.log('Nhận được tin nhắn mới từ:', sender_id);
+    //             console.log('Nội dung tin nhắn:', content);
+    //             // socket.emit('refeshMessage', data);
+    //             // console.log(data);
+
+    //             // Xử lý tin nhắn mới, ví dụ: cập nhật vào danh sách tin nhắn hoặc thông báo
+    //         });
+    //     }
+    // };
+
     useEffect(() => {
         return () => {
             disconnectSocket();
@@ -38,7 +58,7 @@ export const SocketProvider = ({ children }) => {
     }, [socket]);
 
     return (
-        <SocketContext.Provider value={{ socket, connectSocket, disconnectSocket }}>
+        <SocketContext.Provider value={{ socket, connectSocket, disconnectSocket, sendMessageSocket }}>
             {children}
         </SocketContext.Provider>
     );
