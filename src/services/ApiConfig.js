@@ -1,4 +1,4 @@
-const API_URL = 'https://3883-2402-800-61a7-4844-d05d-23b9-c93d-dff4.ngrok-free.app/api/v1/';
+const API_URL = 'http://10.0.2.2:3000/api/v1/';
 
 export const GET_ALL_POST = API_URL + 'posts/get-all-post';
 export const GET_POST_ID = API_URL + 'posts/get-post-by-id/';
