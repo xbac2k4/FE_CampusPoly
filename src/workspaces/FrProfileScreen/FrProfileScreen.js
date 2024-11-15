@@ -1,85 +1,45 @@
-// import FrProfileStats from '../../components/FrProfileScreen/frProfileStats';
-// import ProfileTabs from '../../components/ProfileScreen/profileTabs';
-// import ProfilePosts from '../../components/ProfileScreen/profilePosts';
-
-// const FrProfileScreen = ({ route }) => {
-//   // Provide default values in case params are undefined
-//   const { user = {}, isOwnProfile = false } = route.params || {};
-//   const [activeTab, setActiveTab] = useState('Posts');
-
-//   return (
-//     <View style={styles.screen}>
-//       <ScrollView stickyHeaderIndices={[2]}>
-//         {/* Header and ProfileStats */}
-//         <Header user={user} />
-//         <FrProfileStats friends={user.friends} isOwnProfile={isOwnProfile} />
-//         {/* ProfileTabs (Sticky) */}
-//         <ProfileTabs onTabSelect={setActiveTab} />
-//         {/* Conditionally render the posts based on activeTab */}
-//         {activeTab === 'Posts' && <ProfilePosts user={user} />}
-//       </ScrollView>
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   screen: {
-//     flex: 1,
-//     backgroundColor: '#181A1C',
-//   },
-// });
-
-// export default FrProfileScreen;
-import React, { useState } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
 import Header from '../../components/ProfileScreen/header';
 import FrProfileStats from '../../components/FrProfileScreen/frProfileStats';
 import ProfileTabs from '../../components/ProfileScreen/profileTabs';
 import ProfilePosts from '../../components/ProfileScreen/profilePosts';
+import { GET_USER_ID } from '../../services/ApiConfig'; // Giả sử đây là API endpoint
 
-// Sample data
-const user = {
-  name: 'Alex Tsimikas',
-  location: 'Brooklyn, NY',
-  bio: 'Writer by Profession. Artist by Passion!',
-  profileImage: require('../../assets/images/avt.png'),
-  backgroundImage: require('../../assets/images/background.png'), 
-  friends: 4056, 
-  posts: [
-    {
-      id: 1,
-      text: 'Exploring the canals of Venice!',
-      likes: 8998,
-      comments: 145,
-      images: [
-        require('../../assets/images/venice1.png'),
-        require('../../assets/images/venice2.png'),
-        require('../../assets/images/venice3.png'),
-      ],
-      time: '1h ago',
-    },
-    {
-      id: 2,
-      text: 'Looking forward to my trip!',
-      likes: 215,
-      comments: 8,
-      images: [
-        require('../../assets/images/background.png'),
-      ],
-      time: '1d ago',
-    },
-    {
-      id: 3,
-      text: 'Going on vacation! Catch you all in 10 days. No call!!!!!!',
-      likes: 261,
-      comments: 12,
-      time: '3d ago'
-    },
-  ],
-};
-
-const FrProfileScreen = () => {
+const FrProfileScreen = ({ route }) => {
   const [activeTab, setActiveTab] = useState('Posts');
+  const [user, setUser] = useState(null); // Lưu thông tin người dùng
+  const [loading, setLoading] = useState(true); // Trạng thái loading
+
+  const userId = route.params?.id; // Nhận ID người dùng từ params
+
+  // Hàm gọi API để lấy thông tin người dùng
+  const fetchUserData = async (id) => {
+    setLoading(true); // Bắt đầu tải dữ liệu
+    try {
+      const response = await fetch(`${GET_USER_ID}${id}`);
+      const data = await response.json();
+      setUser(data.data); // Lưu dữ liệu người dùng vào state
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    } finally {
+      setLoading(false); // Dừng loading khi đã có dữ liệu
+    }
+  };
+
+  useEffect(() => {
+    if (userId) {
+      fetchUserData(userId); // Gọi API khi có id người dùng
+    }
+  }, [userId]);
+
+  if (loading) {
+    return (
+      <View style={styles.screen}>
+        <ActivityIndicator size="large" color="#FFF" style={{ marginTop: 20 }} />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.screen}>
@@ -91,7 +51,7 @@ const FrProfileScreen = () => {
         {/* ProfileTabs (Sticky) */}
         <ProfileTabs onTabSelect={setActiveTab} />
 
-        {/* Conditionally render the posts based on activeTab */}
+        {/* Render posts chỉ khi activeTab là "Posts" */}
         {activeTab === 'Posts' && <ProfilePosts user={user} />}
       </ScrollView>
     </View>

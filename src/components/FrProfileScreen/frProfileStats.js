@@ -2,16 +2,19 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
-const FrProfileStats = ({ friends }) => (
-  <View style={styles.statsContainer}>
-    <View style={styles.stat}>
-      {/* Hiển thị số bạn bè với dấu phẩy */} 
-      <Text style={styles.statNumber}>{friends.toLocaleString()}</Text>
-      <Text style={styles.statText}>Friends</Text>
-    </View>
+const FrProfileStats = ({ data }) => {
+  const friendsCount = Array.isArray(data?.friends) ? data?.friends.length : 0;
 
-    {/* Nút Edit Profile nằm ngang với số Friends */}
-    <LinearGradient
+  return (
+    <View style={styles.statsContainer}>
+      <View style={styles.stat}>
+        {/* Hiển thị số bạn bè với dấu phẩy */}
+        <Text style={styles.statNumber}>{friendsCount.toLocaleString()}</Text>
+        <Text style={styles.statText}>Bạn bè</Text>
+      </View>
+
+      {/* Nút Follow nằm ngang với số Friends */}
+      <LinearGradient
         colors={['#F7B733', '#FC4A1A']}
         style={styles.followButtonGradient}
       >
@@ -19,9 +22,9 @@ const FrProfileStats = ({ friends }) => (
           <Text style={styles.followButtonText}>Follow</Text>
         </TouchableOpacity>
       </LinearGradient>
-  </View>
-);
-
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   statsContainer: {
@@ -43,20 +46,6 @@ const styles = StyleSheet.create({
   statText: {
     fontSize: 14,
     color: '#727477', 
-  },
-  editButton: {
-    backgroundColor: 'transparent', 
-    borderColor: 'white', 
-    borderWidth: 1, 
-    borderRadius: 20, 
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    marginLeft: 16, 
-  },
-  editButtonText: {
-    color: 'white', 
-    fontSize: 14, 
-    fontWeight: 'bold',
   },
   followButtonGradient: {
     borderRadius: 20, // Ensure the gradient follows the button shape

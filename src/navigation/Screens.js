@@ -8,6 +8,7 @@ const Screens = {
     Home: "Home",
     Search: "Search",
     Profile: "Profile",
+    FrProfile: "FrProfile",
     Alert: "Alert",
     Comment: "Comment",
     Message:'Message',
