@@ -4,18 +4,21 @@ import Header from '../../components/ProfileScreen/header';
 import ProfileStats from '../../components/ProfileScreen/profileStats';
 import ProfileTabs from '../../components/ProfileScreen/profileTabs';
 import ProfilePosts from '../../components/ProfileScreen/profilePosts';
+import FrProfileStats from '../../components/FrProfileScreen/frProfileStats';
 import { UserContext } from '../../services/provider/UseContext';
 import { GET_USER_ID } from '../../services/ApiConfig';
+import { GET_POST_BY_USERID } from '../../services/ApiConfig';
 import { useFocusEffect } from '@react-navigation/native';
 
 const ProfileScreen = ({ navigation, route }) => {
   const [activeTab, setActiveTab] = useState('Posts');
   const { user } = useContext(UserContext);
-  const [id, setID] = useState();
-  const [userProfile, setUserProfile] = useState();
-  const [loading, setLoading] = useState(true);
-  const [refresh, setRefresh] = useState(false);
-  // console.log(route.params?.id);
+  const [id, setID] = useState();  // State để lưu ID của người dùng
+  const [posts, setPosts] = useState([]);
+  const [postsLoading, setPostsLoading] = useState(false);
+  const [userProfile, setUserProfile] = useState();  // State để lưu thông tin người dùng
+  const [loading, setLoading] = useState(true);  // State để kiểm tra việc tải dữ liệu
+  const [refresh, setRefresh] = useState(false);  // State để theo dõi việc làm mới dữ liệu
 
   // Gọi hàm async để set ID
   const initializeID = () => {
@@ -23,66 +26,92 @@ const ProfileScreen = ({ navigation, route }) => {
       setID(user._id);  // Chỉ setID nếu user._id có giá trị hợp lệ
     }
   };
+
+  // Hàm để lấy dữ liệu người dùng từ API
   const fetchUserData = async (userID) => {
+    setLoading(true);  // Bắt đầu tải dữ liệu
     try {
-      // console.log(`${GET_USER_ID}${id}`);
       const response = await fetch(`${GET_USER_ID}${userID}`);
       const data = await response.json();
-      setUserProfile(data.data);
+      setUserProfile(data.data);  // Lưu dữ liệu vào state
     } catch (error) {
       console.error('Error fetching user data:', error);
     } finally {
-      setLoading(false); // Tắt loading
+      setLoading(false);  // Dừng loading khi đã có dữ liệu
     }
   };
 
-  useEffect(() => {
-    initializeID();
-  }, [user._id]); // Chạy useEffect này khi user._id thay đổi
+  const fetchUserPosts = async (userID) => {
+    setPostsLoading(true);
+    try {
+      const response = await fetch(`${GET_POST_BY_USERID}?user_id=${userID}`);
+      const responseData = await response.json();
+      // const sortedData = responseData.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setPosts(responseData.data);
+      // console.log('Response Data (Posts):', responseData.data);
 
+    } catch (error) {
+      console.error('Error fetching posts:', error.message);
+    } finally {
+      setPostsLoading(false);
+    }
+  };
+
+  // Cập nhật ID khi user._id thay đổi
+  useEffect(() => {
+    initializeID();  // Chạy khi user._id thay đổi
+  }, [user._id]);
+
+  // Cập nhật lại dữ liệu người dùng khi màn hình được focus
   useFocusEffect(
     useCallback(() => {
-      const handleUserData = async () => {
-        // initializeID();
-        const handleUserData = async () => {
-          initializeID();  // Đảm bảo ID được gán
-        };
-        handleUserData();
-        setRefresh(true);
-        // fetchUserData(id); // Gọi lại API khi màn hình được truy cập lại
-        navigation.setParams({ refresh: false }); // Đặt lại refresh để tránh gọi lại không cần thiết
-      }
-      handleUserData();
-    }, [id, route.params?.refresh])
+      setRefresh(true);  // Đánh dấu cần làm mới dữ liệu
+      navigation.setParams({ refresh: false });  // Reset lại trạng thái refresh
+    }, [navigation])
   );
+
+  // Gọi lại API nếu id thay đổi hoặc refresh được set
   useEffect(() => {
-    // Nếu có updatedUser trong params, cập nhật userProfile
-    // if (route.params?.updatedUser) {
-    //   setUserProfile(route.params.updatedUser);
-    //   setLoading(false); // Tắt loading khi có dữ liệu mới
-    //   return;
-    // }
-    if (id) {
-      fetchUserData(id);
+    const userID = route.params?.id || user._id;
+    if (userID && refresh) {
+      fetchUserData(userID);
+      fetchUserPosts(userID);
       setRefresh(false);
     }
-  }, [id, refresh]); // Chạy lại khi id hoặc updatedUser thay đổi
+  }, [id, refresh, route.params?.id, user._id]);
 
   return (
     <View style={styles.screen}>
-      {/* {loading ? (
+      {loading ? (
         <ActivityIndicator size="large" color="#FFF" style={{ marginTop: 20 }} />
-      ) : ( */}
-      <ScrollView stickyHeaderIndices={[2]}>
-        {/* Header and ProfileStats */}
-        <Header data={userProfile} />
-        <ProfileStats data={userProfile} />
-        {/* ProfileTabs (Sticky) */}
-        <ProfileTabs onTabSelect={setActiveTab} />
+      ) : (
+        <ScrollView stickyHeaderIndices={[2]}>
+          <Header data={userProfile} />
 
-        {/* Conditionally render the posts based on activeTab */}
-        {/* {activeTab === 'Posts' && <ProfilePosts data={user} />} */}
-      </ScrollView>
+          {route.params?.id && route.params.id !== user._id ? (
+            <FrProfileStats data={userProfile} />
+          ) : (
+            <ProfileStats data={userProfile} />
+          )}
+
+          <ProfileTabs onTabSelect={setActiveTab} />
+
+          {activeTab === 'Posts' && (
+            postsLoading ? (
+              <ActivityIndicator size="large" color="#FFF" style={{ marginTop: 20 }} />
+            ) : (
+              posts.length > 0 ? (
+                <ProfilePosts data={posts} />
+              ) : (
+                <Text style={{ color: '#FFF', textAlign: 'center', marginTop: 20 }}>
+                  No posts to display.
+                </Text>
+              )
+            )
+          )}
+        </ScrollView>
+      )}
+
     </View>
   );
 };

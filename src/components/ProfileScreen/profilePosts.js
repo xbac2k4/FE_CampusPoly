@@ -36,7 +36,7 @@ const ProfilePosts = (props) => {
     refRBSheet.current.open();
   };
 
-  {/** Sử lí cái thông báo  */}
+  {/** Sử lí cái thông báo  */ }
   const [modalVisible, setModalVisible] = useState(false);
 
   const handleConfirm = () => {
@@ -49,7 +49,19 @@ const ProfilePosts = (props) => {
     setModalVisible(false);
     console.log("Cancelled");
   };
-{/** Close thông báo */}
+
+  // Xử lý khi bấm vào avatar và tên người dùng
+  const handleProfileClick = (userId) => {
+    if (userId === user._id) {
+      // Nếu ID của người dùng hiện tại trùng khớp, chuyển đến màn hình Profile
+      navigation.navigate(Screens.Profile);
+    } else {
+      // Nếu không, chuyển đến màn hình Profile với tham số ID
+      navigation.navigate(Screens.Profile, { id: userId });
+    }
+  };
+  
+  {/** Close thông báo */ }
 
   // Đặt chỉ mục hình ảnh đầu tiên cho các bài viết có nhiều hình ảnh
   useEffect(() => {
@@ -126,24 +138,24 @@ const ProfilePosts = (props) => {
   };
 
   // hàm format thời gian
- // hàm format thời gian
-const timeAgo = (date) => {
-  const now = new Date();
-  const postDate = new Date(date);
-  const diff = Math.floor((now - postDate) / 1000); // Chênh lệch thời gian tính bằng giây
+  // hàm format thời gian
+  const timeAgo = (date) => {
+    const now = new Date();
+    const postDate = new Date(date);
+    const diff = Math.floor((now - postDate) / 1000); // Chênh lệch thời gian tính bằng giây
 
-  if (diff < 60) return `${diff} giây trước`;
-  const minutes = Math.floor(diff / 60);
-  if (minutes < 60) return `${minutes} phút trước`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} giờ trước`;
-  const days = Math.floor(hours / 24);
-  if (days < 30) return `${days} ngày trước`;
-  const months = Math.floor(days / 30);
-  if (months < 12) return `${months} tháng trước`;
-  const years = Math.floor(months / 12);
-  return `${years} năm trước`;
-};
+    if (diff < 60) return `${diff} giây trước`;
+    const minutes = Math.floor(diff / 60);
+    if (minutes < 60) return `${minutes} phút trước`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours} giờ trước`;
+    const days = Math.floor(hours / 24);
+    if (days < 30) return `${days} ngày trước`;
+    const months = Math.floor(days / 30);
+    if (months < 12) return `${months} tháng trước`;
+    const years = Math.floor(months / 12);
+    return `${years} năm trước`;
+  };
 
 
   // Hiển thị dữ liệu các bài viết
@@ -154,9 +166,13 @@ const timeAgo = (date) => {
           user.map((item) => (
             <View key={item._id} style={styles.postContainer}>
               <View style={styles.postHeader}>
-                <Image source={{ uri: item.user_id.avatar.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' }} style={styles.profileImage} />
+                <TouchableOpacity onPress={() => handleProfileClick(item.user_id._id)}>
+                  <Image source={{ uri: item.user_id.avatar.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' }} style={styles.profileImage} />
+                </TouchableOpacity>
                 <View style={styles.headerText}>
-                  <Text style={styles.profileName}>{item.user_id.full_name}</Text>
+                  <TouchableOpacity onPress={() => handleProfileClick(item.user_id._id)}>
+                    <Text style={styles.profileName}>{item.user_id.full_name}</Text>
+                  </TouchableOpacity>
                   <Text style={styles.postTime}>{timeAgo(item.createdAt)}</Text>
                 </View>
                 <TouchableOpacity
@@ -216,7 +232,7 @@ const timeAgo = (date) => {
         openDuration={300}
         closeDuration={250}
         closeOnDragDown={true} // Cho phép kéo xuống để đóng
-       
+
         customStyles={{
           wrapper: {
             backgroundColor: 'rgba(0, 0, 0, 0.3)',
@@ -224,40 +240,40 @@ const timeAgo = (date) => {
           draggableIcon: {
             backgroundColor: '#ffff',
           },
-          
+
         }}
       >
         <View style={styles.inner}>
-          <TouchableOpacity 
-          onPress={() => setModalVisible(true)}
-          
-          style={styles.reporttextcontainer}>
-            <NotificationModal 
-            visible={modalVisible}
-            onConfirm={handleConfirm}
-            onCancel={handleCancel}
+          <TouchableOpacity
+            onPress={() => setModalVisible(true)}
+
+            style={styles.reporttextcontainer}>
+            <NotificationModal
+              visible={modalVisible}
+              onConfirm={handleConfirm}
+              onCancel={handleCancel}
             />
-          <Image source={report} style={{marginTop:'5.5%',width:20,height:20,marginRight:4}} />
-          <Text style={styles.textOne}>Bài viết xúc phạm người dùng khác</Text>
+            <Image source={report} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
+            <Text style={styles.textOne}>Bài viết xúc phạm người dùng khác</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.reporttextcontainer}>
-          <Image source={untrue} style={{marginTop:'5.5%',width:20,height:20,marginRight:4}} />
-          <Text style={styles.textOne}>Bài viết sai sự thật</Text>
+            <Image source={untrue} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
+            <Text style={styles.textOne}>Bài viết sai sự thật</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.reporttextcontainer}>
-          <Image source={violet} style={{marginTop:'5.5%',width:20,height:20,marginRight:4}} />
-          <Text style={styles.textOne}>Bài viết mang tính bạo lực - kích động</Text>
+            <Image source={violet} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
+            <Text style={styles.textOne}>Bài viết mang tính bạo lực - kích động</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.reporttextcontainer}>
-          <Image source={rectionary} style={{marginTop:'5.5%',width:20,height:20,marginRight:4}} />
-          <Text style={styles.textOne}>Bài viết mang tính phản động</Text>
+            <Image source={rectionary} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
+            <Text style={styles.textOne}>Bài viết mang tính phản động</Text>
           </TouchableOpacity><TouchableOpacity style={styles.reporttextcontainer}>
-          <Image source={racsim} style={{marginTop:'5.5%',width:20,height:20,marginRight:4}} />
-          <Text style={styles.textOne}>Bài viết mang tính phân biệt</Text>
+            <Image source={racsim} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
+            <Text style={styles.textOne}>Bài viết mang tính phân biệt</Text>
           </TouchableOpacity>
         </View>
       </RBSheet>
-      
+
     </View>
   );
 };

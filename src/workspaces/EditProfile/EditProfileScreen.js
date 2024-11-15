@@ -98,70 +98,30 @@ const EditProfileScreen = () => {
       setErrorMessage('Tên là bắt buộc.');
       return;
     }
-
+  
     setIsLoading(true);
-
+  
     const formData = new FormData();
     formData.append('full_name', name);
     formData.append('bio', bio);
     formData.append('sex', gender);
     formData.append('birthday', birthday ? birthday.toISOString() : '');
-    // console.log(formData);
-    // Chỉ thêm ảnh nếu ảnh đã thay đổi
-    // if (isProfileImageChanged) {
-    //   formData.append('avatar', {
-    //     uri: profileImage.uri,
-    //     name: 'avatar.jpg',
-    //     type: 'image/jpeg',
-    //   });
-    // }
-
+  
     try {
-      // const response = await fetch(`http://10.0.2.2:3000/api/v1/users/update-user/${user._id}`, {
-      //   method: 'PUT',
-      //   headers: {
-      //     'Content-Type': 'multipart/form-data',
-      //   },
-      //   body: formData,
-      // });
-
-      // if (!response.ok) {
-      //   throw new Error('Failed to update profile');
-      // }
-
-      // const updatedUser = await response.json();
-      // console.log('API response:', updatedUser);
-      FetchUpdateUser(formData);
-
-      setIsLoading(false);
+      await FetchUpdateUser(formData);
+  
       setIsSaved(true);
-      setErrorMessage('');
-
-      // Gửi dữ liệu đã cập nhật trở lại ProfileScreen
-      // Điều hướng trở lại Profile và cập nhật params
-      navigation.navigate(Screens.Profile, { refresh: true }); // Truyền refresh vào params khi điều hướng
-      // navigation.navigate(Screens.Profile, {
-      //   id: user._id,
-      //   updatedUser: {
-      //     ...user,
-      //     full_name: name,
-      //     bio,
-      //     sex: gender,
-      //     birthday: birthday ? birthday.toISOString() : user.birthday.toString(),
-      //     avatar: profileImage.uri,
-      //   },
-      // });
-      // navigation.goBack();
-
-      setIsChanged(false);
+      setIsChanged(false); // Đặt lại isChanged về false khi lưu thành công
+  
+      navigation.navigate(Screens.Profile, { refresh: true });
     } catch (error) {
       console.error('Lỗi khi lưu hồ sơ:', error);
       setErrorMessage('Không lưu được hồ sơ.');
+    } finally {
       setIsLoading(false);
     }
   };
-
-
+  
   const clearBio = () => setBio('');
 
   // Cập nhật profileImage khi người dùng chọn ảnh mới
@@ -230,27 +190,22 @@ const EditProfileScreen = () => {
   
 
   const FetchUpdateUser = async (formData) => {
-    // console.log(`${PUT_UPDATE_USER}${user._id}`);
-
     const response = await fetch(`${PUT_UPDATE_USER}${user._id}`, {
       method: 'PUT',
       headers: {
+        Accept: 'application/json',
         'Content-Type': 'multipart/form-data',
       },
       body: formData,
     });
-
+  
     if (!response.ok) {
       throw new Error('Failed to update profile');
     }
-
-    const updatedUser = await response.json();
-    // console.log(updatedUser);
-
-    setIsLoading(false);
-    setIsSaved(true);
-    setErrorMessage('');
-  }
+  
+    return response.json();
+  };
+  
 
   return (
     <SafeAreaView style={styles.container}>

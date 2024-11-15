@@ -29,6 +29,7 @@ const MainStackNavigator = () => {
       <Stack.Screen name={Screens.ChatView} component={ChatScreen} options={{ animation: 'ios' }} />
       <Stack.Screen name={Screens.CreatePost} component={CreatePostScreen} options={{ animation: 'slide_from_bottom' }} />
       <Stack.Screen name={Screens.Profile} component={Profile} options={{ animation: 'slide_from_bottom' }} />
+      <Stack.Screen name={Screens.FrProfile} component={FrProfileScreen} options={{ animation: 'slide_from_bottom' }} />
 
 
     </Stack.Navigator>
