@@ -6,6 +6,7 @@ import { store } from './src/workspaces/Notification/store';
 import { UserProvider } from './src/services/provider/UseContext';
 import { SocketProvider } from './src/services/provider/SocketContext';
 import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import { notificationListener } from './src/services/Notification';
 
 const App = () => {
 
@@ -29,6 +30,7 @@ const App = () => {
     };
 
     requestNotificationPermission();
+    notificationListener(); // lắng nghe thông báo
   }, []);
 
   return (

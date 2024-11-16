@@ -12,6 +12,7 @@
   "dependencies": {
     "@giphy/react-native-sdk": "^3.3.1",
     "@gorhom/bottom-sheet": "^5.0.2",
+    "@notifee/react-native": "^9.1.2",
     "@react-native-community/blur": "^4.4.1",
     "@react-native-firebase/app": "^21.4.1",
     "@react-native-firebase/messaging": "^21.4.1",
