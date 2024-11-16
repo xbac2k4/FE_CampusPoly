@@ -12,7 +12,7 @@ export async function notificationListener() {
   const unsubscribe = messaging().onMessage(async remoteMessage => {
     await onDisplayNotification(remoteMessage.notification);
 
-    // console.log('A new FCM message arrived!', remoteMessage);
+    console.log('A new FCM message arrived!', remoteMessage);
 
     // Alert.alert(
     //   remoteMessage.notification.title,
@@ -27,9 +27,10 @@ export async function notificationListener() {
 async function createChannel() {
   try {
     await notifee.createChannel({
-      id: 'default',
-      name: 'Default Channel',
+      id: 'default1',
+      name: 'Default Channel1',
       importance: AndroidImportance.HIGH,
+      sound:'notification'
     });
   } catch (error) {
     console.error('Failed to create notification channel:', error);
@@ -38,7 +39,6 @@ async function createChannel() {
 
 //hiển thị thông báo
 async function onDisplayNotification(notification) {
-  console.log('Attempting to display notification:', notification);
 
   try {
     await createChannel(); // Tạo kênh thông báo trước khi hiển thị thông báo
@@ -47,11 +47,12 @@ async function onDisplayNotification(notification) {
       title: notification.title,
       body: notification.body,
       android: {
-        channelId: 'default',
+        channelId: 'default1',
         importance: AndroidImportance.HIGH,
         largeIcon: notification.android.imageUrl,
-        smallIcon: 'ic_campus_poly',
-        color: '#211d1e',
+        smallIcon: notification.android.smallIcon,
+        color: notification.android.color,
+        sound: 'notification',
       },
     });
   } catch (error) {
@@ -59,9 +60,7 @@ async function onDisplayNotification(notification) {
   }
 }
 
-// Đăng ký trình xử lý sự kiện nền
-notifee.onBackgroundEvent(async ({ type, detail }) => {
-  console.log('Background event:', type, detail);
+async function onBackgroundEvent({ type, detail }) {
   switch (type) {
     case EventType.DISMISSED:
       console.log('Notification dismissed:', detail.notification);
@@ -70,4 +69,10 @@ notifee.onBackgroundEvent(async ({ type, detail }) => {
       console.log('Notification press:', detail.notification);
       break;
   }
-});
+}
+
+// Đăng ký sự kiện nền
+notifee.onBackgroundEvent(onBackgroundEvent);
+
+// Đăng ký sự kiện foreground
+notifee.onForegroundEvent(onBackgroundEvent);
