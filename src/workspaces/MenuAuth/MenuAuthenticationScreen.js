@@ -45,6 +45,8 @@ const MenuAuthenticationScreen = ({ navigation }) => {
       const accessToken = (await GoogleSignin.getTokens()).accessToken;
 
       const deviceToken = await messaging().getToken();
+      console.log('Device token:', deviceToken);
+      
 
       const data = userInfo.data.user;
       const user = {

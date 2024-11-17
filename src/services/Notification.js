@@ -5,12 +5,12 @@ import { Alert } from 'react-native';
 // nhận thông báo trong trạng thái background
 messaging().setBackgroundMessageHandler(async remoteMessage => {
   console.log('Tin nhắn được xử lý trong nền!', remoteMessage);
-  await onDisplayNotification(remoteMessage.notification);
+  // await onDisplayNotification(remoteMessage);
 });
 
 export async function notificationListener() {
   const unsubscribe = messaging().onMessage(async remoteMessage => {
-    await onDisplayNotification(remoteMessage.notification);
+    await onDisplayNotification(remoteMessage);
 
     console.log('A new FCM message arrived!', remoteMessage);
 
@@ -38,21 +38,21 @@ async function createChannel() {
 }
 
 //hiển thị thông báo
-async function onDisplayNotification(notification) {
+async function onDisplayNotification(remoteMessage) {
 
   try {
     await createChannel(); // Tạo kênh thông báo trước khi hiển thị thông báo
 
     await notifee.displayNotification({
-      title: notification.title,
-      body: notification.body,
+      title: remoteMessage.notification.title,
+      body: remoteMessage.notification.body,
       android: {
         channelId: 'default1',
         importance: AndroidImportance.HIGH,
-        largeIcon: notification.android.imageUrl,
-        smallIcon: notification.android.smallIcon,
-        color: notification.android.color,
-        sound: 'notification',
+        largeIcon: remoteMessage.notification.android.imageUrl,
+        smallIcon: remoteMessage.notification.android.smallIcon,
+        timestamp: remoteMessage.sentTime || new Date().getTime(), // Sử dụng sentTime hoặc thời gian hiện tại
+        showTimestamp: true, // Hiển thị thời gian trong thông báo
       },
     });
   } catch (error) {
