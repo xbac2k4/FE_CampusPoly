@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { View, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, ScrollView, StyleSheet, ActivityIndicator, Text } from 'react-native';
 import Header from '../../components/ProfileScreen/header';
 import ProfileStats from '../../components/ProfileScreen/profileStats';
 import ProfileTabs from '../../components/ProfileScreen/profileTabs';
