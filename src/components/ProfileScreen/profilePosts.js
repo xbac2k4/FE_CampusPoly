@@ -60,7 +60,7 @@ const ProfilePosts = (props) => {
       navigation.navigate(Screens.Profile, { id: userId });
     }
   };
-  
+
   {/** Close thông báo */ }
 
   // Đặt chỉ mục hình ảnh đầu tiên cho các bài viết có nhiều hình ảnh
@@ -167,11 +167,20 @@ const ProfilePosts = (props) => {
             <View key={item._id} style={styles.postContainer}>
               <View style={styles.postHeader}>
                 <TouchableOpacity onPress={() => handleProfileClick(item.user_id._id)}>
-                  <Image source={{ uri: item.user_id.avatar.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' }} style={styles.profileImage} />
+                  <Image 
+                    source={{ 
+                      uri: item.user_id
+                        ? item.user_id.avatar.replace('localhost', '10.0.2.2') 
+                        : 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' 
+                    }} 
+                    style={styles.profileImage} 
+                  />
                 </TouchableOpacity>
                 <View style={styles.headerText}>
                   <TouchableOpacity onPress={() => handleProfileClick(item.user_id._id)}>
-                    <Text style={styles.profileName}>{item.user_id.full_name}</Text>
+                    <Text style={styles.profileName}>{
+                    item.user_id ? item.user_id.full_name : 'Unknown'
+                    }</Text>
                   </TouchableOpacity>
                   <Text style={styles.postTime}>{timeAgo(item.createdAt)}</Text>
                 </View>

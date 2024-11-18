@@ -9,6 +9,7 @@ import { UserContext } from '../../services/provider/UseContext';
 import { SocketContext } from '../../services/provider/SocketContext';
 import { Google_Client_ID } from '@env';
 import { LOGIN_WITH_GOOGLE } from '../../services/ApiConfig'
+import messaging from '@react-native-firebase/messaging';
 
 GoogleSignin.configure({
   webClientId: Google_Client_ID,
@@ -33,7 +34,6 @@ const MenuAuthenticationScreen = ({ navigation }) => {
   }, []);
 
   const SignInWithGoogle = async () => {
-    // toggleShowDialog()
 
 
     try {
@@ -44,13 +44,17 @@ const MenuAuthenticationScreen = ({ navigation }) => {
       const userInfo = await GoogleSignin.signIn();
       const accessToken = (await GoogleSignin.getTokens()).accessToken;
 
+      const deviceToken = await messaging().getToken();
+      console.log('Device token:', deviceToken);
+      
+
       const data = userInfo.data.user;
       const user = {
         email: data.email,
         full_name: data.name,
         avatar: data.photo,
-        // provider: 'google',
         accessToken,
+        device_token: deviceToken,
       }
 
       const response = await fetch(LOGIN_WITH_GOOGLE, {
