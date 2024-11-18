@@ -6,6 +6,7 @@ import { notificationListener } from './src/services/Notification';
 import { SocketProvider } from './src/services/provider/SocketContext';
 import { UserProvider } from './src/services/provider/UseContext';
 import { store } from './src/workspaces/Notification/store';
+import { RecoilRoot } from 'recoil';
 
 const App = () => {
 
@@ -31,9 +32,11 @@ const App = () => {
   return (
     <Provider store={store}>
       <UserProvider>
-        <SocketProvider>
-          <AppNavigator />
-        </SocketProvider>
+        <RecoilRoot>
+          <SocketProvider>
+            <AppNavigator />
+          </SocketProvider>
+        </RecoilRoot>
       </UserProvider>
     </Provider>
   );

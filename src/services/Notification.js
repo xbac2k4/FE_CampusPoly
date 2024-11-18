@@ -1,6 +1,6 @@
+import notifee, { AndroidImportance } from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
-import notifee, { AndroidImportance, EventType } from '@notifee/react-native';
-import { Alert } from 'react-native';
+
 
 // nhận thông báo trong trạng thái background
 messaging().setBackgroundMessageHandler(async remoteMessage => {
@@ -9,8 +9,11 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
 });
 
 export async function notificationListener() {
+
+
   const unsubscribe = messaging().onMessage(async remoteMessage => {
     await onDisplayNotification(remoteMessage);
+    // addToNotificationList(remoteMessage);
 
     console.log('A new FCM message arrived!', remoteMessage);
 
@@ -18,7 +21,13 @@ export async function notificationListener() {
     //   remoteMessage.notification.title,
     //   remoteMessage.notification.body,
     // )
+
+    // addToNotificationList(remoteMessage);
+
   });
+  
+  // console.log('notificationListener', unsubscribe);
+
 
   return unsubscribe;
 }
@@ -27,11 +36,13 @@ export async function notificationListener() {
 async function createChannel() {
   try {
     await notifee.createChannel({
-      id: 'default1',
-      name: 'Default Channel1',
+      id: 'default2',
+      name: 'Default Channel2',
       importance: AndroidImportance.HIGH,
-      sound:'notification'
+      sound: 'default'
     });
+    console.log('Channel created successfully');
+
   } catch (error) {
     console.error('Failed to create notification channel:', error);
   }
@@ -60,19 +71,19 @@ async function onDisplayNotification(remoteMessage) {
   }
 }
 
-async function onBackgroundEvent({ type, detail }) {
-  switch (type) {
-    case EventType.DISMISSED:
-      console.log('Notification dismissed:', detail.notification);
-      break;
-    case EventType.PRESS:
-      console.log('Notification press:', detail.notification);
-      break;
-  }
-}
+// async function onBackgroundEvent({ type, detail }) {
+//   switch (type) {
+//     case EventType.DISMISSED:
+//       console.log('Notification dismissed:', detail.notification);
+//       break;
+//     case EventType.PRESS:
+//       console.log('Notification press:', detail.notification);
+//       break;
+//   }
+// }
 
-// Đăng ký sự kiện nền
-notifee.onBackgroundEvent(onBackgroundEvent);
+// // Đăng ký sự kiện nền
+// notifee.onBackgroundEvent(onBackgroundEvent);
 
-// Đăng ký sự kiện foreground
-notifee.onForegroundEvent(onBackgroundEvent);
+// // Đăng ký sự kiện foreground
+// notifee.onForegroundEvent(onBackgroundEvent);
