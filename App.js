@@ -17,7 +17,7 @@ const App = () => {
         try {
           const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
           if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-            console.log('Camera permission denied');
+            console.log('Notification permission denied');
           }
         } catch (err) {
           console.warn(err);
