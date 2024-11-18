@@ -1,92 +1,121 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, FlatList, ActivityIndicator, StyleSheet, Platform, KeyboardAvoidingView } from 'react-native';
-import { GET_SEARCH } from '../../services/ApiConfig'; // Đường dẫn API để lấy bài viết
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, FlatList, Image, KeyboardAvoidingView } from 'react-native';
+import React, { useState } from 'react';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import PostItem from '../../components/Search/SearchComponents'; // Import PostItem component
+import Entypo from 'react-native-vector-icons/Entypo';
 
-const SearchScreen = ({ userId }) => {
-  const [searchQuery, setSearchQuery] = useState(''); // Trạng thái tìm kiếm
-  const [posts, setPosts] = useState([]); // Trạng thái bài viết
-  const [filteredPosts, setFilteredPosts] = useState([]); // Trạng thái bài viết sau khi lọc
-  const [loading, setLoading] = useState(false); // Trạng thái loading
-  const [debounceTimeout, setDebounceTimeout] = useState(null); // Trạng thái để lưu trữ setTimeout
+// Dữ liệu giả lập cho các bài viết
+const DATA = [
+  {
+    id: '1',
+    name: 'Michelle Ogilvy',
+    time: '1h ago',
+    image: require('../../assets/images/dongthoigian.png'),
+    likes: '18.6k',
+    comments: '4.7k',
+  },
+  {
+    id: '2',
+    name: 'Brandon Loia',
+    time: '1h ago',
+    image: require('../../assets/images/dongthoigian2.png'),
+    likes: '4.7k',
+    comments: '186',
+  },
+];
 
-  // Hàm gọi API để lấy bài viết theo từ khóa tìm kiếm
-  const fetchPosts = async (searchTerm) => {
-    try {
-      setLoading(true);
-      const response = await fetch(`${GET_SEARCH}?searchTerm=${encodeURIComponent(searchTerm)}`);
-      const responseData = await response.json();
-  
-      console.log('Response Data:', responseData); // Kiểm tra dữ liệu trả về
-  
-      if (responseData.success && Array.isArray(responseData.posts)) {
-        const postsData = responseData.posts;  // Sửa từ data thành posts
-        const sortedData = postsData.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
-        setPosts(sortedData);
-        handleSearch(searchTerm, sortedData); // Cập nhật filteredPosts sau khi lấy dữ liệu
-      } else {
-        setPosts([]);
-        setFilteredPosts([]);
-      }
-    } catch (error) {
-      console.error('Lỗi khi tải dữ liệu:', error);
-    } finally {
-      setLoading(false);
-    }
-  };  
+const SearchScreen = () => {
+  // State để lưu trữ trạng thái bài viết đã thích
+  const [likedPosts, setLikedPosts] = useState({});
+  // State để lưu trữ trạng thái bài viết yêu thích
+  const [favoritePosts, setFavoritePosts] = useState({});
+  // State để lưu trữ nút filter đang được chọn
+  const [activeFilter, setActiveFilter] = useState('All');
 
-  const removeVietnameseTones = (str) => {
-    return str
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "") // Loại bỏ dấu
-      .replace(/đ/g, "d")
-      .replace(/Đ/g, "D")
-      .toLowerCase();
+  // Hàm để bật/tắt trạng thái like của bài đăng
+  const toggleLike = (postId) => {
+    setLikedPosts((prevLikedPosts) => ({
+      ...prevLikedPosts,
+      [postId]: !prevLikedPosts[postId],
+    }));
   };
-  
-  // Xử lý tìm kiếm bài viết theo tiêu đề và post_type
-  const handleSearch = (text, data = posts) => {
-    const normalizedText = removeVietnameseTones(text);
-    setSearchQuery(normalizedText);
-    if (normalizedText === '') {
-      setFilteredPosts(data);
-    } else {
-      console.log('Filtering posts with:', normalizedText);
-      const filtered = data.filter(
-        (post) =>
-          removeVietnameseTones(post.title.toLowerCase()).includes(normalizedText.toLowerCase()) ||
-          removeVietnameseTones(post.post_type.toLowerCase()).includes(normalizedText.toLowerCase())
-      );
-      console.log('Filtered posts:', filtered);
-      setFilteredPosts(filtered);
-    }
-  };  
 
- // Hàm xử lý debounce (chờ 1-2s trước khi gọi API)
- useEffect(() => {
-  if (debounceTimeout) {
-    clearTimeout(debounceTimeout); // Hủy timeout cũ nếu người dùng tiếp tục nhập
-  }
-
-  // Đặt timeout mới khi người dùng nhập xong
-  const timeout = setTimeout(() => {
-    if (searchQuery) {
-      fetchPosts(searchQuery); // Gọi API khi có từ khóa tìm kiếm
-    } else {
-      setFilteredPosts(posts); // Nếu không có tìm kiếm, hiển thị tất cả bài viết
-    }
-  }, 800); // Thời gian trễ 1 giây
-
-  setDebounceTimeout(timeout); // Lưu trữ ID của timeout
-
-  return () => {
-    clearTimeout(timeout); // Dọn dẹp khi component bị unmount
+  // Hàm để bật/tắt trạng thái yêu thích của bài đăng
+  const toggleFavorite = (postId) => {
+    setFavoritePosts((prevFavoritePosts) => ({
+      ...prevFavoritePosts,
+      [postId]: !prevFavoritePosts[postId],
+    }));
   };
-}, [searchQuery]); // Khi searchQuery thay đổi, gọi lại effect
 
+  // Hàm để xử lý khi nhấn nút filter
+  const handleFilterPress = (filter) => {
+    setActiveFilter(filter);
+  };
+
+  // Hàm xử lý khi nhấn nút comment
+  const handleCommentPress = (postId) => {
+    console.log(`Comment button pressed for post ${postId}`);
+    // Thực hiện các hành động khác khi nhấn nút comment
+  };
+
+  // Hàm xử lý khi nhấn nút share
+  const handleSharePress = (postId) => {
+    console.log(`Share button pressed for post ${postId}`);
+    // Thực hiện các hành động khác khi nhấn nút share
+  };
+
+  // Thêm hàm xử lý cho sự kiện ấn vào ảnh
+  const handleImagePress = (postId) => {
+    console.log(`Image pressed for post ${postId}`);
+    // Thực hiện các hành động khác khi ảnh được nhấn
+  };
+
+  // Hàm render từng bài viết
+  const renderPost = ({ item }) => (
+    <View style={styles.postContainer}>
+      <View style={styles.postHeader}>
+        <Image source={item.image} style={styles.avatar} />
+        <View>
+          <Text style={styles.postName}>{item.name}</Text>
+          <Text style={styles.postTime}>{item.time}</Text>
+        </View>
+      </View>
+      <TouchableOpacity onPress={() => handleImagePress(item.id)}>
+        <Image source={item.image} style={styles.postImage} />
+      </TouchableOpacity>
+      <View style={styles.postStats}>
+        <TouchableOpacity
+          style={styles.statContainer}
+          onPress={() => toggleLike(item.id)}
+        >
+          <AntDesign
+            name={likedPosts[item.id] ? "like1" : "like2"}
+            size={20}
+            color="white"
+          />
+          <Text style={styles.postStatText}>{item.likes}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => handleCommentPress(item.id)} style={styles.statContainer}>
+          <FontAwesome name="commenting-o" size={20} color="white" />
+          <Text style={styles.postStatText}>{item.comments}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => handleSharePress(item.id)} style={styles.statContainer}>
+          <Entypo name="share-alternative" size={20} color="white" />
+          <Text style={styles.postStatText}>{item.shares}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => toggleFavorite(item.id)} style={styles.favoritesContainer}>
+          <Image
+            style={{ width: 20, height: 20 }}
+            source={favoritePosts[item.id] ? require('../../assets/images/fav2.png') : require('../../assets/images/fav1.png')}
+          />
+        </TouchableOpacity>
+      </View>
+      <View style={styles.divider} />
+    </View>
+  );
+
+  // Hàm render giao diện chính của màn hình tìm kiếm
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -97,28 +126,38 @@ const SearchScreen = ({ userId }) => {
           <AntDesign name="search1" size={20} color="#FFFFFF" style={styles.icon} />
           <TextInput
             style={styles.input}
-            placeholder="Tìm kiếm bài viết hoặc loại bài..."
+            placeholder="Tìm kiếm người, bài viết, thẻ..."
             placeholderTextColor="#ECEBED"
-            value={searchQuery}
-            onChangeText={(text) => setSearchQuery(text)} // Cập nhật truy vấn tìm kiếm khi người dùng nhập
           />
         </View>
-        {loading ? (
-          <ActivityIndicator size="large" color="#FFF" />
-        ) : (
-          <FlatList
-            data={filteredPosts}
-            renderItem={({ item }) => <PostItem post={item} />} // Sử dụng PostItem để hiển thị bài viết
-            keyExtractor={(item) => item._id ? item._id.toString() : item.id ? item.id.toString() : Math.random().toString()}
-            // Kiểm tra lại _id
-            style={styles.list}
-            ListEmptyComponent={<Text style={styles.noResultsText}>Không có bài viết nào</Text>}
-          />
-        )}
+        <Text style={styles.popularText}>Popular</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterContainer}>
+          {['All', 'Profiles', 'Photos', 'Videos', 'Text', 'Links'].map((filter) => (
+            <TouchableOpacity
+              key={filter}
+              style={[
+                styles.filterButton,
+                activeFilter === filter && styles.activeButton, // Thay đổi màu khi được chọn
+              ]}
+              onPress={() => handleFilterPress(filter)}
+            >
+              <Text style={styles.filterText}>{filter}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+        <FlatList
+          data={DATA}
+          renderItem={renderPost}
+          keyExtractor={item => item.id}
+          style={styles.list}
+        />
       </View>
     </KeyboardAvoidingView>
+
   );
-};
+}
+
+export default SearchScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -128,7 +167,7 @@ const styles = StyleSheet.create({
     paddingTop: 40,
   },
   searchContainer: {
-    flexDirection: 'row',
+    flexDirection: 'row-reverse',
     backgroundColor: '#323436',
     borderRadius: 32,
     paddingHorizontal: 12,
@@ -144,14 +183,96 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#ECEBED',
   },
-  list: {
-    flex: 1,
+  popularText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 12,
   },
-  noResultsText: {
+  filterContainer: {
+    marginTop: 12,
+    marginBottom: 32,
+    paddingVertical: 15
+  },
+  filterButton: {
+    backgroundColor: '#323436',
+    borderRadius: 18,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    marginRight: 10,
+    height: 35,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  filterText: {
+    color: '#ECEBED',
+    fontSize: 14,
+  },
+  activeButton: {
+    backgroundColor: '#0066FF',
+  },
+  list: {
+    height: '78%',
+  },
+  postContainer: {
+    marginBottom: 10,
+  },
+  postHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 12,
+  },
+  postName: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  postTime: {
     color: '#888888',
-    textAlign: 'center',
-    marginTop: 20,
+    fontSize: 12,
+  },
+  postImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: 12,
+    marginBottom: 8,
+  },
+  postStats: {
+    flexDirection: 'row',
+    alignItems: 'center', // Đảm bảo các biểu tượng căn giữa theo chiều dọc
+    marginTop: 8,
+  },
+  postStat: {
+    color: '#888888',
+    fontSize: 14,
+    marginRight: 16,
+  },
+  statContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 16, // Khoảng cách giữa các nhóm (lượt thích, bình luận, chia sẻ)
+  },
+  postStatText: {
+    color: '#FFFFFF',
+    marginLeft: 8,  // Khoảng cách giữa icon và chữ số
+    fontSize: 14,
+  },
+  divider: {
+    height: 1, // Độ dày của đường kẻ
+    backgroundColor: '#888', // Màu sắc của đường kẻ
+    marginTop: 12, // Khoảng cách giữa đường kẻ và nội dung trên
+    marginBottom: 20, // Khoảng cách giữa đường kẻ và bài viết tiếp theo
+    width: '100%', // Làm cho đường kẻ trải dài toàn bộ chiều rộng
+  },
+  favoritesContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 'auto', // Pushes it to the right
   },
 });
-
-export default SearchScreen;
