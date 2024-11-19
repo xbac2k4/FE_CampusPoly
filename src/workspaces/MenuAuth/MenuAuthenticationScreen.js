@@ -1,15 +1,16 @@
-import { StyleSheet, Text, View, StatusBar, TouchableOpacity, Image } from 'react-native'
-import React, { useCallback, useState, useContext } from 'react'
-import Screens from '../../navigation/Screens'
-import Colors from '../../constants/Color'
-import BlockDialog from '../../components/MenuAuth/BlockDialog'
-import { CommonActions } from '@react-navigation/native'
+import { Google_Client_ID } from '@env'
+import messaging from '@react-native-firebase/messaging'
 import { GoogleSignin } from '@react-native-google-signin/google-signin'
-import { UserContext } from '../../services/provider/UseContext';
-import { SocketContext } from '../../services/provider/SocketContext';
-import { Google_Client_ID } from '@env';
+import { CommonActions } from '@react-navigation/native'
+import React, { useCallback, useContext, useState } from 'react'
+import { Image, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import BlockDialog from '../../components/MenuAuth/BlockDialog'
+import Loading from '../../components/MenuAuth/Loading'
+import Colors from '../../constants/Color'
+import Screens from '../../navigation/Screens'
 import { LOGIN_WITH_GOOGLE } from '../../services/ApiConfig'
-import messaging from '@react-native-firebase/messaging';
+import { SocketContext } from '../../services/provider/SocketContext'
+import { UserContext } from '../../services/provider/UseContext'
 
 GoogleSignin.configure({
   webClientId: Google_Client_ID,
@@ -25,9 +26,8 @@ GoogleSignin.configure({
 const MenuAuthenticationScreen = ({ navigation }) => {
   const { setUser } = useContext(UserContext);
   const { connectSocket } = useContext(SocketContext);
-
-
   const [isShowDialog, setIsShowDialog] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const toggleShowDialog = useCallback(() => {
     setIsShowDialog(prevState => !prevState);
@@ -40,13 +40,16 @@ const MenuAuthenticationScreen = ({ navigation }) => {
       await GoogleSignin.hasPlayServices({
         showPlayServicesUpdateDialog: true,
       })
+
       await GoogleSignin.signOut();
       const userInfo = await GoogleSignin.signIn();
+      setIsLoading(true); // Hiển thị loading
+
       const accessToken = (await GoogleSignin.getTokens()).accessToken;
 
       const deviceToken = await messaging().getToken();
       console.log('Device token:', deviceToken);
-      
+
 
       const data = userInfo.data.user;
       const user = {
@@ -76,12 +79,15 @@ const MenuAuthenticationScreen = ({ navigation }) => {
 
       // chuyển màn hình và xóa các màn cũ khỏi ngăn xếp
       if (responseData.status === 200) {
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{ name: Screens.BottomTab }],
-          })
-        );
+        setTimeout(() => {
+          setIsLoading(false);
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{ name: Screens.BottomTab }],
+            })
+          );
+        }, 1000);
       }
 
     } catch (error) {
@@ -145,6 +151,7 @@ const MenuAuthenticationScreen = ({ navigation }) => {
       </View>
 
       <BlockDialog isShowDialog={isShowDialog} toggleShowDialog={toggleShowDialog} />
+      <Loading isLoading={isLoading}/>
     </View>
   )
 }
