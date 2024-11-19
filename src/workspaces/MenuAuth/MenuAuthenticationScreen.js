@@ -34,22 +34,25 @@ const MenuAuthenticationScreen = ({ navigation }) => {
   }, []);
 
   const SignInWithGoogle = async () => {
+    setIsLoading(true); // Hiển thị loading
 
+    const timeoutId = setTimeout(() => {
+      setIsLoading(false);
+      setIsShowDialog(false); // Tắt dialog
+      console.log('Quá trình đăng nhập quá lâu, đã dừng lại.');
+    }, 5000); // Thời gian chờ tối đa là 5 giây
 
     try {
       await GoogleSignin.hasPlayServices({
         showPlayServicesUpdateDialog: true,
-      })
+      });
 
       await GoogleSignin.signOut();
       const userInfo = await GoogleSignin.signIn();
-      setIsLoading(true); // Hiển thị loading
-
       const accessToken = (await GoogleSignin.getTokens()).accessToken;
 
       const deviceToken = await messaging().getToken();
       console.log('Device token:', deviceToken);
-
 
       const data = userInfo.data.user;
       const user = {
@@ -58,14 +61,14 @@ const MenuAuthenticationScreen = ({ navigation }) => {
         avatar: data.photo,
         accessToken,
         device_token: deviceToken,
-      }
+      };
 
       const response = await fetch(LOGIN_WITH_GOOGLE, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json', // Định dạng JSON
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(user), // Chuyển `user` thành chuỗi JSON để gửi lên server
+        body: JSON.stringify(user),
       });
 
       if (!response.ok) {
@@ -73,35 +76,27 @@ const MenuAuthenticationScreen = ({ navigation }) => {
       }
 
       const responseData = await response.json();
-      // console.log('Login response:', responseData);
       setUser(responseData.data);
-      connectSocket(responseData.data); // Kết nối với socket server
+      connectSocket(responseData.data);
 
-      // chuyển màn hình và xóa các màn cũ khỏi ngăn xếp
       if (responseData.status === 200) {
+        clearTimeout(timeoutId); // Xóa thời gian chờ nếu đăng nhập thành công
         setTimeout(() => {
           setIsLoading(false);
-          setTimeout(() => {
-            navigation.dispatch(
-              CommonActions.reset({
-                index: 0,
-                routes: [{ name: Screens.BottomTab }],
-              })
-            );
-          }, 800);
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{ name: Screens.BottomTab }],
+            })
+          );
         }, 1000);
-
       }
-
     } catch (error) {
-      if (JSON.stringify(error) == {}) {
-        console.log('Không có thông tin người dùng');
-      } else {
-        console.log(error);
-      }
+      clearTimeout(timeoutId); // Xóa thời gian chờ nếu có lỗi
+      setIsLoading(false);
+      setIsShowDialog(false); // Tắt dialog nếu có lỗi
+      console.log(error);
     }
-
-
   }
 
   return (
