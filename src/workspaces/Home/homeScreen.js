@@ -1,6 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity, View, FlatList, ScrollView, ActivityIndicator } from 'react-native';
 import React, { useEffect, useState, useContext } from 'react';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from 'react-native-vector-icons/AntDesign';
 import ProfilePosts from '../../components/ProfileScreen/profilePosts';
 import { useNavigation } from '@react-navigation/native';
 import Screens from '../../navigation/Screens';
@@ -26,7 +26,7 @@ const HomeScreen = () => {
     }
   };
 
-  
+
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -42,7 +42,7 @@ const HomeScreen = () => {
       }
     };
 
-   
+
     setGreeting(getGreeting());
     fetchUserData();
   }, []);
@@ -63,7 +63,7 @@ const HomeScreen = () => {
               style={styles.circleIcon}
               onPress={() => navigation.navigate(Screens.Message)}
             >
-              <Icon name="mail-outline" size={15} color="#fff" />
+              <Icon name="message1" size={15} color="#fff" />
             </TouchableOpacity>
           </View>
 
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 40,
     borderRadius: 20,
-    
+
     marginHorizontal: 10,
   },
   activeTab: {
