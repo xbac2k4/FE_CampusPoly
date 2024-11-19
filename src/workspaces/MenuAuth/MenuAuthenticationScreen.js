@@ -81,13 +81,16 @@ const MenuAuthenticationScreen = ({ navigation }) => {
       if (responseData.status === 200) {
         setTimeout(() => {
           setIsLoading(false);
-          navigation.dispatch(
-            CommonActions.reset({
-              index: 0,
-              routes: [{ name: Screens.BottomTab }],
-            })
-          );
+          setTimeout(() => {
+            navigation.dispatch(
+              CommonActions.reset({
+                index: 0,
+                routes: [{ name: Screens.BottomTab }],
+              })
+            );
+          }, 800);
         }, 1000);
+
       }
 
     } catch (error) {
@@ -151,7 +154,7 @@ const MenuAuthenticationScreen = ({ navigation }) => {
       </View>
 
       <BlockDialog isShowDialog={isShowDialog} toggleShowDialog={toggleShowDialog} />
-      <Loading isLoading={isLoading}/>
+      <Loading isLoading={isLoading} />
     </View>
   )
 }
