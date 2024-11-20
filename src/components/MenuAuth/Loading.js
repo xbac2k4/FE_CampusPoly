@@ -25,14 +25,5 @@ const st = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(0,0,0,0.5)'
-    },
-    modalContent: {
-        backgroundColor: '#181a1c',
-        width: '50%',
-        borderRadius: 20,
-        borderWidth: 1,
-        borderColor: 'white',
-        padding: 20,
-        alignItems: 'center'
     }
 })
