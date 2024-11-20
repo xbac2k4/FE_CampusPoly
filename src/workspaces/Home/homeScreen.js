@@ -1,6 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity, View, FlatList, ScrollView, ActivityIndicator } from 'react-native';
 import React, { useEffect, useState, useContext } from 'react';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from 'react-native-vector-icons/AntDesign';
 import ProfilePosts from '../../components/ProfileScreen/profilePosts';
 import { useNavigation } from '@react-navigation/native';
 import Screens from '../../navigation/Screens';
@@ -64,7 +64,7 @@ const HomeScreen = () => {
               style={styles.circleIcon}
               onPress={() => navigation.navigate(Screens.Message)}
             >
-              <Icon name="mail-outline" size={15} color="#fff" />
+              <Icon name="message1" size={15} color="#fff" />
             </TouchableOpacity>
           </View>
 

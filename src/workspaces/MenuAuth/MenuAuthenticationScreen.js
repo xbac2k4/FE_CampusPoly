@@ -1,4 +1,3 @@
-import { StyleSheet, Text, View, StatusBar, TouchableOpacity, Image, Alert } from 'react-native'
 import React, { useCallback, useState, useContext } from 'react'
 import Screens from '../../navigation/Screens'
 import Colors from '../../constants/Color'
@@ -6,9 +5,10 @@ import BlockDialog from '../../components/MenuAuth/BlockDialog'
 import { CommonActions } from '@react-navigation/native'
 import { UserContext } from '../../services/provider/UseContext';
 import { SocketContext } from '../../services/provider/SocketContext';
-import { Google_Client_ID } from '@env';
+import messaging from '@react-native-firebase/messaging'
+import { Image, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import Loading from '../../components/MenuAuth/Loading'
 import { LOGIN_WITH_GOOGLE } from '../../services/ApiConfig'
-import messaging from '@react-native-firebase/messaging';
 
 
 
@@ -18,24 +18,36 @@ const MenuAuthenticationScreen = ({ navigation }) => {
 
 
   const [isShowDialog, setIsShowDialog] = useState(false)
-  const [listUserOnline, setListUserOnline] = useState(false)
+  // const [listUserOnline, setListUserOnline] = useState(false)
+  // const { setUser } = useContext(UserContext);
+  // const { connectSocket } = useContext(SocketContext);
+  // const [isShowDialog, setIsShowDialog] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const toggleShowDialog = useCallback(() => {
     setIsShowDialog(prevState => !prevState);
   }, []);
 
   const SignInWithGoogle = async () => {
+    setIsLoading(true); // Hiển thị loading
 
+    const timeoutId = setTimeout(() => {
+      setIsLoading(false);
+      setIsShowDialog(false); // Tắt dialog
+      console.log('Quá trình đăng nhập quá lâu, đã dừng lại.');
+    }, 5000); // Thời gian chờ tối đa là 5 giây
 
     try {
       await GoogleSignin.hasPlayServices({
         showPlayServicesUpdateDialog: true,
       })
+
+      await GoogleSignin.signOut();
       const userInfo = await GoogleSignin.signIn();
       const accessToken = (await GoogleSignin.getTokens()).accessToken;
 
       const deviceToken = await messaging().getToken();
-      // console.log('Device token:', deviceToken);
+      console.log('Device token:', deviceToken);
 
       const data = userInfo.data.user;
       const user = {
@@ -44,14 +56,14 @@ const MenuAuthenticationScreen = ({ navigation }) => {
         avatar: data.photo,
         accessToken,
         device_token: deviceToken,
-      }
+      };
 
       const response = await fetch(LOGIN_WITH_GOOGLE, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json', // Định dạng JSON
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(user), // Chuyển `user` thành chuỗi JSON để gửi lên server
+        body: JSON.stringify(user),
       });
 
       if (!response.ok) {
@@ -59,33 +71,32 @@ const MenuAuthenticationScreen = ({ navigation }) => {
       }
 
       const responseData = await response.json();
-      console.log('Login response:', responseData);
+      // console.log('Login response:', responseData);
       // Kết nối với socket server
 
-      // chuyển màn hình và xóa các màn cũ khỏi ngăn xếp
       if (responseData.status === 200) {
         setUser(responseData.data);
         connectSocket(responseData.data)
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{ name: Screens.BottomTab }],
-          })
-        );
+        clearTimeout(timeoutId); // Xóa thời gian chờ nếu đăng nhập thành công
+        setTimeout(() => {
+          setIsLoading(false);
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{ name: Screens.BottomTab }],
+            })
+          );
+        }, 1000);
       } else if (responseData.status === 400) {
         toggleShowDialog();
         await GoogleSignin.signOut();
       }
-
     } catch (error) {
-      if (JSON.stringify(error) == {}) {
-        console.log('Không có thông tin người dùng');
-      } else {
-        console.log(error);
-      }
+      clearTimeout(timeoutId); // Xóa thời gian chờ nếu có lỗi
+      setIsLoading(false);
+      setIsShowDialog(false); // Tắt dialog nếu có lỗi
+      console.log(error);
     }
-
-
   }
 
   return (
@@ -138,6 +149,7 @@ const MenuAuthenticationScreen = ({ navigation }) => {
       </View>
 
       <BlockDialog isShowDialog={isShowDialog} toggleShowDialog={toggleShowDialog} />
+      <Loading isLoading={isLoading} />
     </View>
   )
 }
