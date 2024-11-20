@@ -252,6 +252,7 @@ const ProfilePosts = (props) => {
               visible={modalVisible}
               onConfirm={handleConfirm}
               onCancel={handleCancel}
+              message={'Bạn có chắc muốn báo cáo?'}
             />
             <Image source={report} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
             <Text style={styles.textOne}>Bài viết xúc phạm người dùng khác</Text>

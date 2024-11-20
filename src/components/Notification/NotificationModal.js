@@ -3,14 +3,14 @@ import { View, Text, TouchableOpacity, StyleSheet, Modal, Image } from 'react-na
 
 
 
-const NotificationModal = ({ visible, onConfirm, onCancel }) => {
+const NotificationModal = ({ visible, message ,onConfirm, onCancel }) => {
   return (
     <Modal transparent visible={visible} animationType="fade">
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
           <Image source={require('../../assets/images/report.png')} style={styles.icon} />
           <Text style={styles.title}>Thông báo!</Text>
-          <Text style={styles.message}>Bạn có chắc với lựa chọn này</Text>
+          <Text style={styles.message}>{message}</Text>
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.confirmButton} onPress={onConfirm}>
               <Text style={styles.confirmText}>Đồng ý</Text>
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     width: 300,
     padding: 20,
-    backgroundColor: 'white',
+    backgroundColor: '#181A1C',
     borderRadius: 8,
     alignItems: 'center',
   },
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   },
   message: {
     fontSize: 16,
-    color: '#333',
+    color: '#fff',
     textAlign: 'center',
     marginBottom: 20,
   },
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   confirmButton: {
-    backgroundColor: '#6a1b9a',
+    backgroundColor: '#FF0000',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   cancelText: {
-    color: '#333',
+    color: '#fff',
     fontSize: 16,
   },
 });

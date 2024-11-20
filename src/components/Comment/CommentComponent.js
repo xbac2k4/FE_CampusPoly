@@ -23,7 +23,7 @@ const CommentComponent = ({
           <Text style={styles.textContent}>{content}</Text>
           {/* Thời gian và số lượt thích */}
           <View style={styles.timeLikeContainer}>
-            <Text style={styles.textTime}>{time} <Text>Ago</Text></Text>
+            <Text style={styles.textTime}>{time}</Text>
             <Text style={styles.textTime}> · </Text>
             <Text style={styles.textTime}>{likes} <Text>Likes</Text></Text>
           </View>

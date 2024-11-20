@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, ScrollView, ActivityIndicator, Touchable
 import { useNavigation, useRoute } from '@react-navigation/native';
 import CommentComponent from '../../components/Comment/CommentComponent';
 import CommentInputComponent from '../../components/Comment/CommentInputComponent';
-import {GET_POST_ID} from '../../services/ApiConfig'
+import { GET_POST_ID } from '../../services/ApiConfig'
 import styles from '../../assets/style/CommentStyle'
 const { width: screenWidth } = Dimensions.get('window'); // Lấy chiều rộng màn hình để điều chỉnh kích thước hình ảnh
 const CommentScreen = () => {
@@ -29,7 +29,7 @@ const CommentScreen = () => {
           }
         });
 
-      
+
         const data = await response.json();
         setPost(data.data);
         setComment(data.data.commentData);
@@ -49,7 +49,13 @@ const CommentScreen = () => {
         const data = await response.json();
         // console.log(data);
 
-        setComment(data.data); // Giả sử API trả về dữ liệu trong `data.data`
+
+        // Sắp xếp bình luận theo createdAt giảm dần
+        const sortedComments = data.data.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+
+        setComment(sortedComments); // Cập nhật danh sách bình luận đã sắp xếp
       } catch (error) {
         console.error('Error fetching comments:', error);
         setError(error);
@@ -74,7 +80,7 @@ const CommentScreen = () => {
   // console.log(post);
 
 
- 
+
 
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 20 }} />;
@@ -250,18 +256,23 @@ const CommentScreen = () => {
           </View>
         </View>
 
-        {comment.map((comment) => (
-          <CommentComponent
-            key={comment._id}
-            avatar={comment.user_id_comment.avatar.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg'}
-            name={comment.user_id_comment.full_name}
-            content={comment.comment_content}
-            time={timeAgo(comment.createdAt)} // Format thời gian nếu cần
-            likes={0} // Bạn có thể chỉnh sửa nếu cần thêm thông tin về lượt thích
-          />
-        ))}
+        {comment
+          ?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sắp xếp bình luận mới nhất lên đầu
+          .map((comment) => (
+            <CommentComponent
+              key={comment._id}
+              avatar={comment.user_id_comment.avatar.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg'}
+              name={comment.user_id_comment.full_name}
+              content={comment.comment_content}
+              time={timeAgo(comment.createdAt)} // Format thời gian nếu cần
+              likes={0} // Bạn có thể chỉnh sửa nếu cần thêm thông tin về lượt thích
+            />
+          ))}
+
+
       </ScrollView>
-      <CommentInputComponent style={styles.commentInput} />
+      <CommentInputComponent postId={postId}
+        onSend={(newComment) => setComment([newComment, ...comment])} style={styles.commentInput} />
     </View>
   );
 };
