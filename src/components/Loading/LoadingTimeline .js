@@ -1,24 +1,32 @@
 import React from 'react';
-import { View, StyleSheet, Image, Text, FlatList } from 'react-native';
-import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import { StyleSheet, View } from 'react-native';
+import SkeletonShimmer from './SkeletonShimmer';
 
 const RenderLoadingTimeline = () => (
-    <SkeletonPlaceholder borderRadius={4} backgroundColor='#9b9b9b'>
-        <View style={styles.container}>
-            <View style={{ flexDirection: 'row', width: '100%', alignItems: 'center' }}>
-                <View style={styles.avatar} />
-                <View style={{ marginLeft: 10, flexDirection: 'column', width: '100%', gap: 5 }}>
-                    <View style={styles.title} />
-                    <View style={styles.name} />
-                </View>
-            </View>
-            <View style={styles.bottom}>
-                <View style={{ height: 10, width: '20%', borderRadius: 10 }} />
-                <View style={{ height: 10, width: '20%', borderRadius: 10 }} />
-                <View style={{ height: 10, width: '20%', borderRadius: 10 }} />
+    <View style={styles.container}>
+        <View style={{
+            flexDirection: 'row',
+            width: '100%',
+        }}>
+            <SkeletonShimmer width={50} height={50} borderRadius={50} />
+            <View style={{
+                marginLeft: 10,
+            }}>
+                <SkeletonShimmer width={100} height={20} borderRadius={10} style={{marginBottom:10}}/>
+                <SkeletonShimmer width={80} height={15} borderRadius={10} />
             </View>
         </View>
-    </SkeletonPlaceholder>
+
+        <View style={{
+            width: '90%',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+        }}>
+            <SkeletonShimmer width={100} height={20} borderRadius={10}/>
+            <SkeletonShimmer width={100} height={20} borderRadius={10}/>
+        </View>
+    </View>
+
 );
 
 
@@ -41,35 +49,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         borderBottomWidth: 1,
         borderBottomColor: '#FFFFFF',
-    },
-    avatar: {
-        width: 50,
-        height: 50,
-        borderRadius: 50,
-    },
-    title: {
-        width: '30%',
-        height: '20%',
-        borderRadius: 3,
-    },
-    name: {
-        width: '20%',
-        height: '15%',
-        borderRadius: 3,
-    },
-    image: {
-        width: '90%',
-        height: 150,
-        borderRadius: 3,
-        backgroundColor: '#F5F5F5',
-        marginBottom: 10,
-    },
-    bottom: {
-        width: '100%',
-        height: 'auto',
-        justifyContent: 'space-evenly',
-        alignItems: 'center',
-        flexDirection: 'row',
     }
 });
 
