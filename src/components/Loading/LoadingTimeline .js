@@ -3,7 +3,7 @@ import { View, StyleSheet, Image, Text, FlatList } from 'react-native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 
 const RenderLoadingTimeline = () => (
-    <SkeletonPlaceholder borderRadius={4}>
+    <SkeletonPlaceholder borderRadius={4} backgroundColor='#9b9b9b'>
         <View style={styles.container}>
             <View style={{ flexDirection: 'row', width: '100%', alignItems: 'center' }}>
                 <View style={styles.avatar} />
