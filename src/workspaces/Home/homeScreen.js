@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import Screens from '../../navigation/Screens';
 import { UserContext } from '../../services/provider/UseContext';
 import { GET_ALL_POST } from '../../services/ApiConfig';
+import LoadingTimeline from '../../components/Loading/LoadingTimeline ';
 
 const HomeScreen = () => {
   const { user } = useContext(UserContext);
@@ -26,7 +27,7 @@ const HomeScreen = () => {
     }
   };
 
-  
+
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -42,7 +43,7 @@ const HomeScreen = () => {
       }
     };
 
-   
+
     setGreeting(getGreeting());
     fetchUserData();
   }, []);
@@ -93,7 +94,8 @@ const HomeScreen = () => {
           </View>
 
           {loading ? (
-            <ActivityIndicator size="large" color="#FFF" style={{ marginTop: 20 }} />
+            // <ActivityIndicator size="large" color="#FFF" style={{ marginTop: 20 }} />
+            <LoadingTimeline quantity={3} />
           ) : selectedTab === 'Dành cho bạn' ? (
             <ProfilePosts data={data} />
           ) : null}
@@ -140,7 +142,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 40,
     borderRadius: 20,
-    
+
     marginHorizontal: 10,
   },
   activeTab: {

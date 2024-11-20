@@ -6,18 +6,22 @@ import {
   View,
   ScrollView,
   Dimensions,
+  Alert
 } from 'react-native';
 import React, { useContext } from 'react';
 import UserComponent from '../../components/Menu/UserComponent';
 import SettingItem from '../../components/Menu/SettingItem';
 import { UserContext } from '../../services/provider/UseContext';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import Screens from '../../navigation/Screens';
+import { SocketContext } from '../../services/provider/SocketContext';
 
 const { width, height } = Dimensions.get('window'); // Get device dimensions
 
-const MenuScreen = () => {
+const MenuScreen = ({ navigation }) => {
 
-  const { user } = useContext(UserContext);
+  const { user, GoogleSignin } = useContext(UserContext);
+  const { disconnectSocket } = useContext(SocketContext);
 
   return (
     <View style={styles.container}>
@@ -50,7 +54,7 @@ const MenuScreen = () => {
               <Text style={styles.navText}>Bạn bè</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.navItem}>
-              <AntDesign name="message1" size={width * 0.06} color="#ff7d97"/>
+              <AntDesign name="message1" size={width * 0.06} color="#ff7d97" />
               <Text style={styles.navText}>Tin nhắn</Text>
             </TouchableOpacity>
           </View>
@@ -73,7 +77,34 @@ const MenuScreen = () => {
       </ScrollView>
 
       {/* Logout button at the bottom */}
-      <TouchableOpacity style={styles.buttonExit}>
+      <TouchableOpacity style={styles.buttonExit} onPress={() => {
+        Alert.alert(
+          'Đăng xuất',
+          'Bạn có chắc chắn muốn đăng xuất khỏi tài khoản này không?',
+          [
+            {
+              text: 'Hủy',
+              onPress: () => console.log('Hủy bỏ'),
+              style: 'cancel',
+            },
+            {
+              text: 'Đồng ý',
+              onPress: () => {
+                GoogleSignin.signOut()
+                  .then(() => {
+                    // console.log('Đã đăng xuất');
+                    navigation.navigate(Screens.MenuAuth);
+                    disconnectSocket();
+                  })
+                  .catch((error) => {
+                    console.error('Lỗi khi đăng xuất:', error);
+                  });
+              },
+            },
+          ],
+        );
+
+      }}>
         <Text style={styles.buttonExitText}>Đăng Xuất</Text>
       </TouchableOpacity>
     </View>

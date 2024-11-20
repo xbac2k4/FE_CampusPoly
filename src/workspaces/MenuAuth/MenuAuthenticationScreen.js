@@ -1,33 +1,24 @@
-import { StyleSheet, Text, View, StatusBar, TouchableOpacity, Image } from 'react-native'
+import { StyleSheet, Text, View, StatusBar, TouchableOpacity, Image, Alert } from 'react-native'
 import React, { useCallback, useState, useContext } from 'react'
 import Screens from '../../navigation/Screens'
 import Colors from '../../constants/Color'
 import BlockDialog from '../../components/MenuAuth/BlockDialog'
 import { CommonActions } from '@react-navigation/native'
-import { GoogleSignin } from '@react-native-google-signin/google-signin'
 import { UserContext } from '../../services/provider/UseContext';
 import { SocketContext } from '../../services/provider/SocketContext';
 import { Google_Client_ID } from '@env';
 import { LOGIN_WITH_GOOGLE } from '../../services/ApiConfig'
 import messaging from '@react-native-firebase/messaging';
 
-GoogleSignin.configure({
-  webClientId: Google_Client_ID,
-  scopes: [
-    'profile',
-    'email',
-    'https://www.googleapis.com/auth/userinfo.profile',
-    'https://www.googleapis.com/auth/user.birthday.read',
-    'https://www.googleapis.com/auth/user.gender.read',
-  ],
-})
+
 
 const MenuAuthenticationScreen = ({ navigation }) => {
-  const { setUser } = useContext(UserContext);
-  const { connectSocket } = useContext(SocketContext);
+  const { setUser, GoogleSignin } = useContext(UserContext);
+  const { connectSocket, socket, disconnectSocket } = useContext(SocketContext);
 
 
   const [isShowDialog, setIsShowDialog] = useState(false)
+  const [listUserOnline, setListUserOnline] = useState(false)
 
   const toggleShowDialog = useCallback(() => {
     setIsShowDialog(prevState => !prevState);
@@ -40,13 +31,11 @@ const MenuAuthenticationScreen = ({ navigation }) => {
       await GoogleSignin.hasPlayServices({
         showPlayServicesUpdateDialog: true,
       })
-      await GoogleSignin.signOut();
       const userInfo = await GoogleSignin.signIn();
       const accessToken = (await GoogleSignin.getTokens()).accessToken;
 
       const deviceToken = await messaging().getToken();
-      console.log('Device token:', deviceToken);
-      
+      // console.log('Device token:', deviceToken);
 
       const data = userInfo.data.user;
       const user = {
@@ -70,18 +59,23 @@ const MenuAuthenticationScreen = ({ navigation }) => {
       }
 
       const responseData = await response.json();
-      // console.log('Login response:', responseData);
-      setUser(responseData.data);
-      connectSocket(responseData.data); // Kết nối với socket server
+      console.log('Login response:', responseData);
+      // Kết nối với socket server
 
       // chuyển màn hình và xóa các màn cũ khỏi ngăn xếp
       if (responseData.status === 200) {
+        setUser(responseData.data);
+        connectSocket(responseData.data)
         navigation.dispatch(
           CommonActions.reset({
             index: 0,
             routes: [{ name: Screens.BottomTab }],
           })
         );
+      } else if (responseData.status === 400) {
+        console.log(responseData.message);
+        Alert.alert(responseData.message, '...................')
+        await GoogleSignin.signOut();
       }
 
     } catch (error) {
