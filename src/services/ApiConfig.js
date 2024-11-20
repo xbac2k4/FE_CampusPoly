@@ -11,3 +11,5 @@ export const GET_CONVERSATION_BY_USER = API_URL + 'conversations/get-user-conver
 export const GET_MESSAGE_BY_CONVERSATION = API_URL + 'messages/get-message-by-conversation/';
 export const ADD_MESSAGE = API_URL + 'messages/add-message';
 export const ADD_COMMENT = API_URL + 'comments/add-comment-to-post';
+export const LIKE_POST = API_URL + 'likes/add-like-to-post';
+export const UNLIKE_POST = API_URL + 'likes/remove-like-from-post';

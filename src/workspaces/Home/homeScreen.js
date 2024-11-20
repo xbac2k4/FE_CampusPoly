@@ -57,7 +57,8 @@ const HomeScreen = () => {
         <View style={{ flex: 1 }}>
           <View style={styles.headerContent}>
             <Text style={styles.greetingText}>
-              {greeting}
+            <Text>{greeting}</Text>
+
             </Text>
             <TouchableOpacity
               style={styles.circleIcon}
