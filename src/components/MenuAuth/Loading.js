@@ -11,9 +11,7 @@ const Loading = ({ isLoading }) => {
 
             <View style={st.modalContainer}>
 
-                <View style={st.modalContent}>
-                    <ActivityIndicator size={50} color={'white'} animating={isLoading} />
-                </View>
+                <ActivityIndicator size={50} color={'white'} animating={isLoading} />
             </View>
         </Modal>
     )
