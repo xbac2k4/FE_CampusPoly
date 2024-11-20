@@ -73,8 +73,7 @@ const MenuAuthenticationScreen = ({ navigation }) => {
           })
         );
       } else if (responseData.status === 400) {
-        console.log(responseData.message);
-        Alert.alert(responseData.message, '...................')
+        toggleShowDialog();
         await GoogleSignin.signOut();
       }
 

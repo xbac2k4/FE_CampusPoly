@@ -24,7 +24,7 @@ const BlockDialog = ({ isShowDialog, toggleShowDialog }) => {
                         <Text style={st.modalHeader}>Tạm thời tài khoản của bạn bị vô hiệu hóa</Text>
                     </View>
                     <Text style={st.modalTitle}>
-                        Cần hỗ trợ vui lòng liên hệ qua địa chỉ: email@gmail.com
+                        Cần hỗ trợ vui lòng liên hệ qua địa chỉ: campuspoly.vn@gmail.com
                     </Text>
 
                     <TouchableOpacity
