@@ -40,12 +40,6 @@ const CommentStyle = StyleSheet.create({
         color: '#FFF',
         marginBottom: 10,
       },
-      // postImage: {
-      //   width: '100%',
-      //   height: 200,
-      //   borderRadius: 8,
-      //   marginTop: 10,
-      // },
       paginationContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
@@ -76,7 +70,7 @@ const CommentStyle = StyleSheet.create({
       },
       barHeader: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         alignItems: 'center',
         paddingBottom: 20,
       },
@@ -88,6 +82,9 @@ const CommentStyle = StyleSheet.create({
         borderColor: '#323436',
         justifyContent: 'center',
         alignItems: 'center',
+        position: 'absolute',
+        left: '5%',
+        top: '2%',
       },
       textHeader: {
         color: '#ECEBED',

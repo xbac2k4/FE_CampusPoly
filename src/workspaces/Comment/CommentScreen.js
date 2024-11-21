@@ -3,8 +3,9 @@ import { View, Text, StyleSheet, Image, ScrollView, ActivityIndicator, Touchable
 import { useNavigation, useRoute } from '@react-navigation/native';
 import CommentComponent from '../../components/Comment/CommentComponent';
 import CommentInputComponent from '../../components/Comment/CommentInputComponent';
-import {GET_POST_ID} from '../../services/ApiConfig'
+import { GET_POST_ID } from '../../services/ApiConfig'
 import styles from '../../assets/style/CommentStyle'
+import { CommentLoading } from '../../components/Loading/LoadingTimeline ';
 const { width: screenWidth } = Dimensions.get('window'); // Lấy chiều rộng màn hình để điều chỉnh kích thước hình ảnh
 const CommentScreen = () => {
   const route = useRoute();
@@ -29,7 +30,7 @@ const CommentScreen = () => {
           }
         });
 
-      
+
         const data = await response.json();
         setPost(data.data);
         setComment(data.data.commentData);
@@ -74,10 +75,11 @@ const CommentScreen = () => {
   // console.log(post);
 
 
- 
+
 
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 20 }} />;
+    // return <CommentLoading/>
   }
 
   if (error) {
@@ -152,19 +154,19 @@ const CommentScreen = () => {
   return (
     <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={styles.container}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.circleIcon}
+        >
+          <Image
+            source={require('../../assets/images/arowleft.png')}
+            resizeMode="contain"
+            style={{ width: 15, height: 15 }}
+          />
+        </TouchableOpacity>
         <View style={styles.barHeader}>
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={styles.circleIcon}
-          >
-            <Image
-              source={require('../../assets/images/arowleft.png')}
-              resizeMode="contain"
-              style={{ width: 15, height: 15 }}
-            />
-          </TouchableOpacity>
+
           <Text style={styles.textHeader}>Comment</Text>
-          <Text style={[styles.textHeader, { color: '#181A1C' }]}>Post</Text>
         </View>
 
 

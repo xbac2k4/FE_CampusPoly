@@ -40,6 +40,14 @@ const LoadingTimeline = props => {
     );
 };
 
+export const CommentLoading = () => {
+    return(
+        <View>
+
+        </View>
+    )
+}
+
 const styles = StyleSheet.create({
     container: {
         width: '100%',
