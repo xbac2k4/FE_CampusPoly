@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, ActivityIndicator, TouchableOpacity, Dimensions, FlatList } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import CommentComponent from '../../components/Comment/CommentComponent';
+import React, { useEffect, useState } from 'react';
+import { Dimensions, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import styles from '../../assets/style/CommentStyle';
 import CommentInputComponent from '../../components/Comment/CommentInputComponent';
-import { GET_POST_ID } from '../../services/ApiConfig'
-import styles from '../../assets/style/CommentStyle'
-import { CommentLoading } from '../../components/Loading/LoadingTimeline ';
+import { CommentLoading, PostCommentLoading } from '../../components/Loading/LoadingTimeline ';
+import SkeletonShimmer from '../../components/Loading/SkeletonShimmer';
+import CommentComponent from '../../components/Comment/CommentComponent';
 const { width: screenWidth } = Dimensions.get('window'); // Lấy chiều rộng màn hình để điều chỉnh kích thước hình ảnh
 const CommentScreen = () => {
   const route = useRoute();
@@ -77,18 +77,18 @@ const CommentScreen = () => {
 
 
 
-  if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 20 }} />;
-    // return <CommentLoading/>
-  }
+  // if (loading) {
+  //   return <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 20 }} />;
+  //   // return <CommentLoading/>
+  // }
 
   if (error) {
     return <Text style={styles.errorText}>Error loading post: {error.message}</Text>;
   }
 
-  if (!post) {
-    return <Text style={styles.errorText}>No post found</Text>;
-  }
+  // if (!post) {
+  //   return <Text style={styles.errorText}>No post found</Text>;
+  // }
 
   const renderImages = (images, postId) => {
     // console.log(images);
@@ -173,72 +173,79 @@ const CommentScreen = () => {
 
         <View style={{ height: 1, backgroundColor: '#323436', marginBottom: 15 }} />
 
-        <View style={styles.headerContent}>
-          <View style={{ flexDirection: 'row' }}>
-            <TouchableOpacity onPress={() => { /* Xử lý avatar */ }}>
-              <Image source={{ uri: post?.postData?.user_id?.avatar.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' }}
-                style={styles.imageavatar} />
-            </TouchableOpacity>
-            <View style={{ marginLeft: 6, marginTop: -5 }}>
-              <Text style={{ color: '#fff', fontWeight: 'semibold', fontSize: 14, fontFamily: "HankenGrotesk-Regular" }}>{post?.postData?.user_id?.full_name}</Text>
-              <Text style={{ fontSize: 12, fontFamily: 'HankenGrotesk-Regular', fontWeight: "medium", color: '#727477' }}>{timeAgo(post.postData.createdAt)}</Text>
+        {loading ? <PostCommentLoading /> : (
+          <>
+            <View style={styles.headerContent}>
+              <View style={{ flexDirection: 'row' }}>
+                <TouchableOpacity onPress={() => { /* Xử lý avatar */ }}>
+                  <Image source={{ uri: post?.postData?.user_id?.avatar.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' }}
+                    style={styles.imageavatar} />
+                </TouchableOpacity>
+                <View style={{ marginLeft: 6, marginTop: -5 }}>
+                  <Text style={{ color: '#fff', fontWeight: 'semibold', fontSize: 14, fontFamily: "HankenGrotesk-Regular" }}>{post?.postData?.user_id?.full_name}</Text>
+                  <Text style={{ fontSize: 12, fontFamily: 'HankenGrotesk-Regular', fontWeight: "medium", color: '#727477' }}>{timeAgo(post.postData.createdAt)}</Text>
+                </View>
+              </View>
+              <TouchableOpacity onPress={() => { /* Xử lý nút menu */ }}>
+                <Image source={require('../../assets/images/dot.png')} resizeMode='contain' style={{ width: 20, height: 20 }} />
+              </TouchableOpacity>
             </View>
-          </View>
-          <TouchableOpacity onPress={() => { /* Xử lý nút menu */ }}>
-            <Image source={require('../../assets/images/dot.png')} resizeMode='contain' style={{ width: 20, height: 20 }} />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.bodyContent}>
+            <View style={styles.bodyContent}>
 
-          <Text style={{ fontFamily: 'rgl1', fontSize: 16, fontWeight: '500', color: "#fff" }}>
-            {post?.postData?.title}
-          </Text>
-          <Text style={{ fontFamily: 'rgl1', fontSize: 16, fontWeight: '500', color: "#fff" }}>
-            {post?.postData?.content}
-          </Text>
-          {post?.postData?.image && renderImages(post?.postData?.image, post?.postData?._id)}
-        </View>
+              <Text style={{ fontFamily: 'rgl1', fontSize: 16, fontWeight: '500', color: "#fff" }}>
+                {post?.postData?.title}
+              </Text>
+              <Text style={{ fontFamily: 'rgl1', fontSize: 16, fontWeight: '500', color: "#fff" }}>
+                {post?.postData?.content}
+              </Text>
+              {post?.postData?.image && renderImages(post?.postData?.image, post?.postData?._id)}
+            </View>
 
-        <View style={styles.interactContainer}>
-          <View style={{ flexDirection: "row" }}>
-            <View style={styles.iconLike}>
-              <TouchableOpacity>
+
+            <View style={styles.interactContainer}>
+              <View style={{ flexDirection: "row" }}>
+                <View style={styles.iconLike}>
+                  <TouchableOpacity>
+                    <Image
+                      source={isLiked
+                        ? require('../../assets/images/hear2.png')
+                        : require('../../assets/images/heart.png')}
+                      resizeMode='contain'
+                      style={{ width: 20, height: 20, marginLeft: 3 }}
+                    />
+                  </TouchableOpacity>
+                  <Text style={styles.textInteract}>{post?.postData?.like_count}</Text>
+                </View>
+                <View style={styles.iconLike}>
+                  <TouchableOpacity onPress={() => { /* Xử lý nút comment */ }}>
+                    <Image source={require("../../assets/images/comment.png")} resizeMode='contain' style={{ width: 20, height: 20, marginLeft: 3 }} />
+                  </TouchableOpacity>
+                  <Text style={styles.textInteract}>{post?.postData?.comment_count}</Text>
+                </View>
+                <TouchableOpacity onPress={() => { /* Xử lý nút share */ }} style={[styles.iconLike, { marginLeft: 4 }]}>
+                  <Image source={require('../../assets/images/share.png')} resizeMode='contain' style={{ width: 20, height: 20 }} />
+                </TouchableOpacity>
+              </View>
+              <TouchableOpacity onPress={() => setIsBookmark(!isBookmark)} style={{ marginTop: 5 }}>
                 <Image
-                  source={isLiked
-                    ? require('../../assets/images/hear2.png')
-                    : require('../../assets/images/heart.png')}
+                  source={isBookmark
+                    ? require('../../assets/images/bookmark2.png')
+                    : require('../../assets/images/bookmark.png')}
                   resizeMode='contain'
-                  style={{ width: 20, height: 20, marginLeft: 3 }}
+                  style={{ width: 20, height: 20 }}
                 />
               </TouchableOpacity>
-              <Text style={styles.textInteract}>{post?.postData?.like_count}</Text>
-            </View>
-            <View style={styles.iconLike}>
-              <TouchableOpacity onPress={() => { /* Xử lý nút comment */ }}>
-                <Image source={require("../../assets/images/comment.png")} resizeMode='contain' style={{ width: 20, height: 20, marginLeft: 3 }} />
-              </TouchableOpacity>
-              <Text style={styles.textInteract}>{post?.postData?.comment_count}</Text>
-            </View>
-            <TouchableOpacity onPress={() => { /* Xử lý nút share */ }} style={[styles.iconLike, { marginLeft: 4 }]}>
-              <Image source={require('../../assets/images/share.png')} resizeMode='contain' style={{ width: 20, height: 20 }} />
-            </TouchableOpacity>
-          </View>
-          <TouchableOpacity onPress={() => setIsBookmark(!isBookmark)} style={{ marginTop: 5 }}>
-            <Image
-              source={isBookmark
-                ? require('../../assets/images/bookmark2.png')
-                : require('../../assets/images/bookmark.png')}
-              resizeMode='contain'
-              style={{ width: 20, height: 20 }}
-            />
-          </TouchableOpacity>
-        </View>
+            </View></>
+        )}
         <View style={{ height: 1, backgroundColor: '#323436', marginTop: 15 }} />
         {/** Sử lí phầm comment */}
         <View style={styles.barComment}>
-          <Text style={styles.commentTitle}>
-            COMMENTS (<Text>{comment.length}</Text>)
-          </Text>
+          {loading ? <SkeletonShimmer width={100} height={20} borderRadius={10} />
+            : <Text style={styles.commentTitle}>
+              COMMENTS (<Text>{comment.length}</Text>)
+            </Text>
+          }
+
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text style={styles.recentText}>Mới nhất</Text>
             <TouchableOpacity onPress={() => {
@@ -251,17 +258,21 @@ const CommentScreen = () => {
             </TouchableOpacity>
           </View>
         </View>
+        {
+          !loading && (
+            comment.map((comment) => (
+              <CommentComponent
+                key={comment._id}
+                avatar={comment.user_id_comment.avatar.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg'}
+                name={comment.user_id_comment.full_name}
+                content={comment.comment_content}
+                time={timeAgo(comment.createdAt)} // Format thời gian nếu cần
+                likes={0} // Bạn có thể chỉnh sửa nếu cần thêm thông tin về lượt thích
+              />
+            ))
+          )
+        }
 
-        {comment.map((comment) => (
-          <CommentComponent
-            key={comment._id}
-            avatar={comment.user_id_comment.avatar.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg'}
-            name={comment.user_id_comment.full_name}
-            content={comment.comment_content}
-            time={timeAgo(comment.createdAt)} // Format thời gian nếu cần
-            likes={0} // Bạn có thể chỉnh sửa nếu cần thêm thông tin về lượt thích
-          />
-        ))}
       </ScrollView>
       <CommentInputComponent style={styles.commentInput} />
     </View>

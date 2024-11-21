@@ -12,7 +12,7 @@ const RenderLoadingTimeline = () => (
             <View style={{
                 marginLeft: 10,
             }}>
-                <SkeletonShimmer width={100} height={20} borderRadius={10} style={{marginBottom:10}}/>
+                <SkeletonShimmer width={100} height={20} borderRadius={10} style={{ marginBottom: 10 }} />
                 <SkeletonShimmer width={80} height={15} borderRadius={10} />
             </View>
         </View>
@@ -22,8 +22,8 @@ const RenderLoadingTimeline = () => (
             flexDirection: 'row',
             justifyContent: 'space-between',
         }}>
-            <SkeletonShimmer width={100} height={20} borderRadius={10}/>
-            <SkeletonShimmer width={100} height={20} borderRadius={10}/>
+            <SkeletonShimmer width={100} height={20} borderRadius={10} />
+            <SkeletonShimmer width={100} height={20} borderRadius={10} />
         </View>
     </View>
 
@@ -40,10 +40,30 @@ const LoadingTimeline = props => {
     );
 };
 
-export const CommentLoading = () => {
-    return(
-        <View>
+export const PostCommentLoading = () => {
+    return (
+        <View style={[styles.container,{height:'17%'}]}>
+            <View style={{
+                flexDirection: 'row',
+                width: '100%',
+            }}>
+                <SkeletonShimmer width={40} height={40} borderRadius={50} />
+                <View style={{
+                    marginLeft: 10,
+                }}>
+                    <SkeletonShimmer width={100} height={20} borderRadius={10} style={{ marginBottom: 10 }} />
+                    <SkeletonShimmer width={80} height={15} borderRadius={10} />
+                </View>
+            </View>
 
+            <View style={{
+                width: '90%',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+            }}>
+                <SkeletonShimmer width={100} height={20} borderRadius={10} />
+                <SkeletonShimmer width={100} height={20} borderRadius={10} />
+            </View>
         </View>
     )
 }
