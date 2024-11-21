@@ -26,7 +26,7 @@ const HomeScreen = () => {
     }
   };
 
-  
+
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -42,7 +42,7 @@ const HomeScreen = () => {
       }
     };
 
-   
+
     setGreeting(getGreeting());
     fetchUserData();
   }, []);
@@ -57,7 +57,7 @@ const HomeScreen = () => {
         <View style={{ flex: 1 }}>
           <View style={styles.headerContent}>
             <Text style={styles.greetingText}>
-            <Text>{greeting}</Text>
+              <Text>{greeting}</Text>
 
             </Text>
             <TouchableOpacity
@@ -96,7 +96,7 @@ const HomeScreen = () => {
           {loading ? (
             <ActivityIndicator size="large" color="#FFF" style={{ marginTop: 20 }} />
           ) : selectedTab === 'Dành cho bạn' ? (
-            <ProfilePosts data={data} />
+            <ProfilePosts navigation={navigation} data={data} />
           ) : null}
         </View>
       </View>
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 40,
     borderRadius: 20,
-    
+
     marginHorizontal: 10,
   },
   activeTab: {
