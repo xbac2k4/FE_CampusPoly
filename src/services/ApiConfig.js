@@ -11,3 +11,6 @@ export const GET_CONVERSATION_BY_USER = API_URL + 'conversations/get-user-conver
 export const GET_MESSAGE_BY_CONVERSATION = API_URL + 'messages/get-message-by-conversation/';
 export const ADD_MESSAGE = API_URL + 'messages/add-message';
 export const GET_SEARCH = API_URL + 'posts/search';
+export const ADD_FRIEND  = API_URL + 'friends/add-friend';
+export const UPDATE_FRIEND  = API_URL + 'friends/update-friend';
+export const GET_FRIEND_BY_USERID  = API_URL + 'friends/get-friend-by-userID';

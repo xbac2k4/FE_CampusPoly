@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, StatusBar, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-const Header = ({ data }) => {
+const Header = ({ data, navigation }) => {
   const defaultBackgroundImage = require('../../assets/images/default-bg.png');
   const defaultAvatar = require('../../assets/images/default-profile.png');
 
@@ -10,6 +10,15 @@ const Header = ({ data }) => {
     <View style={styles.headerContainer}>
       {/* StatusBar customization */}
       <StatusBar barStyle="light-content" translucent={true} backgroundColor="transparent" />
+
+      {/* Back button */}
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <Image
+          source={require('../../assets/images/arowleft.png')}
+          resizeMode="contain"
+          style={{ width: 15, height: 15 }}
+        />
+      </TouchableOpacity>
 
       {/* Display background image or default image */}
       <Image
@@ -49,6 +58,13 @@ const styles = StyleSheet.create({
   headerContainer: {
     alignItems: 'center',
     marginTop: 0,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 40,
+    left: 20,
+    zIndex: 10,
+    padding: 10,
   },
   backgroundImage: {
     position: 'absolute',
