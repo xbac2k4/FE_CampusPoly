@@ -166,7 +166,7 @@ const ProfilePosts = (props) => {
       <ScrollView contentContainerStyle={styles.flatListContent}>
         {user && user.length > 0 ? (
           user.map((item) => {
-            console.log(item);
+            // console.log(item);
             
             return (
               <View key={item?._id} style={styles.postContainer}>

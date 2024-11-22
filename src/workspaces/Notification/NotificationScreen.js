@@ -1,46 +1,48 @@
 import React from 'react';
-import { View, Text, SectionList, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import { useSelector, useDispatch } from 'react-redux';
-import { markAllAsRead } from './NotificationData'; // Import action từ notificationSlice
-
-
+import { FlatList, Image, SectionList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const NotificationScreen = () => {
-  const notifications = useSelector((state) => state.notifications.notifications);
-  const dispatch = useDispatch();
+  const notifications = [
+    {
+      collapseKey: "com.fe_campuspoly",
+      data: {},
+      from: "248843730555",
+      messageId: "0:1732289383695370%fe7eaefefe7eaefe",
+      notification: {
+        android: {
+          color: "#211d1e",
+          imageUrl: "https://play-lh.googleusercontent.com/DsyWoouXk7psjF7DCG6MJj_rX9RR9-liQskZXoKvcqQIu_ybUm4F5RntxWh1IZAVSLI",
+          smallIcon: "ic_campus_poly",
+          sound: "default"
+        },
+        body: "Học tiếng anh đi! 😡",
+        title: "Chào mừng bạn đến với CampusPoly"
+      },
+      originalPriority: 2,
+      priority: 2,
+      sentTime: 1732289383684,
+      ttl: 2419200
+    }
+  ]
 
 
   const renderItem = ({ item }) => {
-    let iconSource;
 
-    // Sử dụng URL của ảnh
-    switch (item.icon) {
-      case 'like':
-        iconSource = 'https://cdn-icons-png.flaticon.com/512/4926/4926585.png';
-        break;
-      case 'cake':
-        iconSource = 'https://cdn-icons-png.flaticon.com/512/4549/4549811.png';
-        break;
-      case 'comment':
-        iconSource = 'https://icons.iconarchive.com/icons/custom-icon-design/flatastic-1/512/comment-icon.png';
-        break;
-      default:
-        iconSource = 'https://cdn-icons-png.flaticon.com/512/4926/4926585.png';
-    }
-
+    // console.log("item: ", item.notification.android.imageUrl);
+    
     return (
       <View style={styles.notificationItem}>
 
         <View style={styles.iconContainer}>
           <Image
-            source={{ uri: iconSource }}
+            source={{ uri: item.notification.android.imageUrl }}
             style={styles.icon}
           />
         </View>
 
         <View style={styles.notificationContent}>
           <Text style={styles.notificationText}>
-            <Text style={styles.boldText}>{item.user}</Text> {item.action}
+            <Text style={styles.boldText}>{item.notification.title}</Text> {item.notification.body}
           </Text>
           <Text style={styles.timeText}>{item.time}</Text>
         </View>
@@ -48,24 +50,18 @@ const NotificationScreen = () => {
     );
   };
 
-
-  const renderSectionHeader = ({ section: { title } }) => (
-    <Text style={styles.sectionHeader}>{title}</Text>
-  );
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Thông báo</Text>
-        <TouchableOpacity onPress={() => dispatch(markAllAsRead())}>
+        <TouchableOpacity>
           <Text style={styles.markAllAsRead}>Đánh dấu tất cả là đã đọc</Text>
         </TouchableOpacity>
       </View>
-      <SectionList
-        sections={notifications}
-        keyExtractor={(item) => item.id.toString()}
+      <FlatList
+        data={notifications}
         renderItem={renderItem}
-        renderSectionHeader={renderSectionHeader}
+        keyExtractor={(item) => item.messageId}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
     </View>
@@ -82,7 +78,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 15,
-    marginTop:30
+    marginTop: 30
   },
   headerTitle: {
     color: '#fff',

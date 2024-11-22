@@ -1,5 +1,6 @@
 import notifee, { AndroidImportance } from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
+import { addNotification } from '../store/NotificationState';
 
 
 // nhận thông báo trong trạng thái background
@@ -13,20 +14,11 @@ export async function notificationListener() {
 
   const unsubscribe = messaging().onMessage(async remoteMessage => {
     await onDisplayNotification(remoteMessage);
-    // addToNotificationList(remoteMessage);
 
     console.log('A new FCM message arrived!', remoteMessage);
 
-    // Alert.alert(
-    //   remoteMessage.notification.title,
-    //   remoteMessage.notification.body,
-    // )
-
-    // addToNotificationList(remoteMessage);
-
+    addNotification(remoteMessage)
   });
-  
-  // console.log('notificationListener', unsubscribe);
 
 
   return unsubscribe;
