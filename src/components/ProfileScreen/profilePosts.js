@@ -22,7 +22,8 @@ import untrue from '../../assets/images/untrue.png'
 import rectionary from '../../assets/images/rectionary.png'
 import NotificationModal from '../../components/Notification/NotificationModal';
 const ProfilePosts = (props) => {
-  const [user, setUser] = useState(props.data); // Chứa các bài viết
+  // const [user, setUser] = useState(props.data); // Chứa các bài viết
+  const [user, setUser] = useState(props.data.map((item) => item?.post));
   const [loading, setLoading] = useState(true); // Quản lý trạng thái loading
   const [error, setError] = useState(null); // Quản lý lỗi
   const [likedPosts, setLikedPosts] = useState([]); // Lưu trạng thái các bài viết đã thích
@@ -35,6 +36,7 @@ const ProfilePosts = (props) => {
   const openBottomSheet = () => {
     refRBSheet.current.open();
   };
+  // console.log(user);
 
   {/** Sử lí cái thông báo  */ }
   const [modalVisible, setModalVisible] = useState(false);
@@ -68,7 +70,7 @@ const ProfilePosts = (props) => {
     if (user && user.length > 0) {
       const initialIndices = {};
       user.forEach((post) => {
-        if (post.image && post.image.length > 1) {
+        if (post?.image && post?.image.length > 1) {
           initialIndices[post._id] = 0; // Thiết lập chỉ mục đầu tiên cho các bài có nhiều ảnh
         }
       });
@@ -163,72 +165,76 @@ const ProfilePosts = (props) => {
     <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={styles.flatListContent}>
         {user && user.length > 0 ? (
-          user.map((item) => (
-            <View key={item._id} style={styles.postContainer}>
-              <View style={styles.postHeader}>
-                <TouchableOpacity onPress={() => handleProfileClick(item.user_id._id)}>
-                  <Image 
-                    source={{ 
-                      uri: item.user_id
-                        ? item.user_id.avatar.replace('localhost', '10.0.2.2') 
-                        : 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' 
-                    }} 
-                    style={styles.profileImage} 
-                  />
-                </TouchableOpacity>
-                <View style={styles.headerText}>
-                  <TouchableOpacity onPress={() => handleProfileClick(item.user_id._id)}>
-                    <Text style={styles.profileName}>{
-                    item.user_id ? item.user_id.full_name : 'Unknown'
-                    }</Text>
+          user.map((item) => {
+            console.log(item);
+            
+            return (
+              <View key={item?._id} style={styles.postContainer}>
+                <View style={styles.postHeader}>
+                  <TouchableOpacity onPress={() => handleProfileClick(item?.user_id._id)}>
+                    <Image
+                      source={{
+                        uri: item?.user_id
+                          ? item?.user_id.avatar.replace('localhost', '10.0.2.2')
+                          : 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg'
+                      }}
+                      style={styles.profileImage}
+                    />
                   </TouchableOpacity>
-                  <Text style={styles.postTime}>{timeAgo(item.createdAt)}</Text>
+                  <View style={styles.headerText}>
+                    <TouchableOpacity onPress={() => handleProfileClick(item?.user_id._id)}>
+                      <Text style={styles.profileName}>{
+                        item?.user_id ? item?.user_id.full_name : 'Unknown'
+                      }</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.postTime}>{timeAgo(item?.createdAt)}</Text>
+                  </View>
+                  <TouchableOpacity
+                    onPress={openBottomSheet}
+                    style={styles.moreIcon}>
+                    <Text style={styles.moreText}>⋮</Text>
+                  </TouchableOpacity>
                 </View>
-                <TouchableOpacity
-                  onPress={openBottomSheet}
-                  style={styles.moreIcon}>
-                  <Text style={styles.moreText}>⋮</Text>
-                </TouchableOpacity>
-              </View>
-              <Text style={styles.postText}>{item.title}</Text>
-              {item.image && renderImages(item.image, item._id)}
-              <View style={styles.postMeta}>
-                <View style={styles.leftMetaIcons}>
+                <Text style={styles.postText}>{item?.title}</Text>
+                {item?.image && renderImages(item?.image, item?._id)}
+                <View style={styles.postMeta}>
+                  <View style={styles.leftMetaIcons}>
+                    <View style={styles.iconLike}>
+                      <TouchableOpacity onPress={() => toggleLike(item?._id)}>
+                        <Image
+                          source={likedPosts.includes(item?._id) ? heartFilled : heart}
+                          style={styles.iconImage}
+                        />
+                      </TouchableOpacity>
+                      <Text style={styles.metaText}>{item?.like_count}</Text>
+                    </View>
+
+                    <View style={styles.iconLike}>
+                      <TouchableOpacity onPress={() => navigation.navigate(Screens.Comment, { postId: item?._id })}>
+                        <Image source={comment} style={styles.iconImage} />
+                      </TouchableOpacity>
+                      <Text style={styles.metaText}>{item?.comment_count}</Text>
+                    </View>
+
+                    <View style={styles.iconLike}>
+                      <TouchableOpacity>
+                        <Image source={share} style={styles.iconImage} />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
                   <View style={styles.iconLike}>
-                    <TouchableOpacity onPress={() => toggleLike(item._id)}>
+                    <TouchableOpacity style={styles.iconButton} onPress={() => toggleSave(item?._id)}>
                       <Image
-                        source={likedPosts.includes(item._id) ? heartFilled : heart}
+                        source={savedPosts.includes(item?._id) ? bookmarkFilled : bookmark}
                         style={styles.iconImage}
                       />
                     </TouchableOpacity>
-                    <Text style={styles.metaText}>{item.like_count}</Text>
-                  </View>
-
-                  <View style={styles.iconLike}>
-                    <TouchableOpacity onPress={() => navigation.navigate(Screens.Comment, { postId: item._id })}>
-                      <Image source={comment} style={styles.iconImage} />
-                    </TouchableOpacity>
-                    <Text style={styles.metaText}>{item.comment_count}</Text>
-                  </View>
-
-                  <View style={styles.iconLike}>
-                    <TouchableOpacity>
-                      <Image source={share} style={styles.iconImage} />
-                    </TouchableOpacity>
                   </View>
                 </View>
-                <View style={styles.iconLike}>
-                  <TouchableOpacity style={styles.iconButton} onPress={() => toggleSave(item._id)}>
-                    <Image
-                      source={savedPosts.includes(item._id) ? bookmarkFilled : bookmark}
-                      style={styles.iconImage}
-                    />
-                  </TouchableOpacity>
-                </View>
+                <View style={styles.separator} />
               </View>
-              <View style={styles.separator} />
-            </View>
-          ))
+            )
+          })
         ) : (
           <Text style={{ color: 'gray', marginTop: 20 }}>No posts available</Text>
         )}

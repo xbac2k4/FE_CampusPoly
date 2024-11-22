@@ -1,43 +1,41 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { View, ScrollView, StyleSheet, ActivityIndicator, Text } from 'react-native';
+import { View, ScrollView, StyleSheet, ActivityIndicator, Text, Alert } from 'react-native';
 import Header from '../../components/ProfileScreen/header';
 import ProfileStats from '../../components/ProfileScreen/profileStats';
 import ProfileTabs from '../../components/ProfileScreen/profileTabs';
 import ProfilePosts from '../../components/ProfileScreen/profilePosts';
 import FrProfileStats from '../../components/FrProfileScreen/frProfileStats';
 import { UserContext } from '../../services/provider/UseContext';
-import { GET_USER_ID } from '../../services/ApiConfig';
-import { GET_POST_BY_USERID } from '../../services/ApiConfig';
+import { GET_USER_ID, GET_POST_BY_USERID, ADD_FRIEND, UPDATE_FRIEND } from '../../services/ApiConfig';
 import { useFocusEffect } from '@react-navigation/native';
 
 const ProfileScreen = ({ navigation, route }) => {
   const [activeTab, setActiveTab] = useState('Posts');
   const { user } = useContext(UserContext);
-  const [id, setID] = useState();  // State để lưu ID của người dùng
+  const [id, setID] = useState();
   const [posts, setPosts] = useState([]);
   const [postsLoading, setPostsLoading] = useState(false);
-  const [userProfile, setUserProfile] = useState();  // State để lưu thông tin người dùng
-  const [loading, setLoading] = useState(true);  // State để kiểm tra việc tải dữ liệu
-  const [refresh, setRefresh] = useState(false);  // State để theo dõi việc làm mới dữ liệu
+  const [userProfile, setUserProfile] = useState();
+  const [loading, setLoading] = useState(true);
+  const [refresh, setRefresh] = useState(false);
+  const [buttonState, setButtonState] = useState('Add Friend');
 
-  // Gọi hàm async để set ID
   const initializeID = () => {
     if (user?._id) {
-      setID(user._id);  // Chỉ setID nếu user._id có giá trị hợp lệ
+      setID(user._id);
     }
   };
 
-  // Hàm để lấy dữ liệu người dùng từ API
   const fetchUserData = async (userID) => {
-    setLoading(true);  // Bắt đầu tải dữ liệu
+    setLoading(true);
     try {
       const response = await fetch(`${GET_USER_ID}${userID}`);
       const data = await response.json();
-      setUserProfile(data.data);  // Lưu dữ liệu vào state
+      setUserProfile(data.data);
     } catch (error) {
       console.error('Error fetching user data:', error);
     } finally {
-      setLoading(false);  // Dừng loading khi đã có dữ liệu
+      setLoading(false);
     }
   };
 
@@ -46,14 +44,43 @@ const ProfileScreen = ({ navigation, route }) => {
     try {
       const response = await fetch(`${GET_POST_BY_USERID}?user_id=${userID}`);
       const responseData = await response.json();
-      // const sortedData = responseData.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       setPosts(responseData.data);
-      // console.log('Response Data (Posts):', responseData.data);
-
     } catch (error) {
       console.error('Error fetching posts:', error.message);
     } finally {
       setPostsLoading(false);
+    }
+  };
+
+  const handleButtonPress = async () => {
+    try {
+      if (buttonState === 'Add Friend') {
+        const response = await fetch(`${ADD_FRIEND}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id: user._id,
+            user_friend_id: userProfile._id,
+          }),
+        });
+        if (response.ok) {
+          setButtonState('Request Sent');
+        }
+      } else if (buttonState === 'Awaiting Approval') {
+        const response = await fetch(`${UPDATE_FRIEND}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id: userProfile._id,
+            user_friend_id: user._id,
+          }),
+        });
+        if (response.ok) {
+          setButtonState('Friend');
+        }
+      }
+    } catch (error) {
+      console.error('Error handling friend request:', error);
     }
   };
 
@@ -86,10 +113,10 @@ const ProfileScreen = ({ navigation, route }) => {
         <ActivityIndicator size="large" color="#FFF" style={{ marginTop: 20 }} />
       ) : (
         <ScrollView stickyHeaderIndices={[2]}>
-          <Header data={userProfile} />
+          <Header data={userProfile} navigation={navigation} />
 
           {route.params?.id && route.params.id !== user._id ? (
-            <FrProfileStats data={userProfile} />
+            <FrProfileStats data={userProfile} currentUserId={user._id} />
           ) : (
             <ProfileStats data={userProfile} />
           )}
@@ -111,7 +138,6 @@ const ProfileScreen = ({ navigation, route }) => {
           )}
         </ScrollView>
       )}
-
     </View>
   );
 };
