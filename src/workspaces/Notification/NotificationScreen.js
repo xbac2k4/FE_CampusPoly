@@ -1,52 +1,55 @@
-import React from 'react';
-import { FlatList, Image, SectionList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { getArray } from '../../store/NotificationState';
 
 const NotificationScreen = () => {
-  const notifications = [
-    {
-      collapseKey: "com.fe_campuspoly",
-      data: {},
-      from: "248843730555",
-      messageId: "0:1732289383695370%fe7eaefefe7eaefe",
-      notification: {
-        android: {
-          color: "#211d1e",
-          imageUrl: "https://play-lh.googleusercontent.com/DsyWoouXk7psjF7DCG6MJj_rX9RR9-liQskZXoKvcqQIu_ybUm4F5RntxWh1IZAVSLI",
-          smallIcon: "ic_campus_poly",
-          sound: "default"
-        },
-        body: "Học tiếng anh đi! 😡",
-        title: "Chào mừng bạn đến với CampusPoly"
-      },
-      originalPriority: 2,
-      priority: 2,
-      sentTime: 1732289383684,
-      ttl: 2419200
-    }
-  ]
+  const [notification, setNotification] = useState([])
+
+  useEffect(() => {
+    getArray('notifications').then((notifications) => {
+      setNotification(notifications);
+    });
+  }, []);
 
 
   const renderItem = ({ item }) => {
 
-    // console.log("item: ", item.notification.android.imageUrl);
-    
-    return (
-      <View style={styles.notificationItem}>
+    const sentTime = new Date(item.sentTime);
+    const currentTime = new Date();
 
-        <View style={styles.iconContainer}>
-          <Image
-            source={{ uri: item.notification.android.imageUrl }}
-            style={styles.icon}
-          />
-        </View>
+    const isSameDay = sentTime.toDateString() === currentTime.toDateString();
+
+    const time = isSameDay
+      ? sentTime.toLocaleTimeString('vi-VN', {
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+      : sentTime.toLocaleString('vi-VN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      });
+
+    // console.log(time);
+
+
+    return (
+      <TouchableOpacity style={styles.notificationItem}>
+
+        <Image
+          source={{ uri: item.notification.android.imageUrl }}
+          style={styles.icon}
+          borderRadius={20}
+        />
 
         <View style={styles.notificationContent}>
+          <Text style={styles.boldText}>{item.notification.title}</Text>
           <Text style={styles.notificationText}>
-            <Text style={styles.boldText}>{item.notification.title}</Text> {item.notification.body}
+            {item.notification.body}
           </Text>
-          <Text style={styles.timeText}>{item.time}</Text>
+          <Text style={styles.timeText}>{time}</Text>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -54,12 +57,12 @@ const NotificationScreen = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Thông báo</Text>
-        <TouchableOpacity>
+        {/* <TouchableOpacity>
           <Text style={styles.markAllAsRead}>Đánh dấu tất cả là đã đọc</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
       <FlatList
-        data={notifications}
+        data={notification}
         renderItem={renderItem}
         keyExtractor={(item) => item.messageId}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
@@ -85,34 +88,15 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
   },
-  markAllAsRead: {
-    color: '#F50057',
-    fontSize: 16,
-  },
-  sectionHeader: {
-    fontSize: 13,
-    marginTop: 20,
-    marginBottom: 10,
-    marginLeft: 10,
-    color: '#A1A1A1',
-  },
   notificationItem: {
     flexDirection: 'row',
     padding: 15,
     alignItems: 'center',
   },
-  iconContainer: {
+  icon: {
     width: 40,
     height: 40,
-    borderRadius: 20,
-    backgroundColor: '#3A3A3A',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 15,
-  },
-  icon: {
-    width: 20,
-    height: 20,
+    marginRight: '5%',
   },
   notificationContent: {
     flex: 1,
@@ -123,6 +107,7 @@ const styles = StyleSheet.create({
   },
   boldText: {
     fontWeight: 'bold',
+    color: '#fff',
   },
   timeText: {
     color: '#A1A1A1', // Màu xám nhạt cho thời gian

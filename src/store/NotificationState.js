@@ -11,7 +11,7 @@ const saveArray = async (key, array) => {
 };
 
 // Lấy mảng
-const getArray = async (key) => {
+export const getArray = async (key) => {
   try {
     const jsonValue = await AsyncStorage.getItem(key);
     return jsonValue != null ? JSON.parse(jsonValue) : null;
