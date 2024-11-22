@@ -85,8 +85,8 @@ const HomeScreen = () => {
 
   const onPanRelease = () => {
     // Kiểm tra nếu kéo xuống đủ xa mới refresh
-    pullDownPosition.value = withTiming(isReadyTopRefresh.value ? 500 : 0, {
-      duration: 180,
+    pullDownPosition.value = withTiming(isReadyTopRefresh.value ? 120 : 0, {
+      duration: 180, // Tốc độ thả tay
     });
     
     if (isReadyTopRefresh.value) {
@@ -100,18 +100,19 @@ const HomeScreen = () => {
   const panResponderRef = React.useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: (e, gestureState) =>
-        scrollPosition.value <= 0 && gestureState.dy > 10, // Điều kiện kéo nhẹ
+        scrollPosition.value <= 0 && gestureState.dy > 100, // Điều kiện kéo nhẹ
       onPanResponderMove: (event, gestureState) => {
-        const maxDistance = 150; // Khoảng cách tối đa có thể kéo xuống
+        const maxDistance = 120; // Khoảng cách tối đa có thể kéo xuống (giảm từ 150 xuống 120)
         const pullDistance = Math.max(Math.min(maxDistance, gestureState.dy), 0); // Giới hạn kéo xuống
   
         pullDownPosition.value = pullDistance; // Cập nhật vị trí kéo xuống
-        isReadyTopRefresh.value = pullDistance >= 100; // Kiểm tra kéo đủ xa (100px)
+        isReadyTopRefresh.value = pullDistance >= 60; // Kiểm tra kéo đủ xa (60px)
       },
       onPanResponderRelease: onPanRelease, // Xử lý khi thả tay
       onPanResponderTerminate: onPanRelease, // Xử lý khi hủy kéo
     })
   );
+  
   
 
   const renderItem = ({ item }) => (
