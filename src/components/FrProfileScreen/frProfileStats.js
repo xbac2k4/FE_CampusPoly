@@ -24,6 +24,8 @@ const FrProfileStats = ({ data, currentUserId }) => {
     friend.status_id.status_name === 'Chấp nhận' && // Chỉ lấy bạn bè đã được chấp nhận
     friend.user_id.some(user => user._id === currentUserId)
   );
+  console.log(acceptedFriends);
+  
 
   const handleButtonPress = async () => {
     try {
