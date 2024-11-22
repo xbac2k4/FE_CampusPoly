@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { View, ScrollView, Text, StyleSheet, TouchableOpacity, Image, Dimensions, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Screens from '../../navigation/Screens';
 const { width: screenWidth } = Dimensions.get('window');
 import styles from '../../assets/style/PostStyle';
 import RBSheet from 'react-native-raw-bottom-sheet';
-
+import { LIKE_POST, UNLIKE_POST } from '../../services/ApiConfig';
 import ToastModal from '../../components/Notification/NotificationModal'
 // Import các hình ảnh
 import avt from '../../assets/images/avt.png';
@@ -21,15 +21,17 @@ import racsim from '../../assets/images/racsim.png'
 import untrue from '../../assets/images/untrue.png'
 import rectionary from '../../assets/images/rectionary.png'
 import NotificationModal from '../../components/Notification/NotificationModal';
-const ProfilePosts = (props) => {
-  // const [user, setUser] = useState(props.data); // Chứa các bài viết
-  const [user, setUser] = useState(props.data.map((item) => item?.post));
+import ShareButton from '../Sheet/ShareButton ';
+import { UserContext } from '../../services/provider/UseContext';
+const ProfilePosts = ({ navigation, data }) => {
+  const [userAll, setUserAll] = useState(data); // Chứa các bài viết
+  const { user } = useContext(UserContext);
   const [loading, setLoading] = useState(true); // Quản lý trạng thái loading
   const [error, setError] = useState(null); // Quản lý lỗi
   const [likedPosts, setLikedPosts] = useState([]); // Lưu trạng thái các bài viết đã thích
   const [savedPosts, setSavedPosts] = useState([]); // Lưu trạng thái các bài viết đã lưu
   const [activeImageIndex, setActiveImageIndex] = useState({}); // Quản lý chỉ số ảnh đang hiển thị cho mỗi bài có nhiều ảnh
-  const navigation = useNavigation(); // Hook to access navigation
+  // const navigation = useNavigation(); // Hook to access navigation
 
   const refRBSheet = useRef();
 
@@ -67,24 +69,93 @@ const ProfilePosts = (props) => {
 
   // Đặt chỉ mục hình ảnh đầu tiên cho các bài viết có nhiều hình ảnh
   useEffect(() => {
-    if (user && user.length > 0) {
+    if (userAll && userAll.length > 0) {
       const initialIndices = {};
-      user.forEach((post) => {
-        if (post?.image && post?.image.length > 1) {
-          initialIndices[post._id] = 0; // Thiết lập chỉ mục đầu tiên cho các bài có nhiều ảnh
+      userAll.forEach((post) => {
+        if (post.post.image && post.post.image.length > 1) {
+          initialIndices[post.post._id] = 0; // Thiết lập chỉ mục đầu tiên cho các bài có nhiều ảnh
         }
       });
       setActiveImageIndex(initialIndices);
     }
-  }, [user]);
+  }, [userAll]);
+  {/** Sử lí nút like  */ }
+  const toggleLike = async (item) => {
+    const userId = user._id;
+    const isLiked = item.likeData.some((like) => like.user_id_like === user._id);
 
-  const toggleLike = (postId) => {
-    setLikedPosts((prevLikedPosts) =>
-      prevLikedPosts.includes(postId)
-        ? prevLikedPosts.filter((id) => id !== postId)
-        : [...prevLikedPosts, postId]
-    );
+    try {
+      let response;
+      if (isLiked) {
+        // Bỏ like (DELETE)
+        response = await fetch(UNLIKE_POST, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ user_id: userId, post_id: item.post._id }),
+        });
+      } else {
+        // Thích bài viết (POST)
+        response = await fetch(LIKE_POST, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ user_id: userId, post_id: item.post._id }),
+        });
+      }
+
+      const result = await response.json();
+      if (response.ok) {
+        if (isLiked) {
+          // Cập nhật trạng thái khi bỏ like
+          setLikedPosts((prevPosts) => prevPosts.filter((id) => id !== item.post._id));
+          setUserAll((prevPosts) =>
+            prevPosts.map((post) =>
+              post.post._id === item.post._id
+                ? {
+                  ...post,
+                  likeData: post.likeData.filter((like) => like.user_id_like !== userId), // Xóa like của user
+                  post: {
+                    ...post.post,
+                    like_count: post.post.like_count - 1, // Giảm số lượng like
+                  },
+                }
+                : post
+            )
+          );
+        } else {
+          // Cập nhật trạng thái khi thích bài viết
+          setLikedPosts((prevPosts) => [...prevPosts, item.post._id]);
+          setUserAll((prevPosts) =>
+            prevPosts.map((post) =>
+              post.post._id === item.post._id
+                ? {
+                  ...post,
+                  likeData: [...post.likeData, result.data], // Thêm lượt thích mới vào likeData
+                  post: {
+                    ...post.post,
+                    like_count: post.post.like_count + 1, // Tăng số lượng like
+                  },
+                }
+                : post
+            )
+          );
+          console.log({ message: 'Thích thành công', type: 'success' });
+        }
+      } else {
+        console.error(isLiked ? 'Lỗi khi bỏ like' : 'Lỗi khi thích bài viết', result);
+        ToastModal({ message: isLiked ? 'Có lỗi khi bỏ like' : 'Có lỗi khi thích bài viết', type: 'error' });
+      }
+    } catch (error) {
+      console.error('Lỗi khi thực hiện toggle like/unlike:', error);
+      ToastModal({ message: 'Có lỗi xảy ra. Vui lòng thử lại.', type: 'error' });
+    }
   };
+
+
+
 
   const toggleSave = (postId) => {
     setSavedPosts((prevSavedPosts) =>
@@ -164,30 +235,21 @@ const ProfilePosts = (props) => {
   return (
     <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={styles.flatListContent}>
-        {user && user.length > 0 ? (
-          user.map((item) => {
-            console.log(item);
-            
+        {userAll && userAll.length > 0 ? (
+          userAll.map((item) => {
+            // console.log(item);
+
             return (
-              <View key={item?._id} style={styles.postContainer}>
+              <View key={item.post._id} style={styles.postContainer}>
                 <View style={styles.postHeader}>
-                  <TouchableOpacity onPress={() => handleProfileClick(item?.user_id._id)}>
-                    <Image
-                      source={{
-                        uri: item?.user_id
-                          ? item?.user_id.avatar.replace('localhost', '10.0.2.2')
-                          : 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg'
-                      }}
-                      style={styles.profileImage}
-                    />
+                  <TouchableOpacity onPress={() => handleProfileClick(item.post.user_id._id)}>
+                    <Image source={{ uri: item.post.user_id.avatar.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' }} style={styles.profileImage} />
                   </TouchableOpacity>
                   <View style={styles.headerText}>
-                    <TouchableOpacity onPress={() => handleProfileClick(item?.user_id._id)}>
-                      <Text style={styles.profileName}>{
-                        item?.user_id ? item?.user_id.full_name : 'Unknown'
-                      }</Text>
+                    <TouchableOpacity onPress={() => handleProfileClick(item.post.user_id._id)}>
+                      <Text style={styles.profileName}>{item.post.user_id.full_name}</Text>
                     </TouchableOpacity>
-                    <Text style={styles.postTime}>{timeAgo(item?.createdAt)}</Text>
+                    <Text style={styles.postTime}>{timeAgo(item.post.createdAt)}</Text>
                   </View>
                   <TouchableOpacity
                     onPress={openBottomSheet}
@@ -195,41 +257,43 @@ const ProfilePosts = (props) => {
                     <Text style={styles.moreText}>⋮</Text>
                   </TouchableOpacity>
                 </View>
-                <Text style={styles.postText}>{item?.title}</Text>
-                {item?.image && renderImages(item?.image, item?._id)}
+                <Text style={styles.postText}>{item.post.title}</Text>
+                {item.post.image && renderImages(item.post.image, item.post._id)}
                 <View style={styles.postMeta}>
                   <View style={styles.leftMetaIcons}>
+                    {/**Suwr lis chức năng like */}
                     <View style={styles.iconLike}>
-                      <TouchableOpacity onPress={() => toggleLike(item?._id)}>
+                      <TouchableOpacity onPress={() => toggleLike(item)}>
                         <Image
-                          source={likedPosts.includes(item?._id) ? heartFilled : heart}
+                          source={
+                            likedPosts.includes(item.post._id) ||
+                              item.likeData.some(like => like.user_id_like === user._id)
+                              ? heartFilled
+                              : heart
+                          }
                           style={styles.iconImage}
                         />
                       </TouchableOpacity>
-                      <Text style={styles.metaText}>{item?.like_count}</Text>
+                      <Text style={styles.metaText}>{item.post.like_count}</Text>
                     </View>
 
                     <View style={styles.iconLike}>
-                      <TouchableOpacity onPress={() => navigation.navigate(Screens.Comment, { postId: item?._id })}>
+                      <TouchableOpacity onPress={() => navigation.navigate(Screens.Comment, { postId: item.post._id })}>
                         <Image source={comment} style={styles.iconImage} />
                       </TouchableOpacity>
-                      <Text style={styles.metaText}>{item?.comment_count}</Text>
+                      <Text style={styles.metaText}>{item.post.comment_count}</Text>
                     </View>
 
                     <View style={styles.iconLike}>
-                      <TouchableOpacity>
+                      <TouchableOpacity onPress={() => {
+                        // share
+                      }}>
                         <Image source={share} style={styles.iconImage} />
                       </TouchableOpacity>
+
                     </View>
                   </View>
-                  <View style={styles.iconLike}>
-                    <TouchableOpacity style={styles.iconButton} onPress={() => toggleSave(item?._id)}>
-                      <Image
-                        source={savedPosts.includes(item?._id) ? bookmarkFilled : bookmark}
-                        style={styles.iconImage}
-                      />
-                    </TouchableOpacity>
-                  </View>
+
                 </View>
                 <View style={styles.separator} />
               </View>
@@ -267,6 +331,7 @@ const ProfilePosts = (props) => {
               visible={modalVisible}
               onConfirm={handleConfirm}
               onCancel={handleCancel}
+              message={'Bạn có chắc muốn báo cáo?'}
             />
             <Image source={report} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
             <Text style={styles.textOne}>Bài viết xúc phạm người dùng khác</Text>
