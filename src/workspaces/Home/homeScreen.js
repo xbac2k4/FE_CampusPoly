@@ -1,16 +1,14 @@
 
-import Icon from 'react-native-vector-icons/AntDesign';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import LoadingTimeline from '../../components/Loading/LoadingTimeline ';
-import { StyleSheet, Text, TouchableOpacity, View, FlatList, ScrollView, ActivityIndicator } from 'react-native';
-import React, { useEffect, useState, useContext, useCallback } from 'react';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import ProfilePosts from '../../components/ProfileScreen/profilePosts';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Screens from '../../navigation/Screens';
 import { GET_ALL_POST } from '../../services/ApiConfig';
 
 const HomeScreen = ({ navigation }) => {
-  const { user } = useContext(UserContext);
   const [greeting, setGreeting] = useState('');
   // const navigation = useNavigation();
   const [data, setData] = useState([]);
@@ -69,7 +67,7 @@ const HomeScreen = ({ navigation }) => {
               style={styles.circleIcon}
               onPress={() => navigation.navigate(Screens.Message)}
             >
-              <Icon name="message1" size={15} color="#fff" />
+              <AntDesign name="message1" size={15} color="#fff" />
             </TouchableOpacity>
           </View>
 
