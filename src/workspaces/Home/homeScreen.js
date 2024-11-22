@@ -1,15 +1,13 @@
-import { StyleSheet, Text, TouchableOpacity, View, FlatList, ScrollView, ActivityIndicator } from 'react-native';
-import React, { useEffect, useState, useContext } from 'react';
-import Icon from 'react-native-vector-icons/AntDesign';
-import ProfilePosts from '../../components/ProfileScreen/profilePosts';
 import { useNavigation } from '@react-navigation/native';
-import Screens from '../../navigation/Screens';
-import { UserContext } from '../../services/provider/UseContext';
-import { GET_ALL_POST } from '../../services/ApiConfig';
+import React, { useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Icon from 'react-native-vector-icons/AntDesign';
 import LoadingTimeline from '../../components/Loading/LoadingTimeline ';
+import ProfilePosts from '../../components/ProfileScreen/profilePosts';
+import Screens from '../../navigation/Screens';
+import { GET_ALL_POST } from '../../services/ApiConfig';
 
 const HomeScreen = () => {
-  const { user } = useContext(UserContext);
   const [greeting, setGreeting] = useState('');
   const navigation = useNavigation();
   const [data, setData] = useState([]);
@@ -47,10 +45,6 @@ const HomeScreen = () => {
     setGreeting(getGreeting());
     fetchUserData();
   }, []);
-
-  const handleUserPress = (userId) => {
-    navigation.navigate('Profile', { userId });
-  };
 
   return (
     <ScrollView style={styles.container}>
