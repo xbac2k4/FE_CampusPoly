@@ -14,7 +14,7 @@ const FrProfileStats = ({ data, currentUserId }) => {
     if (currentFriend.status_id.status_name === 'Chờ phản hồi') {
       return currentFriend.user_id[0]._id === currentUserId
         ? 'Đã gửi lời mời'
-        : 'Chờ chấp nhận';
+        : 'Chấp nhận';
     }
     return 'Bạn bè';
   });
@@ -42,7 +42,7 @@ const FrProfileStats = ({ data, currentUserId }) => {
         if (response.ok) {
           setButtonState('Đã gửi lời mời');
         }
-      } else if (buttonState === 'Chờ chấp nhận') {
+      } else if (buttonState === 'Chấp nhận') {
         // Chấp nhận lời mời kết bạn
         const response = await fetch(`${UPDATE_FRIEND}`, {
           method: 'PUT',
