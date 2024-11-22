@@ -4,7 +4,9 @@ import { useNavigation } from '@react-navigation/native';
 import Screens from '../../navigation/Screens';
 const { width: screenWidth } = Dimensions.get('window');
 import styles from '../../assets/style/PostStyle';
+import ReportComponent from '../../components/Report/ReportComponent';
 import RBSheet from 'react-native-raw-bottom-sheet';
+import NotificationModal from '../../components/Notification/NotificationModal'; // Import NotificationModal
 
 import ToastModal from '../../components/Notification/NotificationModal'
 // Import các hình ảnh
@@ -15,12 +17,7 @@ import comment from '../../assets/images/comment.png';
 import heart from '../../assets/images/heart.png';
 import heartFilled from '../../assets/images/hear2.png';
 import share from '../../assets/images/share.png';
-import report from '../../assets/images/report.png'
-import violet from '../../assets/images/violet.png'
-import racsim from '../../assets/images/racsim.png'
-import untrue from '../../assets/images/untrue.png'
-import rectionary from '../../assets/images/rectionary.png'
-import NotificationModal from '../../components/Notification/NotificationModal';
+
 const ProfilePosts = (props) => {
   // const [user, setUser] = useState(props.data); // Chứa các bài viết
   const [user, setUser] = useState(props.data.map((item) => item?.post));
@@ -30,28 +27,28 @@ const ProfilePosts = (props) => {
   const [savedPosts, setSavedPosts] = useState([]); // Lưu trạng thái các bài viết đã lưu
   const [activeImageIndex, setActiveImageIndex] = useState({}); // Quản lý chỉ số ảnh đang hiển thị cho mỗi bài có nhiều ảnh
   const navigation = useNavigation(); // Hook to access navigation
+  const [selectedPostId, setSelectedPostId] = useState(null); // ID bài viết được chọn để báo cáo
+  const [reportSuccess, setReportSuccess] = useState(false);
 
   const refRBSheet = useRef();
 
-  const openBottomSheet = () => {
-    refRBSheet.current.open();
-  };
+  const openBottomSheet = (postId) => {
+    if (postId) {
+        setSelectedPostId(postId);
+        refRBSheet.current.open();
+    } else {
+        console.error('No post ID provided');
+    }
+};
+
   // console.log(user);
 
   {/** Sử lí cái thông báo  */ }
   const [modalVisible, setModalVisible] = useState(false);
-
-  const handleConfirm = () => {
-    setModalVisible(false);
-    setTimeout(() => setModalVisible(false), 2000); // Ẩn thông báo sau 2 giây
-    console.log("Confirmed");
+  const handleReportSuccess = () => {
+    setReportSuccess(true); // Set report success
+    refRBSheet.current.close(); // Close the RBSheet when the report is successful
   };
-
-  const handleCancel = () => {
-    setModalVisible(false);
-    console.log("Cancelled");
-  };
-
   // Xử lý khi bấm vào avatar và tên người dùng
   const handleProfileClick = (userId) => {
     if (userId === user._id) {
@@ -166,8 +163,7 @@ const ProfilePosts = (props) => {
       <ScrollView contentContainerStyle={styles.flatListContent}>
         {user && user.length > 0 ? (
           user.map((item) => {
-            console.log(item);
-            
+            // console.log(item);
             return (
               <View key={item?._id} style={styles.postContainer}>
                 <View style={styles.postHeader}>
@@ -190,7 +186,7 @@ const ProfilePosts = (props) => {
                     <Text style={styles.postTime}>{timeAgo(item?.createdAt)}</Text>
                   </View>
                   <TouchableOpacity
-                    onPress={openBottomSheet}
+                    onPress={() => {console.log('item:', item);openBottomSheet(item?._id)}}
                     style={styles.moreIcon}>
                     <Text style={styles.moreText}>⋮</Text>
                   </TouchableOpacity>
@@ -247,6 +243,7 @@ const ProfilePosts = (props) => {
         openDuration={300}
         closeDuration={250}
         closeOnDragDown={true} // Cho phép kéo xuống để đóng
+        closeOnPressMask={true} // Cho phép đóng khi bấm ra ngoài
 
         customStyles={{
           wrapper: {
@@ -258,36 +255,17 @@ const ProfilePosts = (props) => {
 
         }}
       >
-        <View style={styles.inner}>
-          <TouchableOpacity
-            onPress={() => setModalVisible(true)}
+        <ReportComponent
+          postId={selectedPostId}  // Pass selectedPostId here
+          onReportSuccess={handleReportSuccess}
+        />
 
-            style={styles.reporttextcontainer}>
-            <NotificationModal
-              visible={modalVisible}
-              onConfirm={handleConfirm}
-              onCancel={handleCancel}
-            />
-            <Image source={report} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
-            <Text style={styles.textOne}>Bài viết xúc phạm người dùng khác</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.reporttextcontainer}>
-            <Image source={untrue} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
-            <Text style={styles.textOne}>Bài viết sai sự thật</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.reporttextcontainer}>
-            <Image source={violet} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
-            <Text style={styles.textOne}>Bài viết mang tính bạo lực - kích động</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.reporttextcontainer}>
-            <Image source={rectionary} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
-            <Text style={styles.textOne}>Bài viết mang tính phản động</Text>
-          </TouchableOpacity><TouchableOpacity style={styles.reporttextcontainer}>
-            <Image source={racsim} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
-            <Text style={styles.textOne}>Bài viết mang tính phân biệt</Text>
-          </TouchableOpacity>
-        </View>
       </RBSheet>
+      <NotificationModal
+        visible={modalVisible}
+        onConfirm={() => setModalVisible(false)}
+        success={reportSuccess}
+      />
 
     </View>
   );

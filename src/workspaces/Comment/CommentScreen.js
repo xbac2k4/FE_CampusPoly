@@ -1,11 +1,14 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Dimensions, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import styles from '../../assets/style/CommentStyle';
 import CommentInputComponent from '../../components/Comment/CommentInputComponent';
 import { CommentLoading, PostCommentLoading } from '../../components/Loading/LoadingTimeline ';
 import SkeletonShimmer from '../../components/Loading/SkeletonShimmer';
 import CommentComponent from '../../components/Comment/CommentComponent';
+import ReportComponent from '../../components/Report/ReportComponent';
+import RBSheet from 'react-native-raw-bottom-sheet';
+import NotificationModal from '../../components/Notification/NotificationModal'; // Import NotificationModal
 const { width: screenWidth } = Dimensions.get('window'); // Lấy chiều rộng màn hình để điều chỉnh kích thước hình ảnh
 const CommentScreen = () => {
   const route = useRoute();
@@ -18,6 +21,28 @@ const CommentScreen = () => {
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmark, setIsBookmark] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState({}); // Quản lý chỉ số ảnh đang hiển thị cho mỗi bài có nhiều ảnh
+  const [selectedPostId, setSelectedPostId] = useState(null); // ID bài viết được chọn để báo cáo
+  const [reportSuccess, setReportSuccess] = useState(false);
+
+  const refRBSheet = useRef();
+
+  const openBottomSheet = (postId) => {
+    if (postId) {
+        setSelectedPostId(postId);
+        refRBSheet.current.open();
+    } else {
+        console.error('No post ID provided');
+    }
+};
+
+  // console.log(user);
+
+  {/** Sử lí cái thông báo  */ }
+  const [modalVisible, setModalVisible] = useState(false);
+  const handleReportSuccess = () => {
+    setReportSuccess(true); // Set report success
+    refRBSheet.current.close(); // Close the RBSheet when the report is successful
+  };
 
   // State để theo dõi số lượng lượt thích
   useEffect(() => {
@@ -186,7 +211,7 @@ const CommentScreen = () => {
                   <Text style={{ fontSize: 12, fontFamily: 'HankenGrotesk-Regular', fontWeight: "medium", color: '#727477' }}>{timeAgo(post.postData.createdAt)}</Text>
                 </View>
               </View>
-              <TouchableOpacity onPress={() => { /* Xử lý nút menu */ }}>
+              <TouchableOpacity onPress={() => {console.log('post:', post);openBottomSheet(post?.postData?._id)}}>
                 <Image source={require('../../assets/images/dot.png')} resizeMode='contain' style={{ width: 20, height: 20 }} />
               </TouchableOpacity>
             </View>
@@ -275,6 +300,36 @@ const CommentScreen = () => {
 
       </ScrollView>
       <CommentInputComponent style={styles.commentInput} />
+       {/* Bottom Sheet */}
+       <RBSheet
+        ref={refRBSheet}
+        height={250}
+        openDuration={300}
+        closeDuration={250}
+        closeOnDragDown={true} // Cho phép kéo xuống để đóng
+        closeOnPressMask={true} // Cho phép đóng khi bấm ra ngoài
+
+        customStyles={{
+          wrapper: {
+            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+          },
+          draggableIcon: {
+            backgroundColor: '#ffff',
+          },
+
+        }}
+      >
+        <ReportComponent
+          postId={selectedPostId}  // Pass selectedPostId here
+          onReportSuccess={handleReportSuccess}
+        />
+
+      </RBSheet>
+      <NotificationModal
+        visible={modalVisible}
+        onConfirm={() => setModalVisible(false)}
+        success={reportSuccess}
+      />
     </View>
   );
 };
