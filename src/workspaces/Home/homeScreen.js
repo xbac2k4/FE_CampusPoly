@@ -1,16 +1,16 @@
 import { StyleSheet, Text, TouchableOpacity, View, FlatList, ScrollView, ActivityIndicator } from 'react-native';
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useCallback } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import ProfilePosts from '../../components/ProfileScreen/profilePosts';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Screens from '../../navigation/Screens';
 import { UserContext } from '../../services/provider/UseContext';
 import { GET_ALL_POST } from '../../services/ApiConfig';
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
   const { user } = useContext(UserContext);
   const [greeting, setGreeting] = useState('');
-  const navigation = useNavigation();
+  // const navigation = useNavigation();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState('Dành cho bạn'); // Trạng thái cho tab hiện tại
@@ -26,23 +26,30 @@ const HomeScreen = () => {
     }
   };
 
+  const fetchUserData = async () => {
+    try {
+      setLoading(true); // Đặt lại loading trước khi gọi API
+      const response = await fetch(GET_ALL_POST);
+      const responseData = await response.json();
+      const sortedData = responseData.data.sort((a, b) => new Date(b.post.createdAt) - new Date(a.post.createdAt));
+      setData(sortedData);
+    } catch (error) {
+      console.error('Lỗi khi lấy dữ liệu người dùng:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useFocusEffect(
+    useCallback(() => {
+      const handleUserData = async () => {
+        await fetchUserData();
+      }
+      handleUserData();
+    }, [])
+  );
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch(GET_ALL_POST);
-        const responseData = await response.json();
-        const sortedData = responseData.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        setData(sortedData);
-      } catch (error) {
-        console.error('Lỗi khi lấy dữ liệu người dùng:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-
     setGreeting(getGreeting());
     fetchUserData();
   }, []);

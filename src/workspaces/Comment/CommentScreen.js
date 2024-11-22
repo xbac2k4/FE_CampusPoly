@@ -1,28 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, ActivityIndicator, TouchableOpacity, Dimensions, FlatList } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import CommentComponent from '../../components/Comment/CommentComponent';
 import CommentInputComponent from '../../components/Comment/CommentInputComponent';
 import { GET_POST_ID } from '../../services/ApiConfig'
 import styles from '../../assets/style/CommentStyle'
+import { LIKE_POST, UNLIKE_POST } from '../../services/ApiConfig';
+import { UserContext } from '../../services/provider/UseContext';
 const { width: screenWidth } = Dimensions.get('window'); // Lấy chiều rộng màn hình để điều chỉnh kích thước hình ảnh
+import heart from '../../assets/images/heart.png';
+import heartFilled from '../../assets/images/hear2.png';
 const CommentScreen = () => {
   const route = useRoute();
-  const { postId } = route.params;
+
+  const { postId } = route.params;/// ID của  bài viết
   const navigation = useNavigation();
   const [post, setPost] = useState(null);
   const [comment, setComment] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isLiked, setIsLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState();
   const [isBookmark, setIsBookmark] = useState(false);
+  const [likedPosts, setLikedPosts] = useState(); // Lưu trạng thái các bài viết đã thích
   const [activeImageIndex, setActiveImageIndex] = useState({}); // Quản lý chỉ số ảnh đang hiển thị cho mỗi bài có nhiều ảnh
-
+  const { user } = useContext(UserContext);
   // State để theo dõi số lượng lượt thích
   useEffect(() => {
     const fetchPostById = async () => {
       try {
-        const response = await fetch(`http://10.0.2.2:3000/api/v1/posts/get-post-by-id/${postId}`, {
+        const response = await fetch(`${GET_POST_ID}${postId}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json', // nếu API yêu cầu JSON
@@ -32,9 +38,15 @@ const CommentScreen = () => {
 
         const data = await response.json();
         setPost(data.data);
+        if (data?.data?.likeData.some((like) => like.user_id_like._id === user._id)) {
+          setIsLiked(true)
+        } else {
+          setIsLiked(false)
+        }
         setComment(data.data.commentData);
         setLoading(false);
         // console.log(data.data.commentData);
+        // console.log(data.data.likeData);
 
 
       } catch (error) {
@@ -43,24 +55,7 @@ const CommentScreen = () => {
         setLoading(false);
       }
     };
-    const fetchCommentsByPostId = async () => {
-      try {
-        const response = await fetch(`http://10.0.2.2:3000/api/v1/comments/get-comment-by-post?post_id=${postId}`);
-        const data = await response.json();
-        // console.log(data);
 
-
-        // Sắp xếp bình luận theo createdAt giảm dần
-        const sortedComments = data.data.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
-
-        setComment(sortedComments); // Cập nhật danh sách bình luận đã sắp xếp
-      } catch (error) {
-        console.error('Error fetching comments:', error);
-        setError(error);
-      }
-    };
 
     fetchPostById();
     // fetchCommentsByPostId();
@@ -78,6 +73,85 @@ const CommentScreen = () => {
     }
   }, [post]);
   // console.log(post);
+  // sử lí nút like 
+  // Toggle like/unlike functionality
+  // Xử lý like/unlike bài viết
+  const toggleLike = async (item) => {
+    // console.log(item);
+    const userId = user._id; // Lấy ID người dùng từ context
+    // console.log(user._id);
+    // console.log(item.likeData);
+    // isLiked = item.likeData.some((like) => like.user_id_like._id === user._id);
+    // console.log(isLiked);
+
+    try {
+      let response;
+      if (isLiked) { // Kiểm tra nếu bài viết đã được like
+        response = await fetch(UNLIKE_POST, { // Gửi request unlike
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: userId, post_id: postId }),
+        });
+      } else {
+        response = await fetch(LIKE_POST, { // Gửi request like
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: userId, post_id: postId }),
+        });
+      }
+
+      const result = await response.json(); // Parse kết quả từ response
+      if (response.ok) { // Nếu request thành công
+        // setLikedPosts((prevLikedPosts) =>
+        //   likedPosts.includes(postId) // Cập nhật danh sách bài viết đã thích
+        //     ? prevLikedPosts.filter((id) => id !== postId) // Bỏ bài viết khỏi danh sách
+        //     : [...prevLikedPosts, postId] // Thêm bài viết vào danh sách
+        // );
+        if (isLiked) {
+          setLikedPosts(true)
+        } else {
+          setLikedPosts(false)
+        }
+        // console.log(likedPosts);
+        setPost((prevPost) => ({
+          ...prevPost,
+          likeData: isLiked
+            ? // Nếu isLiked là true, xóa người dùng khỏi danh sách like
+            prevPost.likeData.filter(
+              (like) => like.user_id_like._id !== userId // Thay userId thích vào đây
+            )
+            : // Nếu isLiked là false, thêm người dùng vào danh sách like
+            [
+              ...prevPost.likeData,
+              {
+                user_id_like: {
+                  _id: userId, // Thay userId thích vào đây
+                },
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+              },
+            ],
+          postData: {
+            ...prevPost.postData,
+            like_count: isLiked
+              ? prevPost.postData.like_count - 1 // Giảm số lượng like khi xóa
+              : prevPost.postData.like_count + 1, // Tăng số lượng like khi thêm
+          },
+        }));
+
+        setIsLiked((prevIsLiked) => !prevIsLiked);
+      } else {
+        console.error(
+          likedPosts.includes(postId)
+            ? 'Error while unliking the post'
+            : 'Error while liking the post',
+          result
+        );
+      }
+    } catch (error) {
+      console.error('Error toggling like/unlike:', error); // Xử lý lỗi khi like/unlike
+    }
+  };
 
 
 
@@ -206,15 +280,20 @@ const CommentScreen = () => {
         <View style={styles.interactContainer}>
           <View style={{ flexDirection: "row" }}>
             <View style={styles.iconLike}>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => toggleLike(post)}>
                 <Image
-                  source={isLiked
-                    ? require('../../assets/images/hear2.png')
-                    : require('../../assets/images/heart.png')}
-                  resizeMode='contain'
+                  source={
+                    isLiked === true &&
+                      post.likeData.some(like => like.user_id_like._id === user._id)
+                      ? heartFilled
+                      : heart}
+                  resizeMode="contain"
                   style={{ width: 20, height: 20, marginLeft: 3 }}
                 />
               </TouchableOpacity>
+
+
+
               <Text style={styles.textInteract}>{post?.postData?.like_count}</Text>
             </View>
             <View style={styles.iconLike}>
