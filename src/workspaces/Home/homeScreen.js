@@ -99,6 +99,9 @@ const HomeScreen = () => {
           ) : selectedTab === 'Dành cho bạn' ? (
             <ProfilePosts data={data} />
           ) : null}
+
+          {/* Thêm khoảng trống ở cuối danh sách bài post */}
+          <View style={{ height: 60 }} />
         </View>
       </View>
     </ScrollView>
