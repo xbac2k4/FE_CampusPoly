@@ -20,27 +20,11 @@ const UserComponent = ({ avatar, full_name }) => {
         <Image source={{ uri: avatar }} style={styles.avatar} />
         <Text style={styles.fullName}>{full_name}</Text>
         <View style={styles.notificationContainer}>
-          <TouchableOpacity>
-            <Image
-              source={require('../../assets/images/notification.png')}
-              style={styles.notificationIcon}
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
-          {1 > 0 && (
-            <View style={styles.notificationBadge}>
-              <Text style={styles.notificationText}>1</Text>
-            </View>
-          )}
+       
         </View>
       </TouchableOpacity>
       <View style={styles.divider} />
-      <TouchableOpacity style={styles.createPageButton}>
-        <View style={styles.addIconContainer}>
-          <Image source={require('../../assets/images/add.png')} style={styles.addIcon} />
-        </View>
-        <Text style={styles.createPageText}>Tạo trang cá nhân hoặc Trang mới</Text>
-      </TouchableOpacity>
+    
     </View>
   );
 };

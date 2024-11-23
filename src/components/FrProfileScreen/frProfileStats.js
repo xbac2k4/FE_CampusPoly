@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { ADD_FRIEND, UPDATE_FRIEND } from '../../services/ApiConfig';
 
 const FrProfileStats = ({ data, currentUserId }) => {
   const friendsData = data?.friends || [];
+  const [acceptedFriends, setAcceptedFriends] = useState([]);
   const [buttonState, setButtonState] = useState(() => {
     const currentFriend = friendsData.find(friend =>
       friend.user_id.some(user => user._id === currentUserId)
@@ -18,14 +19,21 @@ const FrProfileStats = ({ data, currentUserId }) => {
     }
     return 'Bạn bè';
   });
-
+  // console.log(friendsData);
+  useEffect(() => {
+    setAcceptedFriends(() =>
+      friendsData.filter(friend =>
+        friend.status_id.status_name === 'Chấp nhận' &&
+        friend.user_id.some(user => user._id === currentUserId)
+      )
+    );
+  }, [friendsData, currentUserId]);
   // Lọc chỉ những bạn bè có trạng thái 'Chấp nhận'
-  const acceptedFriends = friendsData.filter(friend =>
-    friend.status_id.status_name === 'Chấp nhận' && // Chỉ lấy bạn bè đã được chấp nhận
-    friend.user_id.some(user => user._id === currentUserId)
-  );
-  console.log(acceptedFriends);
-  
+  // const acceptedFriends = friendsData.filter(friend =>
+  //   friend.status_id.status_name === 'Chấp nhận' && // Chỉ lấy bạn bè đã được chấp nhận
+  //   friend.user_id.some(user => user._id === currentUserId)
+  // );
+  // console.log(acceptedFriends);
 
   const handleButtonPress = async () => {
     try {
@@ -54,6 +62,17 @@ const FrProfileStats = ({ data, currentUserId }) => {
         });
         if (response.ok) {
           setButtonState('Bạn bè');
+          // console.log(response.data);
+          setAcceptedFriends((prevFriends) => [
+            ...prevFriends,
+            {
+              status_id: { status_name: 'Chấp nhận' },
+              user_id: [
+                { _id: currentUserId },
+                { _id: data._id }
+              ],
+            },
+          ]);
         }
       }
     } catch (error) {
@@ -89,12 +108,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   stat: {
-    alignItems: 'flex-start',
+    alignItems: 'center',
   },
   statNumber: {
     fontSize: 16,
     color: 'white',
     fontWeight: 'bold',
+    textAlign: 'center',
   },
   statText: {
     fontSize: 14,

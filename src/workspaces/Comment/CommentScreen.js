@@ -1,29 +1,61 @@
+import React, { useState, useEffect, useContext, useRef } from 'react';
+import { View, Text, Image, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
-import { Dimensions, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import styles from '../../assets/style/CommentStyle';
 import CommentInputComponent from '../../components/Comment/CommentInputComponent';
 import { CommentLoading, PostCommentLoading } from '../../components/Loading/LoadingTimeline ';
 import SkeletonShimmer from '../../components/Loading/SkeletonShimmer';
 import CommentComponent from '../../components/Comment/CommentComponent';
+import ReportComponent from '../../components/Report/ReportComponent';
+import RBSheet from 'react-native-raw-bottom-sheet';
+import NotificationModal from '../../components/Notification/NotificationModal'; // Import NotificationModal
+import { LIKE_POST, UNLIKE_POST, GET_POST_ID } from '../../services/ApiConfig';
+import { UserContext } from '../../services/provider/UseContext';
 const { width: screenWidth } = Dimensions.get('window'); // Lấy chiều rộng màn hình để điều chỉnh kích thước hình ảnh
+import heart from '../../assets/images/heart.png';
+import heartFilled from '../../assets/images/hear2.png';
 const CommentScreen = () => {
   const route = useRoute();
-  const { postId } = route.params;
+
+  const { postId } = route.params;/// ID của  bài viết
   const navigation = useNavigation();
   const [post, setPost] = useState(null);
   const [comment, setComment] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isLiked, setIsLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState();
   const [isBookmark, setIsBookmark] = useState(false);
+  const [likedPosts, setLikedPosts] = useState(); // Lưu trạng thái các bài viết đã thích
   const [activeImageIndex, setActiveImageIndex] = useState({}); // Quản lý chỉ số ảnh đang hiển thị cho mỗi bài có nhiều ảnh
+  const [selectedPostId, setSelectedPostId] = useState(null); // ID bài viết được chọn để báo cáo
+  const [reportSuccess, setReportSuccess] = useState(false);
 
+  const refRBSheet = useRef();
+
+  const openBottomSheet = (postId) => {
+    if (postId) {
+      setSelectedPostId(postId);
+      refRBSheet.current.open();
+    } else {
+      console.error('No post ID provided');
+    }
+  };
+
+  // console.log(user);
+
+  {/** Sử lí cái thông báo  */ }
+  const [modalVisible, setModalVisible] = useState(false);
+  const handleReportSuccess = () => {
+    setReportSuccess(true); // Set report success
+    refRBSheet.current.close(); // Close the RBSheet when the report is successful
+  };
+
+  const { user } = useContext(UserContext);
   // State để theo dõi số lượng lượt thích
   useEffect(() => {
     const fetchPostById = async () => {
       try {
-        const response = await fetch(`http://10.0.2.2:3000/api/v1/posts/get-post-by-id/${postId}`, {
+        const response = await fetch(`${GET_POST_ID}${postId}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json', // nếu API yêu cầu JSON
@@ -33,9 +65,15 @@ const CommentScreen = () => {
 
         const data = await response.json();
         setPost(data.data);
+        if (data?.data?.likeData.some((like) => like.user_id_like._id === user._id)) {
+          setIsLiked(true)
+        } else {
+          setIsLiked(false)
+        }
         setComment(data.data.commentData);
         setLoading(false);
         // console.log(data.data.commentData);
+        // console.log(data.data.likeData);
 
 
       } catch (error) {
@@ -44,18 +82,7 @@ const CommentScreen = () => {
         setLoading(false);
       }
     };
-    const fetchCommentsByPostId = async () => {
-      try {
-        const response = await fetch(`http://10.0.2.2:3000/api/v1/comments/get-comment-by-post?post_id=${postId}`);
-        const data = await response.json();
-        // console.log(data);
 
-        setComment(data.data); // Giả sử API trả về dữ liệu trong `data.data`
-      } catch (error) {
-        console.error('Error fetching comments:', error);
-        setError(error);
-      }
-    };
 
     fetchPostById();
     // fetchCommentsByPostId();
@@ -73,6 +100,86 @@ const CommentScreen = () => {
     }
   }, [post]);
   // console.log(post);
+  // sử lí nút like 
+  // Toggle like/unlike functionality
+  // Xử lý like/unlike bài viết
+  const toggleLike = async (item) => {
+    // console.log(item);
+    const userId = user._id; // Lấy ID người dùng từ context
+    // console.log(user._id);
+    // console.log(item.likeData);
+    // isLiked = item.likeData.some((like) => like.user_id_like._id === user._id);
+    // console.log(isLiked);
+
+    try {
+      let response;
+      if (isLiked) { // Kiểm tra nếu bài viết đã được like
+        response = await fetch(UNLIKE_POST, { // Gửi request unlike
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: userId, post_id: postId }),
+        });
+      } else {
+        response = await fetch(LIKE_POST, { // Gửi request like
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: userId, post_id: postId }),
+        });
+      }
+
+      const result = await response.json(); // Parse kết quả từ response
+      if (response.ok) { // Nếu request thành công
+        // setLikedPosts((prevLikedPosts) =>
+        //   likedPosts.includes(postId) // Cập nhật danh sách bài viết đã thích
+        //     ? prevLikedPosts.filter((id) => id !== postId) // Bỏ bài viết khỏi danh sách
+        //     : [...prevLikedPosts, postId] // Thêm bài viết vào danh sách
+        // );
+        if (isLiked) {
+          setLikedPosts(true)
+        } else {
+          setLikedPosts(false)
+        }
+        // console.log(likedPosts);
+        setPost((prevPost) => ({
+          ...prevPost,
+          likeData: isLiked
+            ? // Nếu isLiked là true, xóa người dùng khỏi danh sách like
+            prevPost.likeData.filter(
+              (like) => like.user_id_like._id !== userId // Thay userId thích vào đây
+            )
+            : // Nếu isLiked là false, thêm người dùng vào danh sách like
+            [
+              ...prevPost.likeData,
+              {
+                user_id_like: {
+                  _id: userId, // Thay userId thích vào đây
+                },
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+              },
+            ],
+          postData: {
+            ...prevPost.postData,
+            like_count: isLiked
+              ? prevPost.postData.like_count - 1 // Giảm số lượng like khi xóa
+              : prevPost.postData.like_count + 1, // Tăng số lượng like khi thêm
+          },
+        }));
+
+        setIsLiked((prevIsLiked) => !prevIsLiked);
+      } else {
+        console.error(
+          likedPosts.includes(postId)
+            ? 'Error while unliking the post'
+            : 'Error while liking the post',
+          result
+        );
+      }
+    } catch (error) {
+      console.error('Error toggling like/unlike:', error); // Xử lý lỗi khi like/unlike
+    }
+  };
+
 
 
 
@@ -186,7 +293,7 @@ const CommentScreen = () => {
                   <Text style={{ fontSize: 12, fontFamily: 'HankenGrotesk-Regular', fontWeight: "medium", color: '#727477' }}>{timeAgo(post.postData.createdAt)}</Text>
                 </View>
               </View>
-              <TouchableOpacity onPress={() => { /* Xử lý nút menu */ }}>
+              <TouchableOpacity onPress={() => { console.log('post:', post); openBottomSheet(post?.postData?._id) }}>
                 <Image source={require('../../assets/images/dot.png')} resizeMode='contain' style={{ width: 20, height: 20 }} />
               </TouchableOpacity>
             </View>
@@ -201,19 +308,23 @@ const CommentScreen = () => {
               {post?.postData?.image && renderImages(post?.postData?.image, post?.postData?._id)}
             </View>
 
-
             <View style={styles.interactContainer}>
               <View style={{ flexDirection: "row" }}>
                 <View style={styles.iconLike}>
-                  <TouchableOpacity>
+                  <TouchableOpacity onPress={() => toggleLike(post)}>
                     <Image
-                      source={isLiked
-                        ? require('../../assets/images/hear2.png')
-                        : require('../../assets/images/heart.png')}
-                      resizeMode='contain'
+                      source={
+                        isLiked === true &&
+                          post.likeData.some(like => like.user_id_like._id === user._id)
+                          ? heartFilled
+                          : heart}
+                      resizeMode="contain"
                       style={{ width: 20, height: 20, marginLeft: 3 }}
                     />
                   </TouchableOpacity>
+
+
+
                   <Text style={styles.textInteract}>{post?.postData?.like_count}</Text>
                 </View>
                 <View style={styles.iconLike}>
@@ -235,47 +346,90 @@ const CommentScreen = () => {
                   style={{ width: 20, height: 20 }}
                 />
               </TouchableOpacity>
-            </View></>
+            </View>
+            <View style={{ height: 1, backgroundColor: '#323436', marginTop: 15 }} />
+            {/** Sử lí phầm comment */}
+            <View style={styles.barComment}>
+              {loading ? <SkeletonShimmer width={100} height={20} borderRadius={10} />
+                : <Text style={styles.commentTitle}>
+                  COMMENTS (<Text>{comment.length}</Text>)
+                </Text>
+              }
+
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={styles.recentText}>Mới nhất</Text>
+                <TouchableOpacity onPress={() => {
+                  // Handle action when click on Recent
+                }}>
+                  <Image
+                    source={require("../../assets/images/arrowbottom.png")}
+                    style={{ width: 20, height: 20 }}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+            {
+              !loading && (
+                comment.map((comment) => (
+                  <CommentComponent
+                    key={comment._id}
+                    avatar={comment.user_id_comment.avatar.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg'}
+                    name={comment.user_id_comment.full_name}
+                    content={comment.comment_content}
+                    time={timeAgo(comment.createdAt)} // Format thời gian nếu cần
+                    likes={0} // Bạn có thể chỉnh sửa nếu cần thêm thông tin về lượt thích
+                  />
+                ))
+              )
+            }
+
+            {comment
+              ?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sắp xếp bình luận mới nhất lên đầu
+              .map((comment) => (
+                <CommentComponent
+                  key={comment._id}
+                  avatar={comment.user_id_comment.avatar.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg'}
+                  name={comment.user_id_comment.full_name}
+                  content={comment.comment_content}
+                  time={timeAgo(comment.createdAt)} // Format thời gian nếu cần
+                  likes={0} // Bạn có thể chỉnh sửa nếu cần thêm thông tin về lượt thích
+                />
+              ))}
+          </>
         )}
-        <View style={{ height: 1, backgroundColor: '#323436', marginTop: 15 }} />
-        {/** Sử lí phầm comment */}
-        <View style={styles.barComment}>
-          {loading ? <SkeletonShimmer width={100} height={20} borderRadius={10} />
-            : <Text style={styles.commentTitle}>
-              COMMENTS (<Text>{comment.length}</Text>)
-            </Text>
-          }
-
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={styles.recentText}>Mới nhất</Text>
-            <TouchableOpacity onPress={() => {
-              // Handle action when click on Recent
-            }}>
-              <Image
-                source={require("../../assets/images/arrowbottom.png")}
-                style={{ width: 20, height: 20 }}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-        {
-          !loading && (
-            comment.map((comment) => (
-              <CommentComponent
-                key={comment._id}
-                avatar={comment.user_id_comment.avatar.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg'}
-                name={comment.user_id_comment.full_name}
-                content={comment.comment_content}
-                time={timeAgo(comment.createdAt)} // Format thời gian nếu cần
-                likes={0} // Bạn có thể chỉnh sửa nếu cần thêm thông tin về lượt thích
-              />
-            ))
-          )
-        }
-
       </ScrollView>
       <CommentInputComponent style={styles.commentInput} />
+      {/* Bottom Sheet */}
+      <RBSheet
+        ref={refRBSheet}
+        height={250}
+        openDuration={300}
+        closeDuration={250}
+        closeOnDragDown={true} // Cho phép kéo xuống để đóng
+        closeOnPressMask={true} // Cho phép đóng khi bấm ra ngoài
+
+        customStyles={{
+          wrapper: {
+            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+          },
+          draggableIcon: {
+            backgroundColor: '#ffff',
+          },
+
+        }}
+      >
+        <ReportComponent
+          postId={selectedPostId}  // Pass selectedPostId here
+          onReportSuccess={handleReportSuccess}
+        />
+
+      </RBSheet>
     </View>
+
+    //       </ScrollView >
+    //       <CommentInputComponent postId={postId}
+    //         onSend={(newComment) => setComment([newComment, ...comment])} style={styles.commentInput} />
+    //     </View >
   );
 };
 

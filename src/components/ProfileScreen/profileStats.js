@@ -10,7 +10,7 @@ const ProfileStats = ({ data }) => {
   // const friendsCount = Array.isArray(data?.friends) ? data?.friends.length : 0;
   const friendsCount = Array.isArray(data?.friends) ? data?.friends.filter(item => item.status_id.status_name === "Chấp nhận").length : 0;
 
-  console.log(data.friends);
+  // console.log(data.friends);
 
 
   return (

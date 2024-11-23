@@ -10,7 +10,7 @@ const SearchComponents = ({ post }) => {
     const [likedPosts, setLikedPosts] = useState([]);
     if (!post) return null;
 
-    console.log('Dữ liệu bài viết:', post); // Debug dữ liệu bài viết
+    // console.log('Dữ liệu bài viết:', post); // Debug dữ liệu bài viết
     const toggleLike = (postId) => {
         setLikedPosts((prevLikedPosts) =>
             prevLikedPosts.includes(postId)

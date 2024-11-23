@@ -8,33 +8,42 @@ import {
   Dimensions,
   Alert
 } from 'react-native';
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import UserComponent from '../../components/Menu/UserComponent';
 import SettingItem from '../../components/Menu/SettingItem';
 import { UserContext } from '../../services/provider/UseContext';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import { useNavigation } from '@react-navigation/native';
 import Screens from '../../navigation/Screens';
+import NotificationModal from '../../components/Notification/NotificationModal';
 import { SocketContext } from '../../services/provider/SocketContext';
-
 const { width, height } = Dimensions.get('window'); // Get device dimensions
 
-const MenuScreen = ({ navigation }) => {
-
+const MenuScreen = () => {
+  const navigation = useNavigation(); // Hook for navigation
   const { user, GoogleSignin } = useContext(UserContext);
   const { disconnectSocket } = useContext(SocketContext);
 
+  const [modalVisible, setModalVisible] = useState(false); // State to control modal
+  const handleLogoutPress = () => {
+    setModalVisible(true); // Show modal
+  };
+  const handleConfirm = async () => {
+    setModalVisible(false);
+    await GoogleSignin.signOut();
+    disconnectSocket();
+    navigation.navigate(Screens.MenuAuth); // Navigate to LoginScreen
+  };
+
+  const handleCancel = () => {
+    setModalVisible(false); // Hide modal
+  };
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollContent}>
         <View style={styles.headContainer}>
           <Text style={styles.headerText}>Menu</Text>
-          <TouchableOpacity onPress={() => { /* Handle navigation to settings here */ }}>
-            <Image
-              source={require('../../assets/images/setting.png')}
-              style={styles.settingIcon}
-              resizeMode={'contain'}
-            />
-          </TouchableOpacity>
+
         </View>
 
         <View style={styles.userContainer}>
@@ -77,36 +86,16 @@ const MenuScreen = ({ navigation }) => {
       </ScrollView>
 
       {/* Logout button at the bottom */}
-      <TouchableOpacity style={styles.buttonExit} onPress={() => {
-        Alert.alert(
-          'Đăng xuất',
-          'Bạn có chắc chắn muốn đăng xuất khỏi tài khoản này không?',
-          [
-            {
-              text: 'Hủy',
-              onPress: () => console.log('Hủy bỏ'),
-              style: 'cancel',
-            },
-            {
-              text: 'Đồng ý',
-              onPress: () => {
-                GoogleSignin.signOut()
-                  .then(() => {
-                    // console.log('Đã đăng xuất');
-                    navigation.navigate(Screens.MenuAuth);
-                    disconnectSocket();
-                  })
-                  .catch((error) => {
-                    console.error('Lỗi khi đăng xuất:', error);
-                  });
-              },
-            },
-          ],
-        );
-
-      }}>
+      <TouchableOpacity style={styles.buttonExit} onPress={handleLogoutPress}>
         <Text style={styles.buttonExitText}>Đăng Xuất</Text>
       </TouchableOpacity>
+      {/* Notification Modal */}
+      <NotificationModal
+        visible={modalVisible}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+        message="Bạn có chắc muốn đăng xuất?"
+      />
     </View>
   );
 };
