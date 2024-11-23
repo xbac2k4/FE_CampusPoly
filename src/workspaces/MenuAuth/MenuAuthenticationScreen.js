@@ -42,7 +42,7 @@ const MenuAuthenticationScreen = ({ navigation }) => {
         showPlayServicesUpdateDialog: true,
       })
 
-      await GoogleSignin.signOut();
+      // await GoogleSignin.signOut();
       const userInfo = await GoogleSignin.signIn();
       const accessToken = (await GoogleSignin.getTokens()).accessToken;
 

@@ -16,18 +16,22 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
 import Screens from '../../navigation/Screens';
 import NotificationModal from '../../components/Notification/NotificationModal';
+import { SocketContext } from '../../services/provider/SocketContext';
 const { width, height } = Dimensions.get('window'); // Get device dimensions
 
 const MenuScreen = () => {
   const navigation = useNavigation(); // Hook for navigation
-  const { user } = useContext(UserContext);
+  const { user, GoogleSignin } = useContext(UserContext);
+  const { disconnectSocket } = useContext(SocketContext);
 
   const [modalVisible, setModalVisible] = useState(false); // State to control modal
   const handleLogoutPress = () => {
     setModalVisible(true); // Show modal
   };
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     setModalVisible(false);
+    await GoogleSignin.signOut();
+    disconnectSocket();
     navigation.navigate(Screens.MenuAuth); // Navigate to LoginScreen
   };
 
@@ -39,7 +43,7 @@ const MenuScreen = () => {
       <ScrollView style={styles.scrollContent}>
         <View style={styles.headContainer}>
           <Text style={styles.headerText}>Menu</Text>
-         
+
         </View>
 
         <View style={styles.userContainer}>
