@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { View, Text, Image, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import styles from '../../assets/style/CommentStyle';
@@ -6,6 +6,9 @@ import CommentInputComponent from '../../components/Comment/CommentInputComponen
 import { CommentLoading, PostCommentLoading } from '../../components/Loading/LoadingTimeline ';
 import SkeletonShimmer from '../../components/Loading/SkeletonShimmer';
 import CommentComponent from '../../components/Comment/CommentComponent';
+import ReportComponent from '../../components/Report/ReportComponent';
+import RBSheet from 'react-native-raw-bottom-sheet';
+import NotificationModal from '../../components/Notification/NotificationModal'; // Import NotificationModal
 import { LIKE_POST, UNLIKE_POST, GET_POST_ID } from '../../services/ApiConfig';
 import { UserContext } from '../../services/provider/UseContext';
 const { width: screenWidth } = Dimensions.get('window'); // Lấy chiều rộng màn hình để điều chỉnh kích thước hình ảnh
@@ -24,6 +27,29 @@ const CommentScreen = () => {
   const [isBookmark, setIsBookmark] = useState(false);
   const [likedPosts, setLikedPosts] = useState(); // Lưu trạng thái các bài viết đã thích
   const [activeImageIndex, setActiveImageIndex] = useState({}); // Quản lý chỉ số ảnh đang hiển thị cho mỗi bài có nhiều ảnh
+  const [selectedPostId, setSelectedPostId] = useState(null); // ID bài viết được chọn để báo cáo
+  const [reportSuccess, setReportSuccess] = useState(false);
+
+  const refRBSheet = useRef();
+
+  const openBottomSheet = (postId) => {
+    if (postId) {
+        setSelectedPostId(postId);
+        refRBSheet.current.open();
+    } else {
+        console.error('No post ID provided');
+    }
+};
+
+  // console.log(user);
+
+  {/** Sử lí cái thông báo  */ }
+  const [modalVisible, setModalVisible] = useState(false);
+  const handleReportSuccess = () => {
+    setReportSuccess(true); // Set report success
+    refRBSheet.current.close(); // Close the RBSheet when the report is successful
+  };
+
   const { user } = useContext(UserContext);
   // State để theo dõi số lượng lượt thích
   useEffect(() => {
@@ -267,7 +293,7 @@ const CommentScreen = () => {
                   <Text style={{ fontSize: 12, fontFamily: 'HankenGrotesk-Regular', fontWeight: "medium", color: '#727477' }}>{timeAgo(post.postData.createdAt)}</Text>
                 </View>
               </View>
-              <TouchableOpacity onPress={() => { /* Xử lý nút menu */ }}>
+              <TouchableOpacity onPress={() => {console.log('post:', post);openBottomSheet(post?.postData?._id)}}>
                 <Image source={require('../../assets/images/dot.png')} resizeMode='contain' style={{ width: 20, height: 20 }} />
               </TouchableOpacity>
             </View>
@@ -371,11 +397,44 @@ const CommentScreen = () => {
               ))}
           </>
         )}
+      </ScrollView>
+      <CommentInputComponent style={styles.commentInput} />
+       {/* Bottom Sheet */}
+       <RBSheet
+        ref={refRBSheet}
+        height={250}
+        openDuration={300}
+        closeDuration={250}
+        closeOnDragDown={true} // Cho phép kéo xuống để đóng
+        closeOnPressMask={true} // Cho phép đóng khi bấm ra ngoài
 
-      </ScrollView >
-      <CommentInputComponent postId={postId}
-        onSend={(newComment) => setComment([newComment, ...comment])} style={styles.commentInput} />
-    </View >
+        customStyles={{
+          wrapper: {
+            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+          },
+          draggableIcon: {
+            backgroundColor: '#ffff',
+          },
+
+        }}
+      >
+        <ReportComponent
+          postId={selectedPostId}  // Pass selectedPostId here
+          onReportSuccess={handleReportSuccess}
+        />
+
+      </RBSheet>
+      <NotificationModal
+        visible={modalVisible}
+        onConfirm={() => setModalVisible(false)}
+        success={reportSuccess}
+      />
+    </View>
+
+//       </ScrollView >
+//       <CommentInputComponent postId={postId}
+//         onSend={(newComment) => setComment([newComment, ...comment])} style={styles.commentInput} />
+//     </View >
   );
 };
 

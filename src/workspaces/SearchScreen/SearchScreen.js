@@ -18,7 +18,7 @@ const SearchScreen = ({ userId }) => {
       const response = await fetch(`${GET_SEARCH}?searchTerm=${encodeURIComponent(searchTerm)}`);
       const responseData = await response.json();
   
-      console.log('Response Data:', responseData); // Kiểm tra dữ liệu trả về
+      // console.log('Response Data:', responseData); // Kiểm tra dữ liệu trả về
   
       if (responseData.success && Array.isArray(responseData.posts)) {
         const postsData = responseData.posts;  // Sửa từ data thành posts
@@ -54,13 +54,13 @@ const SearchScreen = ({ userId }) => {
     if (normalizedText === '') {
       setFilteredPosts(data);
     } else {
-      console.log('Filtering posts with:', normalizedText);
+      // console.log('Filtering posts with:', normalizedText);
       const filtered = data.filter(
         (post) =>
           removeVietnameseTones(post.title.toLowerCase()).includes(normalizedText.toLowerCase()) ||
           removeVietnameseTones(post.post_type.toLowerCase()).includes(normalizedText.toLowerCase())
       );
-      console.log('Filtered posts:', filtered);
+      // console.log('Filtered posts:', filtered);
       setFilteredPosts(filtered);
     }
   };  

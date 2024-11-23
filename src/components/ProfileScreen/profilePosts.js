@@ -4,7 +4,10 @@ import { useNavigation } from '@react-navigation/native';
 import Screens from '../../navigation/Screens';
 const { width: screenWidth } = Dimensions.get('window');
 import styles from '../../assets/style/PostStyle';
+import ReportComponent from '../../components/Report/ReportComponent';
 import RBSheet from 'react-native-raw-bottom-sheet';
+import NotificationModal from '../../components/Notification/NotificationModal'; // Import NotificationModal
+
 import { LIKE_POST, UNLIKE_POST } from '../../services/ApiConfig';
 import ToastModal from '../../components/Notification/NotificationModal'
 // Import các hình ảnh
@@ -26,34 +29,37 @@ import { UserContext } from '../../services/provider/UseContext';
 const ProfilePosts = ({ navigation, data }) => {
   const [userAll, setUserAll] = useState(data); // Chứa các bài viết
   const { user } = useContext(UserContext);
+//   const [user, setUser] = useState(props.data.map((item) => item?.post));
+
   const [loading, setLoading] = useState(true); // Quản lý trạng thái loading
   const [error, setError] = useState(null); // Quản lý lỗi
   const [likedPosts, setLikedPosts] = useState([]); // Lưu trạng thái các bài viết đã thích
   const [savedPosts, setSavedPosts] = useState([]); // Lưu trạng thái các bài viết đã lưu
   const [activeImageIndex, setActiveImageIndex] = useState({}); // Quản lý chỉ số ảnh đang hiển thị cho mỗi bài có nhiều ảnh
+//   const navigation = useNavigation(); // Hook to access navigation
+  const [selectedPostId, setSelectedPostId] = useState(null); // ID bài viết được chọn để báo cáo
+  const [reportSuccess, setReportSuccess] = useState(false);
   // const navigation = useNavigation(); // Hook to access navigation
 
   const refRBSheet = useRef();
 
-  const openBottomSheet = () => {
-    refRBSheet.current.open();
-  };
+  const openBottomSheet = (postId) => {
+    if (postId) {
+        setSelectedPostId(postId);
+        refRBSheet.current.open();
+    } else {
+        console.error('No post ID provided');
+    }
+};
+
   // console.log(user);
 
   {/** Sử lí cái thông báo  */ }
   const [modalVisible, setModalVisible] = useState(false);
-
-  const handleConfirm = () => {
-    setModalVisible(false);
-    setTimeout(() => setModalVisible(false), 2000); // Ẩn thông báo sau 2 giây
-    console.log("Confirmed");
+  const handleReportSuccess = () => {
+    setReportSuccess(true); // Set report success
+    refRBSheet.current.close(); // Close the RBSheet when the report is successful
   };
-
-  const handleCancel = () => {
-    setModalVisible(false);
-    console.log("Cancelled");
-  };
-
   // Xử lý khi bấm vào avatar và tên người dùng
   const handleProfileClick = (userId) => {
     if (userId === user._id) {
@@ -238,7 +244,6 @@ const ProfilePosts = ({ navigation, data }) => {
         {userAll && userAll.length > 0 ? (
           userAll.map((item) => {
             // console.log(item);
-
             return (
               <View key={item.postData._id} style={styles.postContainer}>
                 <View style={styles.postHeader}>
@@ -252,7 +257,7 @@ const ProfilePosts = ({ navigation, data }) => {
                     <Text style={styles.postTime}>{timeAgo(item.postData.createdAt)}</Text>
                   </View>
                   <TouchableOpacity
-                    onPress={openBottomSheet}
+                    onPress={() => {console.log('item:', item);openBottomSheet(item?._id)}}
                     style={styles.moreIcon}>
                     <Text style={styles.moreText}>⋮</Text>
                   </TouchableOpacity>
@@ -311,6 +316,7 @@ const ProfilePosts = ({ navigation, data }) => {
         openDuration={300}
         closeDuration={250}
         closeOnDragDown={true} // Cho phép kéo xuống để đóng
+        closeOnPressMask={true} // Cho phép đóng khi bấm ra ngoài
 
         customStyles={{
           wrapper: {
@@ -322,9 +328,11 @@ const ProfilePosts = ({ navigation, data }) => {
 
         }}
       >
-        <View style={styles.inner}>
-          <TouchableOpacity
-            onPress={() => setModalVisible(true)}
+        <ReportComponent
+          postId={selectedPostId}  // Pass selectedPostId here
+          onReportSuccess={handleReportSuccess}
+        />
+
 
             style={styles.reporttextcontainer}>
             <NotificationModal
@@ -353,6 +361,11 @@ const ProfilePosts = ({ navigation, data }) => {
           </TouchableOpacity>
         </View>
       </RBSheet>
+      <NotificationModal
+        visible={modalVisible}
+        onConfirm={() => setModalVisible(false)}
+        success={reportSuccess}
+      />
 
     </View>
   );
