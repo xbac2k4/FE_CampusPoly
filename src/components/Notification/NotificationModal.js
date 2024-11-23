@@ -2,44 +2,65 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Modal, Image } from 'react-native';
 
 // const NotificationModal = ({ visible, onConfirm, onCancel, success }) => {
-const NotificationModal = ({ visible, message ,onConfirm, onCancel }) => {
+// const NotificationModal = ({ visible, message ,onConfirm, onCancel }) => {
+//   return (
+//     <Modal transparent visible={visible} animationType="fade">
+//       <View style={styles.overlay}>
+//         <View style={styles.modalContainer}>
+// {/* //           <Image 
+// //             source={success ? require('../../assets/images/success.png') : require('../../assets/images/report.png')} 
+// //             style={styles.icon} 
+// //           />
+// //           <Text style={styles.title}>
+// //             {success ? 'Thành công!' : 'Thông báo!'}
+// //           </Text>
+// //           <Text style={styles.message}>
+// //             {success ? 'Báo cáo đã được gửi thành công.' : 'Bạn có chắc với lựa chọn này?'}
+// //           </Text> */}
+//           <Image source={require('../../assets/images/report.png')} style={styles.icon} />
+//           <Text style={styles.title}>Thông báo!</Text>
+//           <Text style={styles.message}>{message}</Text>
+//           <View style={styles.buttonContainer}>
+//             <TouchableOpacity 
+//               style={[styles.confirmButton, success && styles.successButton]} 
+//               onPress={onConfirm}>
+//               <Text style={styles.confirmText}>
+//                 {success ? 'OK' : 'Đồng ý'}
+//               </Text>
+//             </TouchableOpacity>
+//             {!success && (
+//               <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
+//                 <Text style={styles.cancelText}>Hủy</Text>
+//               </TouchableOpacity>
+//             )}
+//           </View>
+//         </View>
+//       </View>
+//     </Modal>
+//   );
+// };
+
+const NotificationModal = ({ visible, message, onConfirm, onCancel }) => {
   return (
     <Modal transparent visible={visible} animationType="fade">
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
-//           <Image 
-//             source={success ? require('../../assets/images/success.png') : require('../../assets/images/report.png')} 
-//             style={styles.icon} 
-//           />
-//           <Text style={styles.title}>
-//             {success ? 'Thành công!' : 'Thông báo!'}
-//           </Text>
-//           <Text style={styles.message}>
-//             {success ? 'Báo cáo đã được gửi thành công.' : 'Bạn có chắc với lựa chọn này?'}
-//           </Text>
           <Image source={require('../../assets/images/report.png')} style={styles.icon} />
           <Text style={styles.title}>Thông báo!</Text>
           <Text style={styles.message}>{message}</Text>
           <View style={styles.buttonContainer}>
-            <TouchableOpacity 
-              style={[styles.confirmButton, success && styles.successButton]} 
-              onPress={onConfirm}>
-              <Text style={styles.confirmText}>
-                {success ? 'OK' : 'Đồng ý'}
-              </Text>
+            <TouchableOpacity style={styles.confirmButton} onPress={onConfirm}>
+              <Text style={styles.confirmText}>Đồng ý</Text>
             </TouchableOpacity>
-            {!success && (
-              <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
-                <Text style={styles.cancelText}>Hủy</Text>
-              </TouchableOpacity>
-            )}
+            <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
+              <Text style={styles.cancelText}>Hủy</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
     </Modal>
   );
 };
-
 
 const styles = StyleSheet.create({
   overlay: {

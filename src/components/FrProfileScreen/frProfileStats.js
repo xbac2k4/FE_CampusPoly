@@ -108,12 +108,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   stat: {
-    alignItems: 'flex-start',
+    alignItems: 'center',
   },
   statNumber: {
     fontSize: 16,
     color: 'white',
     fontWeight: 'bold',
+    textAlign: 'center',
   },
   statText: {
     fontSize: 14,

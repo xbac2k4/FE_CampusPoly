@@ -34,12 +34,12 @@ const CommentScreen = () => {
 
   const openBottomSheet = (postId) => {
     if (postId) {
-        setSelectedPostId(postId);
-        refRBSheet.current.open();
+      setSelectedPostId(postId);
+      refRBSheet.current.open();
     } else {
-        console.error('No post ID provided');
+      console.error('No post ID provided');
     }
-};
+  };
 
   // console.log(user);
 
@@ -293,7 +293,7 @@ const CommentScreen = () => {
                   <Text style={{ fontSize: 12, fontFamily: 'HankenGrotesk-Regular', fontWeight: "medium", color: '#727477' }}>{timeAgo(post.postData.createdAt)}</Text>
                 </View>
               </View>
-              <TouchableOpacity onPress={() => {console.log('post:', post);openBottomSheet(post?.postData?._id)}}>
+              <TouchableOpacity onPress={() => { console.log('post:', post); openBottomSheet(post?.postData?._id) }}>
                 <Image source={require('../../assets/images/dot.png')} resizeMode='contain' style={{ width: 20, height: 20 }} />
               </TouchableOpacity>
             </View>
@@ -399,8 +399,8 @@ const CommentScreen = () => {
         )}
       </ScrollView>
       <CommentInputComponent style={styles.commentInput} />
-       {/* Bottom Sheet */}
-       <RBSheet
+      {/* Bottom Sheet */}
+      <RBSheet
         ref={refRBSheet}
         height={250}
         openDuration={300}
@@ -424,17 +424,12 @@ const CommentScreen = () => {
         />
 
       </RBSheet>
-      <NotificationModal
-        visible={modalVisible}
-        onConfirm={() => setModalVisible(false)}
-        success={reportSuccess}
-      />
     </View>
 
-//       </ScrollView >
-//       <CommentInputComponent postId={postId}
-//         onSend={(newComment) => setComment([newComment, ...comment])} style={styles.commentInput} />
-//     </View >
+    //       </ScrollView >
+    //       <CommentInputComponent postId={postId}
+    //         onSend={(newComment) => setComment([newComment, ...comment])} style={styles.commentInput} />
+    //     </View >
   );
 };
 

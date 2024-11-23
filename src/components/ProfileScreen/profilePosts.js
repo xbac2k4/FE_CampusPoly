@@ -6,8 +6,6 @@ const { width: screenWidth } = Dimensions.get('window');
 import styles from '../../assets/style/PostStyle';
 import ReportComponent from '../../components/Report/ReportComponent';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import NotificationModal from '../../components/Notification/NotificationModal'; // Import NotificationModal
-
 import { LIKE_POST, UNLIKE_POST } from '../../services/ApiConfig';
 import ToastModal from '../../components/Notification/NotificationModal'
 // Import các hình ảnh
@@ -29,14 +27,14 @@ import { UserContext } from '../../services/provider/UseContext';
 const ProfilePosts = ({ navigation, data }) => {
   const [userAll, setUserAll] = useState(data); // Chứa các bài viết
   const { user } = useContext(UserContext);
-//   const [user, setUser] = useState(props.data.map((item) => item?.post));
+  //   const [user, setUser] = useState(props.data.map((item) => item?.post));
 
   const [loading, setLoading] = useState(true); // Quản lý trạng thái loading
   const [error, setError] = useState(null); // Quản lý lỗi
   const [likedPosts, setLikedPosts] = useState([]); // Lưu trạng thái các bài viết đã thích
   const [savedPosts, setSavedPosts] = useState([]); // Lưu trạng thái các bài viết đã lưu
   const [activeImageIndex, setActiveImageIndex] = useState({}); // Quản lý chỉ số ảnh đang hiển thị cho mỗi bài có nhiều ảnh
-//   const navigation = useNavigation(); // Hook to access navigation
+  //   const navigation = useNavigation(); // Hook to access navigation
   const [selectedPostId, setSelectedPostId] = useState(null); // ID bài viết được chọn để báo cáo
   const [reportSuccess, setReportSuccess] = useState(false);
   // const navigation = useNavigation(); // Hook to access navigation
@@ -45,12 +43,12 @@ const ProfilePosts = ({ navigation, data }) => {
 
   const openBottomSheet = (postId) => {
     if (postId) {
-        setSelectedPostId(postId);
-        refRBSheet.current.open();
+      setSelectedPostId(postId);
+      refRBSheet.current.open();
     } else {
-        console.error('No post ID provided');
+      console.error('No post ID provided');
     }
-};
+  };
 
   // console.log(user);
 
@@ -257,7 +255,7 @@ const ProfilePosts = ({ navigation, data }) => {
                     <Text style={styles.postTime}>{timeAgo(item.postData.createdAt)}</Text>
                   </View>
                   <TouchableOpacity
-                    onPress={() => {console.log('item:', item);openBottomSheet(item?._id)}}
+                    onPress={() => { console.log('item:', item); openBottomSheet(item?.postData?._id) }}
                     style={styles.moreIcon}>
                     <Text style={styles.moreText}>⋮</Text>
                   </TouchableOpacity>
@@ -333,41 +331,39 @@ const ProfilePosts = ({ navigation, data }) => {
           onReportSuccess={handleReportSuccess}
         />
 
-
-            style={styles.reporttextcontainer}>
-            <NotificationModal
-              visible={modalVisible}
-              onConfirm={handleConfirm}
-              onCancel={handleCancel}
-              message={'Bạn có chắc muốn báo cáo?'}
-            />
-            <Image source={report} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
-            <Text style={styles.textOne}>Bài viết xúc phạm người dùng khác</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.reporttextcontainer}>
-            <Image source={untrue} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
-            <Text style={styles.textOne}>Bài viết sai sự thật</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.reporttextcontainer}>
-            <Image source={violet} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
-            <Text style={styles.textOne}>Bài viết mang tính bạo lực - kích động</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.reporttextcontainer}>
-            <Image source={rectionary} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
-            <Text style={styles.textOne}>Bài viết mang tính phản động</Text>
-          </TouchableOpacity><TouchableOpacity style={styles.reporttextcontainer}>
-            <Image source={racsim} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
-            <Text style={styles.textOne}>Bài viết mang tính phân biệt</Text>
-          </TouchableOpacity>
-        </View>
-      </RBSheet>
-      <NotificationModal
+        {/* <TouchableOpacity
+          style={styles.reporttextcontainer}>
+          <NotificationModal
+            visible={modalVisible}
+            onConfirm={handleConfirm}
+            onCancel={handleCancel}
+            message={'Bạn có chắc muốn báo cáo?'}
+          />
+          <Image source={report} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
+          <Text style={styles.textOne}>Bài viết xúc phạm người dùng khác</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.reporttextcontainer}>
+          <Image source={untrue} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
+          <Text style={styles.textOne}>Bài viết sai sự thật</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.reporttextcontainer}>
+          <Image source={violet} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
+          <Text style={styles.textOne}>Bài viết mang tính bạo lực - kích động</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.reporttextcontainer}>
+          <Image source={rectionary} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
+          <Text style={styles.textOne}>Bài viết mang tính phản động</Text>
+        </TouchableOpacity><TouchableOpacity style={styles.reporttextcontainer}>
+          <Image source={racsim} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
+          <Text style={styles.textOne}>Bài viết mang tính phân biệt</Text>
+        </TouchableOpacity> */}
+      </RBSheet >
+      {/* <NotificationModal
         visible={modalVisible}
         onConfirm={() => setModalVisible(false)}
         success={reportSuccess}
-      />
-
-    </View>
+      /> */}
+    </View >
   );
 };
 

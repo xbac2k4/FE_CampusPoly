@@ -52,8 +52,8 @@ const ReportComponent = ({ postId, onReportSuccess }) => {
 
             if (response.ok) {
                 setReportSuccess(true);
-                // onReportSuccess(); // Gọi hàm callback khi báo cáo thành công
-                setModalVisible(true); // Hiển thị modal thông báo
+                onReportSuccess(); // Gọi hàm callback khi báo cáo thành công
+                // setModalVisible(true); // Hiển thị modal thông báo
             } else {
                 throw new Error('Lỗi khi gửi báo cáo');
             }
@@ -89,11 +89,17 @@ const ReportComponent = ({ postId, onReportSuccess }) => {
     return (
         <View style={styles.inner}>
             {/* Hiển thị NotificationModal */}
-            <NotificationModal
+            {/* <NotificationModal
                 visible={modalVisible}
                 onConfirm={handleConfirm}
                 onCancel={handleCancel}
                 success={reportSuccess} // Truyền trạng thái thành công hay không vào NotificationModal
+            /> */}
+            <NotificationModal
+                visible={modalVisible}
+                onConfirm={handleConfirm}
+                onCancel={handleCancel}
+                message="Bạn có chắc với lực chọn này không?"
             />
 
             {/* Các nút báo cáo */}
