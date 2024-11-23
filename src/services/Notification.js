@@ -1,6 +1,7 @@
 import notifee, { AndroidImportance } from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
 import { addNotification } from '../store/NotificationState';
+import { Alert } from 'react-native';
 
 
 // nhận thông báo trong trạng thái background

@@ -22,7 +22,7 @@ export const getArray = async (key) => {
 
 // Thêm thông báo mới
 export const addNotification = (message) => {
-  console.log("message: ", message);
+  // console.log("message: ", message);
 
   getArray('notifications').then((notifications) => {
     if (notifications) {
@@ -38,7 +38,7 @@ export const addNotification = (message) => {
     } else {
       // Thêm thuộc tính isRead với giá trị mặc định là false
       const newMessage = { ...message, isRead: false };
-      saveArray('notifications', [newMessage], setNotifications);
+      saveArray('notifications', [newMessage]);
     }
   });
 };
@@ -51,7 +51,7 @@ export const markAllAsRead = () => {
         return { ...notification, isRead: true };
       });
 
-      saveArray('notifications', updatedNotifications, setNotifications);
+      saveArray('notifications', updatedNotifications);
     }
   });
 };
