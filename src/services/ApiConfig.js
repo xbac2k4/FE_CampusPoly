@@ -15,3 +15,6 @@ export const ADD_FRIEND  = API_URL + 'friends/add-friend';
 export const UPDATE_FRIEND  = API_URL + 'friends/update-friend';
 export const GET_FRIEND_BY_USERID  = API_URL + 'friends/get-friend-by-userID';
 export const ADD_REPORT = API_URL + 'reports/add-report';
+export const ADD_COMMENT = API_URL + 'comments/add-comment-to-post';
+export const LIKE_POST = API_URL + 'likes/add-like-to-post';
+export const UNLIKE_POST = API_URL + 'likes/remove-like-from-post';

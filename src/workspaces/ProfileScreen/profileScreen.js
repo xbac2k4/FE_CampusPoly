@@ -8,6 +8,7 @@ import FrProfileStats from '../../components/FrProfileScreen/frProfileStats';
 import { UserContext } from '../../services/provider/UseContext';
 import { GET_USER_ID, GET_POST_BY_USERID, ADD_FRIEND, UPDATE_FRIEND } from '../../services/ApiConfig';
 import { useFocusEffect } from '@react-navigation/native';
+import LoadingTimeline from '../../components/Loading/LoadingTimeline ';
 
 const ProfileScreen = ({ navigation, route }) => {
   const [activeTab, setActiveTab] = useState('Posts');
@@ -49,6 +50,7 @@ const ProfileScreen = ({ navigation, route }) => {
       console.error('Error fetching posts:', error.message);
     } finally {
       setPostsLoading(false);
+      console.log(posts);
     }
   };
 
@@ -125,10 +127,10 @@ const ProfileScreen = ({ navigation, route }) => {
 
           {activeTab === 'Posts' && (
             postsLoading ? (
-              <ActivityIndicator size="large" color="#FFF" style={{ marginTop: 20 }} />
+              <LoadingTimeline quantity={3} />
             ) : (
               posts.length > 0 ? (
-                <ProfilePosts data={posts} />
+                <ProfilePosts data={posts} navigation={navigation} />
               ) : (
                 <Text style={{ color: '#FFF', textAlign: 'center', marginTop: 20 }}>
                   No posts to display.
