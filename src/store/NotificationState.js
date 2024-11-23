@@ -20,23 +20,38 @@ export const getArray = async (key) => {
   }
 };
 
+// Thêm thông báo mới
 export const addNotification = (message) => {
   console.log("message: ", message);
 
   getArray('notifications').then((notifications) => {
     if (notifications) {
-      saveArray('notifications', [...notifications, message]);
+      // Kiểm tra xem messageId đã tồn tại hay chưa
+      const exists = notifications.some(notification => notification.messageId === message.messageId);
+      if (!exists) {
+        // Thêm thuộc tính isRead với giá trị mặc định là false
+        const newMessage = { ...message, isRead: false };
+        saveArray('notifications', [...notifications, newMessage]);
+      } else {
+        console.log('Thông báo đã tồn tại');
+      }
     } else {
-      saveArray('notifications', [message]);
+      // Thêm thuộc tính isRead với giá trị mặc định là false
+      const newMessage = { ...message, isRead: false };
+      saveArray('notifications', [newMessage], setNotifications);
     }
   });
-  
-}
+};
 
-// Sử dụng ví dụ
-// const exampleArray = ['item1', 'item2', 'item3'];
-// saveArray('myArrayKey', exampleArray);
+// Đánh dấu tất cả thông báo là đã đọc
+export const markAllAsRead = () => {
+  getArray('notifications').then((notifications) => {
+    if (notifications) {
+      const updatedNotifications = notifications.map(notification => {
+        return { ...notification, isRead: true };
+      });
 
-// getArray('myArrayKey').then((array) => {
-//   console.log(array);
-// });
+      saveArray('notifications', updatedNotifications, setNotifications);
+    }
+  });
+};

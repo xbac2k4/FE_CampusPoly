@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { getArray } from '../../store/NotificationState';
+import Colors from '../../constants/Color';
+import { getArray, markAllAsRead } from '../../store/NotificationState';
 
 const NotificationScreen = () => {
   const [notification, setNotification] = useState([])
@@ -30,11 +31,11 @@ const NotificationScreen = () => {
         day: '2-digit'
       });
 
-    // console.log(time);
-
 
     return (
-      <TouchableOpacity style={styles.notificationItem}>
+      <TouchableOpacity 
+      style={[styles.notificationItem, { backgroundColor: item.isRead ? Colors.background : '#3A3A3C' }
+      ]}>
 
         <Image
           source={{ uri: item.notification.android.imageUrl }}
@@ -57,9 +58,9 @@ const NotificationScreen = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Thông báo</Text>
-        {/* <TouchableOpacity>
+        <TouchableOpacity onPress={markAllAsRead}>
           <Text style={styles.markAllAsRead}>Đánh dấu tất cả là đã đọc</Text>
-        </TouchableOpacity> */}
+        </TouchableOpacity>
       </View>
       <FlatList
         data={notification}
@@ -74,7 +75,7 @@ const NotificationScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212',
+    backgroundColor: Colors.background,
   },
   header: {
     flexDirection: 'row',
@@ -88,6 +89,12 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
   },
+
+  markAllAsRead: {
+    color: '#007AFF',
+    fontSize: 16,
+  },
+
   notificationItem: {
     flexDirection: 'row',
     padding: 15,
