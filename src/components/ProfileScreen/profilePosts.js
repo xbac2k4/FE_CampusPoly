@@ -71,9 +71,9 @@ const ProfilePosts = ({ navigation, data }) => {
   useEffect(() => {
     if (userAll && userAll.length > 0) {
       const initialIndices = {};
-      userAll.forEach((post) => {
-        if (post.post.image && post.post.image.length > 1) {
-          initialIndices[post.post._id] = 0; // Thiết lập chỉ mục đầu tiên cho các bài có nhiều ảnh
+      userAll.forEach((postData) => {
+        if (postData.postData.image && postData.postData.image.length > 1) {
+          initialIndices[postData.postData._id] = 0; // Thiết lập chỉ mục đầu tiên cho các bài có nhiều ảnh
         }
       });
       setActiveImageIndex(initialIndices);
@@ -93,7 +93,7 @@ const ProfilePosts = ({ navigation, data }) => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ user_id: userId, post_id: item.post._id }),
+          body: JSON.stringify({ user_id: userId, post_id: item.postData._id }),
         });
       } else {
         // Thích bài viết (POST)
@@ -102,7 +102,7 @@ const ProfilePosts = ({ navigation, data }) => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ user_id: userId, post_id: item.post._id }),
+          body: JSON.stringify({ user_id: userId, post_id: item.postData._id }),
         });
       }
 
@@ -110,36 +110,36 @@ const ProfilePosts = ({ navigation, data }) => {
       if (response.ok) {
         if (isLiked) {
           // Cập nhật trạng thái khi bỏ like
-          setLikedPosts((prevPosts) => prevPosts.filter((id) => id !== item.post._id));
+          setLikedPosts((prevPosts) => prevPosts.filter((id) => id !== item.postData._id));
           setUserAll((prevPosts) =>
-            prevPosts.map((post) =>
-              post.post._id === item.post._id
+            prevPosts.map((postData) =>
+              postData.postData._id === item.postData._id
                 ? {
-                  ...post,
-                  likeData: post.likeData.filter((like) => like.user_id_like !== userId), // Xóa like của user
-                  post: {
-                    ...post.post,
-                    like_count: post.post.like_count - 1, // Giảm số lượng like
+                  ...postData,
+                  likeData: postData.likeData.filter((like) => like.user_id_like !== userId), // Xóa like của user
+                  postData: {
+                    ...postData.postData,
+                    like_count: postData.postData.like_count - 1, // Giảm số lượng like
                   },
                 }
-                : post
+                : postData
             )
           );
         } else {
           // Cập nhật trạng thái khi thích bài viết
-          setLikedPosts((prevPosts) => [...prevPosts, item.post._id]);
+          setLikedPosts((prevPosts) => [...prevPosts, item.postData._id]);
           setUserAll((prevPosts) =>
-            prevPosts.map((post) =>
-              post.post._id === item.post._id
+            prevPosts.map((postData) =>
+              postData.postData._id === item.postData._id
                 ? {
-                  ...post,
-                  likeData: [...post.likeData, result.data], // Thêm lượt thích mới vào likeData
-                  post: {
-                    ...post.post,
-                    like_count: post.post.like_count + 1, // Tăng số lượng like
+                  ...postData,
+                  likeData: [...postData.likeData, result.data], // Thêm lượt thích mới vào likeData
+                  postData: {
+                    ...postData.postData,
+                    like_count: postData.postData.like_count + 1, // Tăng số lượng like
                   },
                 }
-                : post
+                : postData
             )
           );
           console.log({ message: 'Thích thành công', type: 'success' });
@@ -240,16 +240,16 @@ const ProfilePosts = ({ navigation, data }) => {
             // console.log(item);
 
             return (
-              <View key={item.post._id} style={styles.postContainer}>
+              <View key={item.postData._id} style={styles.postContainer}>
                 <View style={styles.postHeader}>
-                  <TouchableOpacity onPress={() => handleProfileClick(item.post.user_id._id)}>
-                    <Image source={{ uri: item.post.user_id.avatar.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' }} style={styles.profileImage} />
+                  <TouchableOpacity onPress={() => handleProfileClick(item.postData.user_id._id)}>
+                    <Image source={{ uri: item.postData.user_id.avatar.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' }} style={styles.profileImage} />
                   </TouchableOpacity>
                   <View style={styles.headerText}>
-                    <TouchableOpacity onPress={() => handleProfileClick(item.post.user_id._id)}>
-                      <Text style={styles.profileName}>{item.post.user_id.full_name}</Text>
+                    <TouchableOpacity onPress={() => handleProfileClick(item.postData.user_id._id)}>
+                      <Text style={styles.profileName}>{item.postData.user_id.full_name}</Text>
                     </TouchableOpacity>
-                    <Text style={styles.postTime}>{timeAgo(item.post.createdAt)}</Text>
+                    <Text style={styles.postTime}>{timeAgo(item.postData.createdAt)}</Text>
                   </View>
                   <TouchableOpacity
                     onPress={openBottomSheet}
@@ -257,8 +257,8 @@ const ProfilePosts = ({ navigation, data }) => {
                     <Text style={styles.moreText}>⋮</Text>
                   </TouchableOpacity>
                 </View>
-                <Text style={styles.postText}>{item.post.title}</Text>
-                {item.post.image && renderImages(item.post.image, item.post._id)}
+                <Text style={styles.postText}>{item.postData.title}</Text>
+                {item.postData.image && renderImages(item.postData.image, item.postData._id)}
                 <View style={styles.postMeta}>
                   <View style={styles.leftMetaIcons}>
                     {/**Suwr lis chức năng like */}
@@ -266,7 +266,7 @@ const ProfilePosts = ({ navigation, data }) => {
                       <TouchableOpacity onPress={() => toggleLike(item)}>
                         <Image
                           source={
-                            likedPosts.includes(item.post._id) ||
+                            likedPosts.includes(item.postData._id) ||
                               item.likeData.some(like => like.user_id_like === user._id)
                               ? heartFilled
                               : heart
@@ -274,14 +274,14 @@ const ProfilePosts = ({ navigation, data }) => {
                           style={styles.iconImage}
                         />
                       </TouchableOpacity>
-                      <Text style={styles.metaText}>{item.post.like_count}</Text>
+                      <Text style={styles.metaText}>{item.postData.like_count}</Text>
                     </View>
 
                     <View style={styles.iconLike}>
-                      <TouchableOpacity onPress={() => navigation.navigate(Screens.Comment, { postId: item.post._id })}>
+                      <TouchableOpacity onPress={() => navigation.navigate(Screens.Comment, { postId: item.postData._id })}>
                         <Image source={comment} style={styles.iconImage} />
                       </TouchableOpacity>
-                      <Text style={styles.metaText}>{item.post.comment_count}</Text>
+                      <Text style={styles.metaText}>{item.postData.comment_count}</Text>
                     </View>
 
                     <View style={styles.iconLike}>

@@ -31,7 +31,7 @@ const HomeScreen = ({ navigation }) => {
       setLoading(true); // Đặt lại loading trước khi gọi API
       const response = await fetch(GET_ALL_POST);
       const responseData = await response.json();
-      const sortedData = responseData.data.sort((a, b) => new Date(b.post.createdAt) - new Date(a.post.createdAt));
+      const sortedData = responseData.data.sort((a, b) => new Date(b.postData.createdAt) - new Date(a.postData.createdAt));
       setData(sortedData);
     } catch (error) {
       console.error('Lỗi khi lấy dữ liệu người dùng:', error);
