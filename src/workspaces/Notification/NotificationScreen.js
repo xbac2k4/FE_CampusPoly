@@ -1,6 +1,6 @@
 import firestore from '@react-native-firebase/firestore';
 import { useFocusEffect } from '@react-navigation/native';
-import React, { useContext, useState } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Colors from '../../constants/Color';
 import { markAllAsRead } from '../../store/NotificationState';
@@ -8,11 +8,13 @@ import { UserContext } from '../../services/provider/UseContext';
 
 const NotificationScreen = () => {
   const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true)
   const { user } = useContext(UserContext);
 
 
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
+      setLoading(true);
       const fetchNotifications = async () => {
         try {
           const notificationsSnapshot = await firestore().collection('notifications').get();
@@ -27,17 +29,20 @@ const NotificationScreen = () => {
       };
 
       fetchNotifications();
+      setLoading(false);
     }
     )
   )
 
   const handleMarkAllAsRead = async () => {
+    setLoading(true);
     await markAllAsRead();
     // Fetch notifications again to update the state
     const notificationsSnapshot = await firestore().collection('notifications').get();
     const notificationsList = notificationsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     notificationsList.sort((a, b) => new Date(b.sentTime) - new Date(a.sentTime));
     setNotifications(notificationsList);
+    setLoading(false);
   };
 
   const renderItem = ({ item }) => {
@@ -74,6 +79,14 @@ const NotificationScreen = () => {
       </View>
     );
   };
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ color: '#fff', fontSize: 16 }}>Đang tải...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

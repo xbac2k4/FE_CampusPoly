@@ -1,25 +1,4 @@
 import firestore from '@react-native-firebase/firestore';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
-
-// Lưu mảng
-// const saveArray = async (key, array) => {
-//   try {
-//     const jsonValue = JSON.stringify(array);
-//     await AsyncStorage.setItem(key, jsonValue);
-//   } catch (e) {
-//     console.error('Error saving array:', e);
-//   }
-// };
-
-// // Lấy mảng
-// export const getArray = async (key) => {
-//   try {
-//     const jsonValue = await AsyncStorage.getItem(key);
-//     return jsonValue != null ? JSON.parse(jsonValue) : null;
-//   } catch (e) {
-//     console.error('Error getting array:', e);
-//   }
-// };
 
 // Thêm thông báo mới
 export const addNotification = async (message) => {
