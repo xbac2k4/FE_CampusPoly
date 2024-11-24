@@ -1,3 +1,4 @@
+import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Lưu mảng
@@ -21,26 +22,31 @@ export const getArray = async (key) => {
 };
 
 // Thêm thông báo mới
-export const addNotification = (message) => {
-  // console.log("message: ", message);
+export const addNotification = async (message) => {
+  console.log("message: ", message);
 
-  getArray('notifications').then((notifications) => {
-    if (notifications) {
-      // Kiểm tra xem messageId đã tồn tại hay chưa
-      const exists = notifications.some(notification => notification.messageId === message.messageId);
-      if (!exists) {
-        // Thêm thuộc tính isRead với giá trị mặc định là false
-        const newMessage = { ...message, isRead: false };
-        saveArray('notifications', [...notifications, newMessage]);
-      } else {
-        console.log('Thông báo đã tồn tại');
-      }
-    } else {
-      // Thêm thuộc tính isRead với giá trị mặc định là false
+  const notifications = await getArray('notifications');
+  if (notifications) {
+    // Kiểm tra xem messageId đã tồn tại hay chưa
+    const exists = notifications.some(notification => notification.messageId === message.messageId);
+    if (!exists) {
+      // Thêm thuộc tính isRead với giá tr�� mặc định là false
       const newMessage = { ...message, isRead: false };
-      saveArray('notifications', [newMessage]);
+      saveArray('notifications', [...notifications, newMessage]);
+
+      // Lưu thông báo vào Firestore
+      await firestore().collection('notifications').add(newMessage);
+    } else {
+      console.log('Notification already exists, not adding.');
     }
-  });
+  } else {
+    // Thêm thuộc tính isRead với giá trị mặc định là false
+    const newMessage = { ...message, isRead: false };
+    saveArray('notifications', [newMessage]);
+
+    // Lưu thông báo vào Firestore
+    await firestore().collection('notifications').add(newMessage);
+  }
 };
 
 // Đánh dấu tất cả thông báo là đã đọc

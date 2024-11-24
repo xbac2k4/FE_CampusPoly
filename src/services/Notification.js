@@ -8,6 +8,7 @@ import { Alert } from 'react-native';
 messaging().setBackgroundMessageHandler(async remoteMessage => {
   console.log('Tin nhắn được xử lý trong nền!', remoteMessage);
   await onDisplayNotification(remoteMessage);
+  addNotification(remoteMessage)
 });
 
 export async function notificationListener() {

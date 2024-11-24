@@ -9,11 +9,13 @@ import ProfileScreen from '../workspaces/ProfileScreen/profileScreen';
 import LinearGradient from 'react-native-linear-gradient';
 import Screens from './Screens';
 import MenuScreen from '../workspaces/Menu/MenuScreen';
+import { getArray } from '../store/NotificationState';
 
 const Tab = createBottomTabNavigator();
 
 const BottomTabNavigator = ({ navigation }) => {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
 
   useEffect(() => {
     const showListener = Keyboard.addListener('keyboardDidShow', () =>
@@ -27,6 +29,17 @@ const BottomTabNavigator = ({ navigation }) => {
       showListener.remove();
       hideListener.remove();
     };
+  }, []);
+
+
+  useEffect(() => {
+    const checkNotifications = async () => {
+      const notifications = await getArray('notifications');
+      const hasUnread = notifications.some(notification => !notification.isRead);
+      setHasUnreadNotifications(hasUnread);
+    };
+
+    checkNotifications();
   }, []);
 
   return (
@@ -111,8 +124,14 @@ const BottomTabNavigator = ({ navigation }) => {
             <Image
               source={
                 focused
-                  ? require('../assets/images/4781824_alarm_alert_attention_bell_clock_icon.png')
-                  : require('../assets/images/alert2.png')
+                  ? (hasUnreadNotifications
+                    ? require('../assets/images/dot_clock_icon.png')
+                    : require('../assets/images/4781824_alarm_alert_attention_bell_clock_icon.png')
+                  )
+                  :(hasUnreadNotifications
+                    ? require('../assets/images/dot_alert2.png')
+                    : require('../assets/images/alert2.png')
+                  )
               }
               style={{ width: 24, height: 24 }}
               resizeMode="contain"

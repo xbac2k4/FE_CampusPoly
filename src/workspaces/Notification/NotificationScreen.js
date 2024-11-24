@@ -1,16 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Colors from '../../constants/Color';
 import { getArray, markAllAsRead } from '../../store/NotificationState';
+import { useFocusEffect } from '@react-navigation/native';
 
 const NotificationScreen = () => {
   const [notification, setNotification] = useState([])
 
-  useEffect(() => {
-    getArray('notifications').then((notifications) => {
-      setNotification(notifications);
-    });
-  }, []);
+  const fetchNotifications = async () => {
+    const notifications = await getArray('notifications');
+    setNotification(notifications);
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchNotifications();
+    }, [])
+  );
+
+  const handleMarkAllAsRead = async () => {
+    await markAllAsRead();
+    fetchNotifications();
+  }
+
+
 
 
   const renderItem = ({ item }) => {
@@ -28,14 +41,16 @@ const NotificationScreen = () => {
       : sentTime.toLocaleString('vi-VN', {
         year: 'numeric',
         month: '2-digit',
-        day: '2-digit'
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
       });
 
 
     return (
-      <TouchableOpacity 
-      style={[styles.notificationItem, { backgroundColor: item.isRead ? Colors.background : '#3A3A3C' }
-      ]}>
+      <TouchableOpacity
+        style={[styles.notificationItem, { backgroundColor: item.isRead ? Colors.background : '#3A3A3C' }
+        ]}>
 
         <Image
           source={{ uri: item.notification.android.imageUrl }}
@@ -58,16 +73,17 @@ const NotificationScreen = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Thông báo</Text>
-        <TouchableOpacity onPress={markAllAsRead}>
+        <TouchableOpacity onPress={handleMarkAllAsRead}>
           <Text style={styles.markAllAsRead}>Đánh dấu tất cả là đã đọc</Text>
         </TouchableOpacity>
       </View>
       <FlatList
-        data={notification}
+        data={notification.slice().reverse()}
         renderItem={renderItem}
         keyExtractor={(item) => item.messageId}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
+      <View style={{ height: 60, backgroundColor: 'red' }} />
     </View>
   );
 };
