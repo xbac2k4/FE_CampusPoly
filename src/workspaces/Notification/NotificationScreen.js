@@ -1,33 +1,46 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import firestore from '@react-native-firebase/firestore';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useContext, useState } from 'react';
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Colors from '../../constants/Color';
-import { getArray, markAllAsRead } from '../../store/NotificationState';
-import { useFocusEffect } from '@react-navigation/native';
+import { markAllAsRead } from '../../store/NotificationState';
+import { UserContext } from '../../services/provider/UseContext';
 
 const NotificationScreen = () => {
-  const [notification, setNotification] = useState([])
+  const [notifications, setNotifications] = useState([]);
+  const { user } = useContext(UserContext);
 
-  const fetchNotifications = async () => {
-    const notifications = await getArray('notifications');
-    setNotification(notifications);
-  };
 
   useFocusEffect(
-    useCallback(() => {
+    React.useCallback(() => {
+      const fetchNotifications = async () => {
+        try {
+          const notificationsSnapshot = await firestore().collection('notifications').get();
+          const notificationsList = notificationsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          // Sắp xếp danh sách thông báo theo thuộc tính sentTime
+          notificationsList.sort((a, b) => new Date(b.sentTime) - new Date(a.sentTime));
+
+          setNotifications(notificationsList.filter(notification => user._id === notification.data.userId || notification.data.userIds.includes(user._id)));
+        } catch (e) {
+          console.error('Error fetching notifications:', e);
+        }
+      };
+
       fetchNotifications();
-    }, [])
-  );
+    }
+    )
+  )
 
   const handleMarkAllAsRead = async () => {
     await markAllAsRead();
-    fetchNotifications();
-  }
-
-
-
+    // Fetch notifications again to update the state
+    const notificationsSnapshot = await firestore().collection('notifications').get();
+    const notificationsList = notificationsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    notificationsList.sort((a, b) => new Date(b.sentTime) - new Date(a.sentTime));
+    setNotifications(notificationsList);
+  };
 
   const renderItem = ({ item }) => {
-
     const sentTime = new Date(item.sentTime);
     const currentTime = new Date();
 
@@ -46,26 +59,19 @@ const NotificationScreen = () => {
         minute: '2-digit',
       });
 
-
     return (
-      <TouchableOpacity
-        style={[styles.notificationItem, { backgroundColor: item.isRead ? Colors.background : '#3A3A3C' }
-        ]}>
-
+      <View style={[styles.notificationItem, { backgroundColor: item.isRead ? Colors.background : '#3A3A3C' }]}>
         <Image
           source={{ uri: item.notification.android.imageUrl }}
           style={styles.icon}
           borderRadius={20}
         />
-
         <View style={styles.notificationContent}>
           <Text style={styles.boldText}>{item.notification.title}</Text>
-          <Text style={styles.notificationText}>
-            {item.notification.body}
-          </Text>
+          <Text style={styles.notificationText}>{item.notification.body}</Text>
           <Text style={styles.timeText}>{time}</Text>
         </View>
-      </TouchableOpacity>
+      </View>
     );
   };
 
@@ -78,9 +84,9 @@ const NotificationScreen = () => {
         </TouchableOpacity>
       </View>
       <FlatList
-        data={notification.slice().reverse()}
+        data={notifications}
+        keyExtractor={(item) => item.id}
         renderItem={renderItem}
-        keyExtractor={(item) => item.messageId}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
       <View style={{ height: 60, backgroundColor: 'red' }} />
@@ -105,12 +111,10 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
   },
-
   markAllAsRead: {
     color: '#007AFF',
     fontSize: 16,
   },
-
   notificationItem: {
     flexDirection: 'row',
     padding: 15,

@@ -1,63 +1,66 @@
 import firestore from '@react-native-firebase/firestore';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Lưu mảng
-const saveArray = async (key, array) => {
-  try {
-    const jsonValue = JSON.stringify(array);
-    await AsyncStorage.setItem(key, jsonValue);
-  } catch (e) {
-    console.error('Error saving array:', e);
-  }
-};
+// const saveArray = async (key, array) => {
+//   try {
+//     const jsonValue = JSON.stringify(array);
+//     await AsyncStorage.setItem(key, jsonValue);
+//   } catch (e) {
+//     console.error('Error saving array:', e);
+//   }
+// };
 
-// Lấy mảng
-export const getArray = async (key) => {
-  try {
-    const jsonValue = await AsyncStorage.getItem(key);
-    return jsonValue != null ? JSON.parse(jsonValue) : null;
-  } catch (e) {
-    console.error('Error getting array:', e);
-  }
-};
+// // Lấy mảng
+// export const getArray = async (key) => {
+//   try {
+//     const jsonValue = await AsyncStorage.getItem(key);
+//     return jsonValue != null ? JSON.parse(jsonValue) : null;
+//   } catch (e) {
+//     console.error('Error getting array:', e);
+//   }
+// };
 
 // Thêm thông báo mới
 export const addNotification = async (message) => {
-  console.log("message: ", message);
+  try {
+    const notificationsSnapshot = await firestore().collection('notifications').get();
+    const notifications = notificationsSnapshot.docs.map(doc => doc.data());
 
-  const notifications = await getArray('notifications');
-  if (notifications) {
     // Kiểm tra xem messageId đã tồn tại hay chưa
     const exists = notifications.some(notification => notification.messageId === message.messageId);
     if (!exists) {
-      // Thêm thuộc tính isRead với giá tr�� mặc định là false
-      const newMessage = { ...message, isRead: false };
-      saveArray('notifications', [...notifications, newMessage]);
+      let newMessage = { ...message, isRead: false };
+      if (message.data.userIds !== undefined) {
 
+        const userIdsArray = JSON.parse(message.data.userIds);
+        const newData = { ...message.data, userIds: userIdsArray };
+
+        // Thêm thuộc tính isRead với giá trị mặc định là false
+        newMessage = { ...message, isRead: false, data: newData };
+      }
       // Lưu thông báo vào Firestore
       await firestore().collection('notifications').add(newMessage);
     } else {
       console.log('Notification already exists, not adding.');
     }
-  } else {
-    // Thêm thuộc tính isRead với giá trị mặc định là false
-    const newMessage = { ...message, isRead: false };
-    saveArray('notifications', [newMessage]);
-
-    // Lưu thông báo vào Firestore
-    await firestore().collection('notifications').add(newMessage);
+  } catch (e) {
+    console.error('Error adding notification:', e);
   }
 };
 
 // Đánh dấu tất cả thông báo là đã đọc
-export const markAllAsRead = () => {
-  getArray('notifications').then((notifications) => {
-    if (notifications) {
-      const updatedNotifications = notifications.map(notification => {
-        return { ...notification, isRead: true };
-      });
+export const markAllAsRead = async () => {
+  try {
+    const notificationsSnapshot = await firestore().collection('notifications').get();
+    const batch = firestore().batch();
 
-      saveArray('notifications', updatedNotifications);
-    }
-  });
+    notificationsSnapshot.forEach(doc => {
+      batch.update(doc.ref, { isRead: true });
+    });
+
+    await batch.commit();
+  } catch (e) {
+    console.error('Error marking all as read:', e);
+  }
 };

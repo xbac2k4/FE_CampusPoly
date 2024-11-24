@@ -1,15 +1,14 @@
+import firestore from '@react-native-firebase/firestore';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { useEffect, useState } from 'react';
 import { Image, Keyboard, StyleSheet, TouchableOpacity, View } from 'react-native';
-import HomeScreen from '../workspaces/Home/homeScreen';
-import SearchScreen from '../workspaces/SearchScreen/SearchScreen';
-import CreatePostScreen from '../workspaces/CreatePost/CreatePostScreen';
-import NotificationScreen from '../workspaces/Notification/NotificationScreen';
-import ProfileScreen from '../workspaces/ProfileScreen/profileScreen';
 import LinearGradient from 'react-native-linear-gradient';
-import Screens from './Screens';
+import CreatePostScreen from '../workspaces/CreatePost/CreatePostScreen';
+import HomeScreen from '../workspaces/Home/homeScreen';
 import MenuScreen from '../workspaces/Menu/MenuScreen';
-import { getArray } from '../store/NotificationState';
+import NotificationScreen from '../workspaces/Notification/NotificationScreen';
+import SearchScreen from '../workspaces/SearchScreen/SearchScreen';
+import Screens from './Screens';
 
 const Tab = createBottomTabNavigator();
 
@@ -31,10 +30,10 @@ const BottomTabNavigator = ({ navigation }) => {
     };
   }, []);
 
-
   useEffect(() => {
     const checkNotifications = async () => {
-      const notifications = await getArray('notifications');
+      const notificationsSnapshot = await firestore().collection('notifications').get();
+      const notifications = notificationsSnapshot.docs.map(doc => doc.data());
       const hasUnread = notifications.some(notification => !notification.isRead);
       setHasUnreadNotifications(hasUnread);
     };
@@ -125,7 +124,7 @@ const BottomTabNavigator = ({ navigation }) => {
               source={
                 focused
                   ? (hasUnreadNotifications
-                    ? require('../assets/images/dot_clock_icon.png')
+                    ? require('../assets/images/dot_active_clock.png')
                     : require('../assets/images/4781824_alarm_alert_attention_bell_clock_icon.png')
                   )
                   :(hasUnreadNotifications
