@@ -9,15 +9,17 @@ import messaging from '@react-native-firebase/messaging'
 import { Image, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import Loading from '../../components/MenuAuth/Loading'
 import { LOGIN_WITH_GOOGLE } from '../../services/ApiConfig'
+import NotificationModal from '../../components/Notification/NotificationModal'
 
 
 
 const MenuAuthenticationScreen = ({ navigation }) => {
   const { setUser, GoogleSignin } = useContext(UserContext);
-  const { connectSocket, socket, disconnectSocket } = useContext(SocketContext);
+  const { connectSocket, socket, disconnectSocket, usersOnline } = useContext(SocketContext);
 
 
   const [isShowDialog, setIsShowDialog] = useState(false)
+  const [modalVisible, setModalVisible] = useState(false); // State to control modal
   // const [listUserOnline, setListUserOnline] = useState(false)
   // const { setUser } = useContext(UserContext);
   // const { connectSocket } = useContext(SocketContext);
@@ -77,6 +79,15 @@ const MenuAuthenticationScreen = ({ navigation }) => {
       if (responseData.status === 200) {
         setUser(responseData.data);
         connectSocket(responseData.data)
+        // console.log(responseData.data);
+        // console.log(usersOnline);
+        // const isUserOnline = usersOnline.some(user => user._id === responseData.data._id);
+        // // console.log(isUserOnline); // Kết quả: true
+
+        // if (isUserOnline === true) {
+        //   setModalVisible(true);
+        //   return;
+        // }
         clearTimeout(timeoutId); // Xóa thời gian chờ nếu đăng nhập thành công
         setTimeout(() => {
           setIsLoading(false);
@@ -98,7 +109,15 @@ const MenuAuthenticationScreen = ({ navigation }) => {
       console.log(error);
     }
   }
+  const handleConfirm = async () => {
+    setModalVisible(false); // Hide modal
+    GoogleSignin.signOut();
+    disconnectSocket();
+  };
 
+  const handleCancel = () => {
+    setModalVisible(false); // Hide modal
+  };
   return (
     <View style={st.container}>
 
@@ -150,6 +169,12 @@ const MenuAuthenticationScreen = ({ navigation }) => {
 
       <BlockDialog isShowDialog={isShowDialog} toggleShowDialog={toggleShowDialog} />
       <Loading isLoading={isLoading} />
+      <NotificationModal
+        visible={modalVisible}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+        message="Tài khoản của bạn đang được đăng nhập ở nơi khác"
+      />
     </View>
   )
 }

@@ -4,7 +4,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
-import { ADD_MESSAGE, GET_MESSAGE_BY_CONVERSATION } from '../../services/ApiConfig';
+import { ADD_MESSAGE, GET_MESSAGE_BY_CONVERSATION, UPDATE_MESSAGE } from '../../services/ApiConfig';
 import { UserContext } from '../../services/provider/UseContext';
 import { SocketContext } from '../../services/provider/SocketContext';
 import { useFocusEffect } from '@react-navigation/native';
@@ -42,7 +42,7 @@ const ChatScreen = ({ navigation, route }) => {
     } catch (error) {
       console.error('Error fetching user data:', error);
     } finally {
-      console.log(message);
+      // console.log(message);
     }
   }
   useFocusEffect(
@@ -146,22 +146,57 @@ const ChatScreen = ({ navigation, route }) => {
     setInputText(''); // Đặt lại giá trị của TextInput
     setNotify(!notify);  // Update notify for UI re-render if needed
   };
+  useFocusEffect(
+    useCallback(() => {
+      if (socket) {
+        socket.on('new_message', (data) => {
+          // console.log(data);
+          console.log('Nhận được tin nhắn mới từ:', data.sender_id);
+          console.log('Nội dung tin nhắn:', data.content);
+          FetchMessge(route?.params?.conversation_id);
+          UpdateMessge(route?.params?.conversation_id);
+          // setMessage(prevMessages => [...prevMessages, data]);
+        });
 
-  useEffect(() => {
-    if (socket) {
-      socket.on('new_message', (data) => {
-        // console.log(data);
-        console.log('Nhận được tin nhắn mới từ:', data.sender_id);
-        console.log('Nội dung tin nhắn:', data.content);
-        FetchMessge(route?.params?.conversation_id);
-        // setMessage(prevMessages => [...prevMessages, data]);
+        return () => {
+          socket.off('new_message');
+        };
+      }
+    }, [socket, user._id])
+  );
+
+  // useEffect(() => {
+  //   if (socket) {
+  //     socket.on('new_message', (data) => {
+  //       // console.log(data);
+  //       console.log('Nhận được tin nhắn mới từ:', data.sender_id);
+  //       console.log('Nội dung tin nhắn:', data.content);
+  //       FetchMessge(route?.params?.conversation_id);
+  //       UpdateMessge(route?.params?.conversation_id);
+  //       // setMessage(prevMessages => [...prevMessages, data]);
+  //     });
+
+  //     return () => {
+  //       socket.off('new_message');
+  //     };
+  //   }
+  // }, [socket]);
+  const UpdateMessge = async (conversation_id) => {
+    try {
+      const response = await fetch(`${UPDATE_MESSAGE}`, {
+        method: 'PUT',  // Đảm bảo rằng phương thức là GET
+        headers: {
+          'Content-Type': 'application/json',  // Header cho loại nội dung
+        },
+        body: JSON.stringify({ conversation_id }),  // Dữ liệu đưa vào request
       });
+      const data = await response.json();
+      // console.log(data);
 
-      return () => {
-        socket.off('new_message');
-      };
+    } catch (error) {
+      console.error('Error fetching user data:', error);
     }
-  }, [socket]);
+  }
 
   const FetchAddMessage = async (data) => {
     // console.log(data);

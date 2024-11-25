@@ -6,6 +6,7 @@ export const SocketContext = createContext();  // Đảm bảo sử dụng creat
 
 export const SocketProvider = ({ children }) => {
     const [socket, setSocket] = useState(null);
+    const [usersOnline, setUsersOnline] = useState(null);
 
     const connectSocket = (userInfo) => {
         const newSocket = io('http://10.0.2.2:3000', {
@@ -18,12 +19,18 @@ export const SocketProvider = ({ children }) => {
             console.log(`Kết nối thành công với socket ID: ${newSocket.id}`);
             newSocket.emit('user_login', userInfo);
         });
+        newSocket.on('update_user_list', (data) => {
+            // console.log(data);
+            setUsersOnline(data)
+            // newSocket.emit('user_online', data);
+        });
 
         newSocket.on('new_notification', async (data) => {
             console.log('Nhận được thông báo mới:', data);
           });
 
         newSocket.on('disconnect', () => {
+            newSocket.emit('get_users_online');
             console.log(`${userInfo.full_name} đã đăng xuất`);
         });
     };
@@ -36,7 +43,7 @@ export const SocketProvider = ({ children }) => {
     };
 
     const sendMessageSocket = (newMessage) => {
-        console.log(newMessage);
+        // console.log(newMessage);
         if (socket) {
             socket.emit('send_message', newMessage);
         }
@@ -62,7 +69,7 @@ export const SocketProvider = ({ children }) => {
     }, [socket]);
 
     return (
-        <SocketContext.Provider value={{ socket, connectSocket, disconnectSocket, sendMessageSocket }}>
+        <SocketContext.Provider value={{ socket, connectSocket, disconnectSocket, sendMessageSocket, usersOnline }}>
             {children}
         </SocketContext.Provider>
     );
