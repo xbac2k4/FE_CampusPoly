@@ -7,6 +7,8 @@ import LoadingTimeline from '../../components/Loading/LoadingTimeline ';
 import ProfilePosts from '../../components/ProfileScreen/profilePosts';
 import Screens from '../../navigation/Screens';
 import { GET_ALL_POST } from '../../services/ApiConfig';
+import LinearGradient from 'react-native-linear-gradient';
+import Colors from '../../constants/Color';
 
 const HomeScreen = ({ navigation }) => {
   const [greeting, setGreeting] = useState('');
@@ -74,25 +76,24 @@ const HomeScreen = ({ navigation }) => {
           {/* Tab điều hướng */}
           <View style={styles.tabContainer}>
             <TouchableOpacity
-              style={[
-                styles.tab,
-                selectedTab === 'Dành cho bạn' && styles.activeTab,
-              ]}
               onPress={() => setSelectedTab('Dành cho bạn')}
             >
-              <Text style={styles.tabText}>Dành cho bạn</Text>
+              <LinearGradient
+                colors={selectedTab == 'Dành cho bạn' ? [Colors.first, Colors.second] : [Colors.background, Colors.background]}
+                style={styles.tab}
+              >
+                <Text style={styles.tabText}>Dành cho bạn</Text>
+              </LinearGradient>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[
-                styles.tab,
-                selectedTab === 'Đang theo dõi' && styles.activeTab,
-              ]}
-              onPress={() => {
-                setSelectedTab('Đang theo dõi');
-                // navigation.navigate(Screens.Alert);
-              }}
+              onPress={() => setSelectedTab('Đang theo dõi')}
             >
-              <Text style={styles.tabText}>Đang theo dõi</Text>
+              <LinearGradient
+                colors={selectedTab == 'Đang theo dõi' ? [Colors.first, Colors.second] : [Colors.background, Colors.background]}
+                style={styles.tab}
+              >
+                <Text style={styles.tabText}>Đang theo dõi</Text>
+              </LinearGradient>
             </TouchableOpacity>
           </View>
 
@@ -148,7 +149,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 40,
     borderRadius: 20,
-
     marginHorizontal: 10,
   },
   activeTab: {

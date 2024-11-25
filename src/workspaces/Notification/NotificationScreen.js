@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   markAllAsRead: {
-    color: '#007AFF',
+    color: Colors.second,
     fontSize: 16,
   },
   notificationItem: {
