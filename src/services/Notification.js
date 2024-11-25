@@ -1,13 +1,11 @@
 import notifee, { AndroidImportance } from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
-import { addNotification } from '../store/NotificationState';
 
 
 // nhận thông báo trong trạng thái background
 messaging().setBackgroundMessageHandler(async remoteMessage => {
   console.log('Tin nhắn được xử lý trong nền!', remoteMessage);
   await onDisplayNotification(remoteMessage);
-  addNotification(remoteMessage)
 });
 
 export async function notificationListener() {
@@ -18,9 +16,6 @@ export async function notificationListener() {
 
     console.log('A new FCM message arrived!', remoteMessage);
 
-    // Alert.alert(remoteMessage.notification.title, remoteMessage.notification.body);
-
-    addNotification(remoteMessage)
   });
 
 
@@ -69,10 +64,10 @@ async function onDisplayNotification(remoteMessage) {
 // async function onBackgroundEvent({ type, detail }) {
 //   switch (type) {
 //     case EventType.DISMISSED:
-//       console.log('Notification dismissed:', detail.notification);
+//       console.log('Notification dismissed');
 //       break;
 //     case EventType.PRESS:
-//       console.log('Notification press:', detail.notification);
+//       navigation.navigate('NotificationScreen');
 //       break;
 //   }
 // }

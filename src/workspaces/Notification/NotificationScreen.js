@@ -1,9 +1,8 @@
-import firestore from '@react-native-firebase/firestore';
-import { useFocusEffect } from '@react-navigation/native';
-import React, { useCallback, useContext, useState } from 'react';
+import axios from 'axios';
+import React, { useContext, useEffect, useState } from 'react';
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Colors from '../../constants/Color';
-import { markAllAsRead } from '../../store/NotificationState';
+import { GET_NOTIFICATIONS_BY_USERID, READ_ALL_NOTIFICATION, READ_NOTIFICATION } from '../../services/ApiConfig';
 import { UserContext } from '../../services/provider/UseContext';
 
 const NotificationScreen = () => {
@@ -12,36 +11,42 @@ const NotificationScreen = () => {
   const { user } = useContext(UserContext);
 
 
-  useFocusEffect(
-    useCallback(() => {
-      setLoading(true);
-      const fetchNotifications = async () => {
-        try {
-          const notificationsSnapshot = await firestore().collection('notifications').get();
-          const notificationsList = notificationsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-          // Sắp xếp danh sách thông báo theo thuộc tính sentTime
-          notificationsList.sort((a, b) => new Date(b.sentTime) - new Date(a.sentTime));
-
-          setNotifications(notificationsList.filter(notification => user._id === notification.data.userId || notification.data.userIds.includes(user._id)));
-        } catch (e) {
-          console.error('Error fetching notifications:', e);
+  useEffect(() => {
+    setLoading(true);
+    const fetchNotifications = async () => {
+      try {
+        if (!user || !user._id) {
+          throw new Error('Không tìm thấy userID');
         }
-      };
+        const result = await axios.get(`${GET_NOTIFICATIONS_BY_USERID}?userId=${user._id}`);
+        if (!result.data.success) {
+          throw new Error('Lỗi khi lấy thông báo');
+        }
 
-      fetchNotifications();
-      setLoading(false);
-    }
-    )
-  )
+        setNotifications(result.data.notifications);
+      } catch (e) {
+        console.error('Error fetching notifications:', e);
+      }
+    };
+
+    fetchNotifications();
+    setLoading(false);
+  }, [])
+
 
   const handleMarkAllAsRead = async () => {
     setLoading(true);
-    await markAllAsRead();
-    // Fetch notifications again to update the state
-    const notificationsSnapshot = await firestore().collection('notifications').get();
-    const notificationsList = notificationsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    notificationsList.sort((a, b) => new Date(b.sentTime) - new Date(a.sentTime));
-    setNotifications(notificationsList);
+    try {
+      const result = axios.put(`${READ_ALL_NOTIFICATION}`, {
+        userId: user._id
+      });
+
+      console.log(result);
+
+    } catch (error) {
+      console.log(error);
+
+    }
     setLoading(false);
   };
 
@@ -64,19 +69,34 @@ const NotificationScreen = () => {
         minute: '2-digit',
       });
 
+
     return (
-      <View style={[styles.notificationItem, { backgroundColor: item.isRead ? Colors.background : '#3A3A3C' }]}>
+      <TouchableOpacity
+        onPress={() => {
+          try {
+            const result = axios.put(`${READ_NOTIFICATION}`, {
+              notificationId: item._id
+            });
+
+            console.log(result.data);
+
+          } catch (error) {
+            console.log(error);
+
+          }
+        }}
+        style={[styles.notificationItem, { backgroundColor: item.isRead ? Colors.background : '#3A3A3C' }]}>
         <Image
-          source={{ uri: item.notification.android.imageUrl }}
+          source={{ uri: item.imageUrl }}
           style={styles.icon}
           borderRadius={20}
         />
         <View style={styles.notificationContent}>
-          <Text style={styles.boldText}>{item.notification.title}</Text>
-          <Text style={styles.notificationText}>{item.notification.body}</Text>
+          <Text style={styles.boldText}>{item.title}</Text>
+          <Text style={styles.notificationText}>{item.body}</Text>
           <Text style={styles.timeText}>{time}</Text>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -97,8 +117,8 @@ const NotificationScreen = () => {
         </TouchableOpacity>
       </View>
       <FlatList
-        data={notifications}
-        keyExtractor={(item) => item.id}
+        data={notifications.reverse()}
+        keyExtractor={(item) => item._id}
         renderItem={renderItem}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />

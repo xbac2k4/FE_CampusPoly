@@ -19,6 +19,10 @@ export const SocketProvider = ({ children }) => {
             newSocket.emit('user_login', userInfo);
         });
 
+        newSocket.on('new_notification', async (data) => {
+            console.log('Nhận được thông báo mới:', data);
+          });
+
         newSocket.on('disconnect', () => {
             console.log(`${userInfo.full_name} đã đăng xuất`);
         });
