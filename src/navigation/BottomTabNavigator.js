@@ -1,39 +1,38 @@
-import firestore from '@react-native-firebase/firestore';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
 import { Image, Keyboard, StyleSheet, TouchableOpacity, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { GET_NOTIFICATIONS_BY_USERID } from '../services/ApiConfig';
+import { UserContext } from '../services/provider/UseContext';
 import CreatePostScreen from '../workspaces/CreatePost/CreatePostScreen';
 import HomeScreen from '../workspaces/Home/homeScreen';
 import MenuScreen from '../workspaces/Menu/MenuScreen';
 import NotificationScreen from '../workspaces/Notification/NotificationScreen';
 import SearchScreen from '../workspaces/SearchScreen/SearchScreen';
 import Screens from './Screens';
-import axios from 'axios';
-import { GET_NOTIFICATIONS_BY_USERID } from '../services/ApiConfig';
-import { UserContext } from '../services/provider/UseContext';
 
 const Tab = createBottomTabNavigator();
 
 const BottomTabNavigator = ({ navigation }) => {
-  // const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
   const { user } = useContext(UserContext);
 
 
-  // useEffect(() => {
-  //   const showListener = Keyboard.addListener('keyboardDidShow', () =>
-  //     setKeyboardVisible(true)
-  //   );
-  //   const hideListener = Keyboard.addListener('keyboardDidHide', () =>
-  //     setKeyboardVisible(false)
-  //   );
+  useEffect(() => {
+    const showListener = Keyboard.addListener('keyboardDidShow', () =>
+      setKeyboardVisible(true)
+    );
+    const hideListener = Keyboard.addListener('keyboardDidHide', () =>
+      setKeyboardVisible(false)
+    );
 
-  //   return () => {
-  //     showListener.remove();
-  //     hideListener.remove();
-  //   };
-  // }, []);
+    return () => {
+      showListener.remove();
+      hideListener.remove();
+    };
+  }, []);
 
   useEffect(() => {
     const checkNotifications = async () => {
@@ -59,7 +58,7 @@ const BottomTabNavigator = ({ navigation }) => {
           bottom: 0,
           height: 60,
           backgroundColor: '#000',
-          // display: isKeyboardVisible ? 'none' : 'flex',
+          display: isKeyboardVisible ? 'none' : 'flex',
         },
       }}
     >
