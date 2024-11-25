@@ -368,7 +368,7 @@ const CommentScreen = () => {
                 </TouchableOpacity>
               </View>
             </View>
-            {
+            {/* {
               !loading && (
                 comment.map((comment) => (
                   <CommentComponent
@@ -381,7 +381,7 @@ const CommentScreen = () => {
                   />
                 ))
               )
-            }
+            } */}
 
             {comment
               ?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sắp xếp bình luận mới nhất lên đầu
@@ -398,7 +398,8 @@ const CommentScreen = () => {
           </>
         )}
       </ScrollView>
-      <CommentInputComponent style={styles.commentInput} />
+      <CommentInputComponent postId={postId}
+        onSend={(newComment) => setComment([newComment, ...comment])} style={styles.commentInput} />
       {/* Bottom Sheet */}
       <RBSheet
         ref={refRBSheet}
