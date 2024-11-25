@@ -333,19 +333,9 @@ const CommentScreen = () => {
                   </TouchableOpacity>
                   <Text style={styles.textInteract}>{post?.postData?.comment_count}</Text>
                 </View>
-                <TouchableOpacity onPress={() => { /* Xử lý nút share */ }} style={[styles.iconLike, { marginLeft: 4 }]}>
-                  <Image source={require('../../assets/images/share.png')} resizeMode='contain' style={{ width: 20, height: 20 }} />
-                </TouchableOpacity>
+                
               </View>
-              <TouchableOpacity onPress={() => setIsBookmark(!isBookmark)} style={{ marginTop: 5 }}>
-                <Image
-                  source={isBookmark
-                    ? require('../../assets/images/bookmark2.png')
-                    : require('../../assets/images/bookmark.png')}
-                  resizeMode='contain'
-                  style={{ width: 20, height: 20 }}
-                />
-              </TouchableOpacity>
+           
             </View>
             <View style={{ height: 1, backgroundColor: '#323436', marginTop: 15 }} />
             {/** Sử lí phầm comment */}

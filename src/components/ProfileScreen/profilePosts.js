@@ -24,6 +24,7 @@ import rectionary from '../../assets/images/rectionary.png'
 import NotificationModal from '../../components/Notification/NotificationModal';
 import ShareButton from '../Sheet/ShareButton ';
 import { UserContext } from '../../services/provider/UseContext';
+import ShareComponent from '../Sheet/ShareButton ';
 const ProfilePosts = ({ navigation, data }) => {
   const [userAll, setUserAll] = useState(data); // Chứa các bài viết
   const { user } = useContext(UserContext);
@@ -288,11 +289,12 @@ const ProfilePosts = ({ navigation, data }) => {
                     </View>
 
                     <View style={styles.iconLike}>
-                      <TouchableOpacity onPress={() => {
-                        // share
-                      }}>
-                        <Image source={share} style={styles.iconImage} />
-                      </TouchableOpacity>
+                      <ShareComponent post={{
+                        title: item.postData.title,
+                        url: item.postData.link, // Link bài viết
+                        image: item.postData.image?.[0]?.replace('localhost', '10.0.2.2') || null, // Hình ảnh đầu tiên của bài viết
+                      }} />
+
 
                     </View>
                   </View>
@@ -331,38 +333,7 @@ const ProfilePosts = ({ navigation, data }) => {
           onReportSuccess={handleReportSuccess}
         />
 
-        {/* <TouchableOpacity
-          style={styles.reporttextcontainer}>
-          <NotificationModal
-            visible={modalVisible}
-            onConfirm={handleConfirm}
-            onCancel={handleCancel}
-            message={'Bạn có chắc muốn báo cáo?'}
-          />
-          <Image source={report} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
-          <Text style={styles.textOne}>Bài viết xúc phạm người dùng khác</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.reporttextcontainer}>
-          <Image source={untrue} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
-          <Text style={styles.textOne}>Bài viết sai sự thật</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.reporttextcontainer}>
-          <Image source={violet} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
-          <Text style={styles.textOne}>Bài viết mang tính bạo lực - kích động</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.reporttextcontainer}>
-          <Image source={rectionary} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
-          <Text style={styles.textOne}>Bài viết mang tính phản động</Text>
-        </TouchableOpacity><TouchableOpacity style={styles.reporttextcontainer}>
-          <Image source={racsim} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
-          <Text style={styles.textOne}>Bài viết mang tính phân biệt</Text>
-        </TouchableOpacity> */}
       </RBSheet >
-      {/* <NotificationModal
-        visible={modalVisible}
-        onConfirm={() => setModalVisible(false)}
-        success={reportSuccess}
-      /> */}
     </View >
   );
 };
