@@ -16,7 +16,7 @@ const CommentInputComponent = ({ postId, onSend }) => {
   // console.log('User từ Context:', user);
   const handleSendComment = async () => {
     console.log('User từ Context:', user._id);
-    console.log('User từ Context:', postId);
+    console.log('Post:', postId);
     if (!comment.trim()) {
       Alert.alert('Lỗi', 'Nội dung comment không được để trống.');
       return;
@@ -42,7 +42,12 @@ const CommentInputComponent = ({ postId, onSend }) => {
           }),
         }
       );
-
+      console.log('Request body:', {
+        user_id: user._id,
+        post_id: postId,
+        comment_content: comment,
+      });
+      
       const data = await response.json();
       console.log('Response data:', data);
 

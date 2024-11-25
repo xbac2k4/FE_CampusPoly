@@ -333,9 +333,19 @@ const CommentScreen = () => {
                   </TouchableOpacity>
                   <Text style={styles.textInteract}>{post?.postData?.comment_count}</Text>
                 </View>
-                
+                <TouchableOpacity onPress={() => { /* Xử lý nút share */ }} style={[styles.iconLike, { marginLeft: 4 }]}>
+                  <Image source={require('../../assets/images/share.png')} resizeMode='contain' style={{ width: 20, height: 20 }} />
+                </TouchableOpacity>
               </View>
-           
+              <TouchableOpacity onPress={() => setIsBookmark(!isBookmark)} style={{ marginTop: 5 }}>
+                <Image
+                  source={isBookmark
+                    ? require('../../assets/images/bookmark2.png')
+                    : require('../../assets/images/bookmark.png')}
+                  resizeMode='contain'
+                  style={{ width: 20, height: 20 }}
+                />
+              </TouchableOpacity>
             </View>
             <View style={{ height: 1, backgroundColor: '#323436', marginTop: 15 }} />
             {/** Sử lí phầm comment */}
@@ -358,7 +368,7 @@ const CommentScreen = () => {
                 </TouchableOpacity>
               </View>
             </View>
-            {
+            {/* {
               !loading && (
                 comment.map((comment) => (
                   <CommentComponent
@@ -371,7 +381,7 @@ const CommentScreen = () => {
                   />
                 ))
               )
-            }
+            } */}
 
             {comment
               ?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sắp xếp bình luận mới nhất lên đầu
@@ -388,7 +398,8 @@ const CommentScreen = () => {
           </>
         )}
       </ScrollView>
-      <CommentInputComponent style={styles.commentInput} />
+      <CommentInputComponent postId={postId}
+        onSend={(newComment) => setComment([newComment, ...comment])} style={styles.commentInput} />
       {/* Bottom Sheet */}
       <RBSheet
         ref={refRBSheet}
@@ -416,10 +427,7 @@ const CommentScreen = () => {
       </RBSheet>
     </View>
 
-    //       </ScrollView >
-    //       <CommentInputComponent postId={postId}
-    //         onSend={(newComment) => setComment([newComment, ...comment])} style={styles.commentInput} />
-    //     </View >
+   
   );
 };
 
