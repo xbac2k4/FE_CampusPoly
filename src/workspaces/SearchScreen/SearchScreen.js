@@ -4,7 +4,7 @@ import { GET_SEARCH } from '../../services/ApiConfig'; // Đường dẫn API đ
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import PostItem from '../../components/Search/SearchComponents'; // Import PostItem component
 
-const SearchScreen = ({ userId }) => {
+const SearchScreen = () => {
   const [searchQuery, setSearchQuery] = useState(''); // Trạng thái tìm kiếm
   const [posts, setPosts] = useState([]); // Trạng thái bài viết
   const [filteredPosts, setFilteredPosts] = useState([]); // Trạng thái bài viết sau khi lọc
@@ -17,9 +17,9 @@ const SearchScreen = ({ userId }) => {
       setLoading(true);
       const response = await fetch(`${GET_SEARCH}?searchTerm=${encodeURIComponent(searchTerm)}`);
       const responseData = await response.json();
-  
+
       // console.log('Response Data:', responseData); // Kiểm tra dữ liệu trả về
-  
+
       if (responseData.success && Array.isArray(responseData.posts)) {
         const postsData = responseData.posts;  // Sửa từ data thành posts
         const sortedData = postsData.sort(
@@ -36,7 +36,7 @@ const SearchScreen = ({ userId }) => {
     } finally {
       setLoading(false);
     }
-  };  
+  };
 
   const removeVietnameseTones = (str) => {
     return str
@@ -46,7 +46,7 @@ const SearchScreen = ({ userId }) => {
       .replace(/Đ/g, "D")
       .toLowerCase();
   };
-  
+
   // Xử lý tìm kiếm bài viết theo tiêu đề và post_type
   const handleSearch = (text, data = posts) => {
     const normalizedText = removeVietnameseTones(text);
@@ -63,29 +63,29 @@ const SearchScreen = ({ userId }) => {
       // console.log('Filtered posts:', filtered);
       setFilteredPosts(filtered);
     }
-  };  
-
- // Hàm xử lý debounce (chờ 1-2s trước khi gọi API)
- useEffect(() => {
-  if (debounceTimeout) {
-    clearTimeout(debounceTimeout); // Hủy timeout cũ nếu người dùng tiếp tục nhập
-  }
-
-  // Đặt timeout mới khi người dùng nhập xong
-  const timeout = setTimeout(() => {
-    if (searchQuery) {
-      fetchPosts(searchQuery); // Gọi API khi có từ khóa tìm kiếm
-    } else {
-      setFilteredPosts(posts); // Nếu không có tìm kiếm, hiển thị tất cả bài viết
-    }
-  }, 800); // Thời gian trễ 1 giây
-
-  setDebounceTimeout(timeout); // Lưu trữ ID của timeout
-
-  return () => {
-    clearTimeout(timeout); // Dọn dẹp khi component bị unmount
   };
-}, [searchQuery]); // Khi searchQuery thay đổi, gọi lại effect
+
+  // Hàm xử lý debounce (chờ 1-2s trước khi gọi API)
+  useEffect(() => {
+    if (debounceTimeout) {
+      clearTimeout(debounceTimeout); // Hủy timeout cũ nếu người dùng tiếp tục nhập
+    }
+
+    // Đặt timeout mới khi người dùng nhập xong
+    const timeout = setTimeout(() => {
+      if (searchQuery) {
+        fetchPosts(searchQuery); // Gọi API khi có từ khóa tìm kiếm
+      } else {
+        setFilteredPosts(posts); // Nếu không có tìm kiếm, hiển thị tất cả bài viết
+      }
+    }, 800); // Thời gian trễ 1 giây
+
+    setDebounceTimeout(timeout); // Lưu trữ ID của timeout
+
+    return () => {
+      clearTimeout(timeout); // Dọn dẹp khi component bị unmount
+    };
+  }, [searchQuery]); // Khi searchQuery thay đổi, gọi lại effect
 
   return (
     <KeyboardAvoidingView
@@ -115,6 +115,8 @@ const SearchScreen = ({ userId }) => {
             ListEmptyComponent={<Text style={styles.noResultsText}>Không có bài viết nào</Text>}
           />
         )}
+
+        <View style={{ height: 50 }} />
       </View>
     </KeyboardAvoidingView>
   );

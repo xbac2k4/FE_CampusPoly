@@ -16,24 +16,24 @@ import { UserContext } from '../services/provider/UseContext';
 const Tab = createBottomTabNavigator();
 
 const BottomTabNavigator = ({ navigation }) => {
-  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  // const [isKeyboardVisible, setKeyboardVisible] = useState(false);
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
   const { user } = useContext(UserContext);
 
 
-  useEffect(() => {
-    const showListener = Keyboard.addListener('keyboardDidShow', () =>
-      setKeyboardVisible(true)
-    );
-    const hideListener = Keyboard.addListener('keyboardDidHide', () =>
-      setKeyboardVisible(false)
-    );
+  // useEffect(() => {
+  //   const showListener = Keyboard.addListener('keyboardDidShow', () =>
+  //     setKeyboardVisible(true)
+  //   );
+  //   const hideListener = Keyboard.addListener('keyboardDidHide', () =>
+  //     setKeyboardVisible(false)
+  //   );
 
-    return () => {
-      showListener.remove();
-      hideListener.remove();
-    };
-  }, []);
+  //   return () => {
+  //     showListener.remove();
+  //     hideListener.remove();
+  //   };
+  // }, []);
 
   useEffect(() => {
     const checkNotifications = async () => {
@@ -59,7 +59,7 @@ const BottomTabNavigator = ({ navigation }) => {
           bottom: 0,
           height: 60,
           backgroundColor: '#000',
-          display: isKeyboardVisible ? 'none' : 'flex',
+          // display: isKeyboardVisible ? 'none' : 'flex',
         },
       }}
     >
