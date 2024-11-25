@@ -259,22 +259,23 @@ const CommentScreen = () => {
   }
 
   return (
-    <View style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.circleIcon}
-        >
-          <Image
-            source={require('../../assets/images/arowleft.png')}
-            resizeMode="contain"
-            style={{ width: 15, height: 15 }}
-          />
-        </TouchableOpacity>
-        <View style={styles.barHeader}>
+    <View style={{ flex: 1, backgroundColor: '#181A1C', }}>
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={styles.circleIcon}
+      >
+        <Image
+          source={require('../../assets/images/arowleft.png')}
+          resizeMode="contain"
+          style={{ width: 15, height: 15 }}
+        />
+      </TouchableOpacity>
+      <View style={styles.barHeader}>
 
-          <Text style={styles.textHeader}>Comment</Text>
-        </View>
+        <Text style={styles.textHeader}>Comment</Text>
+      </View>
+      <ScrollView contentContainerStyle={styles.container}>
+
 
 
 
