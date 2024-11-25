@@ -18,3 +18,9 @@ export const ADD_REPORT = API_URL + 'reports/add-report';
 export const ADD_COMMENT = API_URL + 'comments/add-comment-to-post';
 export const LIKE_POST = API_URL + 'likes/add-like-to-post';
 export const UNLIKE_POST = API_URL + 'likes/remove-like-from-post';
+
+export const GET_NOTIFICATIONS_BY_USERID = API_URL + 'notifications/get-notifications-by-user-id';
+export const READ_NOTIFICATION = API_URL + 'notifications/read-notification';
+export const READ_ALL_NOTIFICATION = API_URL + 'notifications/read-all-notification';
+
+

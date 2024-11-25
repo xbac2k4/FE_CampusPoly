@@ -1,19 +1,25 @@
+import firestore from '@react-native-firebase/firestore';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Image, Keyboard, StyleSheet, TouchableOpacity, View } from 'react-native';
-import HomeScreen from '../workspaces/Home/homeScreen';
-import SearchScreen from '../workspaces/SearchScreen/SearchScreen';
-import CreatePostScreen from '../workspaces/CreatePost/CreatePostScreen';
-import NotificationScreen from '../workspaces/Notification/NotificationScreen';
-import ProfileScreen from '../workspaces/ProfileScreen/profileScreen';
 import LinearGradient from 'react-native-linear-gradient';
-import Screens from './Screens';
+import CreatePostScreen from '../workspaces/CreatePost/CreatePostScreen';
+import HomeScreen from '../workspaces/Home/homeScreen';
 import MenuScreen from '../workspaces/Menu/MenuScreen';
+import NotificationScreen from '../workspaces/Notification/NotificationScreen';
+import SearchScreen from '../workspaces/SearchScreen/SearchScreen';
+import Screens from './Screens';
+import axios from 'axios';
+import { GET_NOTIFICATIONS_BY_USERID } from '../services/ApiConfig';
+import { UserContext } from '../services/provider/UseContext';
 
 const Tab = createBottomTabNavigator();
 
 const BottomTabNavigator = ({ navigation }) => {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
+  const { user } = useContext(UserContext);
+
 
   useEffect(() => {
     const showListener = Keyboard.addListener('keyboardDidShow', () =>
@@ -27,6 +33,20 @@ const BottomTabNavigator = ({ navigation }) => {
       showListener.remove();
       hideListener.remove();
     };
+  }, []);
+
+  useEffect(() => {
+    const checkNotifications = async () => {
+      const result = await axios.get(`${GET_NOTIFICATIONS_BY_USERID}?userId=${user._id}`);
+      if (!result.data.success) {
+        throw new Error('Lỗi khi lấy thông báo');
+      }
+
+      const hasUnread = result.data.notifications.some(notification => !notification.isRead);
+      setHasUnreadNotifications(hasUnread);
+    };
+
+    checkNotifications();
   }, []);
 
   return (
@@ -111,8 +131,14 @@ const BottomTabNavigator = ({ navigation }) => {
             <Image
               source={
                 focused
-                  ? require('../assets/images/4781824_alarm_alert_attention_bell_clock_icon.png')
-                  : require('../assets/images/alert2.png')
+                  ? (hasUnreadNotifications
+                    ? require('../assets/images/dot_active_clock.png')
+                    : require('../assets/images/4781824_alarm_alert_attention_bell_clock_icon.png')
+                  )
+                  :(hasUnreadNotifications
+                    ? require('../assets/images/dot_alert2.png')
+                    : require('../assets/images/alert2.png')
+                  )
               }
               style={{ width: 24, height: 24 }}
               resizeMode="contain"

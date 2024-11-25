@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { PermissionsAndroid, Platform } from 'react-native';
 import { Provider } from 'react-redux';
 import AppNavigator from './src/navigation/AppNavigator';
-import { notificationListener } from './src/services/Notification';
+import { createChannel, notificationListener } from './src/services/Notification';
 import { SocketProvider } from './src/services/provider/SocketContext';
 import { UserProvider } from './src/services/provider/UseContext';
 import { store } from './src/workspaces/Notification/store';
@@ -18,6 +18,8 @@ const App = () => {
           const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
           if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
             console.log('Notification permission denied');
+          }else{
+            await createChannel();
           }
         } catch (err) {
           console.warn(err);

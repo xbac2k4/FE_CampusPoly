@@ -13,31 +13,21 @@ export async function notificationListener() {
 
   const unsubscribe = messaging().onMessage(async remoteMessage => {
     await onDisplayNotification(remoteMessage);
-    // addToNotificationList(remoteMessage);
 
     console.log('A new FCM message arrived!', remoteMessage);
 
-    // Alert.alert(
-    //   remoteMessage.notification.title,
-    //   remoteMessage.notification.body,
-    // )
-
-    // addToNotificationList(remoteMessage);
-
   });
-  
-  // console.log('notificationListener', unsubscribe);
 
 
   return unsubscribe;
 }
 
 // Tạo kênh thông báo
-async function createChannel() {
+export async function createChannel() {
   try {
     await notifee.createChannel({
-      id: 'default2',
-      name: 'Default Channel2',
+      id: 'default',
+      name: 'Default Channel',
       importance: AndroidImportance.HIGH,
       sound: 'default'
     });
@@ -52,13 +42,13 @@ async function createChannel() {
 async function onDisplayNotification(remoteMessage) {
 
   try {
-    await createChannel(); // Tạo kênh thông báo trước khi hiển thị thông báo
+    // await createChannel();
 
     await notifee.displayNotification({
       title: remoteMessage.notification.title,
       body: remoteMessage.notification.body,
       android: {
-        channelId: 'default1',
+        channelId: 'default',
         importance: AndroidImportance.HIGH,
         largeIcon: remoteMessage.notification.android.imageUrl,
         smallIcon: remoteMessage.notification.android.smallIcon,
@@ -74,10 +64,10 @@ async function onDisplayNotification(remoteMessage) {
 // async function onBackgroundEvent({ type, detail }) {
 //   switch (type) {
 //     case EventType.DISMISSED:
-//       console.log('Notification dismissed:', detail.notification);
+//       console.log('Notification dismissed');
 //       break;
 //     case EventType.PRESS:
-//       console.log('Notification press:', detail.notification);
+//       navigation.navigate('NotificationScreen');
 //       break;
 //   }
 // }
