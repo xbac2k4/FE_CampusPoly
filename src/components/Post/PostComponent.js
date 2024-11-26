@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, TextInput, TouchableOpacity, View, Text, Animated, Alert, Modal } from 'react-native';
+import { Image, StyleSheet, TextInput, TouchableOpacity, View, Text, Animated, Alert, Modal, FlatList } from 'react-native';
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 import DocumentPicker from 'react-native-document-picker';
 import GiphySelector from './GiphySelector';
 // import styles from '../../assets/style/CreatCPStyle';
+import { GET_HASHTAG } from '../../services/ApiConfig';
 
-const PostComponent = ({ title: initialTitle, content: initialContent, image, gif, onContentChange, user }) => {
+const PostComponent = ({ title: initialTitle, content: initialContent, hashtag: initialHashtag, image, gif, onContentChange, user }) => {
   const [inputHeight, setInputHeight] = useState(40);
   const [isVisible, setIsVisible] = useState(false);
   const [animation] = useState(new Animated.Value(0));
@@ -13,31 +14,87 @@ const PostComponent = ({ title: initialTitle, content: initialContent, image, gi
   const [selectedGif, setSelectedGif] = useState(gif || null);
   const [isGifModalVisible, setGifModalVisible] = useState(false);
   const [content, setContent] = useState(initialContent || ''); // State cho Content
+  const [hashtag, setHashtag] = useState(initialHashtag || ''); // State cho hashtag
   const [title, setTitle] = useState(initialTitle || ''); // State cho Title
+
+  const [suggestedHashtags, setSuggestedHashtags] = useState([]); // Gợi ý hashtag từ DB
+  const [selectedHashtags, setSelectedHashtags] = useState([]); // Danh sách hashtag đã chọn
 
   // Cập nhật giá trị props vào state khi props thay đổi
   useEffect(() => {
     setTitle(initialTitle);
     setContent(initialContent);
+    setHashtag(initialHashtag);
     setSelectedImages(image);
     setSelectedGif(gif);
-  }, [initialTitle, initialContent, image, gif]);
+  }, [initialTitle, initialContent, initialHashtag, image, gif]);
 
   // Xử lý sự thay đổi nội dung
   const handleTitleChange = (text) => {
     setTitle(text);
-    onContentChange(text, content, selectedImages, selectedGif);
+    onContentChange(text, content, hashtag, selectedImages, selectedGif);
   };
 
   const handleContentChange = (text) => {
     setContent(text);
-    onContentChange(title, text, selectedImages, selectedGif);
+    onContentChange(title, text, hashtag, selectedImages, selectedGif);
   };
 
+  const handleHashtagChange = async (text) => {
+    let hashtagText = text.trim();
+    // Kiểm tra nếu người dùng không nhập # ở đầu, tự động thêm
+    if (hashtagText && !hashtagText.startsWith('#')) {
+        hashtagText = '#' + hashtagText; // Thêm dấu # vào đầu
+    }
+    setHashtag(hashtagText);
+    if (hashtagText !== '') {
+        try {
+            // Gọi API với từ khóa tìm kiếm
+            const response = await fetch(`${GET_HASHTAG}?searchTerm=${encodeURIComponent(hashtagText)}`);
+            const data = await response.json();
+            if (Array.isArray(data.hashtags)) {
+                const hashtagNames = data.hashtags.map((hashtag) => hashtag?.hashtag_name);
+                // Nếu không có hashtag nào trả về, coi như người dùng đang tạo mới một hashtag
+                if (!hashtagNames.includes(hashtagText)) {
+                    setSuggestedHashtags([hashtagText, ...hashtagNames]);  // Hiển thị gợi ý hashtag mới
+                } else {
+                    setSuggestedHashtags(hashtagNames); 
+                }
+            } else {
+                setSuggestedHashtags([]); 
+            }
+        } catch (err) {
+            setSuggestedHashtags([]); 
+        }
+    } else {
+        setSuggestedHashtags([]); 
+    }
+
+    // Gửi dữ liệu cập nhật
+    onContentChange(title, content, hashtagText, selectedImages, selectedGif);
+};
+
+  
+  // Xử lý chọn hashtag
+  const handleSelectHashtag = (hashtag) => {
+    setSelectedHashtags([hashtag]);  // Giới hạn chỉ một hashtag đã chọn
+    setSuggestedHashtags([]);  // Ẩn danh sách gợi ý ngay khi chọn hashtag
+    setHashtag(hashtag); // Đặt lại TextInput thành hashtag đã chọn
+    onContentChange(title, content, hashtag, selectedImages, selectedGif);  // Gửi dữ liệu cập nhật
+  };
+  
+  // Xử lý xóa hashtag đã chọn
+  const handleRemoveHashtag = (hashtag) => {
+    setSelectedHashtags((prev) => prev.filter((item) => item !== hashtag));
+    setSuggestedHashtags([]); // Ẩn danh sách gợi ý khi xóa hashtag
+    setHashtag(''); // Reset TextInput
+    onContentChange(title, content, '', selectedImages, selectedGif);  // Gửi dữ liệu cập nhật khi không còn hashtag
+  };
+  
   const handleGifSelect = (gifUrl) => {
     setSelectedGif(gifUrl);
     setGifModalVisible(false);
-    onContentChange(content, selectedImages, gifUrl);
+    onContentChange(content, hashtag, selectedImages, gifUrl);
   };
 
   const toggleImages = () => {
@@ -65,7 +122,7 @@ const PostComponent = ({ title: initialTitle, content: initialContent, image, gi
     if (response.assets && response.assets.length > 0) {
       const newImages = response.assets.map(asset => asset.uri);
       setSelectedImages([...selectedImages, ...newImages]);
-      onContentChange(title, content, [...selectedImages, ...newImages], selectedGif);
+      onContentChange(title, content, hashtag, [...selectedImages, ...newImages], selectedGif);
     }
   };
 
@@ -130,6 +187,36 @@ const PostComponent = ({ title: initialTitle, content: initialContent, image, gi
             onChangeText={handleContentChange}
             underlineColorAndroid="transparent"
           />
+          {/* TextInput để nhập hashtag */}
+          <TextInput
+            style={[styles.textInput, { height: Math.max(40, inputHeight) }]}
+            placeholder="#Hashtag!"
+            placeholderTextColor="#888"
+            multiline
+            value={hashtag}
+            onContentSizeChange={(event) => setInputHeight(event.nativeEvent.contentSize.height)}
+            onChangeText={handleHashtagChange}
+            underlineColorAndroid="transparent"
+          />
+
+          {/* FlatList gợi ý hashtag sẽ xổ xuống ngay dưới TextInput */}
+          {suggestedHashtags.length > 0 && (
+            <View style={styles.suggestionsContainer}>
+              <FlatList
+                data={suggestedHashtags}
+                keyExtractor={(item, index) => index.toString()}
+                style={styles.suggestionsList}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={styles.suggestionItem}
+                    onPress={() => handleSelectHashtag(item)}
+                  >
+                    <Text style={styles.suggestionText}>{`${item}`}</Text>
+                  </TouchableOpacity>
+                )}
+              />
+            </View>
+          )}
         </View>
       </View>
 
@@ -140,7 +227,7 @@ const PostComponent = ({ title: initialTitle, content: initialContent, image, gi
             <TouchableOpacity style={styles.removeImageButton} onPress={() => {
               const newImages = selectedImages.filter((_, i) => i !== index);
               setSelectedImages(newImages);
-              onContentChange(title, content, newImages, selectedGif);
+              onContentChange(title, content, hashtag, newImages, selectedGif);
             }}>
               <Image source={require('../../assets/images/x.png')} style={styles.removeImageIcon} />
             </TouchableOpacity>
@@ -286,4 +373,30 @@ const styles = StyleSheet.create({
     width: 14,
     height: 14,
   },
+  suggestionItem: {
+    paddingVertical: 5,
+    paddingHorizontal: 5,
+  },
+  suggestionText: {
+    fontSize: 14,
+    color: 'white',
+  },
+  suggestionsContainer: {
+    position: 'absolute',
+    top: 105, // Khoảng cách từ trên xuống, điều chỉnh để phù hợp với chiều cao của các TextInput
+    left: 0,
+    right: 0,
+    backgroundColor: '#545454',
+    maxHeight: 200, // Giới hạn chiều cao của FlatList nếu có nhiều mục
+    maxWidth:200,
+    zIndex: 1000, // Đảm bảo nó xuất hiện trên các phần tử khác
+    borderTopEndRadius: 10,
+    borderBottomEndRadius: 10,
+    borderBottomStartRadius: 10,
+  },
+  suggestionsList: {
+    padding: 5,
+    maxHeight: 200, // Đảm bảo danh sách không quá dài
+  },
+  
 });

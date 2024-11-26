@@ -21,7 +21,7 @@ const SearchScreen = () => {
       // console.log('Response Data:', responseData); // Kiểm tra dữ liệu trả về
 
       if (responseData.success && Array.isArray(responseData.posts)) {
-        const postsData = responseData.posts;  // Sửa từ data thành posts
+        const postsData = responseData.posts;  
         const sortedData = postsData.sort(
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         );

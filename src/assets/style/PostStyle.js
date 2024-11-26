@@ -44,7 +44,22 @@ const PostStyle = StyleSheet.create({
     color: '#FFF',
     fontSize: 16,
     marginBottom: 10,
+    fontWeight: '500'
   },
+  postHashtag: {
+    color: '#0078D4',
+    fontSize: 16,
+    marginBottom: 10,
+    fontWeight: '700'
+  },
+  // postImage: {
+  //   width: screenWidth - 50, // Giữ nguyên độ rộng
+  //   height: undefined, // Không gán chiều cao cố định
+  //   aspectRatio: 1, // Giữ tỷ lệ gốc của ảnh (tỷ lệ rộng/cao)
+  //   borderRadius: 8,
+  //   marginRight: 10,
+  //   marginTop: 5,
+  // },
   postImage: {
     width: screenWidth - 50,
     height: 200,
@@ -109,8 +124,8 @@ const PostStyle = StyleSheet.create({
   inactiveDot: {
     backgroundColor: '#B3B3B3',
   },
-   // Các style cho Bottom Sheet
-   bottomSheetContent: {
+  // Các style cho Bottom Sheet
+  bottomSheetContent: {
     backgroundColor: 'white',
     padding: 16,
     height: 450,
@@ -139,15 +154,15 @@ const PostStyle = StyleSheet.create({
   inner: {
     flex: 1,
     backgroundColor: '#181A1C',
-    paddingHorizontal:24
+    paddingHorizontal: 24
   },
-  textOne:{
-    color:'#fff',fontWeight:"semibold",fontSize:16,
-    marginTop:'5%'
+  textOne: {
+    color: '#fff', fontWeight: "semibold", fontSize: 16,
+    marginTop: '5%'
   },
-  reporttextcontainer:{
-    flexDirection:'row',
-    alignContent:'center',
+  reporttextcontainer: {
+    flexDirection: 'row',
+    alignContent: 'center',
   },
   toastContainer: {
     position: 'absolute',

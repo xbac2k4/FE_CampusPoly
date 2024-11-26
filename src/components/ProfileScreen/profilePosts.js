@@ -9,20 +9,10 @@ import RBSheet from 'react-native-raw-bottom-sheet';
 import { LIKE_POST, UNLIKE_POST } from '../../services/ApiConfig';
 import ToastModal from '../../components/Notification/NotificationModal'
 // Import các hình ảnh
-import avt from '../../assets/images/avt.png';
-import bookmark from '../../assets/images/bookmark.png';
-import bookmarkFilled from '../../assets/images/bookmark2.png';
 import comment from '../../assets/images/comment.png';
 import heart from '../../assets/images/heart.png';
 import heartFilled from '../../assets/images/hear2.png';
 import share from '../../assets/images/share.png';
-import report from '../../assets/images/report.png'
-import violet from '../../assets/images/violet.png'
-import racsim from '../../assets/images/racsim.png'
-import untrue from '../../assets/images/untrue.png'
-import rectionary from '../../assets/images/rectionary.png'
-import NotificationModal from '../../components/Notification/NotificationModal';
-import ShareButton from '../Sheet/ShareButton ';
 import { UserContext } from '../../services/provider/UseContext';
 import { SocketContext } from '../../services/provider/SocketContext';
 import { TYPE_LIKE_POST } from '../../services/TypeNotify';
@@ -270,6 +260,9 @@ const ProfilePosts = ({ navigation, data }) => {
                   </TouchableOpacity>
                 </View>
                 <Text style={styles.postText}>{item.postData.title}</Text>
+                {item.postData.hashtag?.hashtag_name ? (
+                  <Text style={styles.postHashtag}>{item.postData.hashtag.hashtag_name}</Text>
+                ) : null}
                 {item.postData.image && renderImages(item.postData.image, item.postData._id)}
                 <View style={styles.postMeta}>
                   <View style={styles.leftMetaIcons}>
@@ -339,39 +332,7 @@ const ProfilePosts = ({ navigation, data }) => {
           postId={selectedPostId}  // Pass selectedPostId here
           onReportSuccess={handleReportSuccess}
         />
-
-        {/* <TouchableOpacity
-          style={styles.reporttextcontainer}>
-          <NotificationModal
-            visible={modalVisible}
-            onConfirm={handleConfirm}
-            onCancel={handleCancel}
-            message={'Bạn có chắc muốn báo cáo?'}
-          />
-          <Image source={report} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
-          <Text style={styles.textOne}>Bài viết xúc phạm người dùng khác</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.reporttextcontainer}>
-          <Image source={untrue} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
-          <Text style={styles.textOne}>Bài viết sai sự thật</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.reporttextcontainer}>
-          <Image source={violet} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
-          <Text style={styles.textOne}>Bài viết mang tính bạo lực - kích động</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.reporttextcontainer}>
-          <Image source={rectionary} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
-          <Text style={styles.textOne}>Bài viết mang tính phản động</Text>
-        </TouchableOpacity><TouchableOpacity style={styles.reporttextcontainer}>
-          <Image source={racsim} style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }} />
-          <Text style={styles.textOne}>Bài viết mang tính phân biệt</Text>
-        </TouchableOpacity> */}
       </RBSheet >
-      {/* <NotificationModal
-        visible={modalVisible}
-        onConfirm={() => setModalVisible(false)}
-        success={reportSuccess}
-      /> */}
     </View >
   );
 };

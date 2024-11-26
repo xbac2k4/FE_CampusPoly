@@ -306,13 +306,18 @@ const CommentScreen = () => {
               </TouchableOpacity>
             </View>
             <View style={styles.bodyContent}>
-
-              <Text style={{ fontFamily: 'rgl1', fontSize: 16, fontWeight: '500', color: "#fff" }}>
+              <Text style={{ fontFamily: 'rgl1', fontSize: 20, fontWeight: 'bold', color: "#fff" }}>
                 {post?.postData?.title}
               </Text>
-              <Text style={{ fontFamily: 'rgl1', fontSize: 16, fontWeight: '500', color: "#fff" }}>
+              <Text style={{ fontFamily: 'rgl1', fontSize: 17, fontWeight: '600', color: "#fff", marginTop: 10}}>
                 {post?.postData?.content}
               </Text>
+              {post?.postData?.hashtag?.hashtag_name ? (
+                <Text style={{ fontFamily: 'rgl1', fontSize: 16, fontWeight: '700', color: "#0078D4", marginTop: 10 }}>
+                  {post.postData.hashtag.hashtag_name}
+                </Text>
+              ) : null}
+
               {post?.postData?.image && renderImages(post?.postData?.image, post?.postData?._id)}
             </View>
 
