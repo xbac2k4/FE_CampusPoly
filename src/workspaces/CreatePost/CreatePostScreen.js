@@ -9,14 +9,16 @@ const CreatePostScreen = ({ navigation }) => {
   // const [id, setID] = useState('670ca3898cfc1be4b41b183b');
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [hashtag, setHashtag] = useState('');
   const [images, setImages] = useState([]);
   const [gif, setGif] = useState(null);
   const { user } = useContext(UserContext);
 
   // Hàm để cập nhật dữ liệu từ PostComponent
-  const handleContentChange = (newTitle, newContent, newImages, newGif) => {
+  const handleContentChange = (newTitle, newContent, newHashtag, newImages, newGif) => {
     setTitle(newTitle);
     setContent(newContent);
+    setHashtag(newHashtag);
     setImages(newImages);
     setGif(newGif);
   };
@@ -26,7 +28,7 @@ const CreatePostScreen = ({ navigation }) => {
     formData.append('user_id', user._id); // Gia dinh khi chua co user_id
     formData.append('title', title || "");
     formData.append('content', content || "");
-    formData.append('post_type', 'text');
+    formData.append('hashtag', hashtag || "");
 
     // Thêm hình ảnh vào formData
     images.forEach((imgUri, index) => {
@@ -83,6 +85,7 @@ const CreatePostScreen = ({ navigation }) => {
         <PostComponent
           title={title}
           content={content}
+          hashtag={hashtag}
           image={images}
           // gif={gif}
           onContentChange={handleContentChange} // Truyền hàm vào PostComponent

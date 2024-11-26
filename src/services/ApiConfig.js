@@ -23,3 +23,4 @@ export const READ_NOTIFICATION = API_URL + 'notifications/read-notification';
 export const READ_ALL_NOTIFICATION = API_URL + 'notifications/read-all-notification';
 export const POST_CONVERSATION = API_URL + 'conversations/post-conversation';
 export const UPDATE_MESSAGE = API_URL + 'messages/update-message';
+export const GET_HASHTAG = API_URL + 'hashtags/search-hashtag';
