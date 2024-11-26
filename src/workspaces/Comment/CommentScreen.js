@@ -1,19 +1,18 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
-import { View, Text, Image, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import styles from '../../assets/style/CommentStyle';
-import CommentInputComponent from '../../components/Comment/CommentInputComponent';
-import { CommentLoading, PostCommentLoading } from '../../components/Loading/LoadingTimeline ';
-import SkeletonShimmer from '../../components/Loading/SkeletonShimmer';
-import CommentComponent from '../../components/Comment/CommentComponent';
-import ReportComponent from '../../components/Report/ReportComponent';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { Dimensions, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import NotificationModal from '../../components/Notification/NotificationModal'; // Import NotificationModal
-import { LIKE_POST, UNLIKE_POST, GET_POST_ID } from '../../services/ApiConfig';
+import heartFilled from '../../assets/images/hear2.png';
+import heart from '../../assets/images/heart.png';
+import styles from '../../assets/style/CommentStyle';
+import CommentComponent from '../../components/Comment/CommentComponent';
+import CommentInputComponent from '../../components/Comment/CommentInputComponent';
+import { PostCommentLoading } from '../../components/Loading/LoadingTimeline';
+import SkeletonShimmer from '../../components/Loading/SkeletonShimmer';
+import ReportComponent from '../../components/Report/ReportComponent';
+import { GET_POST_ID, LIKE_POST, UNLIKE_POST } from '../../services/ApiConfig';
 import { UserContext } from '../../services/provider/UseContext';
 const { width: screenWidth } = Dimensions.get('window'); // Lấy chiều rộng màn hình để điều chỉnh kích thước hình ảnh
-import heart from '../../assets/images/heart.png';
-import heartFilled from '../../assets/images/hear2.png';
 const CommentScreen = () => {
   const route = useRoute();
 

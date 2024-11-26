@@ -3,7 +3,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import LoadingTimeline from '../../components/Loading/LoadingTimeline ';
+import LoadingTimeline from '../../components/Loading/LoadingTimeline';
 import ProfilePosts from '../../components/ProfileScreen/profilePosts';
 import Screens from '../../navigation/Screens';
 import { GET_ALL_POST } from '../../services/ApiConfig';
