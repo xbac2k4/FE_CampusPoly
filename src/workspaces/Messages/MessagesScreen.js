@@ -7,6 +7,7 @@ import { GET_CONVERSATION_BY_USER, GET_USER_ID, POST_CONVERSATION, UPDATE_MESSAG
 import { useFocusEffect } from '@react-navigation/native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { SocketContext } from '../../services/provider/SocketContext';
+import { timeAgo } from '../../utils/formatTime';
 
 // const users = [
 //   { id: '1', name: 'Huy', avatar: 'https://ispacedanang.edu.vn/wp-content/uploads/2024/05/hinh-anh-dep-ve-hoc-sinh-cap-3-1.jpg', online: true, isPinned: true },
@@ -163,27 +164,27 @@ const MessageScreen = ({ navigation }) => {
     await postConversation(user_id, friend_id);
   };
 
-  const timeAgo = (date) => {
-    if (!date || isNaN(new Date(date).getTime())) {
-      return ""; // Trả về giá trị mặc định nếu `date` không hợp lệ
-    }
+  // const timeAgo = (date) => {
+  //   if (!date || isNaN(new Date(date).getTime())) {
+  //     return ""; // Trả về giá trị mặc định nếu `date` không hợp lệ
+  //   }
 
-    const now = new Date();
-    const postDate = new Date(date);
-    const diff = Math.floor((now - postDate) / 1000); // Chênh lệch thời gian tính bằng giây
+  //   const now = new Date();
+  //   const postDate = new Date(date);
+  //   const diff = Math.floor((now - postDate) / 1000); // Chênh lệch thời gian tính bằng giây
 
-    if (diff < 60) return "Vừa xong"; // Đề phòng chênh lệch âm
+  //   if (diff < 60) return "Vừa xong"; // Đề phòng chênh lệch âm
 
-    // if (diff < 60) return `${diff} giây`;
-    const minutes = Math.floor(diff / 60);
-    if (minutes < 60) return `${minutes} phút`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours} giờ`;
-    const days = Math.floor(hours / 24);
-    if (days < 7) return `${days} ngày`;
-    const weeks = Math.floor(days / 7);
-    return `${weeks} tuần`;
-  };
+  //   // if (diff < 60) return `${diff} giây`;
+  //   const minutes = Math.floor(diff / 60);
+  //   if (minutes < 60) return `${minutes} phút`;
+  //   const hours = Math.floor(minutes / 60);
+  //   if (hours < 24) return `${hours} giờ`;
+  //   const days = Math.floor(hours / 24);
+  //   if (days < 7) return `${days} ngày`;
+  //   const weeks = Math.floor(days / 7);
+  //   return `${weeks} tuần`;
+  // };
 
 
   // Hiển thị người dùng có tin nhắn
