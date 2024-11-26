@@ -35,6 +35,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flex: 1,
     marginTop: 15,
+    marginBottom: 10
   },
   imgavt: {
     width: 50,
@@ -47,12 +48,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   statuscontainer: {
-    borderRadius: 10,
+    borderRadius: 7,
     width: 100,
     height: 30,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 10,
+    marginTop: 5,
   },
   statusstyle: {
     color: '#fff',

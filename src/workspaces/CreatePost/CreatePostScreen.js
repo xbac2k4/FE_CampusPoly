@@ -1,8 +1,12 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
 import PostComponent from '../../components/Post/PostComponent';
 import { UserContext } from '../../services/provider/UseContext';
-import { ADD_POST } from '../../services/ApiConfig';
+import { ADD_POST, GET_FRIEND_BY_USERID } from '../../services/ApiConfig';
+import Colors from '../../constants/Color';
+import LinearGradient from 'react-native-linear-gradient';
+import { SocketContext } from '../../services/provider/SocketContext';
+import { TYPE_CREATE_POST } from '../../services/TypeNotify';
 
 const CreatePostScreen = ({ navigation }) => {
   // const [user, setUser] = useState(null);
@@ -13,6 +17,9 @@ const CreatePostScreen = ({ navigation }) => {
   const [images, setImages] = useState([]);
   const [gif, setGif] = useState(null);
   const { user } = useContext(UserContext);
+  const [isPost, setIsPost] = useState(false);
+  const [userFriend, setUserFriend] = useState([]);
+  const { sendNotificationToMultipleSocket } = useContext(SocketContext);
 
   // Hàm để cập nhật dữ liệu từ PostComponent
   const handleContentChange = (newTitle, newContent, newHashtag, newImages, newGif) => {
@@ -22,6 +29,25 @@ const CreatePostScreen = ({ navigation }) => {
     setImages(newImages);
     setGif(newGif);
   };
+
+  const fetchUserFriends = async () => {
+    try {
+      const response = await fetch(`${GET_FRIEND_BY_USERID}?user_id=${user._id}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch user friends!');
+      }
+      const data = await response.json();
+      console.log(data.data);
+      // const listFriends = data.data.filter(friend => friend)
+      setUserFriend(data.data);
+    } catch (error) {
+      console.error('Error fetching user friends:', error);
+    }
+  }
+
+  useEffect(() => {
+    fetchUserFriends();
+  }, []);
 
   const handlePublish = async () => {
     const formData = new FormData();
@@ -59,16 +85,24 @@ const CreatePostScreen = ({ navigation }) => {
         throw new Error('Failed to publish post!');
       }
       const post = await response.json();
-      console.log('API response:', post);
-
+      // console.log('API response:', post.data);
+      if (post.status === 200) {
+        navigation.goBack();
+        await sendNotificationToMultipleSocket(user.full_name, user._id, 'đã đăng bài viết mới', userFriend, TYPE_CREATE_POST, post?.data?._id);
+      }
       // Alert.alert("Success", "Your post has been published!");
-      navigation.goBack();
     } catch (error) {
       console.error('Error while publishing post:', error);
       Alert.alert('Error', error.message);
     }
   };
-
+  useEffect(() => {
+    if (title.trim() && content.trim() && hashtag.trim()) {
+      setIsPost(true);
+    } else {
+      setIsPost(false);
+    }
+  }, [title, content, hashtag])
 
   return (
     <View style={styles.container}>
@@ -77,9 +111,18 @@ const CreatePostScreen = ({ navigation }) => {
           <Text style={[styles.textHeader, { color: "#2E8AF6", fontSize: 16 }]}>Hủy</Text>
         </TouchableOpacity>
         <Text style={styles.textHeader}>Tạo Bài Viết</Text>
-        <TouchableOpacity onPress={handlePublish} style={styles.buttonContainer}>
-          <Text style={[styles.textHeader, { fontSize: 16 }]}>Đăng</Text>
-        </TouchableOpacity>
+        <LinearGradient
+          colors={isPost ? [Colors.first, Colors.second] : [Colors.background, Colors.background]}
+          style={styles.buttonContainer}>
+          <TouchableOpacity
+            onPress={handlePublish}
+            disabled={!isPost} // Disable nếu isPost === false
+            style={{
+              alignItems: 'center'
+            }}>
+            <Text style={[{ ...styles.textHeader, color: isPost ? '#ECEBED' : '#C0C0C0' }, { fontSize: 16 }]}>Đăng</Text>
+          </TouchableOpacity>
+        </LinearGradient>
       </View>
       <View style={styles.createContainer}>
         <PostComponent
@@ -120,7 +163,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F62E8E",
     borderRadius: 24,
     width: 70,
-    height: 24,
+    height: 25,
     alignItems: 'center',
   },
   createContainer: {

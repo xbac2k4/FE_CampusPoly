@@ -12,6 +12,9 @@ import SkeletonShimmer from '../../components/Loading/SkeletonShimmer';
 import ReportComponent from '../../components/Report/ReportComponent';
 import { GET_POST_ID, LIKE_POST, UNLIKE_POST } from '../../services/ApiConfig';
 import { UserContext } from '../../services/provider/UseContext';
+import { timeAgo } from '../../utils/formatTime';
+import { SocketContext } from '../../services/provider/SocketContext';
+import { TYPE_COMMENT_POST, TYPE_LIKE_POST } from '../../services/TypeNotify';
 const { width: screenWidth } = Dimensions.get('window'); // Lấy chiều rộng màn hình để điều chỉnh kích thước hình ảnh
 const CommentScreen = () => {
   const route = useRoute();
@@ -28,6 +31,7 @@ const CommentScreen = () => {
   const [activeImageIndex, setActiveImageIndex] = useState({}); // Quản lý chỉ số ảnh đang hiển thị cho mỗi bài có nhiều ảnh
   const [selectedPostId, setSelectedPostId] = useState(null); // ID bài viết được chọn để báo cáo
   const [reportSuccess, setReportSuccess] = useState(false);
+  const { sendNotifySocket } = useContext(SocketContext);
 
   const refRBSheet = useRef();
 
@@ -124,6 +128,9 @@ const CommentScreen = () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ user_id: userId, post_id: postId }),
         });
+        if (user._id !== post?.postData?.user_id?._id) {
+          await sendNotifySocket(user.full_name, user._id, 'đã thích bài viết của bạn', post?.postData?.user_id?._id, TYPE_LIKE_POST, post?.postData?._id);
+        }
       }
 
       const result = await response.json(); // Parse kết quả từ response
@@ -178,10 +185,6 @@ const CommentScreen = () => {
       console.error('Error toggling like/unlike:', error); // Xử lý lỗi khi like/unlike
     }
   };
-
-
-
-
 
   // if (loading) {
   //   return <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 20 }} />;
@@ -242,29 +245,6 @@ const CommentScreen = () => {
     );
   };
 
-  // hàm format thời gian
-  const timeAgo = (date) => {
-    if (!date || isNaN(new Date(date).getTime())) {
-      return ""; // Trả về giá trị mặc định nếu `date` không hợp lệ
-    }
-
-    const now = new Date();
-    const postDate = new Date(date);
-    const diff = Math.floor((now - postDate) / 1000); // Chênh lệch thời gian tính bằng giây
-
-    if (diff < 60) return "Vừa xong"; // Đề phòng chênh lệch âm
-
-    // if (diff < 60) return `${diff} giây`;
-    const minutes = Math.floor(diff / 60);
-    if (minutes < 60) return `${minutes} phút`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours} giờ`;
-    const days = Math.floor(hours / 24);
-    if (days < 7) return `${days} ngày`;
-    const weeks = Math.floor(days / 7);
-    return `${weeks} tuần`;
-  };
-
   return (
     <View style={{ flex: 1, backgroundColor: '#181A1C', }}>
       <TouchableOpacity
@@ -278,16 +258,10 @@ const CommentScreen = () => {
         />
       </TouchableOpacity>
       <View style={styles.barHeader}>
-
         <Text style={styles.textHeader}>Comment</Text>
       </View>
       <ScrollView contentContainerStyle={styles.container}>
-
-
-
-
         <View style={{ height: 1, backgroundColor: '#323436', marginBottom: 15 }} />
-
         {loading ? <PostCommentLoading /> : (
           <>
             <View style={styles.headerContent}>
@@ -309,7 +283,7 @@ const CommentScreen = () => {
               <Text style={{ fontFamily: 'rgl1', fontSize: 20, fontWeight: 'bold', color: "#fff" }}>
                 {post?.postData?.title}
               </Text>
-              <Text style={{ fontFamily: 'rgl1', fontSize: 17, fontWeight: '600', color: "#fff", marginTop: 10}}>
+              <Text style={{ fontFamily: 'rgl1', fontSize: 17, fontWeight: '600', color: "#fff", marginTop: 10 }}>
                 {post?.postData?.content}
               </Text>
               {post?.postData?.hashtag?.hashtag_name ? (
@@ -396,25 +370,31 @@ const CommentScreen = () => {
               )
             } */}
 
-            {comment
-              ?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sắp xếp bình luận mới nhất lên đầu
-              .map((comment) => (
-                <CommentComponent
-                  key={comment?._id}
-                  avatar={comment?.user_id_comment?.avatar.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg'}
-                  name={comment?.user_id_comment?.full_name}
-                  content={comment?.comment_content}
-                  time={timeAgo(comment?.createdAt)} // Format thời gian nếu cần
-                  likes={0} // Bạn có thể chỉnh sửa nếu cần thêm thông tin về lượt thích
-                />
-              ))}
+            <View style={{
+              paddingHorizontal: 10
+            }} >
+              {comment
+                ?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sắp xếp bình luận mới nhất lên đầu
+                .map((comment) => (
+                  <CommentComponent
+                    key={comment?._id}
+                    avatar={comment?.user_id_comment?.avatar.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg'}
+                    name={comment?.user_id_comment?.full_name}
+                    content={comment?.comment_content}
+                    time={timeAgo(comment?.createdAt)} // Format thời gian nếu cần
+                    likes={0} // Bạn có thể chỉnh sửa nếu cần thêm thông tin về lượt thích
+                  />
+                ))}
+            </View>
           </>
         )}
       </ScrollView>
       <CommentInputComponent postId={postId}
-        onSend={(newComment) => {
-          console.log(newComment);
-
+        onSend={async (newComment) => {
+          // console.log(post);
+          if (user._id !== post?.postData?.user_id?._id) {
+            await sendNotifySocket(user.full_name, user._id, 'đã bình luận bài viết của bạn', post?.postData?.user_id?._id, TYPE_COMMENT_POST, post?.postData?._id);
+          }
           setComment([newComment, ...comment])
         }} style={styles.commentInput} />
       {/* Bottom Sheet */}
@@ -444,7 +424,7 @@ const CommentScreen = () => {
       </RBSheet>
     </View>
 
-   
+
   );
 };
 

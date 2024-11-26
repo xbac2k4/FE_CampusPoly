@@ -1,7 +1,7 @@
 
 import { useFocusEffect } from '@react-navigation/native';
-import React, { useCallback, useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View, ScrollView, RefreshControl } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import LoadingTimeline from '../../components/Loading/LoadingTimeline';
 import ProfilePosts from '../../components/ProfileScreen/profilePosts';
@@ -9,26 +9,32 @@ import Screens from '../../navigation/Screens';
 import { GET_ALL_POST } from '../../services/ApiConfig';
 import LinearGradient from 'react-native-linear-gradient';
 import Colors from '../../constants/Color';
-
+import { UserContext } from '../../services/provider/UseContext';
 const HomeScreen = ({ navigation }) => {
   const [greeting, setGreeting] = useState('');
   // const navigation = useNavigation();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState('Dành cho bạn'); // Trạng thái cho tab hiện tại
+  const [refreshing, setRefreshing] = useState(false);
+  const { user } = useContext(UserContext);
 
   const getGreeting = () => {
-    const currentHour = new Date().getHours();
-    if (currentHour >= 7 && currentHour < 10) {
-      return 'Chào buổi sáng🌞';
-    } else if (currentHour >= 10 && currentHour < 18) {
-      return 'Chào buổi chiều😎';
-    } else {
-      return 'Chào buổi tối🌚';
-    }
+    // const currentHour = new Date().getHours();
+    // if (currentHour >= 7 && currentHour < 10) {
+    //   return 'Chào buổi sáng🌞';
+    // } else if (currentHour >= 10 && currentHour < 18) {
+    //   return 'Chào buổi chiều😎';
+    // } else {
+    //   return 'Chào buổi tối🌚';
+    // }
+    // console.log(user);
+    
+    return `Xin chào, ${user.full_name}`; // Example greeting
   };
 
   const fetchUserData = async () => {
+    setRefreshing(false); // Stop the refresh animation
     try {
       setLoading(true); // Đặt lại loading trước khi gọi API
       const response = await fetch(GET_ALL_POST);
@@ -56,59 +62,81 @@ const HomeScreen = ({ navigation }) => {
     fetchUserData();
   }, []);
 
+  const renderHeaderTabs = () => (
+    <View
+      style={[styles.tabContainer]}>
+      <TouchableOpacity
+        style={{ flex: 1 }}
+        onPress={() => setSelectedTab('Dành cho bạn')}
+      >
+        <LinearGradient
+          colors={selectedTab == 'Dành cho bạn' ? [Colors.first, Colors.second] : [Colors.background, Colors.background]}
+          style={styles.tab}
+        >
+          <Text style={styles.tabText}>Dành cho bạn</Text>
+        </LinearGradient>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={{ flex: 1 }}
+        onPress={() => setSelectedTab('Bạn bè')}
+      >
+        <LinearGradient
+          colors={selectedTab == 'Bạn bè' ? [Colors.first, Colors.second] : [Colors.background, Colors.background]}
+          style={styles.tab}
+        >
+          <Text style={styles.tabText}>Bạn bè</Text>
+        </LinearGradient>
+      </TouchableOpacity>
+    </View>
+  )
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    // Simulate a network request or data update
+    fetchUserData();
+  };
+
+  handlePullRefresh = () => {
+    // refreshing, you can return promise here.
+  };
+
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.container}>
-        <View style={{ flex: 1 }}>
-          <View style={styles.headerContent}>
-            <Text style={styles.greetingText}>
-              <Text>{greeting}</Text>
-
-            </Text>
-            <TouchableOpacity
-              style={styles.circleIcon}
-              onPress={() => navigation.navigate(Screens.Message)}
-            >
-              <AntDesign name="message1" size={15} color="#fff" />
-            </TouchableOpacity>
-          </View>
-
-          {/* Tab điều hướng */}
-          <View style={styles.tabContainer}>
-            <TouchableOpacity
-              onPress={() => setSelectedTab('Dành cho bạn')}
-            >
-              <LinearGradient
-                colors={selectedTab == 'Dành cho bạn' ? [Colors.first, Colors.second] : [Colors.background, Colors.background]}
-                style={styles.tab}
+    <View style={styles.container}>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        <View style={styles.container}>
+          <View style={{ flex: 1 }}>
+            <View style={styles.headerContent}>
+              <Text style={styles.greetingText}>
+                <Text>{greeting}</Text>
+              </Text>
+              <TouchableOpacity
+                style={styles.circleIcon}
+                onPress={() => navigation.navigate(Screens.Message)}
               >
-                <Text style={styles.tabText}>Dành cho bạn</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => setSelectedTab('Đang theo dõi')}
-            >
-              <LinearGradient
-                colors={selectedTab == 'Đang theo dõi' ? [Colors.first, Colors.second] : [Colors.background, Colors.background]}
-                style={styles.tab}
-              >
-                <Text style={styles.tabText}>Đang theo dõi</Text>
-              </LinearGradient>
-            </TouchableOpacity>
+                <AntDesign name="message1" size={15} color="#fff" />
+              </TouchableOpacity>
+            </View>
+
+            {/* Tab điều hướng */}
+            {renderHeaderTabs()}
+
+            {loading ? (
+              // <ActivityIndicator size="large" color="#FFF" style={{ marginTop: 20 }} />
+              <LoadingTimeline quantity={3} />
+            ) : selectedTab === 'Dành cho bạn' ? (
+              <ProfilePosts navigation={navigation} data={data} />
+            ) : null}
+
+            {/* Thêm khoảng trống ở cuối danh sách bài post */}
+            <View style={{ height: 60 }} />
           </View>
-
-          {loading ? (
-            // <ActivityIndicator size="large" color="#FFF" style={{ marginTop: 20 }} />
-            <LoadingTimeline quantity={3} />
-          ) : selectedTab === 'Dành cho bạn' ? (
-            <ProfilePosts navigation={navigation} data={data} />
-          ) : null}
-
-          {/* Thêm khoảng trống ở cuối danh sách bài post */}
-          <View style={{ height: 60 }} />
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 
@@ -144,10 +172,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     marginVertical: 20,
+    paddingHorizontal: 20,
   },
   tab: {
     paddingVertical: 10,
-    paddingHorizontal: 40,
+    paddingHorizontal: 20,
     borderRadius: 20,
     marginHorizontal: 10,
   },
@@ -158,5 +187,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '500',
+    textAlign: 'center',
   },
 });

@@ -57,7 +57,6 @@ const MenuScreen = () => {
           <View style={styles.gridItem}>
             <TouchableOpacity style={styles.navItem} onPress={()=>{
               navigation.navigate(Screens.FriendListScreen)
-
             }}>
               <Image
                 source={require('../../assets/images/friend.png')}
@@ -65,7 +64,9 @@ const MenuScreen = () => {
               />
               <Text style={styles.navText}>Bạn bè</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.navItem}>
+            <TouchableOpacity style={styles.navItem} onPress={()=>{
+              navigation.navigate(Screens.Message)
+            }}>
               <AntDesign name="message1" size={width * 0.06} color="#ff7d97" />
               <Text style={styles.navText}>Tin nhắn</Text>
             </TouchableOpacity>

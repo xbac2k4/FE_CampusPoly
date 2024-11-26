@@ -289,7 +289,7 @@ const MessageScreen = ({ navigation }) => {
         }}>
           <Icon name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>MESSAGES</Text>
+        <Text style={styles.headerTitle}>Tin nhắn</Text>
         <TouchableOpacity>
           <Icon name="settings-outline" size={24} color="#fff" />
         </TouchableOpacity>

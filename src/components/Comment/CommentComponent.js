@@ -1,8 +1,8 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { useState } from 'react';
 // Component nhận dữ liệu từ props
-const CommentComponent = ({ 
-  avatar, name, content, time, likes, initialLiked = false 
+const CommentComponent = ({
+  avatar, name, content, time, likes, initialLiked = false
 }) => {
   // State để lưu trạng thái "đã thích" (liked)
   const [isLiked, setIsLiked] = useState(initialLiked);
@@ -12,10 +12,10 @@ const CommentComponent = ({
     <View style={styles.commentContainer}>
       <View style={styles.userContainer}>
         {/* Hiển thị avatar */}
-        <Image 
-          source={{ uri: avatar }} 
-          resizeMode="cover" 
-          style={styles.imgAvatar} 
+        <Image
+          source={{ uri: avatar }}
+          resizeMode="cover"
+          style={styles.imgAvatar}
         />
         <View style={{ marginLeft: 10 }}>
           {/* Hiển thị tên và nội dung bình luận */}
@@ -24,21 +24,23 @@ const CommentComponent = ({
           {/* Thời gian và số lượt thích */}
           <View style={styles.timeLikeContainer}>
             <Text style={styles.textTime}>{time}</Text>
-            <Text style={styles.textTime}> · </Text>
-            <Text style={styles.textTime}>{likes} <Text>Likes</Text></Text>
+            {/* <Text style={styles.textTime}> · </Text> */}
+            <TouchableOpacity >
+              <Text style={{...styles.textTime, marginLeft: 15}}><Text>Thích</Text></Text>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
       {/* Biểu tượng heart có thể nhấn */}
       <TouchableOpacity onPress={toggleHeart}>
-        <Image 
+        <Image
           source={
-            isLiked 
-              ? require('../../assets/images/hear2.png') 
+            isLiked
+              ? require('../../assets/images/hear2.png')
               : require('../../assets/images/heart.png')
           }
-          resizeMode="contain" 
-          style={styles.iconHeart} 
+          resizeMode="contain"
+          style={styles.iconHeart}
         />
       </TouchableOpacity>
     </View>
@@ -50,11 +52,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 10,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
   },
   userContainer: {
+    maxWidth: '75%',
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'start',
   },
   imgAvatar: {
     width: 32,

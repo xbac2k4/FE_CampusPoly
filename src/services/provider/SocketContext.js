@@ -54,6 +54,12 @@ export const SocketProvider = ({ children }) => {
             socket.emit('send_notify', { sender_name, sender_id, body, receiver_id, type, post_id });
         }
     };
+    const sendNotificationToMultipleSocket = (sender_name, sender_id, body, list_receiver_id, type, post_id) => {
+        // console.log(sender_name + ' - ' + receiver_id);
+        if (socket) {
+            socket.emit('send_notification_to_multiple', { sender_name, sender_id, body, list_receiver_id, type, post_id });
+        }
+    };
     // const notifyLikePostSocket = (sender_name, sender_id, body, receiver_id, type) => {
     //     // console.log(sender_name + ' - ' + receiver_id);
     //     if (socket) {
@@ -82,7 +88,7 @@ export const SocketProvider = ({ children }) => {
     }, [socket]);
 
     return (
-        <SocketContext.Provider value={{ socket, connectSocket, disconnectSocket, sendMessageSocket, usersOnline, sendNotifySocket }}>
+        <SocketContext.Provider value={{ socket, connectSocket, disconnectSocket, sendMessageSocket, usersOnline, sendNotifySocket, sendNotificationToMultipleSocket }}>
             {children}
         </SocketContext.Provider>
     );

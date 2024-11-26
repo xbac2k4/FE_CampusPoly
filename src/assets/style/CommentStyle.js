@@ -98,6 +98,8 @@ const CommentStyle = StyleSheet.create({
       barComment: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+        paddingTop: 5,
+        paddingHorizontal: 10,
       },
       commentTitle: {
         fontFamily: 'rgl1',

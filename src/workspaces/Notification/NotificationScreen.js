@@ -7,7 +7,7 @@ import { UserContext } from '../../services/provider/UseContext';
 import { useFocusEffect } from '@react-navigation/native';
 import { Screen } from 'react-native-screens';
 import Screens from '../../navigation/Screens';
-import { TYPE_ADD_FRIEND, TYPE_LIKE_POST } from '../../services/TypeNotify';
+import { TYPE_ADD_FRIEND, TYPE_COMMENT_POST, TYPE_CREATE_POST, TYPE_LIKE_POST } from '../../services/TypeNotify';
 
 const NotificationScreen = ({ navigation }) => {
   const [notifications, setNotifications] = useState([]);
@@ -90,6 +90,10 @@ const NotificationScreen = ({ navigation }) => {
                 if (result?.data?.data?.type === TYPE_ADD_FRIEND) {
                   navigation.navigate(Screens.Profile, { id: result?.data?.data?.sender_id });
                 } if (result?.data?.data?.type === TYPE_LIKE_POST) {
+                  navigation.navigate(Screens.Comment, { postId: result?.data?.data?.post_id })
+                } if (result?.data?.data?.type === TYPE_COMMENT_POST) {
+                  navigation.navigate(Screens.Comment, { postId: result?.data?.data?.post_id })
+                } if (result?.data?.data?.type === TYPE_CREATE_POST) {
                   navigation.navigate(Screens.Comment, { postId: result?.data?.data?.post_id })
                 }
               })

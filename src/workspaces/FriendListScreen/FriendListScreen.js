@@ -4,6 +4,8 @@ import { useNavigation } from '@react-navigation/native';
 import { UserContext } from '../../services/provider/UseContext';
 import styles from '../../assets/style/FriendList';
 import FriendListComponent from '../../components/FriendListComponent/FriendListConponent';
+import LinearGradient from 'react-native-linear-gradient';
+import Colors from '../../constants/Color';
 
 const FriendListScreen = () => {
   const navigation = useNavigation();
@@ -28,7 +30,7 @@ const FriendListScreen = () => {
       const friends = data?.data?.friends || [];
       setFriendList(friends);
       console.log("Danh sách bạn", friends);
-      
+
     } catch (error) {
       console.error('Error fetching friend list:', error);
     }
@@ -63,42 +65,52 @@ const FriendListScreen = () => {
           <Text style={styles.textHeader}>Danh sách bạn bè</Text>
           <View style={{ height: 2, backgroundColor: '#fff' }} />
         </View>
-        
+
         {/* Tabs */}
         <View style={styles.tabContainer}>
           <TouchableOpacity
             onPress={() => setSelectedTab('accepted')}
             style={[
               styles.tab,
-              selectedTab === 'accepted' && styles.activeTab,
+              // selectedTab === 'accepted' && styles.activeTab,
             ]}
           >
-            <Text style={selectedTab === 'accepted' ? styles.activeTabText : styles.tabText}>
-              Đã chấp nhận
-            </Text>
+            <LinearGradient
+              colors={selectedTab === 'accepted' ? [Colors.first, Colors.second] : [Colors.background, Colors.background]}
+              style={{ ...styles.tab, width: 170 }}
+            >
+              <Text style={selectedTab === 'accepted' ? styles.activeTabText : styles.tabText}>
+                Bạn bè
+              </Text>
+            </LinearGradient>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => setSelectedTab('pending')}
             style={[
               styles.tab,
-              selectedTab === 'pending' && styles.activeTab,
+              // selectedTab === 'pending' && styles.activeTab,
             ]}
           >
-            <Text style={selectedTab === 'pending' ? styles.activeTabText : styles.tabText}>
-              Đang chờ phản hồi
-            </Text>
+            <LinearGradient
+              colors={selectedTab === 'pending' ? [Colors.first, Colors.second] : [Colors.background, Colors.background]}
+              style={{ ...styles.tab, width: 170 }}
+            >
+              <Text style={selectedTab === 'pending' ? styles.activeTabText : styles.tabText}>
+                Lời mời kết bạn
+              </Text>
+            </LinearGradient>
           </TouchableOpacity>
         </View>
 
         {/* Danh sách bạn bè */}
         <View>
-          <Text style={[styles.textHeader, { marginTop: 10 }]}>
-            {selectedTab === 'accepted' ? ' Danh sách bạn đã chấp nhận' : ' Danh sách bạn đang chờ phản hồi'}
+          <Text style={styles.textHeader}>
+            {selectedTab === 'accepted' ? ' Danh sách bạn bè' : ' Danh sách lời mời'}
           </Text>
           {filteredFriends.map((friend, index) => {
             const friendData = friend.user_id.find((u) => u._id !== user._id);
             const statusDisplay = friend?.status_id?.status_name === 'Chấp nhận' ? 'Bạn bè' : friend?.status_id?.status_name;
-            
+
             return (
               <FriendListComponent
                 key={index}
