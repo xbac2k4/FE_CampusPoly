@@ -245,18 +245,26 @@ const CommentScreen = () => {
 
   // hàm format thời gian
   const timeAgo = (date) => {
+    if (!date || isNaN(new Date(date).getTime())) {
+      return ""; // Trả về giá trị mặc định nếu `date` không hợp lệ
+    }
+
     const now = new Date();
     const postDate = new Date(date);
     const diff = Math.floor((now - postDate) / 1000); // Chênh lệch thời gian tính bằng giây
 
-    if (diff < 60) return `${diff} giây trước`;
+    if (diff < 60) return "Vừa xong"; // Đề phòng chênh lệch âm
+
+    // if (diff < 60) return `${diff} giây`;
     const minutes = Math.floor(diff / 60);
-    if (minutes < 60) return `${minutes} phút trước`;
+    if (minutes < 60) return `${minutes} phút`;
     const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours} giờ trước`;
+    if (hours < 24) return `${hours} giờ`;
     const days = Math.floor(hours / 24);
-    return `${days} ngày trước`;
-  }
+    if (days < 7) return `${days} ngày`;
+    const weeks = Math.floor(days / 7);
+    return `${weeks} tuần`;
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: '#181A1C', }}>
@@ -388,11 +396,11 @@ const CommentScreen = () => {
               ?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sắp xếp bình luận mới nhất lên đầu
               .map((comment) => (
                 <CommentComponent
-                  key={comment._id}
-                  avatar={comment.user_id_comment.avatar.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg'}
-                  name={comment.user_id_comment.full_name}
-                  content={comment.comment_content}
-                  time={timeAgo(comment.createdAt)} // Format thời gian nếu cần
+                  key={comment?._id}
+                  avatar={comment?.user_id_comment?.avatar.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg'}
+                  name={comment?.user_id_comment?.full_name}
+                  content={comment?.comment_content}
+                  time={timeAgo(comment?.createdAt)} // Format thời gian nếu cần
                   likes={0} // Bạn có thể chỉnh sửa nếu cần thêm thông tin về lượt thích
                 />
               ))}
@@ -400,7 +408,11 @@ const CommentScreen = () => {
         )}
       </ScrollView>
       <CommentInputComponent postId={postId}
-        onSend={(newComment) => setComment([newComment, ...comment])} style={styles.commentInput} />
+        onSend={(newComment) => {
+          console.log(newComment);
+
+          setComment([newComment, ...comment])
+        }} style={styles.commentInput} />
       {/* Bottom Sheet */}
       <RBSheet
         ref={refRBSheet}

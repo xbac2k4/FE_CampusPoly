@@ -27,7 +27,7 @@ export const SocketProvider = ({ children }) => {
 
         newSocket.on('new_notification', async (data) => {
             console.log('Nhận được thông báo mới:', data);
-          });
+        });
 
         newSocket.on('disconnect', () => {
             newSocket.emit('get_users_online');
@@ -48,6 +48,19 @@ export const SocketProvider = ({ children }) => {
             socket.emit('send_message', newMessage);
         }
     };
+    const sendNotifySocket = (sender_name, sender_id, body, receiver_id, type, post_id) => {
+        // console.log(sender_name + ' - ' + receiver_id);
+        if (socket) {
+            socket.emit('send_notify', { sender_name, sender_id, body, receiver_id, type, post_id });
+        }
+    };
+    // const notifyLikePostSocket = (sender_name, sender_id, body, receiver_id, type) => {
+    //     // console.log(sender_name + ' - ' + receiver_id);
+    //     if (socket) {
+    //         socket.emit('notify_add_friend', { sender_name, sender_id, body, receiver_id, type });
+    //     }
+    // };
+
     // const getNotifySocket = () => {
     //     if (socket) {
     //         socket.on('new_message', (data) => {
@@ -69,7 +82,7 @@ export const SocketProvider = ({ children }) => {
     }, [socket]);
 
     return (
-        <SocketContext.Provider value={{ socket, connectSocket, disconnectSocket, sendMessageSocket, usersOnline }}>
+        <SocketContext.Provider value={{ socket, connectSocket, disconnectSocket, sendMessageSocket, usersOnline, sendNotifySocket }}>
             {children}
         </SocketContext.Provider>
     );

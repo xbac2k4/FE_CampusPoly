@@ -38,6 +38,8 @@ const ChatScreen = ({ navigation, route }) => {
       const data = await response.json();
       setConversation(data.data);
       setMessage(data.data.messages);
+      // console.log(conversation);
+
 
     } catch (error) {
       console.error('Error fetching user data:', error);
@@ -56,7 +58,8 @@ const ChatScreen = ({ navigation, route }) => {
 
   const memberWithDifferentUserId = conversation?.conversation_id?.members.filter(member => member._id !== user._id)[0]
   const avatarUrl = memberWithDifferentUserId ? memberWithDifferentUserId.avatar : "https://placehold.co/50x50";
-  // console.log(memberWithDifferentUserId);
+  const sender_name = conversation?.conversation_id?.members.filter(member => member._id === user._id)[0].full_name
+  // console.log(sender_name);
 
   // Render mỗi tin nhắn
   const MessageItem = React.memo(({ item, isCurrentUser, memberWithDifferentUserId }) => {
@@ -225,8 +228,8 @@ const ChatScreen = ({ navigation, route }) => {
     } finally {
       // setMessage(prevMessages => [...prevMessages, data]);
       await FetchMessge(route?.params?.conversation_id);
-      sendMessageSocket({ ...newMessage.data, receiver_id: memberWithDifferentUserId._id, });
-      // console.log(message);
+      sendMessageSocket({ ...newMessage.data, receiver_id: memberWithDifferentUserId._id, sender_name });
+      console.log(newMessage.data);
     }
   };
 

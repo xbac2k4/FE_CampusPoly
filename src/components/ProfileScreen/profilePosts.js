@@ -24,6 +24,8 @@ import rectionary from '../../assets/images/rectionary.png'
 import NotificationModal from '../../components/Notification/NotificationModal';
 import ShareButton from '../Sheet/ShareButton ';
 import { UserContext } from '../../services/provider/UseContext';
+import { SocketContext } from '../../services/provider/SocketContext';
+import { TYPE_LIKE_POST } from '../../services/TypeNotify';
 const ProfilePosts = ({ navigation, data }) => {
   const [userAll, setUserAll] = useState(data); // Chứa các bài viết
   const { user } = useContext(UserContext);
@@ -37,6 +39,7 @@ const ProfilePosts = ({ navigation, data }) => {
   //   const navigation = useNavigation(); // Hook to access navigation
   const [selectedPostId, setSelectedPostId] = useState(null); // ID bài viết được chọn để báo cáo
   const [reportSuccess, setReportSuccess] = useState(false);
+  const { sendNotifySocket } = useContext(SocketContext);
   // const navigation = useNavigation(); // Hook to access navigation
 
   const refRBSheet = useRef();
@@ -87,6 +90,7 @@ const ProfilePosts = ({ navigation, data }) => {
   const toggleLike = async (item) => {
     const userId = user._id;
     const isLiked = item.likeData.some((like) => like.user_id_like === user._id);
+    // console.log(item);
 
     try {
       let response;
@@ -147,6 +151,11 @@ const ProfilePosts = ({ navigation, data }) => {
             )
           );
           console.log({ message: 'Thích thành công', type: 'success' });
+          // console.log(item);
+
+          if (item?.postData?.user_id?._id !== user._id) {
+            await sendNotifySocket(user.full_name, user._id, 'đã thích bài viết của bạn', item?.postData?.user_id?._id, TYPE_LIKE_POST, item?.postData?._id);
+          }
         }
       } else {
         console.error(isLiked ? 'Lỗi khi bỏ like' : 'Lỗi khi thích bài viết', result);

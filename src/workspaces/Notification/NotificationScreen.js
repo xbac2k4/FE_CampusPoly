@@ -1,38 +1,46 @@
 import axios from 'axios';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Colors from '../../constants/Color';
 import { GET_NOTIFICATIONS_BY_USERID, READ_ALL_NOTIFICATION, READ_NOTIFICATION } from '../../services/ApiConfig';
 import { UserContext } from '../../services/provider/UseContext';
+import { useFocusEffect } from '@react-navigation/native';
+import { Screen } from 'react-native-screens';
+import Screens from '../../navigation/Screens';
+import { TYPE_ADD_FRIEND, TYPE_LIKE_POST } from '../../services/TypeNotify';
 
-const NotificationScreen = () => {
+const NotificationScreen = ({ navigation }) => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true)
   const { user } = useContext(UserContext);
 
+  const fetchNotifications = async () => {
+    try {
+      if (!user || !user._id) {
+        throw new Error('Không tìm thấy userID');
+      }
+      const result = await axios.get(`${GET_NOTIFICATIONS_BY_USERID}?userId=${user._id}`);
+      if (!result.data.success) {
+        throw new Error('Lỗi khi lấy thông báo');
+      }
+
+      setNotifications(result.data.notifications);
+    } catch (e) {
+      console.error('Error fetching notifications:', e);
+    }
+  };
 
   useEffect(() => {
     setLoading(true);
-    const fetchNotifications = async () => {
-      try {
-        if (!user || !user._id) {
-          throw new Error('Không tìm thấy userID');
-        }
-        const result = await axios.get(`${GET_NOTIFICATIONS_BY_USERID}?userId=${user._id}`);
-        if (!result.data.success) {
-          throw new Error('Lỗi khi lấy thông báo');
-        }
-
-        setNotifications(result.data.notifications);
-      } catch (e) {
-        console.error('Error fetching notifications:', e);
-      }
-    };
-
     fetchNotifications();
     setLoading(false);
   }, [])
 
+  useFocusEffect(
+    useCallback(() => {
+      fetchNotifications();
+    }, [user._id])
+  );
 
   const handleMarkAllAsRead = async () => {
     setLoading(true);
@@ -74,15 +82,22 @@ const NotificationScreen = () => {
       <TouchableOpacity
         onPress={() => {
           try {
-            const result = axios.put(`${READ_NOTIFICATION}`, {
+            axios.put(`${READ_NOTIFICATION}`, {
               notificationId: item._id
-            });
-
-            console.log(result.data);
-
+            })
+              .then((result) => {
+                console.log(result.data); // Truy cập dữ liệu trả về từ server
+                if (result?.data?.data?.type === TYPE_ADD_FRIEND) {
+                  navigation.navigate(Screens.Profile, { id: result?.data?.data?.sender_id });
+                } if (result?.data?.data?.type === TYPE_LIKE_POST) {
+                  navigation.navigate(Screens.Comment, { postId: result?.data?.data?.post_id })
+                }
+              })
+              .catch((error) => {
+                console.log(error);
+              });
           } catch (error) {
             console.log(error);
-
           }
         }}
         style={[styles.notificationItem, { backgroundColor: item.isRead ? Colors.background : '#3A3A3C' }]}>
