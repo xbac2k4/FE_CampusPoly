@@ -444,10 +444,7 @@ const CommentScreen = () => {
       </RBSheet>
     </View>
 
-    //       </ScrollView >
-    //       <CommentInputComponent postId={postId}
-    //         onSend={(newComment) => setComment([newComment, ...comment])} style={styles.commentInput} />
-    //     </View >
+   
   );
 };
 

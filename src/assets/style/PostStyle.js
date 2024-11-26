@@ -178,6 +178,10 @@ const PostStyle = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
   },
+  lottieIcon: {
+    width: 50,
+    height: 50,
+  },
 });
 
 export default PostStyle;

@@ -135,20 +135,6 @@ const PostComponent = ({ title: initialTitle, content: initialContent, hashtag: 
     launchCamera(options, handleImageResponse);
   };
 
-  const openFilePicker = async () => {
-    try {
-      const res = await DocumentPicker.pick({
-        type: [DocumentPicker.types.allFiles],
-      });
-      Alert.alert('File đã được chọn!', `Tên file: ${res.name}`);
-    } catch (err) {
-      if (DocumentPicker.isCancel(err)) {
-        Alert.alert('Bạn đã hủy chọn file');
-      } else {
-        Alert.alert('Lỗi', err.message);
-      }
-    }
-  };
 
   const clearSelectedImage = () => {
     setSelectedImages(null);
@@ -267,9 +253,6 @@ const PostComponent = ({ title: initialTitle, content: initialContent, hashtag: 
                 <Image source={require('../../assets/images/Camera.png')} style={styles.image} />
               </TouchableOpacity>
 
-              <TouchableOpacity onPress={openFilePicker}>
-                <Image source={require('../../assets/images/Attachment.png')} style={styles.image} />
-              </TouchableOpacity>
             </View>
           </Animated.View>
         )}

@@ -1,3 +1,4 @@
+import FriendListScreen from "../workspaces/FriendListScreen/FriendListScreen";
 
 
 const Screens = {
@@ -16,6 +17,7 @@ const Screens = {
     CreatePost:"CreatPost",
     ChatView:'ChatView',
     Menu: "Menu",
+    FriendListScreen:"FriendList"
 };
 
 export default Screens;

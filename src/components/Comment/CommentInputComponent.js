@@ -6,11 +6,13 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  Keyboard,
   Animated
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { UserContext } from '../../services/provider/UseContext'; // Import UserContext
+import { UserContext } from '../../services/provider/UseContext';
 import { ADD_COMMENT } from '../../services/ApiConfig';
+
 const CommentInputComponent = ({ postId, onSend }) => {
   const [comment, setComment] = useState('');
   const { user } = useContext(UserContext); // Lấy user từ Context
@@ -31,28 +33,23 @@ const CommentInputComponent = ({ postId, onSend }) => {
     //   return;
     // }
     try {
-      const response = await fetch(
-        ADD_COMMENT,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            user_id: user._id, // Lấy user_id từ Context
-            post_id: postId, // Lấy post_id từ props
-            comment_content: comment,
-          }),
-        }
-      );
-
+      const response = await fetch(ADD_COMMENT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: user._id,
+          post_id: postId,
+          comment_content: comment.trim(),
+        }),
+      });
+  
       const data = await response.json();
       // console.log('Response data:', data);
-
       if (data.status === 200) {
         onSend(data.data); // Callback khi gửi comment thành công
-        // console.log();
-        
+        // console.log();    
       } else {
         // Alert.alert('Lỗi', data.message || 'Không thể gửi comment.');
       }
@@ -60,6 +57,7 @@ const CommentInputComponent = ({ postId, onSend }) => {
       console.error('Error sending comment:', error);
       // Alert.alert('Lỗi', 'Đã xảy ra lỗi khi gửi comment.');
     } finally {
+      Keyboard.dismiss();
       setComment(''); // Xóa input sau khi gửi
     }
   };
@@ -79,7 +77,6 @@ const CommentInputComponent = ({ postId, onSend }) => {
       }).start();
     }
   }, [comment]);
-
   // Tạo hiệu ứng trượt vào từ phải
   const translateX = animationValue.interpolate({
     inputRange: [0, 1],
@@ -156,7 +153,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: 8, // Giãn cách khỏi nút gửi
+    marginRight: 8,
   },
   textInput: {
     flex: 1,
@@ -171,8 +168,8 @@ const styles = StyleSheet.create({
   sendButtonWrapper: {
     width: 32,
     height: 32,
-    borderRadius: 16, // Đảm bảo Gradient cũng bo tròn
-    overflow: 'hidden', // Ẩn mọi thứ tràn ra ngoài
+    borderRadius: 16,
+    overflow: 'hidden',
   },
   sendButton: {
     flex: 1,

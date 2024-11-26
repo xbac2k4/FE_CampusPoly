@@ -14,6 +14,7 @@ import heart from '../../assets/images/heart.png';
 import heartFilled from '../../assets/images/hear2.png';
 import share from '../../assets/images/share.png';
 import { UserContext } from '../../services/provider/UseContext';
+import ShareComponent from '../Sheet/ShareButton ';
 import { SocketContext } from '../../services/provider/SocketContext';
 import { TYPE_LIKE_POST } from '../../services/TypeNotify';
 import { timeAgo } from '../../utils/formatTime';
@@ -291,11 +292,12 @@ const ProfilePosts = ({ navigation, data }) => {
                     </View>
 
                     <View style={styles.iconLike}>
-                      <TouchableOpacity onPress={() => {
-                        // share
-                      }}>
-                        <Image source={share} style={styles.iconImage} />
-                      </TouchableOpacity>
+                      <ShareComponent post={{
+                        title: item.postData.title,
+                        url: item.postData.link, // Link bài viết
+                        image: item.postData.image?.[0]?.replace('localhost', '10.0.2.2') || null, // Hình ảnh đầu tiên của bài viết
+                      }} />
+
 
                     </View>
                   </View>
