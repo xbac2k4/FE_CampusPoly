@@ -55,7 +55,10 @@ const MenuScreen = () => {
 
         <View style={styles.gridContainer}>
           <View style={styles.gridItem}>
-            <TouchableOpacity style={styles.navItem}>
+            <TouchableOpacity style={styles.navItem} onPress={()=>{
+              navigation.navigate(Screens.FriendListScreen)
+
+            }}>
               <Image
                 source={require('../../assets/images/friend.png')}
                 style={styles.imgGrid}

@@ -6,63 +6,55 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  Keyboard,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { UserContext } from '../../services/provider/UseContext'; // Import UserContext
+import { UserContext } from '../../services/provider/UseContext';
 import { ADD_COMMENT } from '../../services/ApiConfig';
+
 const CommentInputComponent = ({ postId, onSend }) => {
   const [comment, setComment] = useState('');
-  const { user } = useContext(UserContext); // Lấy user từ Context
-  // console.log('User từ Context:', user);
+  const { user } = useContext(UserContext);
+
   const handleSendComment = async () => {
-    console.log('User từ Context:', user._id);
-    console.log('Post:', postId);
     if (!comment.trim()) {
       Alert.alert('Lỗi', 'Nội dung comment không được để trống.');
       return;
     }
-
+  
     if (!user?._id) {
-      console.log('Lỗi: Không có User ID');
       Alert.alert('Lỗi', 'Bạn cần đăng nhập để gửi comment.');
       return;
     }
+  
     try {
-      const response = await fetch(
-        ADD_COMMENT,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            user_id: user._id, // Lấy user_id từ Context
-            post_id: postId, // Lấy post_id từ props
-            comment_content: comment,
-          }),
-        }
-      );
-      console.log('Request body:', {
-        user_id: user._id,
-        post_id: postId,
-        comment_content: comment,
+      const response = await fetch(ADD_COMMENT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: user._id,
+          post_id: postId,
+          comment_content: comment.trim(),
+        }),
       });
-      
+  
       const data = await response.json();
-      console.log('Response data:', data);
-
       if (data.success) {
-        onSend(data.data); // Callback khi gửi comment thành công
-        setComment(''); // Xóa input sau khi gửi
-       
+        onSend?.(data.data); // Gọi callback để thêm comment mới vào danh sách
+        setComment(''); // Làm trống nội dung TextInput
       } else {
-        Alert.alert('Lỗi', data.message || 'Không thể gửi comment.');
+        // Alert.alert('Lỗi', data.message || 'Không thể gửi comment.');
       }
     } catch (error) {
       console.error('Error sending comment:', error);
       Alert.alert('Lỗi', 'Đã xảy ra lỗi khi gửi comment.');
+    } finally {
+      Keyboard.dismiss(); // Đóng bàn phím bất kể thành công hay thất bại
     }
   };
+  
 
   return (
     <View style={styles.container}>
@@ -80,7 +72,6 @@ const CommentInputComponent = ({ postId, onSend }) => {
             style={styles.icon}
           />
         </TouchableOpacity>
-        {/* Nút gửi với Gradient */}
         <LinearGradient
           colors={['#F62E8E', '#AC1AF0']}
           start={{ x: 0, y: 0 }}
@@ -89,7 +80,7 @@ const CommentInputComponent = ({ postId, onSend }) => {
         >
           <TouchableOpacity
             style={styles.sendButton}
-            onPress={handleSendComment} // Thay đổi onPress thành handleSendComment
+            onPress={handleSendComment}
           >
             <Image
               source={require('../../assets/images/Vector.png')}
@@ -122,7 +113,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: 8, // Giãn cách khỏi nút gửi
+    marginRight: 8,
   },
   textInput: {
     flex: 1,
@@ -137,8 +128,8 @@ const styles = StyleSheet.create({
   sendButtonWrapper: {
     width: 32,
     height: 32,
-    borderRadius: 16, // Đảm bảo Gradient cũng bo tròn
-    overflow: 'hidden', // Ẩn mọi thứ tràn ra ngoài
+    borderRadius: 16,
+    overflow: 'hidden',
   },
   sendButton: {
     flex: 1,

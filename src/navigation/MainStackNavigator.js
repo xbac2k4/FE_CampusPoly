@@ -12,6 +12,7 @@ import ChatScreen from '../workspaces/ChatScreen/ChatScreen';
 import CreatePostScreen from '../workspaces/CreatePost/CreatePostScreen';
 import FrProfileScreen from '../workspaces/FrProfileScreen/FrProfileScreen';
 import { Profile } from '../workspaces/Home';
+import FriendListScreen from '../workspaces/FriendListScreen/FriendListScreen';
 
 
 
@@ -30,7 +31,7 @@ const MainStackNavigator = () => {
       <Stack.Screen name={Screens.CreatePost} component={CreatePostScreen} options={{ animation: 'slide_from_bottom' }} />
       <Stack.Screen name={Screens.Profile} component={Profile} options={{ animation: 'slide_from_bottom' }} />
       <Stack.Screen name={Screens.FrProfile} component={FrProfileScreen} options={{ animation: 'slide_from_bottom' }} />
-
+      <Stack.Screen name={Screens.FriendListScreen} component={FriendListScreen} options={{ animation: 'ios' }} />
 
     </Stack.Navigator>
   )
