@@ -4,7 +4,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
-import { ADD_MESSAGE, GET_MESSAGE_BY_CONVERSATION } from '../../services/ApiConfig';
+import { ADD_MESSAGE, GET_MESSAGE_BY_CONVERSATION, UPDATE_MESSAGE } from '../../services/ApiConfig';
 import { UserContext } from '../../services/provider/UseContext';
 import { SocketContext } from '../../services/provider/SocketContext';
 import { useFocusEffect } from '@react-navigation/native';
@@ -38,11 +38,13 @@ const ChatScreen = ({ navigation, route }) => {
       const data = await response.json();
       setConversation(data.data);
       setMessage(data.data.messages);
+      // console.log(conversation);
+
 
     } catch (error) {
       console.error('Error fetching user data:', error);
     } finally {
-      console.log(message);
+      // console.log(message);
     }
   }
   useFocusEffect(
@@ -56,7 +58,8 @@ const ChatScreen = ({ navigation, route }) => {
 
   const memberWithDifferentUserId = conversation?.conversation_id?.members.filter(member => member._id !== user._id)[0]
   const avatarUrl = memberWithDifferentUserId ? memberWithDifferentUserId.avatar : "https://placehold.co/50x50";
-  // console.log(memberWithDifferentUserId);
+  const sender_name = conversation?.conversation_id?.members.filter(member => member._id === user._id)[0].full_name
+  // console.log(sender_name);
 
   // Render mỗi tin nhắn
   const MessageItem = React.memo(({ item, isCurrentUser, memberWithDifferentUserId }) => {
@@ -146,22 +149,57 @@ const ChatScreen = ({ navigation, route }) => {
     setInputText(''); // Đặt lại giá trị của TextInput
     setNotify(!notify);  // Update notify for UI re-render if needed
   };
+  useFocusEffect(
+    useCallback(() => {
+      if (socket) {
+        socket.on('new_message', (data) => {
+          // console.log(data);
+          console.log('Nhận được tin nhắn mới từ:', data.sender_id);
+          console.log('Nội dung tin nhắn:', data.content);
+          FetchMessge(route?.params?.conversation_id);
+          UpdateMessge(route?.params?.conversation_id);
+          // setMessage(prevMessages => [...prevMessages, data]);
+        });
 
-  useEffect(() => {
-    if (socket) {
-      socket.on('new_message', (data) => {
-        // console.log(data);
-        console.log('Nhận được tin nhắn mới từ:', data.sender_id);
-        console.log('Nội dung tin nhắn:', data.content);
-        FetchMessge(route?.params?.conversation_id);
-        // setMessage(prevMessages => [...prevMessages, data]);
+        return () => {
+          socket.off('new_message');
+        };
+      }
+    }, [socket, user._id])
+  );
+
+  // useEffect(() => {
+  //   if (socket) {
+  //     socket.on('new_message', (data) => {
+  //       // console.log(data);
+  //       console.log('Nhận được tin nhắn mới từ:', data.sender_id);
+  //       console.log('Nội dung tin nhắn:', data.content);
+  //       FetchMessge(route?.params?.conversation_id);
+  //       UpdateMessge(route?.params?.conversation_id);
+  //       // setMessage(prevMessages => [...prevMessages, data]);
+  //     });
+
+  //     return () => {
+  //       socket.off('new_message');
+  //     };
+  //   }
+  // }, [socket]);
+  const UpdateMessge = async (conversation_id) => {
+    try {
+      const response = await fetch(`${UPDATE_MESSAGE}`, {
+        method: 'PUT',  // Đảm bảo rằng phương thức là GET
+        headers: {
+          'Content-Type': 'application/json',  // Header cho loại nội dung
+        },
+        body: JSON.stringify({ conversation_id }),  // Dữ liệu đưa vào request
       });
+      const data = await response.json();
+      // console.log(data);
 
-      return () => {
-        socket.off('new_message');
-      };
+    } catch (error) {
+      console.error('Error fetching user data:', error);
     }
-  }, [socket]);
+  }
 
   const FetchAddMessage = async (data) => {
     // console.log(data);
@@ -190,8 +228,8 @@ const ChatScreen = ({ navigation, route }) => {
     } finally {
       // setMessage(prevMessages => [...prevMessages, data]);
       await FetchMessge(route?.params?.conversation_id);
-      sendMessageSocket({ ...newMessage.data, receiver_id: memberWithDifferentUserId._id, });
-      // console.log(message);
+      sendMessageSocket({ ...newMessage.data, receiver_id: memberWithDifferentUserId._id, sender_name });
+      console.log(newMessage.data);
     }
   };
 

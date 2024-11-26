@@ -1,11 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { ADD_FRIEND, UPDATE_FRIEND } from '../../services/ApiConfig';
+import { SocketContext } from '../../services/provider/SocketContext';
+import { UserContext } from '../../services/provider/UseContext';
+import { TYPE_ADD_FRIEND } from '../../services/TypeNotify';
 
 const FrProfileStats = ({ data, currentUserId }) => {
   const friendsData = data?.friends || [];
   const [acceptedFriends, setAcceptedFriends] = useState([]);
+  const { sendNotifySocket } = useContext(SocketContext);
+  const { user } = useContext(UserContext);
   const [buttonState, setButtonState] = useState(() => {
     const currentFriend = friendsData.find(friend =>
       friend.user_id.some(user => user._id === currentUserId)
@@ -49,6 +54,7 @@ const FrProfileStats = ({ data, currentUserId }) => {
         });
         if (response.ok) {
           setButtonState('Đã gửi lời mời');
+          await sendNotifySocket(user.full_name, user._id, 'đã gửi lời mời kết bạn', data._id, TYPE_ADD_FRIEND);
         }
       } else if (buttonState === 'Chấp nhận') {
         // Chấp nhận lời mời kết bạn
@@ -62,6 +68,7 @@ const FrProfileStats = ({ data, currentUserId }) => {
         });
         if (response.ok) {
           setButtonState('Bạn bè');
+          await sendNotifySocket(user.full_name, user._id, 'đã chấp nhận kết bạn', data._id, TYPE_ADD_FRIEND);
           // console.log(response.data);
           setAcceptedFriends((prevFriends) => [
             ...prevFriends,

@@ -22,7 +22,7 @@ const { width, height } = Dimensions.get('window'); // Get device dimensions
 const MenuScreen = () => {
   const navigation = useNavigation(); // Hook for navigation
   const { user, GoogleSignin } = useContext(UserContext);
-  const { disconnectSocket } = useContext(SocketContext);
+  const { disconnectSocket, socket } = useContext(SocketContext);
 
   const [modalVisible, setModalVisible] = useState(false); // State to control modal
   const handleLogoutPress = () => {

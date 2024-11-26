@@ -9,22 +9,15 @@ import RBSheet from 'react-native-raw-bottom-sheet';
 import { LIKE_POST, UNLIKE_POST } from '../../services/ApiConfig';
 import ToastModal from '../../components/Notification/NotificationModal'
 // Import các hình ảnh
-import avt from '../../assets/images/avt.png';
-import bookmark from '../../assets/images/bookmark.png';
-import bookmarkFilled from '../../assets/images/bookmark2.png';
 import comment from '../../assets/images/comment.png';
 import heart from '../../assets/images/heart.png';
 import heartFilled from '../../assets/images/hear2.png';
 import share from '../../assets/images/share.png';
-import report from '../../assets/images/report.png'
-import violet from '../../assets/images/violet.png'
-import racsim from '../../assets/images/racsim.png'
-import untrue from '../../assets/images/untrue.png'
-import rectionary from '../../assets/images/rectionary.png'
-import NotificationModal from '../../components/Notification/NotificationModal';
-import ShareButton from '../Sheet/ShareButton ';
 import { UserContext } from '../../services/provider/UseContext';
 import ShareComponent from '../Sheet/ShareButton ';
+import { SocketContext } from '../../services/provider/SocketContext';
+import { TYPE_LIKE_POST } from '../../services/TypeNotify';
+import { timeAgo } from '../../utils/formatTime';
 const ProfilePosts = ({ navigation, data }) => {
   const [userAll, setUserAll] = useState(data); // Chứa các bài viết
   const { user } = useContext(UserContext);
@@ -38,6 +31,7 @@ const ProfilePosts = ({ navigation, data }) => {
   //   const navigation = useNavigation(); // Hook to access navigation
   const [selectedPostId, setSelectedPostId] = useState(null); // ID bài viết được chọn để báo cáo
   const [reportSuccess, setReportSuccess] = useState(false);
+  const { sendNotifySocket } = useContext(SocketContext);
   // const navigation = useNavigation(); // Hook to access navigation
 
   const refRBSheet = useRef();
@@ -88,6 +82,7 @@ const ProfilePosts = ({ navigation, data }) => {
   const toggleLike = async (item) => {
     const userId = user._id;
     const isLiked = item.likeData.some((like) => like.user_id_like === user._id);
+    // console.log(item);
 
     try {
       let response;
@@ -148,6 +143,11 @@ const ProfilePosts = ({ navigation, data }) => {
             )
           );
           console.log({ message: 'Thích thành công', type: 'success' });
+          // console.log(item);
+
+          if (item?.postData?.user_id?._id !== user._id) {
+            await sendNotifySocket(user.full_name, user._id, 'đã thích bài viết của bạn', item?.postData?.user_id?._id, TYPE_LIKE_POST, item?.postData?._id);
+          }
         }
       } else {
         console.error(isLiked ? 'Lỗi khi bỏ like' : 'Lỗi khi thích bài viết', result);
@@ -217,23 +217,23 @@ const ProfilePosts = ({ navigation, data }) => {
 
   // hàm format thời gian
   // hàm format thời gian
-  const timeAgo = (date) => {
-    const now = new Date();
-    const postDate = new Date(date);
-    const diff = Math.floor((now - postDate) / 1000); // Chênh lệch thời gian tính bằng giây
+  // const timeAgo = (date) => {
+  //   const now = new Date();
+  //   const postDate = new Date(date);
+  //   const diff = Math.floor((now - postDate) / 1000); // Chênh lệch thời gian tính bằng giây
 
-    if (diff < 60) return `${diff} giây trước`;
-    const minutes = Math.floor(diff / 60);
-    if (minutes < 60) return `${minutes} phút trước`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours} giờ trước`;
-    const days = Math.floor(hours / 24);
-    if (days < 30) return `${days} ngày trước`;
-    const months = Math.floor(days / 30);
-    if (months < 12) return `${months} tháng trước`;
-    const years = Math.floor(months / 12);
-    return `${years} năm trước`;
-  };
+  //   if (diff < 60) return `${diff} giây trước`;
+  //   const minutes = Math.floor(diff / 60);
+  //   if (minutes < 60) return `${minutes} phút trước`;
+  //   const hours = Math.floor(minutes / 60);
+  //   if (hours < 24) return `${hours} giờ trước`;
+  //   const days = Math.floor(hours / 24);
+  //   if (days < 30) return `${days} ngày trước`;
+  //   const months = Math.floor(days / 30);
+  //   if (months < 12) return `${months} tháng trước`;
+  //   const years = Math.floor(months / 12);
+  //   return `${years} năm trước`;
+  // };
 
 
   // Hiển thị dữ liệu các bài viết
@@ -262,6 +262,9 @@ const ProfilePosts = ({ navigation, data }) => {
                   </TouchableOpacity>
                 </View>
                 <Text style={styles.postText}>{item.postData.title}</Text>
+                {item.postData.hashtag?.hashtag_name ? (
+                  <Text style={styles.postHashtag}>{item.postData.hashtag.hashtag_name}</Text>
+                ) : null}
                 {item.postData.image && renderImages(item.postData.image, item.postData._id)}
                 <View style={styles.postMeta}>
                   <View style={styles.leftMetaIcons}>
@@ -332,7 +335,6 @@ const ProfilePosts = ({ navigation, data }) => {
           postId={selectedPostId}  // Pass selectedPostId here
           onReportSuccess={handleReportSuccess}
         />
-
       </RBSheet >
     </View >
   );

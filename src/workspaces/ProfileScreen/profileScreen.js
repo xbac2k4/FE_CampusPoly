@@ -1,14 +1,15 @@
+import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { View, ScrollView, StyleSheet, ActivityIndicator, Text, Alert } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import FrProfileStats from '../../components/FrProfileScreen/frProfileStats';
+import LoadingTimeline from '../../components/Loading/LoadingTimeline';
+import { ProfileLoading } from '../../components/Loading/ProfileLoading';
 import Header from '../../components/ProfileScreen/header';
+import ProfilePosts from '../../components/ProfileScreen/profilePosts';
 import ProfileStats from '../../components/ProfileScreen/profileStats';
 import ProfileTabs from '../../components/ProfileScreen/profileTabs';
-import ProfilePosts from '../../components/ProfileScreen/profilePosts';
-import FrProfileStats from '../../components/FrProfileScreen/frProfileStats';
+import { ADD_FRIEND, GET_POST_BY_USERID, GET_USER_ID, UPDATE_FRIEND } from '../../services/ApiConfig';
 import { UserContext } from '../../services/provider/UseContext';
-import { GET_USER_ID, GET_POST_BY_USERID, ADD_FRIEND, UPDATE_FRIEND } from '../../services/ApiConfig';
-import { useFocusEffect } from '@react-navigation/native';
-import LoadingTimeline from '../../components/Loading/LoadingTimeline ';
 
 const ProfileScreen = ({ navigation, route }) => {
   const [activeTab, setActiveTab] = useState('Posts');
@@ -112,7 +113,7 @@ const ProfileScreen = ({ navigation, route }) => {
   return (
     <View style={styles.screen}>
       {loading ? (
-        <ActivityIndicator size="large" color="#FFF" style={{ marginTop: 20 }} />
+        <ProfileLoading />
       ) : (
         <ScrollView stickyHeaderIndices={[2]}>
           <Header data={userProfile} navigation={navigation} />

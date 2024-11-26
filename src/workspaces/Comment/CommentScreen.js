@@ -1,19 +1,18 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
-import { View, Text, Image, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import styles from '../../assets/style/CommentStyle';
-import CommentInputComponent from '../../components/Comment/CommentInputComponent';
-import { CommentLoading, PostCommentLoading } from '../../components/Loading/LoadingTimeline ';
-import SkeletonShimmer from '../../components/Loading/SkeletonShimmer';
-import CommentComponent from '../../components/Comment/CommentComponent';
-import ReportComponent from '../../components/Report/ReportComponent';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { Dimensions, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import NotificationModal from '../../components/Notification/NotificationModal'; // Import NotificationModal
-import { LIKE_POST, UNLIKE_POST, GET_POST_ID } from '../../services/ApiConfig';
+import heartFilled from '../../assets/images/hear2.png';
+import heart from '../../assets/images/heart.png';
+import styles from '../../assets/style/CommentStyle';
+import CommentComponent from '../../components/Comment/CommentComponent';
+import CommentInputComponent from '../../components/Comment/CommentInputComponent';
+import { PostCommentLoading } from '../../components/Loading/LoadingTimeline';
+import SkeletonShimmer from '../../components/Loading/SkeletonShimmer';
+import ReportComponent from '../../components/Report/ReportComponent';
+import { GET_POST_ID, LIKE_POST, UNLIKE_POST } from '../../services/ApiConfig';
 import { UserContext } from '../../services/provider/UseContext';
 const { width: screenWidth } = Dimensions.get('window'); // Lấy chiều rộng màn hình để điều chỉnh kích thước hình ảnh
-import heart from '../../assets/images/heart.png';
-import heartFilled from '../../assets/images/hear2.png';
 const CommentScreen = () => {
   const route = useRoute();
 
@@ -245,36 +244,45 @@ const CommentScreen = () => {
 
   // hàm format thời gian
   const timeAgo = (date) => {
+    if (!date || isNaN(new Date(date).getTime())) {
+      return ""; // Trả về giá trị mặc định nếu `date` không hợp lệ
+    }
+
     const now = new Date();
     const postDate = new Date(date);
     const diff = Math.floor((now - postDate) / 1000); // Chênh lệch thời gian tính bằng giây
 
-    if (diff < 60) return `${diff} giây trước`;
+    if (diff < 60) return "Vừa xong"; // Đề phòng chênh lệch âm
+
+    // if (diff < 60) return `${diff} giây`;
     const minutes = Math.floor(diff / 60);
-    if (minutes < 60) return `${minutes} phút trước`;
+    if (minutes < 60) return `${minutes} phút`;
     const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours} giờ trước`;
+    if (hours < 24) return `${hours} giờ`;
     const days = Math.floor(hours / 24);
-    return `${days} ngày trước`;
-  }
+    if (days < 7) return `${days} ngày`;
+    const weeks = Math.floor(days / 7);
+    return `${weeks} tuần`;
+  };
 
   return (
-    <View style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.circleIcon}
-        >
-          <Image
-            source={require('../../assets/images/arowleft.png')}
-            resizeMode="contain"
-            style={{ width: 15, height: 15 }}
-          />
-        </TouchableOpacity>
-        <View style={styles.barHeader}>
+    <View style={{ flex: 1, backgroundColor: '#181A1C', }}>
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={styles.circleIcon}
+      >
+        <Image
+          source={require('../../assets/images/arowleft.png')}
+          resizeMode="contain"
+          style={{ width: 15, height: 15 }}
+        />
+      </TouchableOpacity>
+      <View style={styles.barHeader}>
 
-          <Text style={styles.textHeader}>Comment</Text>
-        </View>
+        <Text style={styles.textHeader}>Comment</Text>
+      </View>
+      <ScrollView contentContainerStyle={styles.container}>
+
 
 
 
@@ -298,13 +306,18 @@ const CommentScreen = () => {
               </TouchableOpacity>
             </View>
             <View style={styles.bodyContent}>
-
-              <Text style={{ fontFamily: 'rgl1', fontSize: 16, fontWeight: '500', color: "#fff" }}>
+              <Text style={{ fontFamily: 'rgl1', fontSize: 20, fontWeight: 'bold', color: "#fff" }}>
                 {post?.postData?.title}
               </Text>
-              <Text style={{ fontFamily: 'rgl1', fontSize: 16, fontWeight: '500', color: "#fff" }}>
+              <Text style={{ fontFamily: 'rgl1', fontSize: 17, fontWeight: '600', color: "#fff", marginTop: 10}}>
                 {post?.postData?.content}
               </Text>
+              {post?.postData?.hashtag?.hashtag_name ? (
+                <Text style={{ fontFamily: 'rgl1', fontSize: 16, fontWeight: '700', color: "#0078D4", marginTop: 10 }}>
+                  {post.postData.hashtag.hashtag_name}
+                </Text>
+              ) : null}
+
               {post?.postData?.image && renderImages(post?.postData?.image, post?.postData?._id)}
             </View>
 
@@ -387,11 +400,11 @@ const CommentScreen = () => {
               ?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sắp xếp bình luận mới nhất lên đầu
               .map((comment) => (
                 <CommentComponent
-                  key={comment._id}
-                  avatar={comment.user_id_comment.avatar.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg'}
-                  name={comment.user_id_comment.full_name}
-                  content={comment.comment_content}
-                  time={timeAgo(comment.createdAt)} // Format thời gian nếu cần
+                  key={comment?._id}
+                  avatar={comment?.user_id_comment?.avatar.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg'}
+                  name={comment?.user_id_comment?.full_name}
+                  content={comment?.comment_content}
+                  time={timeAgo(comment?.createdAt)} // Format thời gian nếu cần
                   likes={0} // Bạn có thể chỉnh sửa nếu cần thêm thông tin về lượt thích
                 />
               ))}
@@ -399,7 +412,11 @@ const CommentScreen = () => {
         )}
       </ScrollView>
       <CommentInputComponent postId={postId}
-        onSend={(newComment) => setComment([newComment, ...comment])} style={styles.commentInput} />
+        onSend={(newComment) => {
+          console.log(newComment);
+
+          setComment([newComment, ...comment])
+        }} style={styles.commentInput} />
       {/* Bottom Sheet */}
       <RBSheet
         ref={refRBSheet}

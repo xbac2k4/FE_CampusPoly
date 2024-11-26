@@ -1,73 +1,143 @@
-import React from 'react';
-import { View, Text, SectionList, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import { useSelector, useDispatch } from 'react-redux';
-import { markAllAsRead } from './NotificationData'; // Import action từ notificationSlice
+import axios from 'axios';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Colors from '../../constants/Color';
+import { GET_NOTIFICATIONS_BY_USERID, READ_ALL_NOTIFICATION, READ_NOTIFICATION } from '../../services/ApiConfig';
+import { UserContext } from '../../services/provider/UseContext';
+import { useFocusEffect } from '@react-navigation/native';
+import { Screen } from 'react-native-screens';
+import Screens from '../../navigation/Screens';
+import { TYPE_ADD_FRIEND, TYPE_LIKE_POST } from '../../services/TypeNotify';
 
+const NotificationScreen = ({ navigation }) => {
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true)
+  const { user } = useContext(UserContext);
 
+  const fetchNotifications = async () => {
+    try {
+      if (!user || !user._id) {
+        throw new Error('Không tìm thấy userID');
+      }
+      const result = await axios.get(`${GET_NOTIFICATIONS_BY_USERID}?userId=${user._id}`);
+      if (!result.data.success) {
+        throw new Error('Lỗi khi lấy thông báo');
+      }
 
-const NotificationScreen = () => {
-  const notifications = useSelector((state) => state.notifications.notifications);
-  const dispatch = useDispatch();
+      setNotifications(result.data.notifications);
+    } catch (e) {
+      console.error('Error fetching notifications:', e);
+    }
+  };
 
+  useEffect(() => {
+    setLoading(true);
+    fetchNotifications();
+    setLoading(false);
+  }, [])
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchNotifications();
+    }, [user._id])
+  );
+
+  const handleMarkAllAsRead = async () => {
+    setLoading(true);
+    try {
+      const result = axios.put(`${READ_ALL_NOTIFICATION}`, {
+        userId: user._id
+      });
+
+      console.log(result);
+
+    } catch (error) {
+      console.log(error);
+
+    }
+    setLoading(false);
+  };
 
   const renderItem = ({ item }) => {
-    let iconSource;
+    const sentTime = new Date(item.sentTime);
+    const currentTime = new Date();
 
-    // Sử dụng URL của ảnh
-    switch (item.icon) {
-      case 'like':
-        iconSource = 'https://cdn-icons-png.flaticon.com/512/4926/4926585.png';
-        break;
-      case 'cake':
-        iconSource = 'https://cdn-icons-png.flaticon.com/512/4549/4549811.png';
-        break;
-      case 'comment':
-        iconSource = 'https://icons.iconarchive.com/icons/custom-icon-design/flatastic-1/512/comment-icon.png';
-        break;
-      default:
-        iconSource = 'https://cdn-icons-png.flaticon.com/512/4926/4926585.png';
-    }
+    const isSameDay = sentTime.toDateString() === currentTime.toDateString();
+
+    const time = isSameDay
+      ? sentTime.toLocaleTimeString('vi-VN', {
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+      : sentTime.toLocaleString('vi-VN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
 
     return (
-      <View style={styles.notificationItem}>
-
-        <View style={styles.iconContainer}>
-          <Image
-            source={{ uri: iconSource }}
-            style={styles.icon}
-          />
-        </View>
-
+      <TouchableOpacity
+        onPress={() => {
+          try {
+            axios.put(`${READ_NOTIFICATION}`, {
+              notificationId: item._id
+            })
+              .then((result) => {
+                console.log(result.data); // Truy cập dữ liệu trả về từ server
+                if (result?.data?.data?.type === TYPE_ADD_FRIEND) {
+                  navigation.navigate(Screens.Profile, { id: result?.data?.data?.sender_id });
+                } if (result?.data?.data?.type === TYPE_LIKE_POST) {
+                  navigation.navigate(Screens.Comment, { postId: result?.data?.data?.post_id })
+                }
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          } catch (error) {
+            console.log(error);
+          }
+        }}
+        style={[styles.notificationItem, { backgroundColor: item.isRead ? Colors.background : '#3A3A3C' }]}>
+        <Image
+          source={{ uri: item.imageUrl }}
+          style={styles.icon}
+          borderRadius={20}
+        />
         <View style={styles.notificationContent}>
-          <Text style={styles.notificationText}>
-            <Text style={styles.boldText}>{item.user}</Text> {item.action}
-          </Text>
-          <Text style={styles.timeText}>{item.time}</Text>
+          <Text style={styles.boldText}>{item.title}</Text>
+          <Text style={styles.notificationText}>{item.body}</Text>
+          <Text style={styles.timeText}>{time}</Text>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
-
-  const renderSectionHeader = ({ section: { title } }) => (
-    <Text style={styles.sectionHeader}>{title}</Text>
-  );
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ color: '#fff', fontSize: 16 }}>Đang tải...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Thông báo</Text>
-        <TouchableOpacity onPress={() => dispatch(markAllAsRead())}>
+        <TouchableOpacity onPress={handleMarkAllAsRead}>
           <Text style={styles.markAllAsRead}>Đánh dấu tất cả là đã đọc</Text>
         </TouchableOpacity>
       </View>
-      <SectionList
-        sections={notifications}
-        keyExtractor={(item) => item.id.toString()}
+      <FlatList
+        data={notifications.reverse()}
+        keyExtractor={(item) => item._id}
         renderItem={renderItem}
-        renderSectionHeader={renderSectionHeader}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
+      <View style={{ height: 60, backgroundColor: 'red' }} />
     </View>
   );
 };
@@ -75,14 +145,14 @@ const NotificationScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212',
+    backgroundColor: Colors.background,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 15,
-    marginTop:30
+    marginTop: 30
   },
   headerTitle: {
     color: '#fff',
@@ -90,33 +160,18 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   markAllAsRead: {
-    color: '#F50057',
+    color: Colors.second,
     fontSize: 16,
-  },
-  sectionHeader: {
-    fontSize: 13,
-    marginTop: 20,
-    marginBottom: 10,
-    marginLeft: 10,
-    color: '#A1A1A1',
   },
   notificationItem: {
     flexDirection: 'row',
     padding: 15,
     alignItems: 'center',
   },
-  iconContainer: {
+  icon: {
     width: 40,
     height: 40,
-    borderRadius: 20,
-    backgroundColor: '#3A3A3A',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 15,
-  },
-  icon: {
-    width: 20,
-    height: 20,
+    marginRight: '5%',
   },
   notificationContent: {
     flex: 1,
@@ -127,6 +182,7 @@ const styles = StyleSheet.create({
   },
   boldText: {
     fontWeight: 'bold',
+    color: '#fff',
   },
   timeText: {
     color: '#A1A1A1', // Màu xám nhạt cho thời gian

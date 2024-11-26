@@ -2,7 +2,7 @@ import { StyleSheet, Dimensions } from 'react-native';
 const { width: screenWidth } = Dimensions.get('window'); // Lấy chiều rộng màn hình để điều chỉnh kích thước hình ảnh
 const CommentStyle = StyleSheet.create({
     container: {
-        padding: 20,
+        paddingBottom: 20,
         backgroundColor: '#181A1C',
         flexGrow: 1,
       },
@@ -58,11 +58,14 @@ const CommentStyle = StyleSheet.create({
         backgroundColor: '#B3B3B3',
       },
       postImage: {
-        width: screenWidth - 50,
-        height: 200,
+        width: screenWidth - 50, // Giữ nguyên độ rộng
+        height: undefined, // Không gán chiều cao cố định
+        aspectRatio: 1, // Giữ tỷ lệ gốc của ảnh (tỷ lệ rộng/cao)
         borderRadius: 8,
         marginRight: 10,
+        marginTop: 5,
       },
+      
       errorText: {
         color: 'red',
         textAlign: 'center',
@@ -72,11 +75,11 @@ const CommentStyle = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        paddingBottom: 20,
+        padding: '5%',
       },
       circleIcon: {
-        width: 32,
-        height: 32,
+        width: "8%",
+        height: '4%',
         borderRadius: 16,
         borderWidth: 1,
         borderColor: '#323436',
@@ -120,6 +123,7 @@ const CommentStyle = StyleSheet.create({
       headerContent: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+        paddingHorizontal: 10,
       },
       imageavatar: {
         width: 32,
@@ -128,6 +132,7 @@ const CommentStyle = StyleSheet.create({
       },
       bodyContent: {
         marginTop: 10,
+        paddingHorizontal: 10,
       },
       imgContent: {
         width: screenWidth - 50,

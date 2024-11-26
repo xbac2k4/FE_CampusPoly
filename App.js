@@ -1,12 +1,9 @@
 import React, { useEffect } from 'react';
 import { PermissionsAndroid, Platform } from 'react-native';
-import { Provider } from 'react-redux';
 import AppNavigator from './src/navigation/AppNavigator';
-import { notificationListener } from './src/services/Notification';
+import { createChannel, notificationListener } from './src/services/Notification';
 import { SocketProvider } from './src/services/provider/SocketContext';
 import { UserProvider } from './src/services/provider/UseContext';
-import { store } from './src/workspaces/Notification/store';
-import { RecoilRoot } from 'recoil';
 
 const App = () => {
 
@@ -24,21 +21,17 @@ const App = () => {
         }
       }
     };
-
     requestNotificationPermission();
+    createChannel();
     notificationListener(); // lắng nghe thông báo
   }, []);
 
   return (
-    <Provider store={store}>
-      <UserProvider>
-        <RecoilRoot>
-          <SocketProvider>
-            <AppNavigator />
-          </SocketProvider>
-        </RecoilRoot>
-      </UserProvider>
-    </Provider>
+    <UserProvider>
+      <SocketProvider>
+        <AppNavigator />
+      </SocketProvider>
+    </UserProvider>
   );
 };
 

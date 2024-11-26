@@ -3,10 +3,11 @@ import { View, Text, FlatList, Image, TextInput, StyleSheet, TouchableOpacity } 
 import Icon from 'react-native-vector-icons/Ionicons';
 import Screens from '../../navigation/Screens';
 import { UserContext } from '../../services/provider/UseContext';
-import { GET_CONVERSATION_BY_USER } from '../../services/ApiConfig';
+import { GET_CONVERSATION_BY_USER, GET_USER_ID, POST_CONVERSATION, UPDATE_MESSAGE } from '../../services/ApiConfig';
 import { useFocusEffect } from '@react-navigation/native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { SocketContext } from '../../services/provider/SocketContext';
+import { timeAgo } from '../../utils/formatTime';
 
 // const users = [
 //   { id: '1', name: 'Huy', avatar: 'https://ispacedanang.edu.vn/wp-content/uploads/2024/05/hinh-anh-dep-ve-hoc-sinh-cap-3-1.jpg', online: true, isPinned: true },
@@ -20,9 +21,10 @@ import { SocketContext } from '../../services/provider/SocketContext';
 // ];
 
 const MessageScreen = ({ navigation }) => {
-  const { socket } = useContext(SocketContext);
+  const { socket, usersOnline } = useContext(SocketContext);
   const { user } = useContext(UserContext);
   const [users, setUsers] = useState();
+  const [friends, setFriends] = useState();
 
   const FetchConversation = async (id) => {
     try {
@@ -39,93 +41,238 @@ const MessageScreen = ({ navigation }) => {
     useCallback(() => {
       const handleUserData = async () => {
         FetchConversation(user._id);
+        FetchFriends(user._id);
+        socket.emit('get_users_online');
       }
       handleUserData();
     }, [])
   );
+  useFocusEffect(
+    useCallback(() => {
+      if (socket) {
+        socket.on('load_conversation', (data) => {
+          FetchConversation(user._id);
+          FetchFriends(user._id);
+        });
+
+        return () => {
+          socket.off('load_conversation');
+        };
+      }
+    }, [socket, user._id])
+  );
   useEffect(() => {
     FetchConversation(user._id);
+    FetchFriends(user._id);
+    // console.log(usersOnline);
   }, [])
 
-  useEffect(() => {
-    if (socket) {
-      socket.on('new_message', (data) => {
-        FetchConversation(user._id);
+  // useEffect(() => {
+  //   if (socket) {
+  //     socket.on('new_message', (data) => {
+  //       FetchConversation(user._id);
+  //       FetchFriends(user._id);
+  //     });
+
+  //     return () => {
+  //       socket.off('new_message');
+  //     };
+  //   }
+  // }, [socket]);
+
+  const postConversation = async (user_id, friend_id) => {
+    let newConversation;
+    try {
+      const response = await fetch(`${POST_CONVERSATION}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id,
+          friend_id
+        }), // chuyển đổi đối tượng thành JSON string
       });
 
-      return () => {
-        socket.off('new_message');
-      };
+      if (!response.ok) {
+        throw new Error('Failed to add');
+      }
+      newConversation = await response.json();
+      // console.log(newConversation.data._id);
+
+    } catch (error) {
+      console.error('Error adding:', error);
+    } finally {
+      if (newConversation?.status === 400) {
+        navigation.navigate(Screens.ChatView, { conversation_id: newConversation.data._id })
+      } else {
+        navigation.navigate(Screens.ChatView, { conversation_id: newConversation.data.newConversation._id })
+      }
     }
-  }, [socket]);
+  };
 
-  // Hiển thị người dùng theo trạng thái hoạt động (online trước, offline sau)
-  const renderPinnedUsers = () => (
-    <FlatList
-      data={users}
-      renderItem={renderPinnedUser}
-      keyExtractor={item => item.id}
-      horizontal
-      showsHorizontalScrollIndicator={true}
-      contentContainerStyle={styles.pinnedList}
-    />
-  );
+  const FetchFriends = async (userID) => {
+    try {
+      const response = await fetch(`${GET_USER_ID}${userID}`);
+      const data = await response.json();
+      // console.log(data.data.friends);
+      setFriends(data.data.friends);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
 
-  const renderPinnedUser = ({ item }) => (
-    <View style={styles.pinnedUserContainer}>
-      <Image source={{ uri: item.avatar }} style={styles.pinnedUserAvatar} />
-      {item.online && <View style={styles.onlineDot} />}
-      <Text style={styles.pinnedUserName}>{item.name}</Text>
-    </View>
-  );
+  const renderPinnedUser = ({ item }) => {
+    const currentUserId = user._id;
 
-  const timeAgo = (date) => {
-    const now = new Date();
-    const postDate = new Date(date);
-    const diff = Math.floor((now - postDate) / 1000); // Chênh lệch thời gian tính bằng giây
+    const filteredUsers =
+      item?.status_id?.status_name === "Chấp nhận"
+        ? item?.user_id?.filter(user => user._id !== currentUserId)
+        : [];
 
-    if (diff < 60) return `${diff} giây`;
+    const firstFilteredUser = filteredUsers.length > 0 ? filteredUsers[0] : null;
 
-    const minutes = Math.floor(diff / 60);
-    if (minutes < 60) return `${minutes} phút`;
+    const isUserOnline = firstFilteredUser
+      ? usersOnline.some((onlineUser) => onlineUser._id === firstFilteredUser._id)
+      : false;
 
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours} giờ`;
+    // Trường hợp không có người dùng để hiển thị
+    if (!firstFilteredUser) {
+      return null; // Hoặc hiển thị một component thay thế nếu cần
+    }
 
-    const days = Math.floor(hours / 24);
-    if (days < 7) return `${days} ngày`;
+    return (
+      <TouchableOpacity
+        style={styles.pinnedUserContainer}
+        onPress={() => {
+          handlePinnedUsers(currentUserId, firstFilteredUser._id);
+        }}>
+        <Image
+          source={{ uri: firstFilteredUser.avatar }}
+          style={styles.pinnedUserAvatar}
+        />
+        {isUserOnline && <View style={styles.onlineDot} />}
+        <Text style={styles.pinnedUserName} numberOfLines={1}>
+          {firstFilteredUser.full_name}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
 
-    const weeks = Math.floor(days / 7);
-    return `${weeks} tuần`;
-  }
+  const handlePinnedUsers = async (user_id, friend_id) => {
+    // console.log(user_id + ' - ' + friend_id);
+    await postConversation(user_id, friend_id);
+  };
+
+  // const timeAgo = (date) => {
+  //   if (!date || isNaN(new Date(date).getTime())) {
+  //     return ""; // Trả về giá trị mặc định nếu `date` không hợp lệ
+  //   }
+
+  //   const now = new Date();
+  //   const postDate = new Date(date);
+  //   const diff = Math.floor((now - postDate) / 1000); // Chênh lệch thời gian tính bằng giây
+
+  //   if (diff < 60) return "Vừa xong"; // Đề phòng chênh lệch âm
+
+  //   // if (diff < 60) return `${diff} giây`;
+  //   const minutes = Math.floor(diff / 60);
+  //   if (minutes < 60) return `${minutes} phút`;
+  //   const hours = Math.floor(minutes / 60);
+  //   if (hours < 24) return `${hours} giờ`;
+  //   const days = Math.floor(hours / 24);
+  //   if (days < 7) return `${days} ngày`;
+  //   const weeks = Math.floor(days / 7);
+  //   return `${weeks} tuần`;
+  // };
+
 
   // Hiển thị người dùng có tin nhắn
   const renderMessage = ({ item }) => {
     // console.log(item);
-    const memberWithDifferentUserId = item.members.filter(member => member.user_id !== user._id)[0]
+    const memberWithDifferentUserId = item?.members.filter(member => member.user_id !== user._id)[0]
     const avatarUrl = memberWithDifferentUserId ? memberWithDifferentUserId.avatar : "https://placehold.co/50x50";
-    const last_message = item.sender?._id !== user._id
-      ? (item.last_message === 'emoji::like::'
+    const last_message = item?.sender?._id !== user._id
+      ? (item?.last_message === 'emoji::like::'
         ? <AntDesign name="like1" size={24} color="#FA7F26" />
-        : item.last_message)
-      : (item.last_message === 'emoji::like::'
+        : item?.last_message)
+      : (item?.last_message === 'emoji::like::'
         ? <Text>Bạn: <AntDesign name="like1" size={24} color="#FA7F26" /></Text>
-        : `Bạn: ${item.last_message}`);
+        : `Bạn: ${item?.last_message}`);
+    const isUserOnline = usersOnline.some((onlineUser) => onlineUser._id === memberWithDifferentUserId.user_id);
+    // console.log(item?.viewed);
 
 
     return (
-      <TouchableOpacity style={styles.messageContainer} onPress={() => navigation.navigate(Screens.ChatView, { conversation_id: item.conversation_id })}>
+      <TouchableOpacity style={styles.messageContainer} onPress={() => {
+        if (item?.sender?._id !== user._id) {
+          UpdateMessge(item?.conversation_id);
+        }
+        navigation.navigate(Screens.ChatView, { conversation_id: item?.conversation_id })
+      }}>
         <Image source={{ uri: avatarUrl }} style={styles.messageAvatar} />
-
+        {isUserOnline && <View style={styles.onlineDotConversation} />}
         <View style={styles.messageContent}>
           <Text style={styles.messageName}>{memberWithDifferentUserId.full_name}</Text>
-          <Text style={styles.messageText}>{last_message}</Text>
+          {
+            item?.sender?._id !== user._id ? (
+              <Text style={{
+                ...styles.messageText,
+                fontWeight: item?.viewed === true ? 'normal' : 'bold',
+                color: item?.viewed === true ? '#888' : '#fff',
+              }}>{last_message}</Text>
+            ) : (
+              <Text style={{
+                ...styles.messageText,
+                fontWeight: 'normal',
+                color: '#888',
+              }}>{last_message}</Text>
+            )
+          }
         </View>
-        <Text style={styles.messageTime}>{timeAgo(item.last_message_time)}</Text>
-      </TouchableOpacity>
+        {/* <Text style={{
+          fontWeight: item?.sender?._id === user._id && item?.viewed === false ? 'normal' : 'bold',
+          color: item?.sender?._id === user._id && item?.viewed === false ? '#888' : '#fff',
+        }}>{timeAgo(item?.last_message_time)}</Text> */}
+        <View style={styles.rightSection}>
+          {
+            item?.sender?._id !== user._id ? (
+              <Text style={{
+                fontWeight: item?.viewed === true ? 'normal' : 'bold',
+                color: item?.viewed === true ? '#888' : '#fff',
+              }}>{timeAgo(item?.last_message_time)}</Text>
+            ) : (
+              <Text style={{
+                fontWeight: 'normal',
+                color: '#888',
+              }}>{timeAgo(item?.last_message_time)}</Text>
+            )
+          }
+          {item?.sender?._id !== user._id && item?.unview > 0 && (
+            <View style={styles.unreadBadge}>
+              <Text style={styles.unreadBadgeText}>{item?.unview}</Text>
+            </View>
+          )}
+        </View>
+      </TouchableOpacity >
     )
   };
+  const UpdateMessge = async (conversation_id) => {
+    try {
+      const response = await fetch(`${UPDATE_MESSAGE}`, {
+        method: 'PUT',  // Đảm bảo rằng phương thức là GET
+        headers: {
+          'Content-Type': 'application/json',  // Header cho loại nội dung
+        },
+        body: JSON.stringify({ conversation_id }),  // Dữ liệu đưa vào request
+      });
+      const data = await response.json();
+      // console.log(data);
 
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  }
   // Lọc và hiển thị người dùng có tin nhắn
   // const renderItem = ({ item }) => {
   //   if (!item.message) {
@@ -151,26 +298,28 @@ const MessageScreen = ({ navigation }) => {
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
-          placeholder="Who do you want to chat with?"
+          placeholder="Tìm kiếm"
           placeholderTextColor="#999"
         />
         <Icon name="search" size={20} color="#999" style={styles.searchIcon} />
       </View>
-      <Text style={styles.pinnedTitle}>PINNED</Text>
 
-      {/* Phần Pinned có chiều cao giới hạn */}
-      {/* <View style={styles.pinnedContainer}>
-        {renderPinnedUsers()}
-      </View> */}
+      <FlatList
+        style={{ flexGrow: 0, padding: 10 }}
+        data={friends}
+        renderItem={renderPinnedUser}
+        keyExtractor={item => item?._id}
+        horizontal
+        showsHorizontalScrollIndicator={true}
+      />
 
-      {/* Đường viền ngăn cách */}
       <View style={styles.divider} />
 
       {/* Phần danh sách tin nhắn */}
       <FlatList
         data={users} // Chỉ hiển thị những người có tin nhắn
         renderItem={renderMessage}
-        keyExtractor={item => item.conversation_id}
+        keyExtractor={item => item?.conversation_id}
         showsVerticalScrollIndicator={false}
         style={styles.messageList}
       />
@@ -188,6 +337,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 20,
+  },
+  rightSection: {
+    alignItems: 'center', // Canh phải
+    justifyContent: 'start', // Giữa theo chiều dọc
+    marginLeft: 10, // Khoảng cách từ nội dung bên trái
+  },
+  unreadBadge: {
+    backgroundColor: '#FF3D00', // Màu đỏ
+    borderRadius: 10,
+    // paddingHorizontal: 3,
+    marginTop: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 40,
+    minWidth: 15,
+    maxWidth: 50,
+    height: 20,
+  },
+  unreadBadgeText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   headerTitle: {
     fontSize: 18,
@@ -211,33 +383,33 @@ const styles = StyleSheet.create({
   searchIcon: {
     marginLeft: 8,
   },
-  pinnedTitle: {
-    margin: 20,
-    fontSize: 14,
-    color: 'gray',
-  },
-  pinnedContainer: {
-    maxHeight: 100,
-  },
-  pinnedList: {
-    paddingHorizontal: 20,
-  },
   pinnedUserContainer: {
     alignItems: 'center',
-    marginRight: 20,
+    marginHorizontal: 5,
     width: 60,
     position: 'relative',
   },
-  onlineDot: {
-    width: 12,
-    height: 12,
+  onlineDotConversation: {
+    width: 20,
+    height: 20,
     backgroundColor: '#00FF00',
-    borderRadius: 6,
+    borderRadius: 100,
     position: 'absolute',
-    bottom: 35,
-    right: 6,
-    borderWidth: 2,
-    borderColor: '#121212',
+    bottom: 20,
+    left: 50,
+    borderBlockColor: '#000000',
+    borderWidth: 4,
+  },
+  onlineDot: {
+    width: 20,
+    height: 20,
+    backgroundColor: '#00FF00',
+    borderRadius: 100,
+    position: 'absolute',
+    bottom: 15,
+    right: 5,
+    borderBlockColor: '#000000',
+    borderWidth: 4,
   },
   pinnedUserAvatar: {
     width: 50,
@@ -255,8 +427,8 @@ const styles = StyleSheet.create({
   messageContainer: {
     flexDirection: 'row',
     padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#333',
+    // borderBottomWidth: 1,
+    // borderBottomColor: '#333',
   },
   messageAvatar: {
     width: 50,
@@ -272,16 +444,12 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   messageText: {
-    color: '#fff',
+    // color: '#fff',
     marginTop: 10,
-  },
-  messageTime: {
-    color: '#888',
   },
   divider: {
     height: 1,
     backgroundColor: '#444',
-    marginVertical: 10,
   },
   messageList: {
     flex: 1,
