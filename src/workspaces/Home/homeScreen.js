@@ -128,7 +128,7 @@ const HomeScreen = ({ navigation }) => {
               // <ActivityIndicator size="large" color="#FFF" style={{ marginTop: 20 }} />
               <LoadingTimeline quantity={3} />
             ) : selectedTab === 'Dành cho bạn' ? (
-              <ProfilePosts navigation={navigation} data={data} />
+              <ProfilePosts navigation={navigation} data={data} screenType={"Home"} />
             ) : null}
 
             {/* Thêm khoảng trống ở cuối danh sách bài post */}

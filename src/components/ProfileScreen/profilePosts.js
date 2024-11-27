@@ -18,11 +18,12 @@ import ShareComponent from '../Sheet/ShareButton ';
 import { SocketContext } from '../../services/provider/SocketContext';
 import { TYPE_LIKE_POST } from '../../services/TypeNotify';
 import { timeAgo } from '../../utils/formatTime';
+import CrudPost from '../CrudPost/CrudPost';
 const ProfilePosts = ({ navigation, data }) => {
   const [userAll, setUserAll] = useState(data); // Chứa các bài viết
   const { user } = useContext(UserContext);
   //   const [user, setUser] = useState(props.data.map((item) => item?.post));
-
+  const refEditDeleteSheet = useRef(); // Dùng cho showEditDeleteSheet
   const [loading, setLoading] = useState(true); // Quản lý trạng thái loading
   const [error, setError] = useState(null); // Quản lý lỗi
   const [likedPosts, setLikedPosts] = useState([]); // Lưu trạng thái các bài viết đã thích
@@ -36,10 +37,24 @@ const ProfilePosts = ({ navigation, data }) => {
 
   const refRBSheet = useRef();
 
+  // const openBottomSheet = (postId) => {
+  //   if (postId) {
+  //     setSelectedPostId(postId);
+  //     refRBSheet.current.open();
+  //   } else {
+  //     console.error('No post ID provided');
+  //   }
+  // };
   const openBottomSheet = (postId) => {
     if (postId) {
       setSelectedPostId(postId);
-      refRBSheet.current.open();
+      if (navigation?.getState()?.routes?.some(route => route.name === Screens.Profile)) {
+        // Nếu đang ở màn hình Profile, mở showEditDeleteSheet
+        refEditDeleteSheet.current.open();
+      } else {
+        // Nếu không phải màn hình Profile, mở RBSheet mặc định
+        refRBSheet.current.open();
+      }
     } else {
       console.error('No post ID provided');
     }
@@ -336,6 +351,36 @@ const ProfilePosts = ({ navigation, data }) => {
           onReportSuccess={handleReportSuccess}
         />
       </RBSheet >
+      {/* Màn hình Bottom Sheet cho Profile (showEditDeleteSheet) */}
+      <RBSheet
+        ref={refEditDeleteSheet}
+        height={250}
+        openDuration={300}
+        closeDuration={250}
+        closeOnDragDown={true}
+        closeOnPressMask={true}
+        customStyles={{
+          wrapper: {
+            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+          },
+          draggableIcon: {
+            backgroundColor: '#ffff',
+          },
+        }}
+      >
+        <CrudPost
+          postId={selectedPostId} // Sử dụng state thay vì truy cập sâu
+          onDeleteSuccess={() => {
+            setUserAll((prevPosts) =>
+              prevPosts.filter((post) => post?.postData?._id !== selectedPostId) // So sánh với selectedPostId
+            );
+            setSelectedPostId(null); // Reset state sau khi xóa
+          }}
+        />
+
+
+
+      </RBSheet>
     </View >
   );
 };

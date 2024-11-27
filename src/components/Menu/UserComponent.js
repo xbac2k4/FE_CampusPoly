@@ -23,7 +23,7 @@ const UserComponent = ({ avatar, full_name }) => {
        
         </View>
       </TouchableOpacity>
-      <View style={styles.divider} />
+      
     
     </View>
   );

@@ -182,6 +182,19 @@ const PostStyle = StyleSheet.create({
     width: 50,
     height: 50,
   },
+  crudContainer:{
+    flexDirection:'row',
+    marginTop:15,alignItems:"center"
+},
+crudText:{
+    color: '#fff',
+    fontSize: 18,
+   
+  },
+  imgCrud:{
+    width:25,
+    height:25, marginRight:10
+  }
 });
 
 export default PostStyle;
