@@ -55,7 +55,7 @@ const MenuScreen = () => {
 
         <View style={styles.gridContainer}>
           <View style={styles.gridItem}>
-            <TouchableOpacity style={styles.navItem} onPress={()=>{
+            <TouchableOpacity style={styles.navItem} onPress={() => {
               navigation.navigate(Screens.FriendListScreen)
             }}>
               <Image
@@ -64,7 +64,7 @@ const MenuScreen = () => {
               />
               <Text style={styles.navText}>Bạn bè</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.navItem} onPress={()=>{
+            <TouchableOpacity style={styles.navItem} onPress={() => {
               navigation.navigate(Screens.Message)
             }}>
               <AntDesign name="message1" size={width * 0.06} color="#ff7d97" />
@@ -79,8 +79,20 @@ const MenuScreen = () => {
           title="Trợ giúp & hỗ trợ"
           icon={require('../../assets/images/hoi.png')}
           subItems={['Trung tâm trợ giúp', 'Báo cáo sự cố', 'Điều khoản & chính sách']}
-          onPress={() => { /* Handle onPress here */ }}
+          onPress={(subItem) => {
+            if (subItem === 'Trung tâm trợ giúp') {
+              navigation.navigate(Screens.HelpCenter); // Điều hướng đến Trung tâm trợ giúp
+            } else if (subItem === 'Báo cáo sự cố') {
+              navigation.navigate(Screens.ReportIssue); // Điều hướng đến Báo cáo sự cố
+            } else if (subItem === 'Điều khoản & chính sách') {
+              navigation.navigate(Screens.TermsAndPolic); // Điều hướng đến Điều khoản & chính sách
+            }
+          }}
         />
+
+
+
+
         <SettingItem
           title="Quyền riêng tư"
           icon={require('../../assets/images/setting.png')}

@@ -14,6 +14,9 @@ import FrProfileScreen from '../workspaces/FrProfileScreen/FrProfileScreen';
 import { Profile } from '../workspaces/Home';
 import FriendListScreen from '../workspaces/FriendListScreen/FriendListScreen';
 import UpdatePost from '../components/CrudPost/UpdatePost';
+import HelpCenterScreen from '../workspaces/SupportList/HelpCenterScreen';
+import ReportIssueScreen from '../workspaces/SupportList/ReportIssueScreen';
+import TermsAndPoliciesScreen from '../workspaces/SupportList/TermsAndPoliciesScreen';
 
 
 
@@ -34,6 +37,9 @@ const MainStackNavigator = () => {
       <Stack.Screen name={Screens.FrProfile} component={FrProfileScreen} options={{ animation: 'slide_from_bottom' }} />
       <Stack.Screen name={Screens.FriendListScreen} component={FriendListScreen} options={{ animation: 'ios' }} />
        <Stack.Screen name={Screens.UpdatePost} component={UpdatePost} options={{ animation: 'slide_from_bottom' }} />
+       <Stack.Screen name={Screens.HelpCenter} component={HelpCenterScreen} options={{ animation: 'ios' }} />
+       <Stack.Screen name={Screens.ReportIssue} component={ReportIssueScreen} options={{ animation: 'ios' }} />
+       <Stack.Screen name={Screens.TermsAndPolic} component={TermsAndPoliciesScreen} options={{ animation: 'ios' }} />
     </Stack.Navigator>
   )
 }

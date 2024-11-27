@@ -1,12 +1,29 @@
 import React, { useState } from 'react';
 import { TouchableOpacity, View, Text, Image, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native'; // Hook cho navigation
 
 const SettingItem = ({ title, icon, subItems }) => {
-  const [expanded, setExpanded] = useState(false); // Trạng thái mở rộng
+  const [expanded, setExpanded] = useState(false);
+  const navigation = useNavigation(); // Khai báo hook navigation
+
+  // Hàm xử lý sự kiện nhấn vào subItem
+  const handleSubItemPress = (subItem) => {
+    // Kiểm tra tên subItem và điều hướng đến màn hình tương ứng
+    if (subItem === 'Trung tâm trợ giúp') {
+      navigation.navigate('HelpCenter'); // Điều hướng đến Trung tâm trợ giúp
+    } else if (subItem === 'Báo cáo sự cố') {
+      navigation.navigate('ReportIssue'); // Điều hướng đến Báo cáo sự cố
+    } else if (subItem === 'Điều khoản & chính sách') {
+      navigation.navigate('TermsAndPolic'); // Điều hướng đến Điều khoản & chính sách
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.itemContainer} onPress={() => setExpanded(!expanded)}>
+      <TouchableOpacity
+        style={styles.itemContainer}
+        onPress={() => setExpanded(!expanded)}
+      >
         <View style={styles.leftSection}>
           <Image source={icon} style={styles.icon} />
           <Text style={styles.title}>{title}</Text>
@@ -18,12 +35,16 @@ const SettingItem = ({ title, icon, subItems }) => {
       {expanded && (
         <View style={styles.subItemsContainer}>
           {subItems.map((item, index) => (
-            <Text key={index} style={styles.subItem}>
-              {item}
-            </Text>
+            <TouchableOpacity
+              key={index}
+              onPress={() => handleSubItemPress(item)} // Gọi hàm handleSubItemPress
+            >
+              <Text style={styles.subItem}>{item}</Text>
+            </TouchableOpacity>
           ))}
         </View>
       )}
+
       <View style={styles.separator} />
     </View>
   );
@@ -62,7 +83,7 @@ const styles = StyleSheet.create({
   },
   subItemsContainer: {
     marginTop: 10,
-    paddingLeft: 30, // Để các mục con thụt vào một chút
+    paddingLeft: 30,
   },
   subItem: {
     fontSize: 14,

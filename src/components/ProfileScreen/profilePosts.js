@@ -401,10 +401,6 @@ const ProfilePosts = ({ navigation, data }) => {
           }}
           existingPost={getExistingPost(selectedPostId)} // Gọi hàm để lấy dữ liệu bài viết
         />
-
-
-
-
       </RBSheet>
     </View >
   );
