@@ -1,3 +1,4 @@
+import UpdatePost from "../components/CrudPost/UpdatePost";
 import FriendListScreen from "../workspaces/FriendListScreen/FriendListScreen";
 
 
@@ -17,7 +18,8 @@ const Screens = {
     CreatePost:"CreatPost",
     ChatView:'ChatView',
     Menu: "Menu",
-    FriendListScreen:"FriendList"
+    FriendListScreen:"FriendList",
+    UpdatePost:'Updatepost',
 };
 
 export default Screens;

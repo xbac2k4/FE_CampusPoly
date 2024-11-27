@@ -45,20 +45,21 @@ const ProfilePosts = ({ navigation, data }) => {
   //     console.error('No post ID provided');
   //   }
   // };
-  const openBottomSheet = (postId) => {
+  const openBottomSheet = (postId, postOwnerId) => {
     if (postId) {
       setSelectedPostId(postId);
-      if (navigation?.getState()?.routes?.some(route => route.name === Screens.Profile)) {
-        // Nếu đang ở màn hình Profile, mở showEditDeleteSheet
+      if (postOwnerId === user._id) {
+        // Nếu bài viết của người dùng hiện tại, mở sheet chỉnh sửa/xóa
         refEditDeleteSheet.current.open();
       } else {
-        // Nếu không phải màn hình Profile, mở RBSheet mặc định
+        // Nếu không phải bài viết của người dùng hiện tại, mở sheet báo cáo
         refRBSheet.current.open();
       }
     } else {
       console.error('No post ID provided');
     }
   };
+
 
   // console.log(user);
 
@@ -250,6 +251,27 @@ const ProfilePosts = ({ navigation, data }) => {
   //   return `${years} năm trước`;
   // };
 
+  const getExistingPost = (postId) => {
+    const post = userAll.find((item) => item.postData._id === postId);
+  
+    if (post) {
+      // // Log dữ liệu title và content của bài viết
+      // console.log('Title:', post.postData.title);
+      // console.log('Content:', post.postData.content);
+      // console.log('img:', post.postData.image);
+  
+      return {
+        title: post.postData.title,
+        content: post.postData.content,
+        image: post.postData.image,
+      };
+    }
+  
+    return null; // Trả về null nếu không tìm thấy bài viết
+  };
+  
+
+
 
   // Hiển thị dữ liệu các bài viết
   return (
@@ -271,10 +293,11 @@ const ProfilePosts = ({ navigation, data }) => {
                     <Text style={styles.postTime}>{timeAgo(item.postData.createdAt)}</Text>
                   </View>
                   <TouchableOpacity
-                    onPress={() => { console.log('item:', item); openBottomSheet(item?.postData?._id) }}
+                    onPress={() => openBottomSheet(item?.postData?._id, item?.postData?.user_id?._id)} // Truyền cả postId và postOwnerId
                     style={styles.moreIcon}>
                     <Text style={styles.moreText}>⋮</Text>
                   </TouchableOpacity>
+
                 </View>
                 <Text style={styles.postText}>{item.postData.title}</Text>
                 {item.postData.hashtag?.hashtag_name ? (
@@ -369,14 +392,16 @@ const ProfilePosts = ({ navigation, data }) => {
         }}
       >
         <CrudPost
-          postId={selectedPostId} // Sử dụng state thay vì truy cập sâu
+          postId={selectedPostId}
           onDeleteSuccess={() => {
             setUserAll((prevPosts) =>
-              prevPosts.filter((post) => post?.postData?._id !== selectedPostId) // So sánh với selectedPostId
+              prevPosts.filter((post) => post?.postData?._id !== selectedPostId)
             );
-            setSelectedPostId(null); // Reset state sau khi xóa
+            setSelectedPostId(null);
           }}
+          existingPost={getExistingPost(selectedPostId)} // Gọi hàm để lấy dữ liệu bài viết
         />
+
 
 
 

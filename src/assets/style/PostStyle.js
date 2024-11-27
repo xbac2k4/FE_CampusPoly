@@ -182,19 +182,80 @@ const PostStyle = StyleSheet.create({
     width: 50,
     height: 50,
   },
-  crudContainer:{
-    flexDirection:'row',
-    marginTop:15,alignItems:"center"
-},
-crudText:{
-    color: '#fff',
-    fontSize: 18,
-   
+  crudContainer: {
+    flexDirection: 'row',
+    marginTop: 15, alignItems: "center"
   },
-  imgCrud:{
-    width:25,
-    height:25, marginRight:10
+  crudText: {
+    color: '#fff',
+    fontSize: 16,
+
+  },
+  imgCrud: {
+    width: 25,
+    height: 25, marginRight: 10
+  },
+
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Nền mờ
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  dialog: {
+    width: '80%',
+    backgroundColor: '#181A1C',
+    borderRadius: 8,
+    padding: 20,
+    alignItems: 'center',
+  },
+  dialogTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color:'#fff',
+  },
+  input: {
+    width: '100%',
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 4,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    color:'#fff',
+  },
+  dialogActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  actionButton: {
+    flex: 1,
+    backgroundColor: '#FF0000',
+    borderRadius: 4,
+    paddingVertical: 10,
+    marginHorizontal: 5,
+    alignItems: 'center',
+  },
+  cancelButton: {
+    backgroundColor: '#6c757d',
+  },
+  actionText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  imgcontainer: {
+    alignSelf:'flex-start',
+    height: 100,
+    marginBottom: 10,
+    borderRadius: 8,
+    overflow: 'hidden',
+   
+    flexDirection: 'row', 
+    justifyContent:'space-around'
   }
+
 });
 
 export default PostStyle;
