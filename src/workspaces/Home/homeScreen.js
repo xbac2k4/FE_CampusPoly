@@ -10,6 +10,7 @@ import { GET_ALL_POST } from '../../services/ApiConfig';
 import LinearGradient from 'react-native-linear-gradient';
 import Colors from '../../constants/Color';
 import { UserContext } from '../../services/provider/UseContext';
+import { SocketContext } from '../../services/provider/SocketContext';
 const HomeScreen = ({ navigation }) => {
   const [greeting, setGreeting] = useState('');
   // const navigation = useNavigation();
@@ -18,6 +19,7 @@ const HomeScreen = ({ navigation }) => {
   const [selectedTab, setSelectedTab] = useState('Dành cho bạn'); // Trạng thái cho tab hiện tại
   const [refreshing, setRefreshing] = useState(false);
   const { user } = useContext(UserContext);
+  const { socket } = useContext(SocketContext);
 
   const getGreeting = () => {
     // const currentHour = new Date().getHours();
@@ -29,7 +31,7 @@ const HomeScreen = ({ navigation }) => {
     //   return 'Chào buổi tối🌚';
     // }
     // console.log(user);
-    
+
     return `Xin chào, ${user.full_name}`; // Example greeting
   };
 

@@ -14,17 +14,17 @@ const UserComponent = ({ avatar, full_name }) => {
   const navigation = useNavigation();
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.profileSection} onPress={()=>{
+      <TouchableOpacity style={styles.profileSection} onPress={() => {
         navigation.navigate(Screens.Profile);
       }}>
         <Image source={{ uri: avatar }} style={styles.avatar} />
         <Text style={styles.fullName}>{full_name}</Text>
         <View style={styles.notificationContainer}>
-       
+
         </View>
       </TouchableOpacity>
       <View style={styles.divider} />
-    
+
     </View>
   );
 };

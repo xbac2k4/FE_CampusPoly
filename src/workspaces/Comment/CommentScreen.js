@@ -1,5 +1,5 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Dimensions, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import heartFilled from '../../assets/images/hear2.png';
@@ -31,7 +31,7 @@ const CommentScreen = () => {
   const [activeImageIndex, setActiveImageIndex] = useState({}); // Quản lý chỉ số ảnh đang hiển thị cho mỗi bài có nhiều ảnh
   const [selectedPostId, setSelectedPostId] = useState(null); // ID bài viết được chọn để báo cáo
   const [reportSuccess, setReportSuccess] = useState(false);
-  const { sendNotifySocket } = useContext(SocketContext);
+  const { sendNotifySocket, socket } = useContext(SocketContext);
 
   const refRBSheet = useRef();
 
@@ -52,44 +52,42 @@ const CommentScreen = () => {
     setReportSuccess(true); // Set report success
     refRBSheet.current.close(); // Close the RBSheet when the report is successful
   };
-
   const { user } = useContext(UserContext);
+  const fetchPostById = async () => {
+    try {
+      const response = await fetch(`${GET_POST_ID}${postId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json', // nếu API yêu cầu JSON
+        }
+      });
+
+
+      const data = await response.json();
+      setPost(data.data);
+      if (data?.data?.likeData.some((like) => like.user_id_like._id === user._id)) {
+        setIsLiked(true)
+      } else {
+        setIsLiked(false)
+      }
+      setComment(data.data.commentData);
+      setLoading(false);
+      // console.log(data.data.commentData);
+      // console.log(data.data.likeData);
+
+
+    } catch (error) {
+      console.error('Error fetching post data:', error);
+      setError(error);
+      setLoading(false);
+    }
+  };
   // State để theo dõi số lượng lượt thích
   useEffect(() => {
-    const fetchPostById = async () => {
-      try {
-        const response = await fetch(`${GET_POST_ID}${postId}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json', // nếu API yêu cầu JSON
-          }
-        });
-
-
-        const data = await response.json();
-        setPost(data.data);
-        if (data?.data?.likeData.some((like) => like.user_id_like._id === user._id)) {
-          setIsLiked(true)
-        } else {
-          setIsLiked(false)
-        }
-        setComment(data.data.commentData);
-        setLoading(false);
-        // console.log(data.data.commentData);
-        // console.log(data.data.likeData);
-
-
-      } catch (error) {
-        console.error('Error fetching post data:', error);
-        setError(error);
-        setLoading(false);
-      }
-    };
-
-
     fetchPostById();
+    socket.emit('join_post', postId);
     // fetchCommentsByPostId();
-  }, [postId]);
+  }, [postId, user._id]);
 
   // Đặt chỉ mục hình ảnh đầu tiên cho các bài viết có nhiều hình ảnh
   useEffect(() => {
@@ -102,6 +100,40 @@ const CommentScreen = () => {
       setActiveImageIndex(initialIndices);
     }
   }, [post]);
+
+  useFocusEffect(
+    useCallback(() => {
+      // fetchNotifications();
+      if (socket) {
+        socket.on('get_user_comment_post', (newComment) => {
+          // console.log(newComment);
+          fetchPostById();
+        })
+      }
+      return () => {
+        socket.off('get_user_comment_post');
+      };
+    }, [socket, user._id, post])
+  );
+  // useEffect(() => {
+  //   if (socket) {
+  //     socket.on('get_user_comment_post', (newComment) => {
+  //       console.log('123: ' + newComment);
+  //       // fetchPostById();
+  //       setPost({
+  //         ...post,
+  //         postData: {
+  //           ...post.postData,
+  //           comment_count: post.postData.comment_count + 1,
+  //         },
+  //       })
+  //       setComment([newComment, ...comment])
+  //     })
+  //   }
+  //   return () => {
+  //     socket.off('new_message');
+  //   };
+  // }, [newComment])
   // console.log(post);
   // sử lí nút like 
   // Toggle like/unlike functionality
@@ -173,6 +205,7 @@ const CommentScreen = () => {
         }));
 
         setIsLiked((prevIsLiked) => !prevIsLiked);
+        socket.emit('user_comment_post', { postId: post?.postData?._id });
       } else {
         console.error(
           likedPosts.includes(postId)
@@ -395,7 +428,7 @@ const CommentScreen = () => {
           if (user._id !== post?.postData?.user_id?._id) {
             await sendNotifySocket(user.full_name, user._id, 'đã bình luận bài viết của bạn', post?.postData?.user_id?._id, TYPE_COMMENT_POST, post?.postData?._id);
           }
-          setComment([newComment, ...comment])
+          socket.emit('user_comment_post', { postId: post?.postData?._id });
         }} style={styles.commentInput} />
       {/* Bottom Sheet */}
       <RBSheet

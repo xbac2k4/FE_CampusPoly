@@ -8,21 +8,34 @@ import {
   Dimensions,
   Alert
 } from 'react-native';
-import React, { useContext, useState } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import UserComponent from '../../components/Menu/UserComponent';
 import SettingItem from '../../components/Menu/SettingItem';
 import { UserContext } from '../../services/provider/UseContext';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Screens from '../../navigation/Screens';
 import NotificationModal from '../../components/Notification/NotificationModal';
 import { SocketContext } from '../../services/provider/SocketContext';
+import { GET_USER_ID } from '../../services/ApiConfig';
 const { width, height } = Dimensions.get('window'); // Get device dimensions
 
 const MenuScreen = () => {
   const navigation = useNavigation(); // Hook for navigation
   const { user, GoogleSignin } = useContext(UserContext);
   const { disconnectSocket, socket } = useContext(SocketContext);
+  const [userProfile, setUserProfile] = useState(null);
+
+  const fetchUserData = async (userID) => {
+    try {
+      const response = await fetch(`${GET_USER_ID}${userID}`);
+      const data = await response.json();
+      // console.log(data.data);
+      setUserProfile(data.data);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
 
   const [modalVisible, setModalVisible] = useState(false); // State to control modal
   const handleLogoutPress = () => {
@@ -38,6 +51,11 @@ const MenuScreen = () => {
   const handleCancel = () => {
     setModalVisible(false); // Hide modal
   };
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserData(user._id)
+    }, [user._id])
+  );
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollContent}>
@@ -47,15 +65,19 @@ const MenuScreen = () => {
         </View>
 
         <View style={styles.userContainer}>
-          <UserComponent
-            avatar={user.avatar}
-            full_name={user.full_name}
-          />
+          {
+            userProfile && (
+              <UserComponent
+                avatar={userProfile.avatar}
+                full_name={userProfile.full_name}
+              />
+            )
+          }
         </View>
 
         <View style={styles.gridContainer}>
           <View style={styles.gridItem}>
-            <TouchableOpacity style={styles.navItem} onPress={()=>{
+            <TouchableOpacity style={styles.navItem} onPress={() => {
               navigation.navigate(Screens.FriendListScreen)
             }}>
               <Image
@@ -64,7 +86,7 @@ const MenuScreen = () => {
               />
               <Text style={styles.navText}>Bạn bè</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.navItem} onPress={()=>{
+            <TouchableOpacity style={styles.navItem} onPress={() => {
               navigation.navigate(Screens.Message)
             }}>
               <AntDesign name="message1" size={width * 0.06} color="#ff7d97" />
