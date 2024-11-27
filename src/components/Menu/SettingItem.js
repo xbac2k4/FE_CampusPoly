@@ -24,7 +24,6 @@ const SettingItem = ({ title, icon, subItems }) => {
           ))}
         </View>
       )}
-      <View style={styles.separator} />
     </View>
   );
 };
@@ -68,13 +67,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#fff',
     marginVertical: 5,
-  },
-  separator: {
-    height: 1,
-    backgroundColor: '#ccc',
-    marginTop: 10,
-    marginHorizontal: 15,
-    marginBottom: 10,
   },
 });
 

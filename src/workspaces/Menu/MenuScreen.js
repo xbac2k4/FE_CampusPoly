@@ -90,12 +90,10 @@ const MenuScreen = () => {
               navigation.navigate(Screens.Message)
             }}>
               <AntDesign name="message1" size={width * 0.06} color="#ff7d97" />
-              <Text style={styles.navText}>Tin nhắn</Text>
+              <Text style={[styles.navText, { marginTop: 10 }]}>Tin nhắn</Text>
             </TouchableOpacity>
           </View>
         </View>
-
-        <View style={styles.divider} />
 
         <SettingItem
           title="Trợ giúp & hỗ trợ"
@@ -183,13 +181,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: width * 0.04, // Responsive font size
     fontWeight: '500',
-  },
-  divider: {
-    height: 1,
-    backgroundColor: '#ccc',
-    marginTop: height * 0.01, // 1% of screen height
-    marginHorizontal: width * 0.04, // 4% of screen width
-    marginBottom: height * 0.01, // 1% of screen height
   },
   buttonExit: {
     backgroundColor: '#333333',

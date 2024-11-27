@@ -1,15 +1,14 @@
+import { useFocusEffect } from '@react-navigation/native';
 import axios from 'axios';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Colors from '../../constants/Color';
-import { GET_NOTIFICATIONS_BY_USERID, GET_POST_ID, READ_ALL_NOTIFICATION, READ_NOTIFICATION } from '../../services/ApiConfig';
-import { UserContext } from '../../services/provider/UseContext';
-import { useFocusEffect } from '@react-navigation/native';
-import { Screen } from 'react-native-screens';
-import Screens from '../../navigation/Screens';
-import { TYPE_ADD_FRIEND, TYPE_COMMENT_POST, TYPE_CREATE_POST, TYPE_LIKE_POST } from '../../services/TypeNotify';
 import NotificationModal from '../../components/Notification/NotificationModal';
+import Colors from '../../constants/Color';
+import Screens from '../../navigation/Screens';
+import { GET_NOTIFICATIONS_BY_USERID, GET_POST_ID, READ_ALL_NOTIFICATION, READ_NOTIFICATION } from '../../services/ApiConfig';
 import { SocketContext } from '../../services/provider/SocketContext';
+import { UserContext } from '../../services/provider/UseContext';
+import { TYPE_ADD_FRIEND, TYPE_COMMENT_POST, TYPE_CREATE_POST, TYPE_LIKE_POST } from '../../services/TypeNotify';
 
 const NotificationScreen = ({ navigation }) => {
   const [notifications, setNotifications] = useState([]);
@@ -72,15 +71,20 @@ const NotificationScreen = ({ navigation }) => {
   const handleMarkAllAsRead = async () => {
     setLoading(true);
     try {
+      // console.log("id: ", user._id);
+
       const result = axios.put(`${READ_ALL_NOTIFICATION}`, {
-        userId: user._id
+        receiver_id: user._id
       });
 
-      console.log(result);
+      // console.log(result);
 
     } catch (error) {
       console.log(error);
 
+    }
+    finally {
+      await fetchNotifications();
     }
     setLoading(false);
   };
@@ -195,6 +199,8 @@ const NotificationScreen = ({ navigation }) => {
         keyExtractor={(item) => item._id}
         renderItem={renderItem}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
+        onRefresh={() => fetchNotifications()}
+        refreshing={loading}
       />
       <View style={{ height: 60, backgroundColor: 'red' }} />
       <NotificationModal

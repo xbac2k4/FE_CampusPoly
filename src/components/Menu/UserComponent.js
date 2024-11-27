@@ -23,7 +23,6 @@ const UserComponent = ({ avatar, full_name }) => {
 
         </View>
       </TouchableOpacity>
-      <View style={styles.divider} />
 
     </View>
   );
@@ -40,7 +39,6 @@ const styles = StyleSheet.create({
   profileSection: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: normalize(10),
   },
   avatar: {
     width: normalize(30),
@@ -56,50 +54,5 @@ const styles = StyleSheet.create({
   notificationContainer: {
     position: 'relative',
     marginRight: normalize(10),
-  },
-  notificationIcon: {
-    width: normalize(20),
-    height: normalize(20),
-  },
-  notificationBadge: {
-    position: 'absolute',
-    top: -normalize(4),
-    right: -normalize(4),
-    backgroundColor: '#FF0000',
-    borderRadius: normalize(10),
-    paddingHorizontal: normalize(5),
-    paddingVertical: normalize(2),
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  notificationText: {
-    color: '#ffffff',
-    fontSize: normalize(10),
-    fontWeight: 'bold',
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "#cccc",
-  },
-  createPageButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: normalize(10),
-    marginLeft: normalize(10),
-  },
-  addIconContainer: {
-    borderRadius: normalize(16),
-    borderWidth: 1,
-    borderColor: '#fff',
-    padding: normalize(5),
-  },
-  addIcon: {
-    width: normalize(15),
-    height: normalize(15),
-  },
-  createPageText: {
-    color: '#9fa0a2',
-    fontSize: normalize(14),
-    marginLeft: normalize(10),
   },
 });

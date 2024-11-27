@@ -8,11 +8,11 @@ import Header from '../../components/ProfileScreen/header';
 import ProfilePosts from '../../components/ProfileScreen/profilePosts';
 import ProfileStats from '../../components/ProfileScreen/profileStats';
 import ProfileTabs from '../../components/ProfileScreen/profileTabs';
-import { ADD_FRIEND, GET_POST_BY_USERID, GET_USER_ID, UPDATE_FRIEND } from '../../services/ApiConfig';
+import { GET_POST_BY_USERID, GET_USER_ID } from '../../services/ApiConfig';
 import { UserContext } from '../../services/provider/UseContext';
 
 const ProfileScreen = ({ navigation, route }) => {
-  const [activeTab, setActiveTab] = useState('Posts');
+  const [activeTab, setActiveTab] = useState('Bài viết');
   const { user } = useContext(UserContext);
   const [id, setID] = useState();
   const [posts, setPosts] = useState([]);
@@ -20,7 +20,6 @@ const ProfileScreen = ({ navigation, route }) => {
   const [userProfile, setUserProfile] = useState();
   const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(false);
-  const [buttonState, setButtonState] = useState('Add Friend');
 
   const initializeID = () => {
     if (user?._id) {
@@ -52,38 +51,6 @@ const ProfileScreen = ({ navigation, route }) => {
     } finally {
       setPostsLoading(false);
       console.log(posts);
-    }
-  };
-
-  const handleButtonPress = async () => {
-    try {
-      if (buttonState === 'Add Friend') {
-        const response = await fetch(`${ADD_FRIEND}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            user_id: user._id,
-            user_friend_id: userProfile._id,
-          }),
-        });
-        if (response.ok) {
-          setButtonState('Request Sent');
-        }
-      } else if (buttonState === 'Awaiting Approval') {
-        const response = await fetch(`${UPDATE_FRIEND}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            user_id: userProfile._id,
-            user_friend_id: user._id,
-          }),
-        });
-        if (response.ok) {
-          setButtonState('Friend');
-        }
-      }
-    } catch (error) {
-      console.error('Error handling friend request:', error);
     }
   };
 
@@ -126,7 +93,7 @@ const ProfileScreen = ({ navigation, route }) => {
 
           <ProfileTabs onTabSelect={setActiveTab} />
 
-          {activeTab === 'Posts' && (
+          {activeTab === 'Bài viết' && (
             postsLoading ? (
               <LoadingTimeline quantity={3} />
             ) : (
@@ -134,7 +101,7 @@ const ProfileScreen = ({ navigation, route }) => {
                 <ProfilePosts data={posts} navigation={navigation} />
               ) : (
                 <Text style={{ color: '#FFF', textAlign: 'center', marginTop: 20 }}>
-                  No posts to display.
+                  Không có bài viết nào
                 </Text>
               )
             )
