@@ -201,9 +201,11 @@ const PostStyle = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)', // Nền mờ
     justifyContent: 'center',
     alignItems: 'center',
+    
   },
   dialog: {
-    width: '80%',
+    width: '100%',
+    height:'100%',
     backgroundColor: '#181A1C',
     borderRadius: 8,
     padding: 20,
@@ -212,39 +214,41 @@ const PostStyle = StyleSheet.create({
   dialogTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 10,
-    color:'#fff',
+    color:'#C0C0C0',
   },
   input: {
     width: '100%',
     height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
     borderRadius: 4,
     paddingHorizontal: 10,
-    marginBottom: 10,
+
     color:'#fff',
   },
   dialogActions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     width: '100%',
+    marginBottom: 10,
   },
   actionButton: {
-    flex: 1,
-    backgroundColor: '#FF0000',
-    borderRadius: 4,
-    paddingVertical: 10,
-    marginHorizontal: 5,
+    padding: 10,
+    borderRadius: 8,
+    justifyContent: 'center',
     alignItems: 'center',
   },
   cancelButton: {
-    backgroundColor: '#6c757d',
+    backgroundColor: 'transparent', // Màu trong suốt
+  },
+  updateButton: {
+    width: 100, // Chiều rộng cố định
   },
   actionText: {
-    color: '#fff',
+    fontSize: 16,
     fontWeight: 'bold',
+    color: '#fff',
   },
+
   imgcontainer: {
     alignSelf:'flex-start',
     height: 100,
@@ -254,8 +258,41 @@ const PostStyle = StyleSheet.create({
    
     flexDirection: 'row', 
     justifyContent:'space-around'
-  }
-
+  },
+  container: {
+    padding: 10,
+    backgroundColor: '#2B2B2B',
+    borderRadius: 10,
+  },
+  postRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 12,
+  },
+  avatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 32,
+    marginRight: 12,
+  },
+  avatarPlaceholder: {
+    width: 32,
+    height: 32,
+    borderRadius: 32,
+    marginRight: 12,
+    backgroundColor: '#888', // Màu nền placeholder
+  },
+  textInput: {
+    color: '#ECEBED',
+    fontSize: 16,
+    padding: 0,
+    margin: 0,
+    textAlignVertical: 'top',
+    backgroundColor: 'transparent',
+  },
+  inputContainer: {
+    flex: 1,
+  },
 });
 
 export default PostStyle;

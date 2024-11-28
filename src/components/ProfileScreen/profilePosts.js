@@ -259,11 +259,12 @@ const ProfilePosts = ({ navigation, data }) => {
       // console.log('Title:', post.postData.title);
       // console.log('Content:', post.postData.content);
       // console.log('img:', post.postData.image);
-  
+    console.log('hagtag:', post.postData.hashtag.hashtag_name);
       return {
         title: post.postData.title,
         content: post.postData.content,
         image: post.postData.image,
+        hashtag:post.postData.hashtag.hashtag_name
       };
     }
   

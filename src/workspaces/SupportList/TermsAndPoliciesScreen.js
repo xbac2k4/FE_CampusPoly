@@ -7,7 +7,7 @@ const TermsAndPoliciesScreen = () => {
   const navigation = useNavigation();
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView style={styles.container}>
+      <View style={styles.container}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.circleIcon}>
           <Image
             source={require('../../assets/images/arowleft.png')}
@@ -21,7 +21,7 @@ const TermsAndPoliciesScreen = () => {
           <Text style={styles.textHeader}>Điều khoản và chính sách</Text>
           <View style={{ height: 2, backgroundColor: '#fff' }} />
         </View>
-      </ScrollView>
+      </View>
     </View>
   )
 }

@@ -1,4 +1,4 @@
-import { Alert, Image, StyleSheet, Text, TouchableOpacity, View, Modal, TextInput, Button } from 'react-native';
+import { Alert, Image, StyleSheet, Text, TouchableOpacity, View, Modal, TextInput, Button, Dimensions } from 'react-native';
 import React, { useState, useContext, useEffect } from 'react';
 import styles from '../../assets/style/PostStyle';
 import { UserContext } from '../../services/provider/UseContext';
@@ -7,17 +7,21 @@ import Screens from '../../navigation/Screens';
 import { launchImageLibrary } from 'react-native-image-picker';
 import NotificationModal from '../Notification/NotificationModal';
 
+
 const CrudPost = ({ postId, onDeleteSuccess, navigation, existingPost }) => {
   const { user } = useContext(UserContext);
   const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái modal
   const [title, setTitle] = useState(''); // Trạng thái tiêu đề bài viết
   const [content, setContent] = useState(''); // Trạng thái nội dung bài viết
+  const [hashtag, setHagtag] = useState(''); // Trạng thái nội dung bài viết
   const [selectedImage, setSelectedImage] = useState(null); // State để lưu ảnh đã chọn
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false); // State cho modal xác nhận xóa
+  const [inputHeight, setInputHeight] = useState(40);
   useEffect(() => {
     if (existingPost) {
       setTitle(existingPost.title || ''); // Update title if existingPost is updated
       setContent(existingPost.content || ''); // Update content if existingPost is updated
+      setHagtag(existingPost.hagtag || ''); // Update content if existingPost is updated
     }
   }, [existingPost]); // Re-run when existingPost chan
 
@@ -148,76 +152,115 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, existingPost }) => {
       >
         <View style={styles.overlay}>
           <View style={styles.dialog}>
-            <Text style={styles.dialogTitle}>Chỉnh sửa bài viết</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, alignSelf: 'flex-start' }}>
-              <Image source={{ uri: user.avatar.replace('localhost', '10.0.2.2') }} style={{ width: 30, height: 30, borderRadius: 32 }} resizeMode='contain' />
-              <Text style={{ color: '#fff', fontSize: 16, fontWeight: '700', marginLeft: 10 }}>{user.full_name}</Text>
-            </View>
-            <TextInput
-              style={styles.input}
-              placeholder="Tiêu đề bài viết"
-              value={title}
-              onChangeText={setTitle}
-            />
-            <TextInput
-              style={[styles.input, { height: 100 }]} // Cho nội dung lớn hơn
-              placeholder="Nội dung bài viết"
-              value={content}
-              onChangeText={setContent}
-              multiline
-            />
-            <View style={styles.imgcontainer}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                {/* Hiển thị ảnh dữ liệu cũ nếu không có ảnh mới từ thư viện */}
-                {selectedImage ? (
-                  <Image
-                    source={selectedImage} // Hiển thị ảnh đã chọn từ thư viện
-                    style={{ width: 150, height: 100, borderRadius: 8, marginLeft: 3 }}
-                    resizeMode="contain"
-                  />
-                ) : existingPost && existingPost.image && existingPost.image[0] ? (
-                  <Image
-                    source={{ uri: existingPost.image[0] }} // Truy cập phần tử đầu tiên trong mảng ảnh
-                    style={{ width: 150, height: 100, borderRadius: 8 }}
-                    resizeMode="contain"
-                  />
-                ) : (
-                  <Image
-                    source={require('../../assets/images/no_iamge.png')}
-                    style={{ width: 100, height: 100 }}
-                    resizeMode="contain"
-                  />
-                )}
-
-                {/* Nút đổi ảnh bên phải */}
-                <TouchableOpacity style={{ marginLeft: '25%' }} onPress={handleChangeImage}>
-                  <Image
-                    source={require('../../assets/images/changeimg.png')}
-                    style={{ width: 50, height: 50 }} // Chỉnh kích thước nút đổi ảnh
-                    resizeMode="contain"
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-
-
-
-
             {/** Button container */}
             <View style={styles.dialogActions}>
+              <TouchableOpacity
+                style={[styles.actionButton, styles.cancelButton]}
+                onPress={() => setIsModalVisible(false)}
+              >
+                <Text style={[styles.actionText, { color: '#2E8AF6' }]}>Hủy</Text>
+              </TouchableOpacity>
+              <Text style={styles.dialogTitle}>Chỉnh sửa bài viết</Text>
               <TouchableOpacity
                 style={styles.actionButton}
                 onPress={handleUpdatePost}
               >
                 <Text style={styles.actionText}>Cập nhật</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.actionButton, styles.cancelButton]}
-                onPress={() => setIsModalVisible(false)}
-              >
-                <Text style={styles.actionText}>Hủy</Text>
-              </TouchableOpacity>
+
             </View>
+
+            <View style={styles.container}>
+              <View style={styles.postRow}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, alignSelf: 'flex-start' }}>
+                  {user && user?.avatar ? (
+                    <Image source={{ uri: user?.avatar.replace('localhost', '10.0.2.2') }} style={styles.avatar} />
+                  ) : (
+                    <View style={styles.avatarPlaceholder} />
+                  )}
+                  {/** Input */}
+                  <View style={styles.inputContainer}>
+                    <TextInput
+                      style={[styles.textInput, { height: Math.max(40, inputHeight) }]}
+                      placeholder="Title?"
+                      placeholderTextColor="#888"
+                      multiline
+                      value={title}
+                      onChangeText={setTitle}
+                      underlineColorAndroid="transparent"
+                      onContentSizeChange={(event) => setInputHeight(event.nativeEvent.contentSize.height)}
+
+                    />
+                    <TextInput
+                      style={[styles.textInput, { height: Math.max(40, inputHeight) }]}
+                      placeholder="Bạn đang nghĩ gì?"
+                      placeholderTextColor="#888"
+                      multiline
+                      value={content}
+                      onChangeText={setContent}
+                      onContentSizeChange={(event) => setInputHeight(event.nativeEvent.contentSize.height)}
+                      underlineColorAndroid="transparent"
+                    />
+                    {/* TextInput để nhập hashtag */}
+                    {/* <TextInput
+                      style={[styles.textInput, { height: Math.max(40, inputHeight) }]}
+                      placeholder="#Hashtag!"
+                      placeholderTextColor="#888"
+                      multiline
+                      value={hashtag}
+                      onContentSizeChange={(event) => setInputHeight(event.nativeEvent.contentSize.height)}
+                      // onChangeText={handleHashtagChange}
+                      underlineColorAndroid="transparent"
+                    /> */}
+                    <View style={styles.imgcontainer}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+
+                        {/* Hiển thị ảnh dữ liệu cũ nếu không có ảnh mới từ thư viện */}
+                        {selectedImage ? (
+                          <Image
+                            source={selectedImage} // Hiển thị ảnh đã chọn từ thư viện
+                            style={{ width: 150, height: 100, borderRadius: 8, marginLeft: 3 }}
+                            resizeMode="contain"
+                          />
+                        ) : existingPost && existingPost.image && existingPost.image[0] ? (
+                          <Image
+                            source={{ uri: existingPost.image[0] }} // Truy cập phần tử đầu tiên trong mảng ảnh
+                            style={{ width: 150, height: 100, borderRadius: 8 }}
+                            resizeMode="contain"
+                          />
+                        ) : (
+                          <Image
+                            source={require('../../assets/images/no_iamge.png')}
+                            style={{ width: 100, height: 100 }}
+                            resizeMode="contain"
+                          />
+                        )}
+
+                        {/* Nút đổi ảnh bên phải */}
+                        <TouchableOpacity style={{ marginLeft: '25%' }} onPress={handleChangeImage}>
+                          <Image
+                            source={require('../../assets/images/changeimg.png')}
+                            style={{ width: 50, height: 50 }} // Chỉnh kích thước nút đổi ảnh
+                            resizeMode="contain"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  </View>
+
+                </View>
+              </View>
+            </View>
+
+
+
+
+
+
+
+
+
+
           </View>
         </View>
       </Modal>

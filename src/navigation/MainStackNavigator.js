@@ -17,6 +17,11 @@ import UpdatePost from '../components/CrudPost/UpdatePost';
 import HelpCenterScreen from '../workspaces/SupportList/HelpCenterScreen';
 import ReportIssueScreen from '../workspaces/SupportList/ReportIssueScreen';
 import TermsAndPoliciesScreen from '../workspaces/SupportList/TermsAndPoliciesScreen';
+import Introduce from '../workspaces/SupportList/navSupport/Introduce';
+import Accountinformation from '../workspaces/SupportList/navSupport/Accountinformation';
+import Loginproblem from '../workspaces/SupportList/navSupport/Loginproblem';
+import Page from '../workspaces/SupportList/navSupport/Page';
+import Security from '../workspaces/SupportList/navSupport/Security';
 
 
 
@@ -40,6 +45,11 @@ const MainStackNavigator = () => {
        <Stack.Screen name={Screens.HelpCenter} component={HelpCenterScreen} options={{ animation: 'ios' }} />
        <Stack.Screen name={Screens.ReportIssue} component={ReportIssueScreen} options={{ animation: 'ios' }} />
        <Stack.Screen name={Screens.TermsAndPolic} component={TermsAndPoliciesScreen} options={{ animation: 'ios' }} />
+       <Stack.Screen name={Screens.Introduce} component={Introduce} options={{ animation: 'ios' }} />
+       <Stack.Screen name={Screens.Accountinformation} component={Accountinformation} options={{ animation: 'ios' }} />
+       <Stack.Screen name={Screens.Loginproblem} component={Loginproblem} options={{ animation: 'ios' }} />
+       <Stack.Screen name={Screens.Page} component={Page} options={{ animation: 'ios' }} />
+       <Stack.Screen name={Screens.Security} component={Security} options={{ animation: 'ios' }} />
     </Stack.Navigator>
   )
 }
