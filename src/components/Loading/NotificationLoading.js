@@ -9,14 +9,14 @@ const NotificationLoading = () => {
             padding: 10,
         }}>
             {Array.from({ length: 4 }).map((_, index) => (
-                <>
-                    <NotificationItem key={index} />
+                <View key={index}>
+                    <NotificationItem />
                     <View style={{
                         height: 1,
                         backgroundColor: '#3A3A3C',
                         width: '100%',
                     }} />
-                </>
+                </View>
             ))}
         </View>
     );
