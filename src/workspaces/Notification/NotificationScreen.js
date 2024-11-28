@@ -9,6 +9,7 @@ import { GET_NOTIFICATIONS_BY_USERID, GET_POST_ID, READ_ALL_NOTIFICATION, READ_N
 import { SocketContext } from '../../services/provider/SocketContext';
 import { UserContext } from '../../services/provider/UseContext';
 import { TYPE_ADD_FRIEND, TYPE_COMMENT_POST, TYPE_CREATE_POST, TYPE_LIKE_POST } from '../../services/TypeNotify';
+import NotificationLoading from '../../components/Loading/NotificationLoading';
 
 const NotificationScreen = ({ navigation }) => {
   const [notifications, setNotifications] = useState([]);
@@ -178,14 +179,6 @@ const NotificationScreen = ({ navigation }) => {
     );
   };
 
-  if (loading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ color: '#fff', fontSize: 16 }}>Đang tải...</Text>
-      </View>
-    );
-  }
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -194,15 +187,22 @@ const NotificationScreen = ({ navigation }) => {
           <Text style={styles.markAllAsRead}>Đánh dấu tất cả là đã đọc</Text>
         </TouchableOpacity>
       </View>
-      <FlatList
-        data={notifications.reverse()}
-        keyExtractor={(item) => item._id}
-        renderItem={renderItem}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
-        onRefresh={() => fetchNotifications()}
-        refreshing={loading}
-      />
-      <View style={{ height: 60, backgroundColor: 'red' }} />
+      {loading ?
+        <NotificationLoading />
+        :
+        <>
+          <FlatList
+            data={notifications.reverse()}
+            keyExtractor={(item) => item._id}
+            renderItem={renderItem}
+            ItemSeparatorComponent={() => <View style={styles.separator} />}
+            onRefresh={() => fetchNotifications()}
+            refreshing={loading}
+          />
+          <View style={{ height: "7%" }} />
+        </>
+      }
+
       <NotificationModal
         visible={modalVisible}
         onConfirm={handleConfirm}
