@@ -1,104 +1,173 @@
-import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import comment from '../../assets/images/comment.png';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Screens from '../../navigation/Screens';
-import heart from '../../assets/images/heart.png';
-import heartFilled from '../../assets/images/hear2.png';
+import { GET_SEARCH_POST_BY_HASHTAG } from '../../services/ApiConfig';
+import ProfilePosts from '../../components/ProfileScreen/profilePosts';
 
-const SearchComponents = ({ post }) => {
-    const [likedPosts, setLikedPosts] = useState([]);
-    if (!post) return null;
+const SearchComponents = ({ filteredHashtags, filteredUsers, navigation }) => {
+    const Navigation = useNavigation();
+    const [searchQuery, setSearchQuery] = useState("");
+    const [filteredHashTags, setFilteredHashTags] = useState([]);
+    const [loading, setLoading] = useState(false); // Trạng thái loading
+    const [isHashtagSelected, setIsHashtagSelected] = useState(false);
+    const [posts, setPosts] = useState([]); // Dữ liệu bài viết khi hashtag được chọn
 
-    // console.log('Dữ liệu bài viết:', post); // Debug dữ liệu bài viết
-    const toggleLike = (postId) => {
-        setLikedPosts((prevLikedPosts) =>
-            prevLikedPosts.includes(postId)
-                ? prevLikedPosts.filter((id) => id !== postId)
-                : [...prevLikedPosts, postId]
-        );
+
+    // Hàm xử lý khi bấm vào avatar hoặc tên người dùng
+    const handleProfileClick = (userId) => {
+        Navigation.navigate('Profile', { id: userId });
+    };
+    const removeVietnameseTones = (str) => {
+        return str
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "") // Loại bỏ dấu
+            .replace(/đ/g, "d")
+            .replace(/Đ/g, "D")
+            .toLowerCase();
+    };
+    const handleSearch = (text, data) => {
+        const normalizedText = removeVietnameseTones(text);
+        setSearchQuery(normalizedText);
+
+        if (normalizedText === "") {
+            setFilteredHashTags(data.hashtags);
+        } else {
+            const filteredHashTags = data.hashtags.filter((hashtag) => {
+                const normalizedHashtag = removeVietnameseTones(hashtag?.hashtag_name || "");
+                return normalizedHashtag.includes(normalizedText);
+            });
+
+            setFilteredHashTags(filteredHashTags);
+        }
     };
 
-    // Đảm bảo rằng trường name tồn tại trong post.user_id hoặc post.author
-    const userName = post.user_id?.full_name || post.author?.name || 'Vô danh';
+    const handleHashtagClick = async (hashtag) => {
+        // console.log('Hashtag selected:', hashtag);
+        setIsHashtagSelected(true);
 
-    const navigation = useNavigation(); // Hook to access navigation
-    // Xử lý khi bấm vào avatar và tên người dùng
-    const handleProfileClick = () => {
-        navigation.navigate(Screens.Profile, { id: post.user_id._id });
-        // navigation.navigate(Screens.Profile, { userId: post.user_id?._id || post.author?._id });
+
+        // Gọi API lấy bài viết theo hashtag
+        try {
+            const response = await fetch(`${GET_SEARCH_POST_BY_HASHTAG}?searchTerm=${encodeURIComponent(hashtag)}`);
+            const responseData = await response.json();
+            // Kiểm tra cấu trúc dữ liệu trả về
+            // console.log('API Response:', responseData);
+            // Kiểm tra xem dữ liệu có chứa posts hay không và posts có phải là mảng không
+            if (responseData.status === 200) {
+                // Cập nhật danh sách bài viết
+                setPosts(responseData.data);
+
+            } else {
+                console.error("Dữ liệu trả về không đúng cấu trúc", responseData);
+                setPosts([]); // Xóa dữ liệu nếu không hợp lệ
+            }
+        } catch (error) {
+            console.error("Lỗi khi tải bài viết:", error);
+            setPosts([]); // Xóa dữ liệu bài viết nếu có lỗi
+        } finally {
+            // console.log('Posts:', posts);
+            // Chuyển sang chế độ hiển thị bài viết
+        }
     };
-    return (
-        <View style={styles.postContainer}>
-            <View style={styles.postHeader}>
-                <TouchableOpacity onPress={() => handleProfileClick()}>
-                    <Image
-                        source={{
-                            uri: post.user_id?.avatar.replace('localhost', '10.0.2.2') ||
-                                'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg',
-                        }}
-                        style={styles.profileImage}
-                    />
+
+
+    // Thành phần cho mỗi hashtag
+    const renderHashtagItem = ({ item }) => (
+        <TouchableOpacity style={styles.hashtagContainer} onPress={() => handleHashtagClick(item?.hashtag_name)}>
+            <Text style={styles.hashtagText}>{item?.hashtag_name || 'Hashtag'}</Text>
+        </TouchableOpacity>
+    );
+
+    // Thành phần cho mỗi người dùng
+    const renderUserItem = ({ item }) => (
+        <View style={styles.userContainer}>
+            <TouchableOpacity onPress={() => handleProfileClick(item?._id)}>
+                <Image
+                    source={{
+                        uri: item?.avatar?.replace('localhost', '10.0.2.2') ||
+                            'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg',
+                    }}
+                    style={styles.profileImage}
+                />
+            </TouchableOpacity>
+            <View>
+                <TouchableOpacity onPress={() => handleProfileClick(item?._id)}>
+                    <Text style={styles.userName}>{item?.full_name || 'Vô danh'}</Text>
                 </TouchableOpacity>
-                <View>
-                    <TouchableOpacity onPress={() => handleProfileClick()}>
-                        <Text style={styles.postName}>{userName}</Text>
-                    </TouchableOpacity>
-                    <Text style={styles.postTime}>
-                        {post.createdAt ? new Date(post.createdAt).toLocaleString() : 'Thời gian không xác định'}
-                    </Text>
-                </View>
             </View>
-            {post.images && post.images.length > 0 && (
-                <Image source={{ uri: post.images[0] }} style={styles.postImage} />
-            )}
-            <Text
-                style={styles.postTitle}
-                numberOfLines={1} // Giới hạn hiển thị 1 dòng
-                ellipsizeMode="tail" // Dấu ... xuất hiện ở cuối dòng
-            >
-                {post.title || 'Không có tiêu đề'}
-            </Text>
-            <Text
-                style={styles.postContent}
-                numberOfLines={2} // Giới hạn hiển thị 2 dòng
-                ellipsizeMode="tail" // Dấu ... xuất hiện ở cuối dòng
-            >
-                {post.content || 'Nội dung không có sẵn'}
-            </Text>
-            <View style={styles.postStats}>
-                <View style={styles.iconLike}>
-                    <TouchableOpacity onPress={() => toggleLike( post._id )}>
-                        <Image
-                            source={likedPosts.includes( post._id ) ? heartFilled : heart}
-                            style={styles.iconImage}
-                        />
-                    </TouchableOpacity>
-                    <Text style={styles.metaText}>{post.like_count}</Text>
-                </View>
+        </View>
+    );
 
-                <View style={styles.iconLike}>
-                    <TouchableOpacity onPress={() => navigation.navigate(Screens.Comment, { postId: post._id })}>
-                        <Image source={comment} style={styles.iconImage} />
-                    </TouchableOpacity>
-                    <Text style={styles.metaText}>{post.comments || 0}</Text>
-                </View>
+    return (
+        <View style={styles.container}>
+            {/* FlatList cho Hashtags (ngang) */}
+            <FlatList
+                showsHorizontalScrollIndicator={true}
+                data={filteredHashtags}
+                horizontal={true}
+                renderItem={renderHashtagItem}
+                keyExtractor={(item) => item?._id ? item._id.toString() : item.id.toString()}
+                style={styles.hashtagList}
+                ListEmptyComponent={<Text style={styles.noResultsText}></Text>}
+            />
+
+            {/* FlatList cho Users (dọc) */}
+            <View style={{ flex: 1 , paddingBottom: 35}}>
+                {!isHashtagSelected ? (
+                    <FlatList
+                        data={filteredUsers}
+                        renderItem={renderUserItem}
+                        keyExtractor={(item) => item?._id ? item._id.toString() : item.id.toString()}
+                        style={styles.userList}
+                        ListEmptyComponent={<Text style={styles.noResultsText}>Gợi ý</Text>}
+                    />
+                ) : (
+                    <ProfilePosts navigation={navigation} data={posts} />
+                )}
             </View>
+
+
         </View>
     );
 };
 
+export default SearchComponents;
+
 const styles = StyleSheet.create({
-    postContainer: {
-        marginBottom: 20,
-        backgroundColor: '#323436',
-        borderRadius: 8,
-        padding: 10,
+    container: {
+        flex: 1,
+        backgroundColor: '#181A1C',
+    
     },
-    postHeader: {
+    hashtagList: {
+        marginBottom: 5,
+        flexGrow: 0,
+        marginHorizontal: 20
+    },
+    hashtagContainer: {
+        backgroundColor: '#323436',
+        borderRadius: 5,
+        maxHeight: 35,
+        marginRight: 10,
+        paddingVertical: 2,
+        paddingHorizontal: 8,
+    },
+    hashtagText: {
+        color: '#FFFFFF',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    userList: {
+        marginTop: 10,
+        marginHorizontal:10,
+    },
+    userContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 8,
+        backgroundColor: '#323436',
+        borderRadius: 20,
+        padding: 10,
+        marginBottom: 15,
     },
     profileImage: {
         width: 40,
@@ -106,53 +175,15 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         marginRight: 12,
     },
-    postName: {
+    userName: {
         color: '#FFFFFF',
         fontSize: 16,
         fontWeight: 'bold',
     },
-    postTime: {
-        color: '#888888',
-        fontSize: 12,
-    },
-    postImage: {
-        width: '100%',
-        height: 200,
-        borderRadius: 8,
-        marginBottom: 8,
-    },
-    postTitle: {
-        color: '#FFFFFF',
-        fontSize: 16,
-        fontWeight: 'bold',
-        marginBottom: 8,
-    },
-    postContent: {
+    noResultsText: {
         color: '#FFFFFF',
         fontSize: 14,
-        fontWeight: 'normal',
-        marginBottom: 8,
-    },
-    postStats: {
-        flexDirection: 'row',
-        alignItems: 'center',  // Căn chỉnh theo chiều ngang
-        justifyContent: 'flex-start',  // Canh đều các phần tử
-        marginBottom: 8,
-    },
-    iconLike: {
-        flexDirection: 'row',  // Các phần tử icon và số lượng sẽ nằm trên cùng 1 hàng
-        alignItems: 'center',  // Căn chỉnh theo chiều dọc
-        marginRight: 20,  // Khoảng cách giữa các biểu tượng
-    },
-    iconImage: {
-        width: 20,
-        height: 20,
-    },
-    metaText: {
-        color: '#B3B3B3',
-        fontSize: 14,
-        marginLeft: 5,  // Khoảng cách giữa icon và số lượng
+        alignContent: 'center',
+        marginTop: 6,
     },
 });
-
-export default SearchComponents;

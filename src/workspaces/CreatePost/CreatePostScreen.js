@@ -59,7 +59,7 @@ const CreatePostScreen = ({ navigation }) => {
         throw new Error('Failed to publish post!');
       }
       const post = await response.json();
-      console.log('API response:', post);
+      // console.log('API response:', post);
 
       // Alert.alert("Success", "Your post has been published!");
       navigation.goBack();
