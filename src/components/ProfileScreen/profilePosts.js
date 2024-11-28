@@ -6,7 +6,7 @@ const { width: screenWidth } = Dimensions.get('window');
 import styles from '../../assets/style/PostStyle';
 import ReportComponent from '../../components/Report/ReportComponent';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import { LIKE_POST, UNLIKE_POST } from '../../services/ApiConfig';
+import { INTERACTION_SCORE, LIKE_POST, UNLIKE_POST } from '../../services/ApiConfig';
 import ToastModal from '../../components/Notification/NotificationModal'
 // Import các hình ảnh
 import comment from '../../assets/images/comment.png';
@@ -46,6 +46,21 @@ const ProfilePosts = ({ navigation, data }) => {
   };
 
   // console.log(user);
+  const fetchInteractionScore = async (user_id, hashtag_id, score) => {
+    const response = await fetch(INTERACTION_SCORE, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ user_id, hashtag_id, score }),
+    });
+    const result = await response.json();
+    // if (response.ok) {
+    //   if (result.status === 200) {
+    //     // console.log('okok');
+    //   }
+    // }
+  };
 
   {/** Sử lí cái thông báo  */ }
   const [modalVisible, setModalVisible] = useState(false);
@@ -107,6 +122,7 @@ const ProfilePosts = ({ navigation, data }) => {
       }
 
       const result = await response.json();
+      // console.log(result);
       if (response.ok) {
         if (isLiked) {
           // Cập nhật trạng thái khi bỏ like
@@ -128,20 +144,43 @@ const ProfilePosts = ({ navigation, data }) => {
         } else {
           // Cập nhật trạng thái khi thích bài viết
           setLikedPosts((prevPosts) => [...prevPosts, item.postData._id]);
-          setUserAll((prevPosts) =>
-            prevPosts.map((postData) =>
-              postData.postData._id === item.postData._id
-                ? {
+          // setUserAll((prevPosts) =>
+          //   prevPosts.map((postData) =>
+          //     postData.postData._id === item.postData._id
+          //       ? {
+          //         ...postData,
+          //         likeData: [...postData.likeData, result.data], // Thêm lượt thích mới vào likeData
+          //         postData: {
+          //           ...postData.postData,
+          //           like_count: postData.postData.like_count + 1, // Tăng số lượng like
+          //         },
+          //       }
+          //       : postData
+          //   )
+          // );
+          setUserAll((prevPosts) => {
+            return prevPosts.map((postData) => {
+              if (postData.postData._id === item.postData._id) {
+                // Lấy hashtag từ bài viết
+                const hashtags = postData.postData.hashtag;
+
+                // Gọi hàm fetchInteractionScore với hashtag
+                fetchInteractionScore(user._id, hashtags._id, 1);
+
+                return {
                   ...postData,
                   likeData: [...postData.likeData, result.data], // Thêm lượt thích mới vào likeData
                   postData: {
                     ...postData.postData,
                     like_count: postData.postData.like_count + 1, // Tăng số lượng like
                   },
-                }
-                : postData
-            )
-          );
+                };
+              }
+              return postData;
+            });
+          });
+          // console.log(userAll);
+
           console.log({ message: 'Thích thành công', type: 'success' });
           // console.log(item);
 
@@ -285,7 +324,12 @@ const ProfilePosts = ({ navigation, data }) => {
                     </View>
 
                     <View style={styles.iconLike}>
-                      <TouchableOpacity onPress={() => navigation.navigate(Screens.Comment, { postId: item.postData._id })}>
+                      <TouchableOpacity onPress={() => {
+                        navigation.navigate(Screens.Comment, { postId: item.postData._id })
+                        console.log(item);
+                        
+                        // fetchInteractionScore(user._id, item.postData?.hashtag?._id, 1);
+                      }}>
                         <Image source={comment} style={styles.iconImage} />
                       </TouchableOpacity>
                       <Text style={styles.metaText}>{item.postData.comment_count}</Text>

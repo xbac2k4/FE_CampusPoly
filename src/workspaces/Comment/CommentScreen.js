@@ -10,7 +10,7 @@ import CommentInputComponent from '../../components/Comment/CommentInputComponen
 import { PostCommentLoading } from '../../components/Loading/LoadingTimeline';
 import SkeletonShimmer from '../../components/Loading/SkeletonShimmer';
 import ReportComponent from '../../components/Report/ReportComponent';
-import { GET_POST_ID, LIKE_POST, UNLIKE_POST } from '../../services/ApiConfig';
+import { GET_POST_ID, INTERACTION_SCORE, LIKE_POST, UNLIKE_POST } from '../../services/ApiConfig';
 import { UserContext } from '../../services/provider/UseContext';
 import { timeAgo } from '../../utils/formatTime';
 import { SocketContext } from '../../services/provider/SocketContext';
@@ -82,6 +82,21 @@ const CommentScreen = () => {
       setLoading(false);
     }
   };
+  const fetchInteractionScore = async (user_id, hashtag_id, score) => {
+    const response = await fetch(INTERACTION_SCORE, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ user_id, hashtag_id, score }),
+    });
+    const result = await response.json();
+    // if (response.ok) {
+    //   if (result.status === 200) {
+    //     // console.log('okok');
+    //   }
+    // }
+  };
   // State để theo dõi số lượng lượt thích
   useEffect(() => {
     fetchPostById();
@@ -139,7 +154,7 @@ const CommentScreen = () => {
   // Toggle like/unlike functionality
   // Xử lý like/unlike bài viết
   const toggleLike = async (item) => {
-    // console.log(item);
+    console.log(item);
     const userId = user._id; // Lấy ID người dùng từ context
     // console.log(user._id);
     // console.log(item.likeData);
@@ -163,6 +178,7 @@ const CommentScreen = () => {
         if (user._id !== post?.postData?.user_id?._id) {
           await sendNotifySocket(user.full_name, user._id, 'đã thích bài viết của bạn', post?.postData?.user_id?._id, TYPE_LIKE_POST, post?.postData?._id);
         }
+        fetchInteractionScore(user._id, item?.postData?.hashtag?._id, 1);
       }
 
       const result = await response.json(); // Parse kết quả từ response
@@ -429,6 +445,7 @@ const CommentScreen = () => {
             await sendNotifySocket(user.full_name, user._id, 'đã bình luận bài viết của bạn', post?.postData?.user_id?._id, TYPE_COMMENT_POST, post?.postData?._id);
           }
           socket.emit('user_comment_post', { postId: post?.postData?._id });
+          fetchInteractionScore(user._id, post?.postData?.hashtag._id, 2);
         }} style={styles.commentInput} />
       {/* Bottom Sheet */}
       <RBSheet

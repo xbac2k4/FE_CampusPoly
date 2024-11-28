@@ -6,7 +6,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import LoadingTimeline from '../../components/Loading/LoadingTimeline';
 import ProfilePosts from '../../components/ProfileScreen/profilePosts';
 import Screens from '../../navigation/Screens';
-import { GET_ALL_POST } from '../../services/ApiConfig';
+import { GET_ALL_POST, GET_POST_BY_USER_INTERACTION } from '../../services/ApiConfig';
 import LinearGradient from 'react-native-linear-gradient';
 import Colors from '../../constants/Color';
 import { UserContext } from '../../services/provider/UseContext';
@@ -39,10 +39,12 @@ const HomeScreen = ({ navigation }) => {
     setRefreshing(false); // Stop the refresh animation
     try {
       setLoading(true); // Đặt lại loading trước khi gọi API
-      const response = await fetch(GET_ALL_POST);
+      const response = await fetch(`${GET_POST_BY_USER_INTERACTION}?user_id=${user._id}`);
       const responseData = await response.json();
-      const sortedData = responseData.data.sort((a, b) => new Date(b.postData.createdAt) - new Date(a.postData.createdAt));
-      setData(sortedData);
+      // console.log(responseData);
+
+      // const sortedData = responseData.data.sort((a, b) => new Date(b.postData.createdAt) - new Date(a.postData.createdAt));
+      setData(responseData.data);
     } catch (error) {
       console.error('Lỗi khi lấy dữ liệu người dùng:', error);
     } finally {
@@ -50,14 +52,14 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      const handleUserData = async () => {
-        await fetchUserData();
-      }
-      handleUserData();
-    }, [])
-  );
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     const handleUserData = async () => {
+  //       await fetchUserData();
+  //     }
+  //     handleUserData();
+  //   }, [])
+  // );
 
   useEffect(() => {
     setGreeting(getGreeting());

@@ -25,3 +25,5 @@ export const POST_CONVERSATION = API_URL + 'conversations/post-conversation';
 export const UPDATE_MESSAGE = API_URL + 'messages/update-message';
 export const GET_HASHTAG = API_URL + 'hashtags/search-hashtag';
 export const REMOVE_FRIEND = API_URL + 'friends/remove-friend';
+export const GET_POST_BY_USER_INTERACTION = API_URL + 'posts/get-posts-by-user-interaction';
+export const INTERACTION_SCORE = API_URL + 'userpreferences/interaction-scoring';
