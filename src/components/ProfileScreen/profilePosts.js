@@ -19,7 +19,10 @@ import { SocketContext } from '../../services/provider/SocketContext';
 import { TYPE_LIKE_POST } from '../../services/TypeNotify';
 import { timeAgo } from '../../utils/formatTime';
 const ProfilePosts = ({ navigation, data }) => {
+ 
   const [userAll, setUserAll] = useState(data); // Chứa các bài viết
+  useEffect(() => {setUserAll(data)},[data]);
+  // console.log('userAll:', userAll);
   const { user } = useContext(UserContext);
   //   const [user, setUser] = useState(props.data.map((item) => item?.post));
 
@@ -281,7 +284,7 @@ const ProfilePosts = ({ navigation, data }) => {
       <ScrollView contentContainerStyle={styles.flatListContent}>
         {userAll && userAll.length > 0 ? (
           userAll.map((item) => {
-            // console.log(item);
+            // console.log("moinhat",item);
             return (
               <View key={item.postData._id} style={styles.postContainer}>
                 <View style={styles.postHeader}>
@@ -295,7 +298,7 @@ const ProfilePosts = ({ navigation, data }) => {
                     <Text style={styles.postTime}>{timeAgo(item.postData.createdAt)}</Text>
                   </View>
                   <TouchableOpacity
-                    onPress={() => { console.log('item:', item); openBottomSheet(item?.postData?._id) }}
+                    onPress={() => {  openBottomSheet(item?.postData?._id) }}
                     style={styles.moreIcon}>
                     <Text style={styles.moreText}>⋮</Text>
                   </TouchableOpacity>

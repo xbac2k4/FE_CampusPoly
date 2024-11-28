@@ -90,6 +90,8 @@ const CreatePostScreen = ({ navigation }) => {
         navigation.goBack();
         await sendNotificationToMultipleSocket(user.full_name, user._id, 'đã đăng bài viết mới', userFriend, TYPE_CREATE_POST, post?.data?._id);
       }
+      // console.log('API response:', post);
+
       // Alert.alert("Success", "Your post has been published!");
     } catch (error) {
       console.error('Error while publishing post:', error);
