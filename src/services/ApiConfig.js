@@ -25,3 +25,5 @@ export const POST_CONVERSATION = API_URL + 'conversations/post-conversation';
 export const UPDATE_MESSAGE = API_URL + 'messages/update-message';
 export const GET_HASHTAG = API_URL + 'hashtags/search-hashtag';
 export const DELETE_POST = API_URL + 'posts/delete-post';
+export const UPDATE_POST = API_URL + 'posts/update-post';
+

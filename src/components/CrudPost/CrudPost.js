@@ -1,10 +1,9 @@
-import { Alert, Image, StyleSheet, Text, TouchableOpacity, View, Modal, TextInput, Button, Dimensions, Animated } from 'react-native';
-import React, { useState, useContext, useEffect } from 'react';
-import styles from '../../assets/style/PostStyle';
-import { UserContext } from '../../services/provider/UseContext';
-import { Screen } from 'react-native-screens';
-import Screens from '../../navigation/Screens';
+import React, { useContext, useEffect, useState } from 'react';
+import { Alert, Animated, Image, Modal, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import styles from '../../assets/style/PostStyle';
+import { DELETE_POST, UPDATE_POST } from '../../services/ApiConfig';
+import { UserContext } from '../../services/provider/UseContext';
 import NotificationModal from '../Notification/NotificationModal';
 
 
@@ -64,7 +63,7 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, existingPost }) => {
   const handleConfirmDelete = async () => {
     try {
       const response = await fetch(
-        `http://10.0.2.2:3000/api/v1/posts/delete-post/${postId}?user_id=${user._id}`,
+        `${DELETE_POST}/${postId}?user_id=${user._id}`,
         { method: 'DELETE' }
       );
       if (response.ok) {
@@ -132,7 +131,7 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, existingPost }) => {
       }
 
       const response = await fetch(
-        `http://10.0.2.2:3000/api/v1/posts/update-post/${postId}?user_id=${user._id}`,
+        `${UPDATE_POST}/${postId}?user_id=${user._id}`,
         {
           method: 'PUT',
           body: formData,
