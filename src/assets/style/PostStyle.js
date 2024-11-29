@@ -231,6 +231,19 @@ const PostStyle = StyleSheet.create({
     width: '100%',
     marginBottom: 10,
   },
+  updateButtonActive: {
+    backgroundColor: '#2E8AF6', // Màu xanh khi có thay đổi
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 5,
+  },
+  updateButtonInactive: {
+    backgroundColor: '#ccc', // Màu xám khi không có thay đổi
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 5,
+  },
+  
   actionButton: {
     padding: 10,
     borderRadius: 8,
@@ -274,6 +287,7 @@ const PostStyle = StyleSheet.create({
     height: 32,
     borderRadius: 32,
     marginRight: 12,
+    
   },
   avatarPlaceholder: {
     width: 32,
@@ -292,6 +306,109 @@ const PostStyle = StyleSheet.create({
   },
   inputContainer: {
     flex: 1,
+  },
+  addButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 30,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#323436',
+    justifyContent: 'center',
+  },
+  imageContainer: {
+    width: 160,
+    height: 32,
+    borderRadius: 32,
+    overflow: 'hidden',
+    marginLeft: 10,
+    backgroundColor: '#323436',
+    justifyContent: 'center',
+  },
+  imageRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
+  image: {
+    width: 20,
+    height: 20,
+  },
+  selectedImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 10,
+  },
+  selectedGif: {
+    width: 60,
+    height: 60,
+    borderRadius: 10,
+  },
+  imageContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  imageWrapper: {
+    position: 'relative',
+    marginRight: 10,
+  },
+  removeImageButton: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    borderRadius: 12,
+    padding: 2,
+  },
+  removeImageIcon: {
+    width: 14,
+    height: 14,
+  },
+  imageWrapper: {
+    position: 'relative',
+    width: 60,
+    height: 60,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  previewImage: {
+    width: '100%',
+    height: '100%',
+  },
+  deleteButton: {
+    position: 'absolute',
+    top: -5,
+    right: -5,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    borderRadius: 12,
+    width: 24,
+    height: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  deleteButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  noImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 8,
+  },
+  imgContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  deleteIcon: {
+    position: 'absolute',
+    top: -5, // Đặt vị trí bên trên
+    right: -5, // Đặt vị trí bên phải
+    backgroundColor: '#fff', // Nền trắng để nút nổi bật
+    borderRadius: 8,
+    padding: 2,
+    elevation: 5, // Đổ bóng cho nút "X"
   },
 });
 

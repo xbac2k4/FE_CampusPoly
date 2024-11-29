@@ -1,11 +1,12 @@
-import { Alert, Image, StyleSheet, Text, TouchableOpacity, View, Modal, TextInput, Button, Dimensions } from 'react-native';
+import { Alert, Image, StyleSheet, Text, TouchableOpacity, View, Modal, TextInput, Button, Dimensions, Animated } from 'react-native';
 import React, { useState, useContext, useEffect } from 'react';
 import styles from '../../assets/style/PostStyle';
 import { UserContext } from '../../services/provider/UseContext';
 import { Screen } from 'react-native-screens';
 import Screens from '../../navigation/Screens';
-import { launchImageLibrary } from 'react-native-image-picker';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import NotificationModal from '../Notification/NotificationModal';
+
 
 
 const CrudPost = ({ postId, onDeleteSuccess, navigation, existingPost }) => {
@@ -13,10 +14,14 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, existingPost }) => {
   const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái modal
   const [title, setTitle] = useState(''); // Trạng thái tiêu đề bài viết
   const [content, setContent] = useState(''); // Trạng thái nội dung bài viết
-  const [hashtag, setHagtag] = useState(''); // Trạng thái nội dung bài viết
+  const [hagtag, setHagtag] = useState(''); // Trạng thái nội dung bài viết
   const [selectedImage, setSelectedImage] = useState(null); // State để lưu ảnh đã chọn
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false); // State cho modal xác nhận xóa
   const [inputHeight, setInputHeight] = useState(40);
+  const [isVisible, setIsVisible] = useState(false);
+  const [animation] = useState(new Animated.Value(0));
+  const [isChanged, setIsChanged] = useState(false); // Trạng thái kiểm tra thay đổi
+
   useEffect(() => {
     if (existingPost) {
       setTitle(existingPost.title || ''); // Update title if existingPost is updated
@@ -24,8 +29,33 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, existingPost }) => {
       setHagtag(existingPost.hagtag || ''); // Update content if existingPost is updated
     }
   }, [existingPost]); // Re-run when existingPost chan
+  const animatedStyle = {
+    transform: [
+      {
+        translateY: animation.interpolate({
+          inputRange: [0, 1],
+          outputRange: [10, 0],
+        }),
+      },
+    ],
+  };
+  const toggleImages = () => {
+    setIsVisible(!isVisible);
+    Animated.spring(animation, {
+      toValue: isVisible ? 0 : 1,
+      friction: 5,
+      tension: 50,
+      useNativeDriver: true,
+    }).start();
+  };
 
-
+  const openImageLibrary = () => {
+    handleChangeImage(); // Gọi hàm handleChangeImage để mở thư viện ảnh
+  };
+  const openCamera = () => {
+    const options = { mediaType: 'photo', saveToPhotos: true };
+    launchCamera(options, handleImageResponse);
+  };
 
   const handleDeletePost = async () => {
     setIsDeleteModalVisible(true); // Hiển thị modal xác nhận xóa
@@ -68,6 +98,19 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, existingPost }) => {
       }
     });
   };
+  const handleCaptureImage = () => {
+    launchCamera({ mediaType: 'photo', quality: 0.5, saveToPhotos: true }, (response) => {
+      if (response.didCancel) {
+        console.log('User cancelled camera');
+      } else if (response.errorCode) {
+        console.log('Camera Error: ', response.errorCode);
+      } else {
+        // Lưu ảnh đã chụp vào state
+        const source = { uri: response.assets[0].uri };
+        setSelectedImage(source); // Cập nhật ảnh mới
+      }
+    });
+  };
 
 
   // Hàm xử lý cập nhật bài viết
@@ -76,6 +119,7 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, existingPost }) => {
       const formData = new FormData();
       formData.append('title', title);
       formData.append('content', content);
+      formData.append('hagtag', hagtag);
 
       // Chỉ gửi ảnh nếu có ảnh mới
       if (selectedImage) {
@@ -173,11 +217,13 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, existingPost }) => {
             <View style={styles.container}>
               <View style={styles.postRow}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, alignSelf: 'flex-start' }}>
-                  {user && user?.avatar ? (
-                    <Image source={{ uri: user?.avatar.replace('localhost', '10.0.2.2') }} style={styles.avatar} />
-                  ) : (
-                    <View style={styles.avatarPlaceholder} />
-                  )}
+                  <View style={{top:'-40%' }}>
+                    {user && user?.avatar ? (
+                      <Image source={{ uri: user?.avatar.replace('localhost', '10.0.2.2') }} style={styles.avatar} />
+                    ) : (
+                      <View style={styles.avatarPlaceholder} />
+                    )}
+                  </View>
                   {/** Input */}
                   <View style={styles.inputContainer}>
                     <TextInput
@@ -207,51 +253,81 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, existingPost }) => {
                       placeholder="#Hashtag!"
                       placeholderTextColor="#888"
                       multiline
-                      value={hashtag}
+                      value={hagtag}
                       onContentSizeChange={(event) => setInputHeight(event.nativeEvent.contentSize.height)}
                       // onChangeText={handleHashtagChange}
                       underlineColorAndroid="transparent"
                     /> */}
-                    <View style={styles.imgcontainer}>
-                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-
-                        {/* Hiển thị ảnh dữ liệu cũ nếu không có ảnh mới từ thư viện */}
+                    <View style={styles.imgContainer}>
+                      <View style={{ position: 'relative' }}>
+                        {/* Hiển thị ảnh đã chọn */}
                         {selectedImage ? (
-                          <Image
-                            source={selectedImage} // Hiển thị ảnh đã chọn từ thư viện
-                            style={{ width: 150, height: 100, borderRadius: 8, marginLeft: 3 }}
-                            resizeMode="contain"
-                          />
+                          <View>
+                            <Image
+                              source={selectedImage} // Hiển thị ảnh đã chọn từ thư viện
+                              style={{ width: 60, height: 60, borderRadius: 8 }}
+                              resizeMode="cover"
+                            />
+                            {/* Nút X */}
+                            <TouchableOpacity
+                              style={styles.deleteIcon}
+                              onPress={() => setSelectedImage(null)} // Xóa ảnh khi nhấn nút
+                            >
+                              <Image
+                                source={require('../../assets/images/x.png')} // Đường dẫn đến ảnh "X"
+                                style={{ width: 16, height: 16 }}
+                              />
+                            </TouchableOpacity>
+                          </View>
                         ) : existingPost && existingPost.image && existingPost.image[0] ? (
                           <Image
                             source={{ uri: existingPost.image[0] }} // Truy cập phần tử đầu tiên trong mảng ảnh
-                            style={{ width: 150, height: 100, borderRadius: 8 }}
-                            resizeMode="contain"
+                            style={{ width: 60, height: 60, borderRadius: 8 }}
+                            resizeMode="cover"
                           />
                         ) : (
                           <Image
-                            source={require('../../assets/images/no_iamge.png')}
-                            style={{ width: 100, height: 100 }}
+                            source={require('../../assets/images/no_iamge.png')} // Ảnh mặc định nếu không có ảnh
+                            style={{ width: 60, height: 60, borderRadius: 8 }}
                             resizeMode="contain"
                           />
                         )}
-
-                        {/* Nút đổi ảnh bên phải */}
-                        <TouchableOpacity style={{ marginLeft: '25%' }} onPress={handleChangeImage}>
-                          <Image
-                            source={require('../../assets/images/changeimg.png')}
-                            style={{ width: 50, height: 50 }} // Chỉnh kích thước nút đổi ảnh
-                            resizeMode="contain"
-                          />
-                        </TouchableOpacity>
                       </View>
                     </View>
+
+
+
+                    <View style={{ flexDirection: 'row', alignItems: 'center',marginTop:10 }}>
+                      <TouchableOpacity style={styles.addButton}
+                        onPress={toggleImages}
+
+                      >
+                        <Image source={require('../../assets/images/add.png')} resizeMode="contain" style={{ width: 12, height: 12 }} />
+                      </TouchableOpacity>
+
+                      {isVisible && (
+                        <Animated.View style={[styles.imageContainer, animatedStyle]}>
+                          <View style={styles.imageRow}>
+                            <TouchableOpacity onPress={openImageLibrary}>
+                              <Image source={require('../../assets/images/image.png')} style={styles.image} />
+                            </TouchableOpacity>
+
+
+
+                            <TouchableOpacity onPress={handleCaptureImage}>
+                              <Image source={require('../../assets/images/Camera.png')} style={styles.image} />
+                            </TouchableOpacity>
+
+                          </View>
+                        </Animated.View>
+                      )}
+                    </View>
+
                   </View>
 
                 </View>
               </View>
             </View>
-
 
 
 
