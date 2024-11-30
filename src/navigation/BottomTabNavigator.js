@@ -1,9 +1,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import axios from 'axios';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Image, Keyboard, StyleSheet, TouchableOpacity, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { GET_NOTIFICATIONS_BY_USERID } from '../services/ApiConfig';
 import { UserContext } from '../services/provider/UseContext';
 import CreatePostScreen from '../workspaces/CreatePost/CreatePostScreen';
 import HomeScreen from '../workspaces/Home/homeScreen';
@@ -11,16 +9,14 @@ import MenuScreen from '../workspaces/Menu/MenuScreen';
 import NotificationScreen from '../workspaces/Notification/NotificationScreen';
 import SearchScreen from '../workspaces/SearchScreen/SearchScreen';
 import Screens from './Screens';
-import { useFocusEffect } from '@react-navigation/native';
-import { SocketContext } from '../services/provider/SocketContext';
+import axios from 'axios';
+import { GET_NOTIFICATIONS_BY_USERID } from '../services/ApiConfig';
 
 const Tab = createBottomTabNavigator();
 
 const BottomTabNavigator = ({ navigation }) => {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
-  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
-  const { user } = useContext(UserContext);
-  const { socket } = useContext(SocketContext);
+  const { isRead, user, setIsRead } = useContext(UserContext);
 
 
   useEffect(() => {
@@ -44,27 +40,14 @@ const BottomTabNavigator = ({ navigation }) => {
     }
 
     const hasUnread = result.data.notifications.some(notification => !notification.isRead);
-    setHasUnreadNotifications(hasUnread);
+    setIsRead(!hasUnread);
   };
 
   useEffect(() => {
-    checkNotifications();
-  }, []);
-
-  useFocusEffect(
-    useCallback(() => {
-      // fetchNotifications();
-      if (socket) {
-        socket.on('load_notification', () => {
-          console.log('12345555');
-          checkNotifications();
-        })
-      }
-      return () => {
-        socket.off('load_notification');
-      };
-    }, [socket])
-  );
+    if (user) {
+      checkNotifications();
+    }
+  }, [user]);
 
   return (
     <Tab.Navigator
@@ -148,13 +131,13 @@ const BottomTabNavigator = ({ navigation }) => {
             <Image
               source={
                 focused
-                  ? (hasUnreadNotifications
-                    ? require('../assets/images/dot_active_clock.png')
-                    : require('../assets/images/4781824_alarm_alert_attention_bell_clock_icon.png')
+                  ? (isRead
+                    ? require('../assets/images/4781824_alarm_alert_attention_bell_clock_icon.png')
+                    : require('../assets/images/dot_active_clock.png')
                   )
-                  : (hasUnreadNotifications
-                    ? require('../assets/images/dot_alert2.png')
-                    : require('../assets/images/alert2.png')
+                  : (isRead
+                    ? require('../assets/images/alert2.png')
+                    : require('../assets/images/dot_alert2.png')
                   )
               }
               style={{ width: 24, height: 24 }}

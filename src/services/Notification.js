@@ -1,4 +1,4 @@
-import notifee, { AndroidImportance, EventType } from '@notifee/react-native';
+import notifee, { AndroidImportance } from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
 
 
@@ -38,7 +38,7 @@ export async function createChannel() {
       importance: AndroidImportance.HIGH,
       sound: 'default'
     });
-    console.log('Channel created successfully');
+    // console.log('Channel created successfully');
 
   } catch (error) {
     console.error('Failed to create notification channel:', error);
@@ -61,6 +61,7 @@ async function onDisplayNotification(remoteMessage) {
         smallIcon: remoteMessage.notification.android.smallIcon,
         timestamp: remoteMessage.sentTime || new Date().getTime(), // Sử dụng sentTime hoặc thời gian hiện tại
         showTimestamp: true, // Hiển thị thời gian trong thông báo
+        pressAction: { id: 'default', launchActivity: 'default'}
       },
     });
   } catch (error) {
@@ -123,8 +124,8 @@ async function onDisplayNotification(remoteMessage) {
 //   }
 // }
 
-// // Đăng ký sự kiện nền
+// Đăng ký sự kiện nền
 // notifee.onBackgroundEvent(onBackgroundEvent);
 
-// // Đăng ký sự kiện foreground
+// Đăng ký sự kiện foreground
 // notifee.onForegroundEvent(onBackgroundEvent);

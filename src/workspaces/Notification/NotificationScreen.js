@@ -14,12 +14,13 @@ import NotificationLoading from '../../components/Loading/NotificationLoading';
 const NotificationScreen = ({ navigation }) => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useContext(UserContext);
+  const { user, setIsRead } = useContext(UserContext);
   const [modalVisible, setModalVisible] = useState(false); // State to control modal
   const { socket } = useContext(SocketContext);
 
   const fetchNotifications = async () => {
     try {
+      setLoading(true);
       if (!user || !user._id) {
         throw new Error('Không tìm thấy userID');
       }
@@ -29,8 +30,12 @@ const NotificationScreen = ({ navigation }) => {
       }
 
       setNotifications(result.data.notifications);
+      const hasUnread = notifications.some(notification => !notification.isRead);
+      setIsRead(hasUnread);
     } catch (e) {
       console.error('Error fetching notifications:', e);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -43,9 +48,7 @@ const NotificationScreen = ({ navigation }) => {
   };
 
   useEffect(() => {
-    setLoading(true);
     fetchNotifications();
-    setLoading(false);
   }, [])
 
   useFocusEffect(
@@ -56,10 +59,8 @@ const NotificationScreen = ({ navigation }) => {
 
   useFocusEffect(
     useCallback(() => {
-      // fetchNotifications();
       if (socket) {
         socket.on('load_notification', () => {
-          // console.log('12345555');
           fetchNotifications();
         })
       }
@@ -72,13 +73,12 @@ const NotificationScreen = ({ navigation }) => {
   const handleMarkAllAsRead = async () => {
     setLoading(true);
     try {
-      // console.log("id: ", user._id);
 
-      const result = axios.put(`${READ_ALL_NOTIFICATION}`, {
+      const result = await axios.put(`${READ_ALL_NOTIFICATION}`, {
         receiver_id: user._id
       });
 
-      // console.log(result);
+      console.log("result: ", result.data);
 
     } catch (error) {
       console.log(error);
@@ -86,8 +86,9 @@ const NotificationScreen = ({ navigation }) => {
     }
     finally {
       await fetchNotifications();
+      setLoading(false);
+      setIsRead(true);
     }
-    setLoading(false);
   };
   const fetchPostById = async (postId) => {
     try {
@@ -119,9 +120,10 @@ const NotificationScreen = ({ navigation }) => {
     }
   }
 
+  const currentTime = new Date();
+
   const renderItem = ({ item }) => {
     const sentTime = new Date(item.sentTime);
-    const currentTime = new Date();
 
     const isSameDay = sentTime.toDateString() === currentTime.toDateString();
 
@@ -156,6 +158,10 @@ const NotificationScreen = ({ navigation }) => {
                 } if (result?.data?.data?.type === TYPE_CREATE_POST) {
                   openModal(result?.data?.data?.post_id);
                 }
+
+                // kiểm tra xem có thông báo nào chưa đọc
+                const hasUnread = notifications.some(notification => !notification.isRead);
+                setIsRead(hasUnread);
               })
               .catch((error) => {
                 console.log(error);

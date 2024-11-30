@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Alert, ToastAndroid } from 'react-native';
 import PostComponent from '../../components/Post/PostComponent';
 import { UserContext } from '../../services/provider/UseContext';
 import { ADD_POST, GET_FRIEND_BY_USERID } from '../../services/ApiConfig';
@@ -90,9 +90,7 @@ const CreatePostScreen = ({ navigation }) => {
         navigation.goBack();
         await sendNotificationToMultipleSocket(user.full_name, user._id, 'đã đăng bài viết mới', userFriend, TYPE_CREATE_POST, post?.data?._id);
       }
-      // console.log('API response:', post);
-
-      // Alert.alert("Success", "Your post has been published!");
+      ToastAndroid.show('Đăng bài viết thành công', ToastAndroid.SHORT);
     } catch (error) {
       console.error('Error while publishing post:', error);
       Alert.alert('Error', error.message);

@@ -7,6 +7,7 @@ export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [isRead, setIsRead] = useState(false);
 
     GoogleSignin.configure({
         webClientId: Google_Client_ID,
@@ -20,7 +21,7 @@ export const UserProvider = ({ children }) => {
     })
 
     return (
-        <UserContext.Provider value={{ user, setUser, GoogleSignin }}>
+        <UserContext.Provider value={{ user, setUser, GoogleSignin, isRead, setIsRead }}>
             {children}
         </UserContext.Provider>
     );

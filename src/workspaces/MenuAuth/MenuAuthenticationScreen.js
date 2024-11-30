@@ -36,7 +36,7 @@ const MenuAuthenticationScreen = ({ navigation }) => {
     const timeoutId = setTimeout(() => {
       setIsLoading(false);
       setIsShowDialog(false); // Tắt dialog
-      console.log('Quá trình đăng nhập quá lâu, đã dừng lại.');
+      // console.log('Quá trình đăng nhập quá lâu, đã dừng lại.');
     }, 5000); // Thời gian chờ tối đa là 5 giây
 
     try {
@@ -49,7 +49,7 @@ const MenuAuthenticationScreen = ({ navigation }) => {
       const accessToken = (await GoogleSignin.getTokens()).accessToken;
 
       const deviceToken = await messaging().getToken();
-      console.log('Device token:', deviceToken);
+      // console.log('Device token:', deviceToken);
 
       const data = userInfo.data.user;
       const user = {
