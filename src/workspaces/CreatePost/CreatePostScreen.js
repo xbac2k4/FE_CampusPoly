@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Alert, ActivityIndicator } from 'react-native';
 import PostComponent from '../../components/Post/PostComponent';
 import { UserContext } from '../../services/provider/UseContext';
 import { ADD_POST, GET_FRIEND_BY_USERID } from '../../services/ApiConfig';
@@ -7,6 +7,7 @@ import Colors from '../../constants/Color';
 import LinearGradient from 'react-native-linear-gradient';
 import { SocketContext } from '../../services/provider/SocketContext';
 import { TYPE_CREATE_POST } from '../../services/TypeNotify';
+import Loading from '../../components/MenuAuth/Loading';
 
 const CreatePostScreen = ({ navigation }) => {
   // const [user, setUser] = useState(null);
@@ -19,10 +20,20 @@ const CreatePostScreen = ({ navigation }) => {
   const { user } = useContext(UserContext);
   const [isPost, setIsPost] = useState(false);
   const [userFriend, setUserFriend] = useState([]);
+  const [loading, setLoading] = useState(false);
   const { sendNotificationToMultipleSocket } = useContext(SocketContext);
 
+  const uploadImage = async (images) => {
+    // Thực hiện công việc bất đồng bộ, ví dụ gọi API hoặc tải ảnh lên
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        console.log('Images uploaded');
+        resolve();
+      }, 2000); // Giả lập tác vụ mất 2 giây
+    });
+  };
   // Hàm để cập nhật dữ liệu từ PostComponent
-  const handleContentChange = (newTitle, newContent, newHashtag, newImages, newGif) => {
+  const handleContentChange = async (newTitle, newContent, newHashtag, newImages, newGif) => {
     setTitle(newTitle);
     setContent(newContent);
     setHashtag(newHashtag);
@@ -49,32 +60,7 @@ const CreatePostScreen = ({ navigation }) => {
     fetchUserFriends();
   }, []);
 
-  const handlePublish = async () => {
-    const formData = new FormData();
-    formData.append('user_id', user._id); // Gia dinh khi chua co user_id
-    formData.append('title', title || "");
-    formData.append('content', content || "");
-    formData.append('hashtag', hashtag || "");
-
-    // Thêm hình ảnh vào formData
-    images.forEach((imgUri, index) => {
-      if (imgUri) {
-        formData.append('image', {
-          uri: imgUri,
-          type: 'image/jpeg', // Đảm bảo điều này phù hợp với loại hình ảnh của bạn
-          name: `image_${index}.jpg`, // Tên cho mỗi ảnh
-        });
-      }
-    });
-
-    // if (gif) {
-    //   formData.append('gif', {
-    //     uri: gif,
-    //     name: 'gif.gif',
-    //     type: 'image/gif',
-    //   });
-    // }
-
+  const fetchCreatePost = async (formData) => {
     try {
       const response = await fetch(ADD_POST, {
         method: 'POST',
@@ -90,12 +76,44 @@ const CreatePostScreen = ({ navigation }) => {
         navigation.goBack();
         await sendNotificationToMultipleSocket(user.full_name, user._id, 'đã đăng bài viết mới', userFriend, TYPE_CREATE_POST, post?.data?._id);
       }
-      // console.log('API response:', post);
-
       // Alert.alert("Success", "Your post has been published!");
     } catch (error) {
       console.error('Error while publishing post:', error);
       Alert.alert('Error', error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handlePublish = async () => {
+    try {
+      const formData = new FormData();
+      formData.append('user_id', user._id); // Gia dinh khi chua co user_id
+      formData.append('title', title || "");
+      formData.append('content', content || "");
+      formData.append('hashtag', hashtag || "");
+      // Thêm hình ảnh vào formData
+      images?.forEach((imgUri, index) => {
+        if (imgUri) {
+          formData.append('image', {
+            uri: imgUri,
+            type: 'image/jpeg', // Đảm bảo điều này phù hợp với loại hình ảnh của bạn
+            name: `image_${index}.jpg`, // Tên cho mỗi ảnh
+          });
+        }
+      });
+      await fetchCreatePost(formData);
+
+      // setTimeout(async () => {
+      //   await fetchCreatePost(formData);
+      // }, 5000); // Delay 3 giây (3000 ms)    // if (gif) {
+      //   formData.append('gif', {
+      //     uri: gif,
+      //     name: 'gif.gif',
+      //     type: 'image/gif',
+      //   });
+      // }
+    } catch (error) {
+      console.error('Error fetching user friends:', error);
     }
   };
   useEffect(() => {
@@ -117,7 +135,10 @@ const CreatePostScreen = ({ navigation }) => {
           colors={isPost ? [Colors.first, Colors.second] : [Colors.background, Colors.background]}
           style={styles.buttonContainer}>
           <TouchableOpacity
-            onPress={handlePublish}
+            onPress={() => {
+              setLoading(true);
+              handlePublish();
+            }}
             disabled={!isPost} // Disable nếu isPost === false
             style={{
               alignItems: 'center'
@@ -126,6 +147,7 @@ const CreatePostScreen = ({ navigation }) => {
           </TouchableOpacity>
         </LinearGradient>
       </View>
+      <Loading isLoading={loading} />
       <View style={styles.createContainer}>
         <PostComponent
           title={title}
@@ -133,7 +155,7 @@ const CreatePostScreen = ({ navigation }) => {
           hashtag={hashtag}
           image={images}
           // gif={gif}
-          onContentChange={handleContentChange} // Truyền hàm vào PostComponent
+          onContentChange={handleContentChange}
           user={user}
         />
       </View>
