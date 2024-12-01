@@ -1,4 +1,3 @@
-import FriendListScreen from "../workspaces/FriendListScreen/FriendListScreen";
 
 
 const Screens = {

@@ -7,6 +7,7 @@ import Colors from '../../constants/Color';
 import LinearGradient from 'react-native-linear-gradient';
 import { SocketContext } from '../../services/provider/SocketContext';
 import { TYPE_CREATE_POST } from '../../services/TypeNotify';
+import Screens from '../../navigation/Screens';
 
 const CreatePostScreen = ({ navigation }) => {
   // const [user, setUser] = useState(null);
@@ -87,7 +88,7 @@ const CreatePostScreen = ({ navigation }) => {
       const post = await response.json();
       // console.log('API response:', post.data);
       if (post.status === 200) {
-        navigation.goBack();
+        navigation.navigate(Screens.Home)
         await sendNotificationToMultipleSocket(user.full_name, user._id, 'đã đăng bài viết mới', userFriend, TYPE_CREATE_POST, post?.data?._id);
       }
       ToastAndroid.show('Đăng bài viết thành công', ToastAndroid.SHORT);
