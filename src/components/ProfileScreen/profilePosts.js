@@ -399,6 +399,10 @@ const ProfilePosts = ({ navigation, data }) => {
               prevPosts.filter((post) => post?.postData?._id !== selectedPostId)
             );
             setSelectedPostId(null);
+            refEditDeleteSheet.current.close(); // Đóng sheet khi xóa thành công
+          }}
+          onUpdateSuccess={() => {
+            refEditDeleteSheet.current.close(); // Đóng sheet khi sửa thành công
           }}
           existingPost={getExistingPost(selectedPostId)} // Gọi hàm để lấy dữ liệu bài viết
         />

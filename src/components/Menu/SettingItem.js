@@ -15,6 +15,8 @@ const SettingItem = ({ title, icon, subItems }) => {
       navigation.navigate('ReportIssue'); // Điều hướng đến Báo cáo sự cố
     } else if (subItem === 'Điều khoản & chính sách') {
       navigation.navigate('TermsAndPolic'); // Điều hướng đến Điều khoản & chính sách
+    }else if (subItem === 'Trung tâm quyền riêng tư') {
+      navigation.navigate('Privacy'); // Điều hướng đến Điều khoản & chính sách
     }
   };
 

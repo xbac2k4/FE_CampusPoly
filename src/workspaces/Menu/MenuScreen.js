@@ -73,8 +73,7 @@ const MenuScreen = () => {
           </View>
         </View>
 
-        <View style={styles.divider} />
-
+        
         <SettingItem
           title="Trợ giúp & hỗ trợ"
           icon={require('../../assets/images/hoi.png')}
@@ -96,8 +95,14 @@ const MenuScreen = () => {
         <SettingItem
           title="Quyền riêng tư"
           icon={require('../../assets/images/setting.png')}
-          subItems={['Trung tâm quyền riêng tư', 'Cài đặt']}
-          onPress={() => { /* Handle onPress here */ }}
+          subItems={['Trung tâm quyền riêng tư']}
+          onPress={(subItem) => { 
+            if (subItem === 'Trung tâm quyền riêng tư') {
+              navigation.navigate(Screens.Privacy); // Điều hướng đến Trung tâm trợ giúp
+            } else if (subItem === 'Báo cáo sự cố') {
+              navigation.navigate(Screens.ReportIssue);
+            }
+          }}
         />
       </ScrollView>
 

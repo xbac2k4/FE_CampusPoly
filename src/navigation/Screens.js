@@ -1,3 +1,4 @@
+import Privacy from "../workspaces/SupportList/navSupport/Privacy";
 
 
 const Screens = {
@@ -26,6 +27,7 @@ const Screens = {
     Loginproblem:'Loginproblem',
     Page:'Page',
     Security:'Security',
+    Privacy:'Privacy',  
 };
 
 export default Screens;

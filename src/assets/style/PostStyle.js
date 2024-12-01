@@ -225,12 +225,20 @@ const PostStyle = StyleSheet.create({
     color:'#fff',
   },
   dialogActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'space-between', // Đảm bảo hai nút cân đều
+    width: '100%', 
     marginBottom: 10,
+   
   },
+  dialogTitleContainer: {
+    position: 'absolute', 
+    left: 0,
+    right: 0,
+    alignItems: 'center', // Đảm bảo tiêu đề luôn ở giữa
+  },
+    
   updateButtonActive: {
     backgroundColor: '#2E8AF6', // Màu xanh khi có thay đổi
     paddingHorizontal: 15,

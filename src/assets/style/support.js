@@ -60,6 +60,7 @@ const supportlist = StyleSheet.create({
         color: '#fff',
         fontSize: width * 0.04, // Responsive font size
         fontWeight: '500',
+        
       },
       footer: {
         marginTop: 20,
@@ -88,6 +89,10 @@ const supportlist = StyleSheet.create({
         marginBottom:10,
         backgroundColor:'#181A1C'
 
+      },
+      texthp:{
+        fontSize:15,fontWeight:'400',color:'#fff',
+        marginTop:10
       },
       
   });

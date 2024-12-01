@@ -21,6 +21,7 @@ import Accountinformation from '../workspaces/SupportList/navSupport/Accountinfo
 import Loginproblem from '../workspaces/SupportList/navSupport/Loginproblem';
 import Page from '../workspaces/SupportList/navSupport/Page';
 import Security from '../workspaces/SupportList/navSupport/Security';
+import Privacy from '../workspaces/SupportList/navSupport/Privacy';
 
 
 
@@ -48,6 +49,7 @@ const MainStackNavigator = () => {
        <Stack.Screen name={Screens.Loginproblem} component={Loginproblem} options={{ animation: 'ios' }} />
        <Stack.Screen name={Screens.Page} component={Page} options={{ animation: 'ios' }} />
        <Stack.Screen name={Screens.Security} component={Security} options={{ animation: 'ios' }} />
+       <Stack.Screen name={Screens.Privacy} component={Privacy} options={{ animation: 'ios' }} />
     </Stack.Navigator>
   )
 }

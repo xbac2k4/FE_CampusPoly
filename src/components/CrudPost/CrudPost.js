@@ -1,14 +1,16 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Alert, Animated, Image, Modal, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import { Alert, Image, StyleSheet, Text, TouchableOpacity, View, Modal, TextInput, Button, Dimensions, Animated } from 'react-native';
+import React, { useState, useContext, useEffect } from 'react';
 import styles from '../../assets/style/PostStyle';
-import { DELETE_POST, UPDATE_POST } from '../../services/ApiConfig';
 import { UserContext } from '../../services/provider/UseContext';
+import { Screen } from 'react-native-screens';
+import Screens from '../../navigation/Screens';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import NotificationModal from '../Notification/NotificationModal';
+import Snackbar from 'react-native-snackbar';
 
 
 
-const CrudPost = ({ postId, onDeleteSuccess, navigation, existingPost }) => {
+const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess,existingPost }) => {
   const { user } = useContext(UserContext);
   const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái modal
   const [title, setTitle] = useState(''); // Trạng thái tiêu đề bài viết
@@ -63,21 +65,39 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, existingPost }) => {
   const handleConfirmDelete = async () => {
     try {
       const response = await fetch(
-        `${DELETE_POST}/${postId}?user_id=${user._id}`,
+        `http://10.0.2.2:3000/api/v1/posts/delete-post/${postId}?user_id=${user._id}`,
         { method: 'DELETE' }
       );
       if (response.ok) {
         setIsDeleteModalVisible(false); // Đóng modal
-        Alert.alert('Thành công', 'Bài viết đã được xóa.');
         onDeleteSuccess?.(); // Cập nhật giao diện sau khi xóa
+        
+        // Hiển thị Snackbar thành công
+        Snackbar.show({
+          text: 'Bài viết đã được xóa thành công!',
+          duration: Snackbar.LENGTH_SHORT,
+          backgroundColor: '#4CAF50', // Màu nền cho thành công
+          textColor: 'white', // Màu chữ
+        });
       } else {
-        Alert.alert('Thất bại', 'Không thể xóa bài viết. Vui lòng thử lại.');
+        Snackbar.show({
+          text: 'Không thể xóa bài viết. Vui lòng thử lại!',
+          duration: Snackbar.LENGTH_SHORT,
+          backgroundColor: '#f44336', // Màu nền cho lỗi
+          textColor: 'white',
+        });
       }
     } catch (error) {
       console.error('Lỗi xóa bài viết:', error);
-      Alert.alert('Lỗi', 'Đã xảy ra lỗi khi xóa bài viết.');
+      Snackbar.show({
+        text: 'Đã xảy ra lỗi khi xóa bài viết!',
+        duration: Snackbar.LENGTH_SHORT,
+        backgroundColor: '#f44336',
+        textColor: 'white',
+      });
     }
   };
+  
 
   const handleCancelDelete = () => {
     setIsDeleteModalVisible(false); // Đóng modal khi hủy
@@ -131,22 +151,38 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, existingPost }) => {
       }
 
       const response = await fetch(
-        `${UPDATE_POST}/${postId}?user_id=${user._id}`,
+        `http://10.0.2.2:3000/api/v1/posts/update-post/${postId}?user_id=${user._id}`,
         {
           method: 'PUT',
           body: formData,
         }
       );
 
+    
       if (response.ok) {
-        Alert.alert('Thành công', 'Bài viết đã được cập nhật.');
-        setIsModalVisible(false); // Đóng modal sau khi cập nhật thành công
+        // Hiển thị snackbar hoặc thông báo thành công
+        Snackbar.show({
+          text: 'Bài viết đã được cập nhật thành công!',
+          duration: Snackbar.LENGTH_SHORT,
+          backgroundColor: '#4CAF50',
+        });
+
+        // Gọi callback để đóng sheet
+        onUpdateSuccess?.();
       } else {
-        Alert.alert('Thất bại', 'Không thể cập nhật bài viết. Vui lòng thử lại.');
+        Snackbar.show({
+          text: 'Không thể cập nhật bài viết. Vui lòng thử lại!',
+          duration: Snackbar.LENGTH_SHORT,
+          backgroundColor: '#f44336',
+        });
       }
     } catch (error) {
       console.error('Lỗi khi cập nhật bài viết:', error);
-      Alert.alert('Lỗi', 'Đã xảy ra lỗi khi cập nhật bài viết.');
+      Snackbar.show({
+        text: 'Đã xảy ra lỗi khi cập nhật bài viết!',
+        duration: Snackbar.LENGTH_SHORT,
+        backgroundColor: '#f44336',
+      });
     }
   };
 
@@ -203,20 +239,24 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, existingPost }) => {
               >
                 <Text style={[styles.actionText, { color: '#2E8AF6' }]}>Hủy</Text>
               </TouchableOpacity>
-              <Text style={styles.dialogTitle}>Chỉnh sửa bài viết</Text>
+
+              <View style={styles.dialogTitleContainer}>
+                <Text style={styles.dialogTitle}>Chỉnh sửa bài viết</Text>
+              </View>
+
               <TouchableOpacity
                 style={styles.actionButton}
                 onPress={handleUpdatePost}
               >
                 <Text style={styles.actionText}>Cập nhật</Text>
               </TouchableOpacity>
-
             </View>
+
 
             <View style={styles.container}>
               <View style={styles.postRow}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, alignSelf: 'flex-start' }}>
-                  <View style={{top:'-40%' }}>
+                  <View style={{ top: '-40%' }}>
                     {user && user?.avatar ? (
                       <Image source={{ uri: user?.avatar.replace('localhost', '10.0.2.2') }} style={styles.avatar} />
                     ) : (
@@ -296,7 +336,7 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, existingPost }) => {
 
 
 
-                    <View style={{ flexDirection: 'row', alignItems: 'center',marginTop:10 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                       <TouchableOpacity style={styles.addButton}
                         onPress={toggleImages}
 

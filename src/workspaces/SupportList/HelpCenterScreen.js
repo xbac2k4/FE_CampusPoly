@@ -9,7 +9,8 @@ const HelpCenterScreen = () => {
   return (
     <View style={{ flex: 1 }}>
       <ScrollView style={styles.container}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.circleIcon}>
+      <View>
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.circleIcon}>
           <Image
             source={require('../../assets/images/arowleft.png')}
             resizeMode="contain"
@@ -22,6 +23,7 @@ const HelpCenterScreen = () => {
           <Text style={styles.textHeader}>CampusPoly Trung tâm hộ trợ</Text>
           <View style={{ height: 2, backgroundColor: '#fff' }} />
         </View>
+      </View>
         <View style={{ paddingHorizontal: 24, marginTop: 10 }}>
           <Text style={styles.texth1}>Chúng tôi có thể giúp gì cho bạn?</Text>
 
