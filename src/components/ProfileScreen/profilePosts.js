@@ -19,9 +19,9 @@ import { SocketContext } from '../../services/provider/SocketContext';
 import { TYPE_LIKE_POST } from '../../services/TypeNotify';
 import { timeAgo } from '../../utils/formatTime';
 const ProfilePosts = ({ navigation, data }) => {
- 
+
   const [userAll, setUserAll] = useState(data); // Chứa các bài viết
-  useEffect(() => {setUserAll(data)},[data]);
+  useEffect(() => { setUserAll(data) }, [data]);
   // console.log('userAll:', userAll);
   const { user } = useContext(UserContext);
   //   const [user, setUser] = useState(props.data.map((item) => item?.post));
@@ -284,7 +284,7 @@ const ProfilePosts = ({ navigation, data }) => {
       <ScrollView contentContainerStyle={styles.flatListContent}>
         {userAll && userAll.length > 0 ? (
           userAll.map((item) => {
-            // console.log("moinhat",item);
+            // console.log("moinhat", item);
             return (
               <View key={item.postData._id} style={styles.postContainer}>
                 <View style={styles.postHeader}>
@@ -295,10 +295,20 @@ const ProfilePosts = ({ navigation, data }) => {
                     <TouchableOpacity onPress={() => handleProfileClick(item.postData.user_id._id)}>
                       <Text style={styles.profileName}>{item.postData.user_id.full_name}</Text>
                     </TouchableOpacity>
-                    <Text style={styles.postTime}>{timeAgo(item.postData.createdAt)}</Text>
+                    <View style={{
+                      flexDirection: 'row',
+                      gap: 15,
+                    }}>
+                      <Text style={{
+                        ...styles.postTime,
+                        fontSize: 12,
+                        fontWeight: 'bold'
+                      }}>{item.postData?.user_id?.role[0]?.role_name}</Text>
+                      <Text style={styles.postTime}>{timeAgo(item.postData.createdAt)}</Text>
+                    </View>
                   </View>
                   <TouchableOpacity
-                    onPress={() => {  openBottomSheet(item?.postData?._id) }}
+                    onPress={() => { openBottomSheet(item?.postData?._id) }}
                     style={styles.moreIcon}>
                     <Text style={styles.moreText}>⋮</Text>
                   </TouchableOpacity>
@@ -329,8 +339,8 @@ const ProfilePosts = ({ navigation, data }) => {
                     <View style={styles.iconLike}>
                       <TouchableOpacity onPress={() => {
                         navigation.navigate(Screens.Comment, { postId: item.postData._id })
-                        console.log(item);
-                        
+                        // console.log(item);
+
                         // fetchInteractionScore(user._id, item.postData?.hashtag?._id, 1);
                       }}>
                         <Image source={comment} style={styles.iconImage} />
@@ -355,7 +365,8 @@ const ProfilePosts = ({ navigation, data }) => {
             )
           })
         ) : (
-          <Text style={{ color: 'gray', marginTop: 20 }}>No posts available</Text>
+          // <Text style={{ color: 'gray', marginTop: 20 }}>No posts available</Text>
+          null
         )}
       </ScrollView>
 

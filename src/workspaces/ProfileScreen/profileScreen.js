@@ -45,12 +45,13 @@ const ProfileScreen = ({ navigation, route }) => {
     try {
       const response = await fetch(`${GET_POST_BY_USERID}?user_id=${userID}`);
       const responseData = await response.json();
-      setPosts(responseData.data);
+      // console.log(responseData.data);
+      const postSort = responseData.data.sort((a, b) => new Date(b.postData.createdAt) - new Date(a.postData.createdAt));
+      setPosts(postSort);
     } catch (error) {
       console.error('Error fetching posts:', error.message);
     } finally {
       setPostsLoading(false);
-      console.log(posts);
     }
   };
 
