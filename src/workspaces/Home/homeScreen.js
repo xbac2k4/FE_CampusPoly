@@ -6,7 +6,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import LoadingTimeline from '../../components/Loading/LoadingTimeline';
 import ProfilePosts from '../../components/ProfileScreen/profilePosts';
 import Screens from '../../navigation/Screens';
-import { GET_ALL_POST, GET_POST_BY_USER_INTERACTION } from '../../services/ApiConfig';
+import { GET_ALL_POST, GET_POST_BY_FRIENDS, GET_POST_BY_USER_INTERACTION } from '../../services/ApiConfig';
 import LinearGradient from 'react-native-linear-gradient';
 import Colors from '../../constants/Color';
 import { UserContext } from '../../services/provider/UseContext';
@@ -15,6 +15,7 @@ const HomeScreen = ({ navigation }) => {
   const [greeting, setGreeting] = useState('');
   // const navigation = useNavigation();
   const [data, setData] = useState([]);
+  const [dataPost, setDataPost] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState('Dành cho bạn'); // Trạng thái cho tab hiện tại
   const [refreshing, setRefreshing] = useState(false);
@@ -51,7 +52,22 @@ const HomeScreen = ({ navigation }) => {
       setLoading(false);
     }
   };
+  const fetchPostByFriends = async () => {
+    setRefreshing(false); // Stop the refresh animation
+    try {
+      setLoading(true); // Đặt lại loading trước khi gọi API
+      const response = await fetch(`${GET_POST_BY_FRIENDS}?user_id=${user._id}`);
+      const responseData = await response.json();
+      // console.log(responseData);
 
+      // const sortedData = responseData.data.sort((a, b) => new Date(b.postData.createdAt) - new Date(a.postData.createdAt));
+      setDataPost(responseData.data);
+    } catch (error) {
+      console.error('Lỗi khi lấy dữ liệu người dùng:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
   // useFocusEffect(
   //   useCallback(() => {
   //     const handleUserData = async () => {
@@ -64,6 +80,7 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     setGreeting(getGreeting());
     fetchUserData();
+    fetchPostByFriends();
   }, []);
 
   const renderHeaderTabs = () => (
@@ -98,6 +115,7 @@ const HomeScreen = ({ navigation }) => {
     setRefreshing(true);
     // Simulate a network request or data update
     fetchUserData();
+    fetchPostByFriends();
   };
 
   handlePullRefresh = () => {
@@ -133,7 +151,9 @@ const HomeScreen = ({ navigation }) => {
               <LoadingTimeline quantity={3} />
             ) : selectedTab === 'Dành cho bạn' ? (
               <ProfilePosts navigation={navigation} data={data} />
-            ) : null}
+            ) : (
+              <ProfilePosts navigation={navigation} data={dataPost} />
+            )}
 
             {/* Thêm khoảng trống ở cuối danh sách bài post */}
             <View style={{ height: 60 }} />

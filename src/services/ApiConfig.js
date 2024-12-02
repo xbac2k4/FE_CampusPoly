@@ -28,3 +28,4 @@ export const REMOVE_FRIEND = API_URL + 'friends/remove-friend';
 export const GET_POST_BY_USER_INTERACTION = API_URL + 'posts/get-posts-by-user-interaction';
 export const INTERACTION_SCORE = API_URL + 'userpreferences/interaction-scoring';
 export const GET_SEARCH_POST_BY_HASHTAG = API_URL + 'searchpluss/search-by-hashtag';
+export const GET_POST_BY_FRIENDS = API_URL + 'posts/get-posts-by-friends';
