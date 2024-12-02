@@ -7,10 +7,11 @@ import Screens from '../../navigation/Screens';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import NotificationModal from '../Notification/NotificationModal';
 import Snackbar from 'react-native-snackbar';
+import { DELETE_POST, UPDATE_POST } from '../../services/ApiConfig';
 
 
 
-const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess,existingPost }) => {
+const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess, existingPost }) => {
   const { user } = useContext(UserContext);
   const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái modal
   const [title, setTitle] = useState(''); // Trạng thái tiêu đề bài viết
@@ -65,13 +66,13 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess,existin
   const handleConfirmDelete = async () => {
     try {
       const response = await fetch(
-        `http://10.0.2.2:3000/api/v1/posts/delete-post/${postId}?user_id=${user._id}`,
+        `${DELETE_POST}/${postId}?user_id=${user._id}`,
         { method: 'DELETE' }
       );
       if (response.ok) {
         setIsDeleteModalVisible(false); // Đóng modal
         onDeleteSuccess?.(); // Cập nhật giao diện sau khi xóa
-        
+
         // Hiển thị Snackbar thành công
         Snackbar.show({
           text: 'Bài viết đã được xóa thành công!',
@@ -97,7 +98,7 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess,existin
       });
     }
   };
-  
+
 
   const handleCancelDelete = () => {
     setIsDeleteModalVisible(false); // Đóng modal khi hủy
@@ -151,14 +152,14 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess,existin
       }
 
       const response = await fetch(
-        `http://10.0.2.2:3000/api/v1/posts/update-post/${postId}?user_id=${user._id}`,
+        `${UPDATE_POST}/${postId}?user_id=${user._id}`,
         {
           method: 'PUT',
           body: formData,
         }
       );
 
-    
+
       if (response.ok) {
         // Hiển thị snackbar hoặc thông báo thành công
         Snackbar.show({
@@ -318,12 +319,19 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess,existin
                               />
                             </TouchableOpacity>
                           </View>
-                        ) : existingPost && existingPost.image && existingPost.image[0] ? (
-                          <Image
-                            source={{ uri: existingPost.image[0] }} // Truy cập phần tử đầu tiên trong mảng ảnh
-                            style={{ width: 60, height: 60, borderRadius: 8 }}
-                            resizeMode="cover"
-                          />
+                        ) : existingPost && existingPost.image && existingPost.image.length > 0 ? (
+                          <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                            {/* Lặp qua tất cả các ảnh trong mảng image */}
+                            {existingPost.image.map((imgUri, index) => (
+                              <View key={index} style={{ margin: 5 }}>
+                                <Image
+                                  source={{ uri: imgUri.replace('localhost', '10.0.2.2') }} // Xử lý URL ảnh
+                                  style={{ width: 60, height: 60, borderRadius: 8 }}
+                                  resizeMode="cover"
+                                />
+                              </View>
+                            ))}
+                          </View>
                         ) : (
                           <Image
                             source={require('../../assets/images/no_iamge.png')} // Ảnh mặc định nếu không có ảnh
@@ -333,6 +341,7 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess,existin
                         )}
                       </View>
                     </View>
+
 
 
 
