@@ -97,11 +97,11 @@ const ChatScreen = ({ navigation, route }) => {
           justifyContent: isCurrentUser ? 'flex-start' : 'flex-end',
           // marginVertical: 1,
         }}>
+        {isCurrentUser && <Image source={{ uri: memberWithDifferentUserId.avatar }} style={styles.avatar} />}
         {item.content === 'emoji::like::' ? (
           <AntDesign name="like1" size={24} color="#FA7F26" /> // Hiển thị biểu tượng like nếu item.content là 'emoji::like::'
         ) : (
           <>
-            {isCurrentUser && <Image source={{ uri: memberWithDifferentUserId.avatar }} style={styles.avatar} />}
             <View style={isCurrentUser ? styles.messageLeft : styles.messageRight}>
               <Text style={styles.messageText}>{item.content}</Text>
             </View>
@@ -357,7 +357,7 @@ const ChatScreen = ({ navigation, route }) => {
           </TouchableOpacity>
           <TextInput
             style={styles.input}
-            placeholder="Type your message here..."
+            placeholder="Nhập tin nhắn của bạn ở đây..."
             placeholderTextColor="#ECEBED"
             value={inputText}
             onChangeText={setInputText}

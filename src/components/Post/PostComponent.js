@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, TextInput, TouchableOpacity, View, Text, Animated, Alert, Modal, FlatList } from 'react-native';
+import { Image, StyleSheet, TextInput, TouchableOpacity, View, Text, Animated, Alert, Modal, FlatList, ActivityIndicator, TouchableWithoutFeedback } from 'react-native';
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 import DocumentPicker from 'react-native-document-picker';
 import GiphySelector from './GiphySelector';
@@ -16,6 +16,8 @@ const PostComponent = ({ title: initialTitle, content: initialContent, hashtag: 
   const [content, setContent] = useState(initialContent || ''); // State cho Content
   const [hashtag, setHashtag] = useState(initialHashtag || ''); // State cho hashtag
   const [title, setTitle] = useState(initialTitle || ''); // State cho Title
+  const [loadImage, setLoadImage] = useState(false);
+  const [lengthImage, setLengthImage] = useState(0);
 
   const [suggestedHashtags, setSuggestedHashtags] = useState([]); // Gợi ý hashtag từ DB
   const [selectedHashtags, setSelectedHashtags] = useState([]); // Danh sách hashtag đã chọn
@@ -44,37 +46,37 @@ const PostComponent = ({ title: initialTitle, content: initialContent, hashtag: 
     let hashtagText = text.trim();
     // Kiểm tra nếu người dùng không nhập # ở đầu, tự động thêm
     if (hashtagText && !hashtagText.startsWith('#')) {
-        hashtagText = '#' + hashtagText; // Thêm dấu # vào đầu
+      hashtagText = '#' + hashtagText; // Thêm dấu # vào đầu
     }
     setHashtag(hashtagText);
     if (hashtagText !== '') {
-        try {
-            // Gọi API với từ khóa tìm kiếm
-            const response = await fetch(`${GET_HASHTAG}?searchTerm=${encodeURIComponent(hashtagText)}`);
-            const data = await response.json();
-            if (Array.isArray(data.hashtags)) {
-                const hashtagNames = data.hashtags.map((hashtag) => hashtag?.hashtag_name);
-                // Nếu không có hashtag nào trả về, coi như người dùng đang tạo mới một hashtag
-                if (!hashtagNames.includes(hashtagText)) {
-                    setSuggestedHashtags([hashtagText, ...hashtagNames]);  // Hiển thị gợi ý hashtag mới
-                } else {
-                    setSuggestedHashtags(hashtagNames); 
-                }
-            } else {
-                setSuggestedHashtags([]); 
-            }
-        } catch (err) {
-            setSuggestedHashtags([]); 
+      try {
+        // Gọi API với từ khóa tìm kiếm
+        const response = await fetch(`${GET_HASHTAG}?searchTerm=${encodeURIComponent(hashtagText)}`);
+        const data = await response.json();
+        if (Array.isArray(data.hashtags)) {
+          const hashtagNames = data.hashtags.map((hashtag) => hashtag?.hashtag_name);
+          // Nếu không có hashtag nào trả về, coi như người dùng đang tạo mới một hashtag
+          if (!hashtagNames.includes(hashtagText)) {
+            setSuggestedHashtags([hashtagText, ...hashtagNames]);  // Hiển thị gợi ý hashtag mới
+          } else {
+            setSuggestedHashtags(hashtagNames);
+          }
+        } else {
+          setSuggestedHashtags([]);
         }
+      } catch (err) {
+        setSuggestedHashtags([]);
+      }
     } else {
-        setSuggestedHashtags([]); 
+      setSuggestedHashtags([]);
     }
 
     // Gửi dữ liệu cập nhật
     onContentChange(title, content, hashtagText, selectedImages, selectedGif);
-};
+  };
 
-  
+
   // Xử lý chọn hashtag
   const handleSelectHashtag = (hashtag) => {
     setSelectedHashtags([hashtag]);  // Giới hạn chỉ một hashtag đã chọn
@@ -82,7 +84,7 @@ const PostComponent = ({ title: initialTitle, content: initialContent, hashtag: 
     setHashtag(hashtag); // Đặt lại TextInput thành hashtag đã chọn
     onContentChange(title, content, hashtag, selectedImages, selectedGif);  // Gửi dữ liệu cập nhật
   };
-  
+
   // Xử lý xóa hashtag đã chọn
   const handleRemoveHashtag = (hashtag) => {
     setSelectedHashtags((prev) => prev.filter((item) => item !== hashtag));
@@ -90,7 +92,7 @@ const PostComponent = ({ title: initialTitle, content: initialContent, hashtag: 
     setHashtag(''); // Reset TextInput
     onContentChange(title, content, '', selectedImages, selectedGif);  // Gửi dữ liệu cập nhật khi không còn hashtag
   };
-  
+
   const handleGifSelect = (gifUrl) => {
     setSelectedGif(gifUrl);
     setGifModalVisible(false);
@@ -118,12 +120,44 @@ const PostComponent = ({ title: initialTitle, content: initialContent, hashtag: 
     ],
   };
 
-  const handleImageResponse = (response) => {
+  // const handleImageResponse = (response) => {
+  //   if (response.assets && response.assets.length > 0) {
+  //     const newImages = response.assets.map(asset => asset.uri);
+  //     setSelectedImages([...selectedImages, ...newImages]);
+  //     onContentChange(title, content, hashtag, [...selectedImages, ...newImages], selectedGif);
+  //   }
+  // };
+  const handleImageResponse = async (response) => {
     if (response.assets && response.assets.length > 0) {
       const newImages = response.assets.map(asset => asset.uri);
-      setSelectedImages([...selectedImages, ...newImages]);
-      onContentChange(title, content, hashtag, [...selectedImages, ...newImages], selectedGif);
+
+      // Giả sử bạn muốn tải ảnh lên server trước khi cập nhật state (tạo một hàm uploadImage)
+      try {
+        // Nếu bạn cần tải ảnh lên server, có thể gọi một API hoặc tải ảnh lên trước
+        setLengthImage(prevLength => prevLength + response.assets.length);
+        await uploadImage(newImages); // Giả lập việc tải ảnh lên
+        // Sau khi ảnh được tải lên (hoặc bất kỳ tác vụ bất đồng bộ nào), cập nhật state
+        setSelectedImages([...selectedImages, ...newImages]);
+        // Gọi onContentChange với các tham số đã được cập nhật
+        onContentChange(title, content, hashtag, [...selectedImages, ...newImages], selectedGif);
+      } catch (error) {
+        console.warn("Error uploading images: ", error);
+      }
     }
+  };
+
+  // Giả sử uploadImage là một hàm bất đồng bộ giả lập
+  const uploadImage = async (images) => {
+    // Giả lập việc tải ảnh lên trong 2 giây
+    setLoadImage(true);
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        console.log("Images uploaded successfully!");
+        setLoadImage(false);
+        // setLengthImage(0);
+        resolve();
+      }, 2000); // Giả lập thời gian tải lên
+    });
   };
 
   const openImageLibrary = () => {
@@ -145,125 +179,147 @@ const PostComponent = ({ title: initialTitle, content: initialContent, hashtag: 
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.postRow}>
-        {user && user?.avatar ? (
-          <Image source={{ uri: user?.avatar.replace('localhost', '10.0.2.2') }} style={styles.avatar} />
-        ) : (
-          <View style={styles.avatarPlaceholder} />
-        )}
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={[styles.textInput, { height: Math.max(40, inputHeight) }]}
-            placeholder="Title?"
-            placeholderTextColor="#888"
-            multiline
-            value={title} // Sử dụng giá trị từ state
-            onContentSizeChange={(event) => setInputHeight(event.nativeEvent.contentSize.height)}
-            onChangeText={handleTitleChange}
-            underlineColorAndroid="transparent"
-          />
-          <TextInput
-            style={[styles.textInput, { height: Math.max(40, inputHeight) }]}
-            placeholder="Bạn đang nghĩ gì?"
-            placeholderTextColor="#888"
-            multiline
-            value={content} // Sử dụng giá trị từ state
-            onContentSizeChange={(event) => setInputHeight(event.nativeEvent.contentSize.height)}
-            onChangeText={handleContentChange}
-            underlineColorAndroid="transparent"
-          />
-          {/* TextInput để nhập hashtag */}
-          <TextInput
-            style={[styles.textInput, { height: Math.max(40, inputHeight) }]}
-            placeholder="#Hashtag!"
-            placeholderTextColor="#888"
-            multiline
-            value={hashtag}
-            onContentSizeChange={(event) => setInputHeight(event.nativeEvent.contentSize.height)}
-            onChangeText={handleHashtagChange}
-            underlineColorAndroid="transparent"
-          />
+    <TouchableWithoutFeedback style={{ flex: 1 }} onPress={() => {
+      setSuggestedHashtags([])
+      handleSelectHashtag(hashtag)
+    }}>
+      <View style={styles.container}>
+        <View style={styles.postRow}>
+          {user && user?.avatar ? (
+            <Image source={{ uri: user?.avatar.replace('localhost', '10.0.2.2') }} style={styles.avatar} />
+          ) : (
+            <View style={styles.avatarPlaceholder} />
+          )}
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={[styles.textInput, { height: Math.max(40, inputHeight) }]}
+              placeholder="Title?"
+              placeholderTextColor="#888"
+              multiline
+              value={title} // Sử dụng giá trị từ state
+              onContentSizeChange={(event) => setInputHeight(event.nativeEvent.contentSize.height)}
+              onChangeText={handleTitleChange}
+              underlineColorAndroid="transparent"
+            />
+            <TextInput
+              style={[styles.textInput, { height: Math.max(40, inputHeight) }]}
+              placeholder="Bạn đang nghĩ gì?"
+              placeholderTextColor="#888"
+              multiline
+              value={content} // Sử dụng giá trị từ state
+              onContentSizeChange={(event) => setInputHeight(event.nativeEvent.contentSize.height)}
+              onChangeText={handleContentChange}
+              underlineColorAndroid="transparent"
+            />
+            {/* TextInput để nhập hashtag */}
+            <TextInput
+              style={[styles.textInput, { height: Math.max(40, inputHeight) }]}
+              placeholder="#Hashtag!"
+              placeholderTextColor="#888"
+              multiline
+              value={hashtag}
+              onContentSizeChange={(event) => setInputHeight(event.nativeEvent.contentSize.height)}
+              onChangeText={handleHashtagChange}
+              underlineColorAndroid="transparent"
+            />
 
-          {/* FlatList gợi ý hashtag sẽ xổ xuống ngay dưới TextInput */}
-          {suggestedHashtags.length > 0 && (
-            <View style={styles.suggestionsContainer}>
-              <FlatList
-                data={suggestedHashtags}
-                keyExtractor={(item, index) => index.toString()}
-                style={styles.suggestionsList}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    style={styles.suggestionItem}
-                    onPress={() => handleSelectHashtag(item)}
-                  >
-                    <Text style={styles.suggestionText}>{`${item}`}</Text>
+            {/* FlatList gợi ý hashtag sẽ xổ xuống ngay dưới TextInput */}
+            {suggestedHashtags.length > 0 && (
+              <View style={styles.suggestionsContainer}>
+                <FlatList
+                  data={suggestedHashtags}
+                  keyExtractor={(item, index) => index.toString()}
+                  style={styles.suggestionsList}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity
+                      style={styles.suggestionItem}
+                      onPress={() => handleSelectHashtag(item)}
+                    >
+                      <Text style={styles.suggestionText}>{`${item}`}</Text>
+                    </TouchableOpacity>
+                  )}
+                />
+              </View>
+            )}
+          </View>
+        </View>
+        <View style={styles.imageContent}>
+          {
+            loadImage ? (
+              Array.from({ length: lengthImage }).map((_, index) => (
+                <View key={index} style={[styles.selectedImage, styles.loadingContainer]}>
+                  <ActivityIndicator size="small" color="#0000ff" />
+                </View>
+              ))
+            ) : (
+              selectedImages.map((img, index) => (
+                <View key={index} style={styles.imageWrapper}>
+                  <Image source={{ uri: img }} style={styles.selectedImage} />
+                  <TouchableOpacity style={styles.removeImageButton} onPress={() => {
+                    const newImages = selectedImages.filter((_, i) => i !== index);
+                    setSelectedImages(newImages);
+                    setLengthImage(prevLength => prevLength - 1);
+                    onContentChange(title, content, hashtag, newImages, selectedGif);
+                  }}>
+                    <Image source={require('../../assets/images/x.png')} style={styles.removeImageIcon} />
                   </TouchableOpacity>
-                )}
-              />
+                </View>
+              ))
+            )
+          }
+          {selectedGif && (
+            <View style={styles.imageWrapper}>
+              <Image source={{ uri: selectedGif }} style={styles.selectedGif} />
+              <TouchableOpacity style={styles.removeImageButton} onPress={clearSelectedGif}>
+                <Image source={require('../../assets/images/x.png')} style={styles.removeImageIcon} />
+              </TouchableOpacity>
             </View>
           )}
         </View>
+
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <TouchableOpacity style={styles.addButton} onPress={toggleImages}>
+            <Image source={require('../../assets/images/add.png')} resizeMode="contain" style={{ width: 12, height: 12 }} />
+          </TouchableOpacity>
+
+          {isVisible && (
+            <Animated.View style={[styles.imageContainer, animatedStyle]}>
+              <View style={styles.imageRow}>
+                <TouchableOpacity onPress={openImageLibrary}>
+                  <Image source={require('../../assets/images/image.png')} style={styles.image} />
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => setGifModalVisible(true)}>
+                  <Image source={require('../../assets/images/GIF.png')} style={styles.image} />
+                </TouchableOpacity>
+
+                <Modal visible={isGifModalVisible} animationType="slide">
+                  <GiphySelector onGifSelect={handleGifSelect} />
+                </Modal>
+
+                <TouchableOpacity onPress={openCamera}>
+                  <Image source={require('../../assets/images/Camera.png')} style={styles.image} />
+                </TouchableOpacity>
+
+              </View>
+            </Animated.View>
+          )}
+        </View>
       </View>
-
-      <View style={styles.imageContent}>
-        {selectedImages.map((img, index) => (
-          <View key={index} style={styles.imageWrapper}>
-            <Image source={{ uri: img }} style={styles.selectedImage} />
-            <TouchableOpacity style={styles.removeImageButton} onPress={() => {
-              const newImages = selectedImages.filter((_, i) => i !== index);
-              setSelectedImages(newImages);
-              onContentChange(title, content, hashtag, newImages, selectedGif);
-            }}>
-              <Image source={require('../../assets/images/x.png')} style={styles.removeImageIcon} />
-            </TouchableOpacity>
-          </View>
-        ))}
-        {selectedGif && (
-          <View style={styles.imageWrapper}>
-            <Image source={{ uri: selectedGif }} style={styles.selectedGif} />
-            <TouchableOpacity style={styles.removeImageButton} onPress={clearSelectedGif}>
-              <Image source={require('../../assets/images/x.png')} style={styles.removeImageIcon} />
-            </TouchableOpacity>
-          </View>
-        )}
-      </View>
-
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <TouchableOpacity style={styles.addButton} onPress={toggleImages}>
-          <Image source={require('../../assets/images/add.png')} resizeMode="contain" style={{ width: 12, height: 12 }} />
-        </TouchableOpacity>
-
-        {isVisible && (
-          <Animated.View style={[styles.imageContainer, animatedStyle]}>
-            <View style={styles.imageRow}>
-              <TouchableOpacity onPress={openImageLibrary}>
-                <Image source={require('../../assets/images/image.png')} style={styles.image} />
-              </TouchableOpacity>
-
-              <TouchableOpacity onPress={() => setGifModalVisible(true)}>
-                <Image source={require('../../assets/images/GIF.png')} style={styles.image} />
-              </TouchableOpacity>
-
-              <Modal visible={isGifModalVisible} animationType="slide">
-                <GiphySelector onGifSelect={handleGifSelect} />
-              </Modal>
-
-              <TouchableOpacity onPress={openCamera}>
-                <Image source={require('../../assets/images/Camera.png')} style={styles.image} />
-              </TouchableOpacity>
-
-            </View>
-          </Animated.View>
-        )}
-      </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
 
 export default PostComponent;
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0', // Màu nền cho khung vuông
+    borderRadius: 8,
+    marginRight: 10
+  },
   container: {
     padding: 10,
     backgroundColor: '#2B2B2B',
@@ -371,7 +427,7 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: '#545454',
     maxHeight: 200, // Giới hạn chiều cao của FlatList nếu có nhiều mục
-    maxWidth:200,
+    maxWidth: 200,
     zIndex: 1000, // Đảm bảo nó xuất hiện trên các phần tử khác
     borderTopEndRadius: 10,
     borderBottomEndRadius: 10,
@@ -381,5 +437,5 @@ const styles = StyleSheet.create({
     padding: 5,
     maxHeight: 200, // Đảm bảo danh sách không quá dài
   },
-  
+
 });

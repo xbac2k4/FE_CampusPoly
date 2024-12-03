@@ -1,6 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import axios from 'axios';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Image, Keyboard, StyleSheet, TouchableOpacity, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { GET_NOTIFICATIONS_BY_USERID } from '../services/ApiConfig';
@@ -11,6 +11,8 @@ import MenuScreen from '../workspaces/Menu/MenuScreen';
 import NotificationScreen from '../workspaces/Notification/NotificationScreen';
 import SearchScreen from '../workspaces/SearchScreen/SearchScreen';
 import Screens from './Screens';
+import { useFocusEffect } from '@react-navigation/native';
+import { SocketContext } from '../services/provider/SocketContext';
 
 const Tab = createBottomTabNavigator();
 
@@ -18,6 +20,7 @@ const BottomTabNavigator = ({ navigation }) => {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
   const { user } = useContext(UserContext);
+  const { socket } = useContext(SocketContext);
 
 
   useEffect(() => {
@@ -34,19 +37,34 @@ const BottomTabNavigator = ({ navigation }) => {
     };
   }, []);
 
+  const checkNotifications = async () => {
+    const result = await axios.get(`${GET_NOTIFICATIONS_BY_USERID}?userId=${user._id}`);
+    if (!result.data.success) {
+      throw new Error('Lỗi khi lấy thông báo');
+    }
+
+    const hasUnread = result.data.notifications.some(notification => !notification.isRead);
+    setHasUnreadNotifications(hasUnread);
+  };
+
   useEffect(() => {
-    const checkNotifications = async () => {
-      const result = await axios.get(`${GET_NOTIFICATIONS_BY_USERID}?userId=${user._id}`);
-      if (!result.data.success) {
-        throw new Error('Lỗi khi lấy thông báo');
-      }
-
-      const hasUnread = result.data.notifications.some(notification => !notification.isRead);
-      setHasUnreadNotifications(hasUnread);
-    };
-
     checkNotifications();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      // fetchNotifications();
+      if (socket) {
+        socket.on('load_notification', () => {
+          console.log('12345555');
+          checkNotifications();
+        })
+      }
+      return () => {
+        socket.off('load_notification');
+      };
+    }, [socket])
+  );
 
   return (
     <Tab.Navigator
@@ -134,7 +152,7 @@ const BottomTabNavigator = ({ navigation }) => {
                     ? require('../assets/images/dot_active_clock.png')
                     : require('../assets/images/4781824_alarm_alert_attention_bell_clock_icon.png')
                   )
-                  :(hasUnreadNotifications
+                  : (hasUnreadNotifications
                     ? require('../assets/images/dot_alert2.png')
                     : require('../assets/images/alert2.png')
                   )

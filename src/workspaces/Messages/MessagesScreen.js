@@ -8,31 +8,25 @@ import { useFocusEffect } from '@react-navigation/native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { SocketContext } from '../../services/provider/SocketContext';
 import { timeAgo } from '../../utils/formatTime';
-
-// const users = [
-//   { id: '1', name: 'Huy', avatar: 'https://ispacedanang.edu.vn/wp-content/uploads/2024/05/hinh-anh-dep-ve-hoc-sinh-cap-3-1.jpg', online: true, isPinned: true },
-//   { id: '2', name: 'Huy', avatar: 'https://ispacedanang.edu.vn/wp-content/uploads/2024/05/hinh-anh-dep-ve-hoc-sinh-cap-3-1.jpg', online: true, isPinned: true },
-//   { id: '3', name: 'Huy', avatar: 'https://ispacedanang.edu.vn/wp-content/uploads/2024/05/hinh-anh-dep-ve-hoc-sinh-cap-3-1.jpg', online: true, isPinned: true },
-//   { id: '4', name: 'Vũ Quang Huy', avatar: 'https://ispacedanang.edu.vn/wp-content/uploads/2024/05/hinh-anh-dep-ve-hoc-sinh-cap-3-1.jpg', online: true, message: 'CampusPoly.....', time: '4h ago', isPinned: true },
-//   { id: '5', name: 'Vũ Quang Huy', avatar: 'https://ispacedanang.edu.vn/wp-content/uploads/2024/05/hinh-anh-dep-ve-hoc-sinh-cap-3-1.jpg', online: false, message: 'CampusPoly.....', time: '5h ago', isPinned: true },
-//   { id: '6', name: 'Vũ Quang Huy', avatar: 'https://ispacedanang.edu.vn/wp-content/uploads/2024/05/hinh-anh-dep-ve-hoc-sinh-cap-3-1.jpg', online: false, message: 'CampusPoly.....', time: '20/9/2024', isPinned: true },
-//   { id: '7', name: 'Vũ Quang Huy', avatar: 'https://ispacedanang.edu.vn/wp-content/uploads/2024/05/hinh-anh-dep-ve-hoc-sinh-cap-3-1.jpg', online: false, message: 'CampusPoly.....', time: '20/9/2024', isPinned: true },
-//   { id: '8', name: 'Vũ Quang Huy', avatar: 'https://ispacedanang.edu.vn/wp-content/uploads/2024/05/hinh-anh-dep-ve-hoc-sinh-cap-3-1.jpg', online: false, message: 'CampusPoly.....', time: '20/9/2024' },
-// ];
+import FriendLoading from '../../components/Loading/Message/FriendLoading';
+import UserLoading from '../../components/Loading/Message/UserLoading';
 
 const MessageScreen = ({ navigation }) => {
   const { socket, usersOnline } = useContext(SocketContext);
   const { user } = useContext(UserContext);
   const [users, setUsers] = useState();
   const [friends, setFriends] = useState();
+  const [loading, setLoading] = useState(true)
 
   const FetchConversation = async (id) => {
     try {
+      setLoading(true)
       const response = await fetch(`${GET_CONVERSATION_BY_USER}${id}`);
       const data = await response.json();
       // console.log(data.data);
 
       setUsers(data.data);
+      setLoading(false)
     } catch (error) {
       console.error('Error fetching user data:', error);
     }
@@ -67,19 +61,6 @@ const MessageScreen = ({ navigation }) => {
     // console.log(usersOnline);
   }, [])
 
-  // useEffect(() => {
-  //   if (socket) {
-  //     socket.on('new_message', (data) => {
-  //       FetchConversation(user._id);
-  //       FetchFriends(user._id);
-  //     });
-
-  //     return () => {
-  //       socket.off('new_message');
-  //     };
-  //   }
-  // }, [socket]);
-
   const postConversation = async (user_id, friend_id) => {
     let newConversation;
     try {
@@ -113,10 +94,12 @@ const MessageScreen = ({ navigation }) => {
 
   const FetchFriends = async (userID) => {
     try {
+      setLoading(true);
       const response = await fetch(`${GET_USER_ID}${userID}`);
       const data = await response.json();
       // console.log(data.data.friends);
       setFriends(data.data.friends);
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching user data:', error);
     }
@@ -304,25 +287,29 @@ const MessageScreen = ({ navigation }) => {
         <Icon name="search" size={20} color="#999" style={styles.searchIcon} />
       </View>
 
-      <FlatList
-        style={{ flexGrow: 0, padding: 10 }}
-        data={friends}
-        renderItem={renderPinnedUser}
-        keyExtractor={item => item?._id}
-        horizontal
-        showsHorizontalScrollIndicator={true}
-      />
+      {loading ? <FriendLoading /> :
+        <FlatList
+          style={{ flexGrow: 0, padding: 10 }}
+          data={friends}
+          renderItem={renderPinnedUser}
+          keyExtractor={item => item?._id}
+          horizontal
+          showsHorizontalScrollIndicator={true}
+        />}
 
       <View style={styles.divider} />
 
       {/* Phần danh sách tin nhắn */}
-      <FlatList
-        data={users} // Chỉ hiển thị những người có tin nhắn
-        renderItem={renderMessage}
-        keyExtractor={item => item?.conversation_id}
-        showsVerticalScrollIndicator={false}
-        style={styles.messageList}
-      />
+      {loading ?
+        <UserLoading />
+        : <FlatList
+          data={users} // Chỉ hiển thị những người có tin nhắn
+          renderItem={renderMessage}
+          keyExtractor={item => item?.conversation_id}
+          showsVerticalScrollIndicator={false}
+          style={styles.messageList}
+        />}
+
     </View>
   );
 };

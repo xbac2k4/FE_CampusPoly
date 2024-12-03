@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 const Header = ({ data, navigation }) => {
   const defaultBackgroundImage = require('../../assets/images/default-bg.png');
   const defaultAvatar = require('../../assets/images/default-profile.png');
+  // console.log(data);
 
   return (
     <View style={styles.headerContainer}>
@@ -47,7 +48,10 @@ const Header = ({ data, navigation }) => {
           <Icon name="mail-outline" size={15} color="#fff" />
         </TouchableOpacity>
       </View>
-
+      <Text style={{
+        ...styles.bio,
+        marginTop: 0,
+      }}>{data?.role[0]?.role_name}</Text>
       {/* Conditionally display bio if it exists */}
       {data?.bio ? <Text style={styles.bio}>{data?.bio}</Text> : null}
     </View>

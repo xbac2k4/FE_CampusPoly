@@ -1,18 +1,22 @@
+import { useFocusEffect } from '@react-navigation/native';
 import axios from 'axios';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import NotificationModal from '../../components/Notification/NotificationModal';
 import Colors from '../../constants/Color';
-import { GET_NOTIFICATIONS_BY_USERID, READ_ALL_NOTIFICATION, READ_NOTIFICATION } from '../../services/ApiConfig';
-import { UserContext } from '../../services/provider/UseContext';
-import { useFocusEffect } from '@react-navigation/native';
-import { Screen } from 'react-native-screens';
 import Screens from '../../navigation/Screens';
+import { GET_NOTIFICATIONS_BY_USERID, GET_POST_ID, READ_ALL_NOTIFICATION, READ_NOTIFICATION } from '../../services/ApiConfig';
+import { SocketContext } from '../../services/provider/SocketContext';
+import { UserContext } from '../../services/provider/UseContext';
 import { TYPE_ADD_FRIEND, TYPE_COMMENT_POST, TYPE_CREATE_POST, TYPE_LIKE_POST } from '../../services/TypeNotify';
+import NotificationLoading from '../../components/Loading/NotificationLoading';
 
 const NotificationScreen = ({ navigation }) => {
   const [notifications, setNotifications] = useState([]);
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true);
   const { user } = useContext(UserContext);
+  const [modalVisible, setModalVisible] = useState(false); // State to control modal
+  const { socket } = useContext(SocketContext);
 
   const fetchNotifications = async () => {
     try {
@@ -30,6 +34,14 @@ const NotificationScreen = ({ navigation }) => {
     }
   };
 
+  const handleConfirm = async () => {
+    setModalVisible(false);
+  };
+
+  const handleCancel = () => {
+    setModalVisible(false); // Hide modal
+  };
+
   useEffect(() => {
     setLoading(true);
     fetchNotifications();
@@ -42,21 +54,70 @@ const NotificationScreen = ({ navigation }) => {
     }, [user._id])
   );
 
+  useFocusEffect(
+    useCallback(() => {
+      // fetchNotifications();
+      if (socket) {
+        socket.on('load_notification', () => {
+          // console.log('12345555');
+          fetchNotifications();
+        })
+      }
+      return () => {
+        socket.off('load_notification');
+      };
+    }, [socket, user._id])
+  );
+
   const handleMarkAllAsRead = async () => {
     setLoading(true);
     try {
+      // console.log("id: ", user._id);
+
       const result = axios.put(`${READ_ALL_NOTIFICATION}`, {
-        userId: user._id
+        receiver_id: user._id
       });
 
-      console.log(result);
+      // console.log(result);
 
     } catch (error) {
       console.log(error);
 
     }
+    finally {
+      await fetchNotifications();
+    }
     setLoading(false);
   };
+  const fetchPostById = async (postId) => {
+    try {
+      const response = await fetch(`${GET_POST_ID}${postId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json', // nếu API yêu cầu JSON
+        }
+      });
+      if (!response.ok) {
+        console.error(`Error: ${response.status}`);
+        return false;
+      }
+
+      const data = await response.json();
+      // console.log(data);
+      return Boolean(data.data);
+    } catch (error) {
+      console.error('Error fetching post data:', error);
+    }
+  };
+  const openModal = async (result) => {
+    const isPostAvailable = await fetchPostById(result);
+    // console.log(isPostAvailable);
+    if (isPostAvailable) {
+      navigation.navigate(Screens.Comment, { postId: result })
+    } else {
+      setModalVisible(true)
+    }
+  }
 
   const renderItem = ({ item }) => {
     const sentTime = new Date(item.sentTime);
@@ -86,15 +147,14 @@ const NotificationScreen = ({ navigation }) => {
               notificationId: item._id
             })
               .then((result) => {
-                console.log(result.data); // Truy cập dữ liệu trả về từ server
                 if (result?.data?.data?.type === TYPE_ADD_FRIEND) {
                   navigation.navigate(Screens.Profile, { id: result?.data?.data?.sender_id });
                 } if (result?.data?.data?.type === TYPE_LIKE_POST) {
-                  navigation.navigate(Screens.Comment, { postId: result?.data?.data?.post_id })
+                  openModal(result?.data?.data?.post_id);
                 } if (result?.data?.data?.type === TYPE_COMMENT_POST) {
-                  navigation.navigate(Screens.Comment, { postId: result?.data?.data?.post_id })
+                  openModal(result?.data?.data?.post_id);
                 } if (result?.data?.data?.type === TYPE_CREATE_POST) {
-                  navigation.navigate(Screens.Comment, { postId: result?.data?.data?.post_id })
+                  openModal(result?.data?.data?.post_id);
                 }
               })
               .catch((error) => {
@@ -119,14 +179,6 @@ const NotificationScreen = ({ navigation }) => {
     );
   };
 
-  if (loading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ color: '#fff', fontSize: 16 }}>Đang tải...</Text>
-      </View>
-    );
-  }
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -135,13 +187,28 @@ const NotificationScreen = ({ navigation }) => {
           <Text style={styles.markAllAsRead}>Đánh dấu tất cả là đã đọc</Text>
         </TouchableOpacity>
       </View>
-      <FlatList
-        data={notifications.reverse()}
-        keyExtractor={(item) => item._id}
-        renderItem={renderItem}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
+      {loading ?
+        <NotificationLoading />
+        :
+        <>
+          <FlatList
+            data={notifications.reverse()}
+            keyExtractor={(item) => item._id}
+            renderItem={renderItem}
+            ItemSeparatorComponent={() => <View style={styles.separator} />}
+            onRefresh={() => fetchNotifications()}
+            refreshing={loading}
+          />
+          <View style={{ height: "7%" }} />
+        </>
+      }
+
+      <NotificationModal
+        visible={modalVisible}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+        message="Bài viết không tồn tại!"
       />
-      <View style={{ height: 60, backgroundColor: 'red' }} />
     </View>
   );
 };

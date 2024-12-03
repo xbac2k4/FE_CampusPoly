@@ -1,26 +1,14 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import Colors from '../../constants/Color';
 
 const ProfileTabs = ({ onTabSelect }) => {
-  const [activeTab, setActiveTab] = useState('Posts');
-  const [tabWidths, setTabWidths] = useState({}); // Lưu độ rộng của từng text trong tab
-  const [tabPositions, setTabPositions] = useState({}); // Lưu vị trí x của từng text trong tab
-
-  // Handle the text layout to get its width
-  const handleTextLayout = (event, tab) => {
-    const { width } = event.nativeEvent.layout; // Lấy chiều rộng của text
-    setTabWidths((prevWidths) => ({ ...prevWidths, [tab]: width }));
-  };
-
-  const handleTabLayout = (event, tab) => {
-    const { x } = event.nativeEvent.layout; // Chỉ lấy vị trí x của tab (vị trí chữ)
-    setTabPositions((prevPositions) => ({ ...prevPositions, [tab]: x }));
-  };
+  const [activeTab, setActiveTab] = useState('Bài viết');
 
   return (
     <View style={styles.tabsContainer}>
       <View style={styles.tabsWrapper}>
-        {['Posts', 'Stories', 'Liked', 'Tagged'].map((tab) => (
+        {['Bài viết', 'Đã thích'].map((tab, index) => (
           <TouchableOpacity
             key={tab}
             onPress={() => {
@@ -28,10 +16,8 @@ const ProfileTabs = ({ onTabSelect }) => {
               onTabSelect(tab);
             }}
             style={styles.tab}
-            onLayout={(event) => handleTabLayout(event, tab)} // Lấy vị trí x của tab
           >
             <Text
-              onLayout={(event) => handleTextLayout(event, tab)} // Lấy chiều rộng của text
               style={[styles.tabText, activeTab === tab && styles.activeTabText]}
             >
               {tab}
@@ -45,8 +31,10 @@ const ProfileTabs = ({ onTabSelect }) => {
             style={[
               styles.activeIndicator,
               {
-                width: tabWidths[activeTab] || 0, // Độ rộng thanh xanh bằng với chữ của tab
-                left: tabPositions[activeTab] || 0, // Vị trí của thanh xanh theo chữ
+                // Chiếm 1/2 chiều rộng của thanh xám
+                width: '50%',
+                // Căn trái theo chỉ số tab (index)
+                left: activeTab === 'Bài viết' ? '0%' : '50%',
               },
             ]}
           />
@@ -69,10 +57,10 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   tab: {
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-    paddingVertical: 5,
-    width: '28%', // Cố định độ rộng của mỗi tab
+    alignItems: 'center', // Căn giữa theo chiều ngang
+    justifyContent: 'center', // Căn giữa theo chiều dọc
+    paddingVertical: 10,
+    width: '50%', // Độ rộng tab chia đều
   },
   tabText: {
     color: '#fff',
@@ -87,13 +75,13 @@ const styles = StyleSheet.create({
     bottom: 0,
     height: 3,
     backgroundColor: '#3E3E3E',
-    width: '99%',
+    width: '100%',
   },
   activeIndicator: {
     position: 'absolute',
     bottom: 0,
     height: 3,
-    backgroundColor: '#4F8EF7',
+    backgroundColor: Colors.second,
   },
 });
 
