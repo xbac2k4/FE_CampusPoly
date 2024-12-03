@@ -1,4 +1,4 @@
-import { Alert, Image, StyleSheet, Text, TouchableOpacity, View, Modal, TextInput, Button, Dimensions, Animated } from 'react-native';
+import { Alert, Image, StyleSheet, Text, TouchableOpacity, View, Modal, TextInput, Button, Dimensions, Animated, ScrollView } from 'react-native';
 import React, { useState, useContext, useEffect } from 'react';
 import styles from '../../assets/style/PostStyle';
 import { UserContext } from '../../services/provider/UseContext';
@@ -8,10 +8,6 @@ import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import NotificationModal from '../Notification/NotificationModal';
 import Snackbar from 'react-native-snackbar';
 import { DELETE_POST, UPDATE_POST } from '../../services/ApiConfig';
-import LinearGradient from 'react-native-linear-gradient';
-import Colors from '../../constants/Color';
-
-
 
 const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess, existingPost }) => {
   const { user } = useContext(UserContext);
@@ -19,32 +15,26 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess, existi
   const [title, setTitle] = useState(''); // Trạng thái tiêu đề bài viết
   const [content, setContent] = useState(''); // Trạng thái nội dung bài viết
   const [hagtag, setHagtag] = useState(''); // Trạng thái nội dung bài viết
-  const [selectedImage, setSelectedImage] = useState(null); // State để lưu ảnh đã chọn
+  const [selectedImages, setSelectedImages] = useState([]); // Chứa danh sách ảnh đã chọn
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false); // State cho modal xác nhận xóa
   const [inputHeight, setInputHeight] = useState(40);
   const [isVisible, setIsVisible] = useState(false);
   const [animation] = useState(new Animated.Value(0));
   const [isChanged, setIsChanged] = useState(false); // Trạng thái kiểm tra thay đổi
-  const [oldTitle, setOldTitle] = useState();
-  const [oldContent, setOldContent] = useState();
-
 
   useEffect(() => {
     if (existingPost) {
-      setOldTitle(existingPost.title || '');
-      setOldContent(existingPost.content || '');
-      setTitle(existingPost.title || ''); // Update title if existingPost is updated
-      setContent(existingPost.content || ''); // Update content if existingPost is updated
-      setHagtag(existingPost.hagtag || ''); // Update content if existingPost is updated
+      setTitle(existingPost.title || '');
+      setContent(existingPost.content || '');
+      setHagtag(existingPost.hagtag || '');
+
+      if (existingPost.image && existingPost.image.length > 0) {
+        const oldImages = existingPost.image.map(uri => ({ uri: uri.replace('localhost', '10.0.2.2') }));
+        setSelectedImages(oldImages); // Thêm ảnh cũ vào state
+      }
     }
-  }, [existingPost]); // Re-run when existingPost chan
-  useEffect(() => {
-    if (title === oldTitle && content === oldContent) {
-      setIsChanged(false);
-      return;
-    }
-    setIsChanged(true);
-  }, [title, content, hagtag]);
+  }, [existingPost]);
+
   const animatedStyle = {
     transform: [
       {
@@ -120,32 +110,30 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess, existi
 
   // Hàm xử lý thay đổi ảnh
   const handleChangeImage = () => {
-    launchImageLibrary({ mediaType: 'photo', quality: 0.5 }, (response) => {
+    launchImageLibrary({ mediaType: 'photo', quality: 0.5, selectionLimit: 0 }, (response) => {
       if (response.didCancel) {
         console.log('User cancelled image picker');
       } else if (response.errorCode) {
         console.log('ImagePicker Error: ', response.errorCode);
-      } else {
-        // Lưu ảnh đã chọn vào state
-        const source = { uri: response.assets[0].uri };
-        setSelectedImage(source); // Cập nhật ảnh mới
+      } else if (response.assets) {
+        const newImages = response.assets.map(asset => ({ uri: asset.uri }));
+        setSelectedImages([...selectedImages, ...newImages]); // Thêm ảnh mới vào mảng
       }
     });
   };
+
   const handleCaptureImage = () => {
     launchCamera({ mediaType: 'photo', quality: 0.5, saveToPhotos: true }, (response) => {
       if (response.didCancel) {
         console.log('User cancelled camera');
       } else if (response.errorCode) {
         console.log('Camera Error: ', response.errorCode);
-      } else {
-        // Lưu ảnh đã chụp vào state
-        const source = { uri: response.assets[0].uri };
-        setSelectedImage(source); // Cập nhật ảnh mới
+      } else if (response.assets) {
+        const newImage = { uri: response.assets[0].uri };
+        setSelectedImages([...selectedImages, newImage]); // Thêm ảnh mới vào mảng
       }
     });
   };
-
 
   // Hàm xử lý cập nhật bài viết
   const handleUpdatePost = async () => {
@@ -154,37 +142,43 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess, existi
       formData.append('title', title);
       formData.append('content', content);
       formData.append('hagtag', hagtag);
-
-      // Chỉ gửi ảnh nếu có ảnh mới
-      if (selectedImage) {
-        const file = {
-          uri: selectedImage.uri,
-          type: 'image/jpeg', // Thay đổi kiểu tệp nếu cần
-          name: 'image.jpg', // Đặt tên cho tệp ảnh
-        };
-        formData.append('image', file);
+  
+      // Kiểm tra nếu không có ảnh nào, gửi mảng rỗng
+      if (selectedImages.length > 0) {
+        selectedImages.forEach((image, index) => {
+          if (image.uri) { // Đảm bảo URI không bị null
+            formData.append('image', {
+              uri: image.uri,
+              type: 'image/jpeg', // Kiểm tra MIME type
+              name: `image_${index}.jpg`,
+            });
+          }
+        });
+      } else {
+        formData.append('image', []); // Gửi mảng rỗng nếu không có ảnh
       }
-
+  
       const response = await fetch(
         `${UPDATE_POST}/${postId}?user_id=${user._id}`,
         {
           method: 'PUT',
           body: formData,
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
         }
       );
-
-
+  
       if (response.ok) {
-        // Hiển thị snackbar hoặc thông báo thành công
         Snackbar.show({
           text: 'Bài viết đã được cập nhật thành công!',
           duration: Snackbar.LENGTH_SHORT,
           backgroundColor: '#4CAF50',
         });
-
-        // Gọi callback để đóng sheet
         onUpdateSuccess?.();
       } else {
+        const errorResponse = await response.json();
+        console.error('Response Error:', errorResponse);
         Snackbar.show({
           text: 'Không thể cập nhật bài viết. Vui lòng thử lại!',
           duration: Snackbar.LENGTH_SHORT,
@@ -200,7 +194,7 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess, existi
       });
     }
   };
-
+  
   return (
     <View style={styles.inner}>
       <TouchableOpacity style={styles.crudContainer} onPress={() => setIsModalVisible(true)}>
@@ -258,34 +252,14 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess, existi
               <View style={styles.dialogTitleContainer}>
                 <Text style={styles.dialogTitle}>Chỉnh sửa bài viết</Text>
               </View>
-              {/* <LinearGradient
-                colors={isChanged ? [Colors.first, Colors.second] : [Colors.background, Colors.background]}
-                style={styles.buttonContainer}>
-                <TouchableOpacity
-                  style={{...styles.actionButton, alignItems: 'center'}}
-                  onPress={handleUpdatePost}
-                  disabled={!isChanged}
-                >
-                  <Text style={[{ ...styles.actionText, color: isChanged ? '#ECEBED' : '#C0C0C0' }]}>Cập nhật</Text>
-                </TouchableOpacity>
-              </LinearGradient> */}
-              <LinearGradient
-                colors={isChanged ? [Colors.first, Colors.second] : [Colors.background, Colors.background]}
-                style={styles.buttonContainer}>
-                <TouchableOpacity
-                  onPress={() => {
-                    // setLoading(true);
-                    handleUpdatePost();
-                  }}
-                  disabled={!isChanged} // Disable nếu isPost === false
-                  style={{
-                    alignItems: 'center'
-                  }}>
-                  <Text style={[{ ...styles.textHeader, color: isChanged ? '#ECEBED' : '#C0C0C0' }, { fontSize: 16 }]}>Cập nhật</Text>
-                </TouchableOpacity>
-              </LinearGradient>
-            </View>
 
+              <TouchableOpacity
+                style={styles.actionButton}
+                onPress={handleUpdatePost}
+              >
+                <Text style={styles.actionText}>Cập nhật</Text>
+              </TouchableOpacity>
+            </View>
 
             <View style={styles.container}>
               <View style={styles.postRow}>
@@ -303,17 +277,15 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess, existi
                       style={[styles.textInput, { height: Math.max(40, inputHeight) }]}
                       placeholder="Title?"
                       placeholderTextColor="#888"
-                      multiline
+                      // multiline
                       value={title}
-                      onChangeText={(value) => {
-                        setTitle(value);
-                      }}
+                      onChangeText={setTitle}
                       underlineColorAndroid="transparent"
                       onContentSizeChange={(event) => setInputHeight(event.nativeEvent.contentSize.height)}
 
                     />
                     <TextInput
-                      style={[styles.textInput, { height: Math.max(40, inputHeight) }]}
+                      style={[styles.textInput1, { height: Math.max(40, inputHeight) }]}
                       placeholder="Bạn đang nghĩ gì?"
                       placeholderTextColor="#888"
                       multiline
@@ -322,101 +294,75 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess, existi
                       onContentSizeChange={(event) => setInputHeight(event.nativeEvent.contentSize.height)}
                       underlineColorAndroid="transparent"
                     />
-                    {/* TextInput để nhập hashtag */}
-                    {/* <TextInput
-                      style={[styles.textInput, { height: Math.max(40, inputHeight) }]}
-                      placeholder="#Hashtag!"
-                      placeholderTextColor="#888"
-                      multiline
-                      value={hagtag}
-                      onContentSizeChange={(event) => setInputHeight(event.nativeEvent.contentSize.height)}
-                      // onChangeText={handleHashtagChange}
-                      underlineColorAndroid="transparent"
-                    /> */}
-                    <View style={styles.imgContainer}>
-                      <View style={{ position: 'relative' }}>
-                        {/* Hiển thị ảnh đã chọn */}
-                        {selectedImage ? (
-                          <View>
+
+                    <View style={styles.horizontalScrollContainer}>
+                      <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                      >
+                        {selectedImages.map((image, index) => (
+                          <View key={index} style={{
+                            position: 'relative',
+                            marginRight: 10,
+                          }}>
                             <Image
-                              source={selectedImage} // Hiển thị ảnh đã chọn từ thư viện
-                              style={{ width: 60, height: 60, borderRadius: 8 }}
+                              source={{ uri: image.uri }}
+                              style={{ width: 60, height: 60, borderRadius: 10 }}
                               resizeMode="cover"
                             />
-                            {/* Nút X */}
+                            {/* Nút xóa từng ảnh */}
                             <TouchableOpacity
                               style={styles.deleteIcon}
-                              onPress={() => setSelectedImage(null)} // Xóa ảnh khi nhấn nút
+                              onPress={() => {
+                                const updatedImages = selectedImages.filter((_, i) => i !== index);
+                                setSelectedImages(updatedImages);
+                              }}
                             >
                               <Image
-                                source={require('../../assets/images/x.png')} // Đường dẫn đến ảnh "X"
-                                style={{ width: 16, height: 16 }}
+                                source={require('../../assets/images/x.png')}
+                                style={{ width: 14, height: 14 }}
                               />
                             </TouchableOpacity>
                           </View>
-                        ) : existingPost && existingPost.image && existingPost.image.length > 0 ? (
-                          <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-                            {/* Lặp qua tất cả các ảnh trong mảng image */}
-                            {existingPost.image.map((imgUri, index) => (
-                              <View key={index} style={{ margin: 5 }}>
-                                <Image
-                                  source={{ uri: imgUri.replace('localhost', '10.0.2.2') }} // Xử lý URL ảnh
-                                  style={{ width: 60, height: 60, borderRadius: 8 }}
-                                  resizeMode="cover"
-                                />
-                              </View>
-                            ))}
-                          </View>
-                        ) : (
-                          <Image
-                            source={require('../../assets/images/no_iamge.png')} // Ảnh mặc định nếu không có ảnh
-                            style={{ width: 60, height: 60, borderRadius: 8 }}
-                            resizeMode="contain"
-                          />
-                        )}
-                      </View>
-                    </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, display: 'none' }}>
-                      <TouchableOpacity style={styles.addButton}
-                        onPress={toggleImages}
-                      >
-                        <Image source={require('../../assets/images/add.png')} resizeMode="contain" style={{ width: 12, height: 12 }} />
-                      </TouchableOpacity>
-
-                      {isVisible && (
-                        <Animated.View style={[styles.imageContainer, animatedStyle]}>
-                          <View style={styles.imageRow}>
-                            <TouchableOpacity onPress={openImageLibrary}>
-                              <Image source={require('../../assets/images/image.png')} style={styles.image} />
-                            </TouchableOpacity>
-
-
-
-                            <TouchableOpacity onPress={handleCaptureImage}>
-                              <Image source={require('../../assets/images/Camera.png')} style={styles.image} />
-                            </TouchableOpacity>
-
-                          </View>
-                        </Animated.View>
-                      )}
+                        ))}
+                      </ScrollView>
                     </View>
 
                   </View>
 
                 </View>
+
               </View>
+
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: -10 }}>
+                <TouchableOpacity style={styles.addButton}
+                  onPress={toggleImages}
+                >
+                  <Image source={require('../../assets/images/add.png')} resizeMode="contain" style={{ width: 12, height: 12 }} />
+                </TouchableOpacity>
+
+                {isVisible && (
+                  <Animated.View style={[styles.imageContainer, animatedStyle]}>
+                    <View style={styles.imageRow}>
+                      <TouchableOpacity onPress={openImageLibrary}>
+                        <Image source={require('../../assets/images/image.png')} style={styles.image} />
+                      </TouchableOpacity>
+
+                      <TouchableOpacity onPress={handleCaptureImage}>
+                        <Image source={require('../../assets/images/Camera.png')} style={styles.image} />
+                      </TouchableOpacity>
+
+                    </View>
+                  </Animated.View>
+                )}
+              </View>
+
             </View>
 
-
-
-
-
-
-
-
-
           </View>
+
         </View>
+
       </Modal>
 
     </View>
