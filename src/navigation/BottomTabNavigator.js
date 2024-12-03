@@ -56,7 +56,6 @@ const BottomTabNavigator = ({ navigation }) => {
       // fetchNotifications();
       if (socket) {
         socket.on('load_notification', () => {
-          console.log('12345555');
           checkNotifications();
         })
       }

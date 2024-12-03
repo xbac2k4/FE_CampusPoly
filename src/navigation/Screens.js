@@ -1,4 +1,3 @@
-import Privacy from "../workspaces/SupportList/navSupport/Privacy";
 
 
 const Screens = {

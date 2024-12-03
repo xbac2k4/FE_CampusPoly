@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Alert, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Alert, ActivityIndicator, ToastAndroid } from 'react-native';
 import PostComponent from '../../components/Post/PostComponent';
 import { UserContext } from '../../services/provider/UseContext';
 import { ADD_POST, GET_FRIEND_BY_USERID } from '../../services/ApiConfig';
@@ -9,6 +9,7 @@ import { SocketContext } from '../../services/provider/SocketContext';
 import { TYPE_CREATE_POST } from '../../services/TypeNotify';
 import Loading from '../../components/MenuAuth/Loading';
 import Snackbar from 'react-native-snackbar';
+import Screens from '../../navigation/Screens';
 
 const CreatePostScreen = ({ navigation }) => {
   // const [user, setUser] = useState(null);
@@ -63,6 +64,7 @@ const CreatePostScreen = ({ navigation }) => {
 
   const fetchCreatePost = async (formData) => {
     try {
+      ToastAndroid.show("Đang đăng bài viết...", ToastAndroid.SHORT);
       const response = await fetch(ADD_POST, {
         method: 'POST',
         body: formData,
@@ -74,10 +76,10 @@ const CreatePostScreen = ({ navigation }) => {
       const post = await response.json();
       // console.log('API response:', post.data);
       if (post.status === 200) {
-        navigation.goBack();
+        navigation.navigate(Screens.Home)
         await sendNotificationToMultipleSocket(user.full_name, user._id, 'đã đăng bài viết mới', userFriend, TYPE_CREATE_POST, post?.data?._id);
       }
-      // Alert.alert("Success", "Your post has been published!");
+      ToastAndroid.show("Đăng thành công", ToastAndroid.SHORT);
     } catch (error) {
       console.error('Error while publishing post:', error);
       Alert.alert('Error', error.message);
