@@ -1,45 +1,46 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { GET_SEARCH_POST_BY_HASHTAG } from '../../services/ApiConfig';
+import React, { useState } from 'react';
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ProfilePosts from '../../components/ProfileScreen/profilePosts';
+import { GET_SEARCH_POST_BY_HASHTAG } from '../../services/ApiConfig';
+import Screens from '../../navigation/Screens';
 
-const SearchComponents = ({ filteredHashtags, filteredUsers, navigation }) => {
-    const Navigation = useNavigation();
-    const [searchQuery, setSearchQuery] = useState("");
-    const [filteredHashTags, setFilteredHashTags] = useState([]);
-    const [loading, setLoading] = useState(false); // Trạng thái loading
+const SearchComponents = ({ filteredHashtags, filteredUsers }) => {
+    const navigation = useNavigation();
+    // const [searchQuery, setSearchQuery] = useState("");
+    // const [filteredHashTags, setFilteredHashTags] = useState([]);
+    // const [loading, setLoading] = useState(false); // Trạng thái loading
     const [isHashtagSelected, setIsHashtagSelected] = useState(false);
     const [posts, setPosts] = useState([]); // Dữ liệu bài viết khi hashtag được chọn
 
 
     // Hàm xử lý khi bấm vào avatar hoặc tên người dùng
     const handleProfileClick = (userId) => {
-        Navigation.navigate('Profile', { id: userId });
+        navigation.navigate(Screens.Profile, { id: userId });
     };
-    const removeVietnameseTones = (str) => {
-        return str
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "") // Loại bỏ dấu
-            .replace(/đ/g, "d")
-            .replace(/Đ/g, "D")
-            .toLowerCase();
-    };
-    const handleSearch = (text, data) => {
-        const normalizedText = removeVietnameseTones(text);
-        setSearchQuery(normalizedText);
+    // const removeVietnameseTones = (str) => {
+    //     return str
+    //         .normalize("NFD")
+    //         .replace(/[\u0300-\u036f]/g, "") // Loại bỏ dấu
+    //         .replace(/đ/g, "d")
+    //         .replace(/Đ/g, "D")
+    //         .toLowerCase();
+    // };
+    // const handleSearch = (text, data) => {
+    //     const normalizedText = removeVietnameseTones(text);
+    //     setSearchQuery(normalizedText);
 
-        if (normalizedText === "") {
-            setFilteredHashTags(data.hashtags);
-        } else {
-            const filteredHashTags = data.hashtags.filter((hashtag) => {
-                const normalizedHashtag = removeVietnameseTones(hashtag?.hashtag_name || "");
-                return normalizedHashtag.includes(normalizedText);
-            });
+    //     if (normalizedText === "") {
+    //         setFilteredHashTags(data.hashtags);
+    //     } else {
+    //         const filteredHashTags = data.hashtags.filter((hashtag) => {
+    //             const normalizedHashtag = removeVietnameseTones(hashtag?.hashtag_name || "");
+    //             return normalizedHashtag.includes(normalizedText);
+    //         });
 
-            setFilteredHashTags(filteredHashTags);
-        }
-    };
+    //         setFilteredHashTags(filteredHashTags);
+    //     }
+    // };
 
     const handleHashtagClick = async (hashtag) => {
         // console.log('Hashtag selected:', hashtag);
@@ -48,7 +49,7 @@ const SearchComponents = ({ filteredHashtags, filteredUsers, navigation }) => {
 
         // Gọi API lấy bài viết theo hashtag
         try {
-            const response = await fetch(`${GET_SEARCH_POST_BY_HASHTAG}?searchTerm=${encodeURIComponent(hashtag)}`);
+            const response = await fetch(`${GET_SEARCH_POST_BY_HASHTAG}${encodeURIComponent(hashtag)}`);
             const responseData = await response.json();
             // Kiểm tra cấu trúc dữ liệu trả về
             // console.log('API Response:', responseData);
@@ -80,8 +81,10 @@ const SearchComponents = ({ filteredHashtags, filteredUsers, navigation }) => {
 
     // Thành phần cho mỗi người dùng
     const renderUserItem = ({ item }) => (
-        <View style={styles.userContainer}>
-            <TouchableOpacity onPress={() => handleProfileClick(item?._id)}>
+        <TouchableOpacity style={styles.userContainer}
+            onPress={() => handleProfileClick(item?._id)}
+        >
+            <View>
                 <Image
                     source={{
                         uri: item?.avatar?.replace('localhost', '10.0.2.2') ||
@@ -89,41 +92,45 @@ const SearchComponents = ({ filteredHashtags, filteredUsers, navigation }) => {
                     }}
                     style={styles.profileImage}
                 />
-            </TouchableOpacity>
-            <View>
-                <TouchableOpacity onPress={() => handleProfileClick(item?._id)}>
-                    <Text style={styles.userName}>{item?.full_name || 'Vô danh'}</Text>
-                </TouchableOpacity>
             </View>
-        </View>
+            <View>
+                <View>
+                    <Text style={styles.userName}>{item?.full_name || 'Vô danh'}</Text>
+                </View>
+            </View>
+        </TouchableOpacity>
     );
 
     return (
         <View style={styles.container}>
-            {/* FlatList cho Hashtags (ngang) */}
-            <FlatList
-                showsHorizontalScrollIndicator={true}
-                data={filteredHashtags}
-                horizontal={true}
-                renderItem={renderHashtagItem}
-                keyExtractor={(item) => item?._id ? item._id.toString() : item.id.toString()}
-                style={styles.hashtagList}
-                ListEmptyComponent={<Text style={styles.noResultsText}></Text>}
-            />
+            {
+                filteredHashtags.length > 0 && (
+                    <FlatList
+                        showsHorizontalScrollIndicator={true}
+                        data={filteredHashtags}
+                        horizontal={true}
+                        renderItem={renderHashtagItem}
+                        keyExtractor={(item) => item?._id ? item._id.toString() : item.id.toString()}
+                        style={styles.hashtagList}
+                        ListEmptyComponent={<Text style={styles.noResultsText}></Text>}
+                    />
+                )
+            }
+
 
             {/* FlatList cho Users (dọc) */}
-            <View style={{ flex: 1 , paddingBottom: 35}}>
+            <View style={{ flex: 1, paddingBottom: 35 }}>
                 {!isHashtagSelected ? (
                     <FlatList
                         data={filteredUsers}
                         renderItem={renderUserItem}
                         keyExtractor={(item) => item?._id ? item._id.toString() : item.id.toString()}
                         style={styles.userList}
-                        ListEmptyComponent={<Text style={styles.noResultsText}>Gợi ý</Text>}
+                        // ListEmptyComponent={<Text style={styles.noResultsText}>Gợi ý</Text>}
                     />
                 ) : (
                     posts ? (
-                        <ProfilePosts navigation={navigation} data={posts} />
+                        <ProfilePosts data={posts} />
                     ) : null
                 )}
             </View>
@@ -139,7 +146,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#181A1C',
-    
+
     },
     hashtagList: {
         marginBottom: 5,
@@ -161,7 +168,7 @@ const styles = StyleSheet.create({
     },
     userList: {
         marginTop: 10,
-        marginHorizontal:10,
+        marginHorizontal: 10,
     },
     userContainer: {
         flexDirection: 'row',

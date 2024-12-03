@@ -1,17 +1,29 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
+import Screens from '../../navigation/Screens';
 
-const FriendListConponent = ({ avatar, full_name, status, send_id, onDeleteFriend, onConfirm }) => {
+const FriendListConponent = ({ avatar, full_name, status, send_id, onDeleteFriend, onConfirm, navigation, friendId }) => {
   const isPending = status === 'Chờ phản hồi'; // Kiểm tra trạng thái
-  // console.log(isPending);
+  // Xử lý khi bấm vào avatar và tên người dùng
+  const handleProfileClick = (friendId) => {
 
-  // console.log(send_id);
+    // Nếu không, chuyển đến màn hình Profile với tham số ID
+    navigation.navigate(Screens.Profile, { id: friendId });
+
+  };
+  console.log(isPending);
+
+  console.log(send_id);
 
   return (
     <View style={styles.container}>
-      <Image source={{ uri: avatar.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' }} style={styles.imgavt} resizeMode={'contain'} />
+      <TouchableOpacity onPress={() => handleProfileClick(friendId)}>
+        <Image source={{ uri: avatar.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' }} style={styles.imgavt} resizeMode={'contain'} />
+      </TouchableOpacity>
       <View style={{ marginLeft: 20 }}>
-        <Text style={styles.username}>{full_name}</Text>
+        <TouchableOpacity onPress={() => handleProfileClick(friendId)}>
+          <Text style={styles.username}>{full_name}</Text>
+        </TouchableOpacity>
         <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center' }}>
           {
             isPending && send_id ? (

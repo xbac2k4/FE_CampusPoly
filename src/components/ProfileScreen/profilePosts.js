@@ -19,8 +19,8 @@ import { SocketContext } from '../../services/provider/SocketContext';
 import { TYPE_LIKE_POST } from '../../services/TypeNotify';
 import { timeAgo } from '../../utils/formatTime';
 import CrudPost from '../CrudPost/CrudPost';
-const ProfilePosts = ({ navigation, data }) => {
-
+const ProfilePosts = ({ data }) => {
+  const navigation = useNavigation();
   const [userAll, setUserAll] = useState(data); // Chứa các bài viết
   useEffect(() => { setUserAll(data) }, [data]);
   // console.log('userAll:', userAll);
@@ -82,7 +82,7 @@ const ProfilePosts = ({ navigation, data }) => {
   };
 
   {/** Sử lí cái thông báo  */ }
-  const [modalVisible, setModalVisible] = useState(false);
+  // const [modalVisible, setModalVisible] = useState(false);
   const handleReportSuccess = () => {
     setReportSuccess(true); // Set report success
     refRBSheet.current.close(); // Close the RBSheet when the report is successful
@@ -220,13 +220,13 @@ const ProfilePosts = ({ navigation, data }) => {
 
 
 
-  const toggleSave = (postId) => {
-    setSavedPosts((prevSavedPosts) =>
-      prevSavedPosts.includes(postId)
-        ? prevSavedPosts.filter((id) => id !== postId)
-        : [...prevSavedPosts, postId]
-    );
-  };
+  // const toggleSave = (postId) => {
+  //   setSavedPosts((prevSavedPosts) =>
+  //     prevSavedPosts.includes(postId)
+  //       ? prevSavedPosts.filter((id) => id !== postId)
+  //       : [...prevSavedPosts, postId]
+  //   );
+  // };
 
   // Hiển thị hình ảnh của bài viết
   const renderImages = (images, postId) => {
@@ -387,7 +387,7 @@ const ProfilePosts = ({ navigation, data }) => {
                       <Text style={styles.metaText}>{item.postData.comment_count}</Text>
                     </View>
 
-                    <View style={styles.iconLike}>
+                    {/* <View style={styles.iconLike}>
                       <ShareComponent post={{
                         title: item.postData.title,
                         url: item.postData.link, // Link bài viết
@@ -395,7 +395,7 @@ const ProfilePosts = ({ navigation, data }) => {
                       }} />
 
 
-                    </View>
+                    </View> */}
                   </View>
 
                 </View>

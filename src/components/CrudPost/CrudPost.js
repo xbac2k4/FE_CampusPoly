@@ -25,11 +25,14 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess, existi
   const [isChanged, setIsChanged] = useState(false); // Trạng thái kiểm tra thay đổi
   const [oldTitle, setOldTitle] = useState();
   const [oldContent, setOldContent] = useState();
+  const [oldImages, setOldImages] = useState();
+
 
   useEffect(() => {
     if (existingPost) {
       setOldTitle(existingPost.title || '');
       setOldContent(existingPost.content || '');
+      setOldImages(existingPost.image)
       setTitle(existingPost.title || '');
       setContent(existingPost.content || '');
       setHagtag(existingPost.hagtag || '');
@@ -42,12 +45,12 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess, existi
   }, [existingPost]);
 
   useEffect(() => {
-    if (title === oldTitle && content === oldContent) {
+    if (title === oldTitle && content === oldContent && oldImages === selectedImages) {
       setIsChanged(false);
       return;
     }
     setIsChanged(true);
-  }, [title, content, hagtag]);
+  }, [title, content, hagtag, selectedImages]);
 
   const animatedStyle = {
     transform: [
@@ -127,30 +130,40 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess, existi
 
   // Hàm xử lý thay đổi ảnh
   const handleChangeImage = () => {
+    if (selectedImages.length >= 10) {
+      ToastAndroid.show('Chỉ được chọn tối đa 10 ảnh!', ToastAndroid.SHORT);
+      return; // Dừng nếu vượt quá giới hạn
+    }
     launchImageLibrary({ mediaType: 'photo', quality: 0.5, selectionLimit: 0 }, (response) => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.errorCode) {
-        console.log('ImagePicker Error: ', response.errorCode);
-      } else if (response.assets) {
-        const newImages = response.assets.map(asset => ({ uri: asset.uri }));
-        setSelectedImages([...selectedImages, ...newImages]); // Thêm ảnh mới vào mảng
-      }
+      handleImageSelection(response);
     });
   };
 
   const handleCaptureImage = () => {
+    if (selectedImages.length >= 10) {
+      ToastAndroid.show('Chỉ được chọn tối đa 10 ảnh!', ToastAndroid.SHORT);
+      return; // Dừng nếu vượt quá giới hạn
+    }
     launchCamera({ mediaType: 'photo', quality: 0.5, saveToPhotos: true }, (response) => {
-      if (response.didCancel) {
-        console.log('User cancelled camera');
-      } else if (response.errorCode) {
-        console.log('Camera Error: ', response.errorCode);
-      } else if (response.assets) {
-        const newImage = { uri: response.assets[0].uri };
-        setSelectedImages([...selectedImages, newImage]); // Thêm ảnh mới vào mảng
-      }
+      handleImageSelection(response);
     });
   };
+
+  const handleImageSelection = (response) => {
+    
+    if (response.didCancel) {
+      console.log('User cancelled image picker');
+    } else if (response.errorCode) {
+      console.log('ImagePicker Error: ', response.errorCode);
+    } else if (response.assets) {
+      const newImages = response.assets.map(asset => ({ uri: asset.uri }));
+      if (selectedImages.length + newImages.length > 10) {
+        ToastAndroid.show('Chỉ được chọn tối đa 10 ảnh!', ToastAndroid.SHORT);
+        return; // Dừng nếu vượt quá giới hạn
+      }
+      setSelectedImages([...selectedImages, ...newImages]); // Thêm ảnh mới vào mảng
+    }
+  }
 
   // Hàm xử lý cập nhật bài viết
   const handleUpdatePost = async () => {

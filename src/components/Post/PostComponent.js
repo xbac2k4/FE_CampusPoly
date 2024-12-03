@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, TextInput, TouchableOpacity, View, Text, Animated, Alert, Modal, FlatList, ScrollView, ActivityIndicator, TouchableWithoutFeedback } from 'react-native';
+import { Image, StyleSheet, TextInput, TouchableOpacity, View, Text, Animated, Alert, Modal, FlatList, ScrollView, ActivityIndicator, TouchableWithoutFeedback, ToastAndroid } from 'react-native';
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 import DocumentPicker from 'react-native-document-picker';
 import GiphySelector from './GiphySelector';
@@ -122,11 +122,17 @@ const PostComponent = ({ title: initialTitle, content: initialContent, hashtag: 
 
   const handleImageResponse = async (response) => {
     try {
-      // Nếu bạn cần tải ảnh lên server, có thể gọi một API hoặc tải ảnh lên trước
       if (response.assets && response.assets.length > 0) {
-        setLengthImage(prevLength => prevLength + response.assets.length);
-        await uploadImage(newImages); // Giả lập việc tải ảnh lên
         const newImages = response.assets.map(asset => asset.uri);
+
+        // Kiểm tra tổng số ảnh
+        if (selectedImages.length + newImages.length > 10) {
+          ToastAndroid.show('Chỉ được chọn tối đa 10 ảnh!', ToastAndroid.SHORT);
+          return; // Dừng nếu vượt quá giới hạn
+        }
+
+        setLengthImage(prevLength => prevLength + newImages.length);
+        await uploadImage(newImages); // Giả lập việc tải ảnh lên
         setSelectedImages([...selectedImages, ...newImages]);
         onContentChange(title, content, hashtag, [...selectedImages, ...newImages], selectedGif);
       }
@@ -149,7 +155,7 @@ const PostComponent = ({ title: initialTitle, content: initialContent, hashtag: 
   };
 
   const openImageLibrary = () => {
-    const options = { mediaType: 'photo', selectionLimit: 0 }; // Allow multiple images
+    const options = { mediaType: 'photo', selectionLimit: 10 }; // Allow multiple images
     launchImageLibrary(options, handleImageResponse);
   };
   const openCamera = () => {
@@ -281,9 +287,9 @@ const PostComponent = ({ title: initialTitle, content: initialContent, hashtag: 
                   <Image source={require('../../assets/images/image.png')} style={styles.image} />
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => setGifModalVisible(true)}>
+                {/* <TouchableOpacity onPress={() => setGifModalVisible(true)}>
                   <Image source={require('../../assets/images/GIF.png')} style={styles.image} />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
                 <Modal visible={isGifModalVisible} animationType="slide">
                   <GiphySelector onGifSelect={handleGifSelect} />

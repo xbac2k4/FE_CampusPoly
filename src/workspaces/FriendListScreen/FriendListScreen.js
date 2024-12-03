@@ -1,18 +1,16 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { UserContext } from '../../services/provider/UseContext';
+import LinearGradient from 'react-native-linear-gradient';
 import styles from '../../assets/style/FriendList';
 import FriendListComponent from '../../components/FriendListComponent/FriendListConponent';
-import LinearGradient from 'react-native-linear-gradient';
-import Colors from '../../constants/Color';
-import { REMOVE_FRIEND, UPDATE_FRIEND } from '../../services/ApiConfig';
-import { SocketContext } from '../../services/provider/SocketContext';
-import { TYPE_ADD_FRIEND } from '../../services/TypeNotify';
 import NotificationModal from '../../components/Notification/NotificationModal';
+import Colors from '../../constants/Color';
+import { GET_USER_ID, REMOVE_FRIEND, UPDATE_FRIEND } from '../../services/ApiConfig';
+import { SocketContext } from '../../services/provider/SocketContext';
+import { UserContext } from '../../services/provider/UseContext';
+import { TYPE_ADD_FRIEND } from '../../services/TypeNotify';
 
-const FriendListScreen = () => {
-  const navigation = useNavigation();
+const FriendListScreen = ({ navigation }) => {
   const { user } = useContext(UserContext);
   const [friendList, setFriendList] = useState([]);
   const [selectedTab, setSelectedTab] = useState('accepted');
@@ -22,7 +20,7 @@ const FriendListScreen = () => {
 
   const fetchFriendList = async () => {
     try {
-      const response = await fetch(`http://10.0.2.2:3000/api/v1/users/get-user-by-id/${user._id}`, {
+      const response = await fetch(`${GET_USER_ID}${user._id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -175,7 +173,9 @@ const FriendListScreen = () => {
 
             return (
               <FriendListComponent
+                navigation={navigation}
                 key={index}
+                friendId={friendData?._id} // Truyền ID qua prop friendId
                 avatar={friendData?.avatar}
                 full_name={friendData?.full_name}
                 send_id={isDifferentId}

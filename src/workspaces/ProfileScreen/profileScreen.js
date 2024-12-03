@@ -1,6 +1,6 @@
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import FrProfileStats from '../../components/FrProfileScreen/frProfileStats';
 import LoadingTimeline from '../../components/Loading/LoadingTimeline';
 import { ProfileLoading } from '../../components/Loading/ProfileLoading';
@@ -94,7 +94,7 @@ const ProfileScreen = ({ navigation, route }) => {
 
           <ProfileTabs onTabSelect={setActiveTab} />
 
-          {activeTab === 'Bài viết' && (
+          {activeTab === 'Bài viết' ? (
             postsLoading ? (
               <LoadingTimeline quantity={3} />
             ) : (
@@ -106,7 +106,21 @@ const ProfileScreen = ({ navigation, route }) => {
                 </Text>
               )
             )
-          )}
+          ) : (
+            <View style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginTop: 50,
+            }}>
+              <Text style={{ color: '#fff' }}>
+                Đang phát triển tính năng
+              </Text>
+              <Image source={require('../../assets/images/white_bee.png')} style={{ width: '50%' }} />
+            </View>
+
+          )
+          }
         </ScrollView>
       )}
     </View>

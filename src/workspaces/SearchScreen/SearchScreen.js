@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { View, TextInput, ActivityIndicator, StyleSheet, Platform, KeyboardAvoidingView } from 'react-native';
-import { GET_SEARCH } from '../../services/ApiConfig'; // Đường dẫn API để lấy bài viết
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet, TextInput, View } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import SearchComponents from '../../components/Search/SearchComponents'; // Import SearchComponents
+import { GET_SEARCH } from '../../services/ApiConfig'; // Đường dẫn API để lấy bài viết
+import { useFocusEffect } from '@react-navigation/native';
 
-const SearchScreen = ({navigation}) => {
+const SearchScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState(""); // Trạng thái tìm kiếm
   const [filteredUsers, setFilteredUsers] = useState([]); // Trạng thái người dùng sau khi lọc
   const [filteredHashtags, setFilteredHashtags] = useState([]); // Trạng thái hashtag sau khi lọc
@@ -19,6 +20,16 @@ const SearchScreen = ({navigation}) => {
       .replace(/Đ/g, "D")
       .toLowerCase();
   };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      return () => {
+        setSearchQuery("");
+        setFilteredUsers([]);
+        setFilteredHashtags([]);
+      };
+    }, [])
+  );
 
   // Hàm gọi API tìm kiếm người dùng và hashtag
   const fetchSearchResults = async (searchTerm) => {
@@ -96,7 +107,7 @@ const SearchScreen = ({navigation}) => {
         {loading ? (
           <ActivityIndicator size="large" color="#FFF" />
         ) : (
-          <SearchComponents navigation = {navigation} filteredHashtags={filteredHashtags} filteredUsers={filteredUsers} />
+          <SearchComponents filteredHashtags={filteredHashtags} filteredUsers={filteredUsers} />
         )}
       </View>
     </KeyboardAvoidingView>

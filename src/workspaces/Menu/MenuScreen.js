@@ -116,7 +116,7 @@ const MenuScreen = () => {
           title="Quyền riêng tư"
           icon={require('../../assets/images/setting.png')}
           subItems={['Trung tâm quyền riêng tư']}
-          onPress={(subItem) => { 
+          onPress={(subItem) => {
             if (subItem === 'Trung tâm quyền riêng tư') {
               navigation.navigate(Screens.Privacy); // Điều hướng đến Trung tâm trợ giúp
             } else if (subItem === 'Báo cáo sự cố') {
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
     height: height * 0.07, // Adjust height based on screen size
     marginHorizontal: width * 0.05, // 5% of screen width
     borderRadius: 10,
-    marginBottom: height * 0.08, // 3% of screen height
+    marginBottom: '20%',
   },
   buttonExitText: {
     fontWeight: '500',
