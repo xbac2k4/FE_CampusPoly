@@ -4,6 +4,18 @@ import { StyleSheet, Dimensions } from 'react-native';
 const { width: screenWidth } = Dimensions.get('window');
 
 const PostStyle = StyleSheet.create({
+  textHeader: {
+    color: '#ECEBED',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  buttonContainer: {
+    // backgroundColor: "#F62E8E",
+    borderRadius: 24,
+    width: 80,
+    height: 25,
+    alignItems: 'center',
+  },
   postContainer: {
     width: '100%',
     backgroundColor: '#181A1C',
@@ -201,11 +213,11 @@ const PostStyle = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)', // Nền mờ
     justifyContent: 'center',
     alignItems: 'center',
-    
+
   },
   dialog: {
     width: '100%',
-    height:'100%',
+    height: '100%',
     backgroundColor: '#181A1C',
     borderRadius: 8,
     padding: 20,
@@ -214,7 +226,7 @@ const PostStyle = StyleSheet.create({
   dialogTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color:'#C0C0C0',
+    color: '#C0C0C0',
   },
   input: {
     width: '100%',
@@ -222,23 +234,23 @@ const PostStyle = StyleSheet.create({
     borderRadius: 4,
     paddingHorizontal: 10,
 
-    color:'#fff',
+    color: '#fff',
   },
   dialogActions: {
-    flexDirection: 'row', 
-    alignItems: 'center', 
+    flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between', // Đảm bảo hai nút cân đều
-    width: '100%', 
+    width: '100%',
     marginBottom: 10,
-   
+
   },
   dialogTitleContainer: {
-    position: 'absolute', 
+    position: 'absolute',
     left: 0,
     right: 0,
     alignItems: 'center', // Đảm bảo tiêu đề luôn ở giữa
   },
-    
+
   updateButtonActive: {
     backgroundColor: '#2E8AF6', // Màu xanh khi có thay đổi
     paddingHorizontal: 15,
@@ -251,7 +263,7 @@ const PostStyle = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 5,
   },
-  
+
   actionButton: {
     padding: 10,
     borderRadius: 8,
@@ -271,14 +283,14 @@ const PostStyle = StyleSheet.create({
   },
 
   imgcontainer: {
-    alignSelf:'flex-start',
+    alignSelf: 'flex-start',
     height: 100,
     marginBottom: 10,
     borderRadius: 8,
     overflow: 'hidden',
-   
-    flexDirection: 'row', 
-    justifyContent:'space-around'
+
+    flexDirection: 'row',
+    justifyContent: 'space-around'
   },
   container: {
     padding: 10,
@@ -295,7 +307,7 @@ const PostStyle = StyleSheet.create({
     height: 32,
     borderRadius: 32,
     marginRight: 12,
-    
+
   },
   avatarPlaceholder: {
     width: 32,

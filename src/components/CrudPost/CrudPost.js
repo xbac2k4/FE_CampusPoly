@@ -8,6 +8,8 @@ import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import NotificationModal from '../Notification/NotificationModal';
 import Snackbar from 'react-native-snackbar';
 import { DELETE_POST, UPDATE_POST } from '../../services/ApiConfig';
+import LinearGradient from 'react-native-linear-gradient';
+import Colors from '../../constants/Color';
 
 
 
@@ -23,14 +25,26 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess, existi
   const [isVisible, setIsVisible] = useState(false);
   const [animation] = useState(new Animated.Value(0));
   const [isChanged, setIsChanged] = useState(false); // Trạng thái kiểm tra thay đổi
+  const [oldTitle, setOldTitle] = useState();
+  const [oldContent, setOldContent] = useState();
+
 
   useEffect(() => {
     if (existingPost) {
+      setOldTitle(existingPost.title || '');
+      setOldContent(existingPost.content || '');
       setTitle(existingPost.title || ''); // Update title if existingPost is updated
       setContent(existingPost.content || ''); // Update content if existingPost is updated
       setHagtag(existingPost.hagtag || ''); // Update content if existingPost is updated
     }
   }, [existingPost]); // Re-run when existingPost chan
+  useEffect(() => {
+    if (title === oldTitle && content === oldContent) {
+      setIsChanged(false);
+      return;
+    }
+    setIsChanged(true);
+  }, [title, content, hagtag]);
   const animatedStyle = {
     transform: [
       {
@@ -244,13 +258,32 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess, existi
               <View style={styles.dialogTitleContainer}>
                 <Text style={styles.dialogTitle}>Chỉnh sửa bài viết</Text>
               </View>
-
-              <TouchableOpacity
-                style={styles.actionButton}
-                onPress={handleUpdatePost}
-              >
-                <Text style={styles.actionText}>Cập nhật</Text>
-              </TouchableOpacity>
+              {/* <LinearGradient
+                colors={isChanged ? [Colors.first, Colors.second] : [Colors.background, Colors.background]}
+                style={styles.buttonContainer}>
+                <TouchableOpacity
+                  style={{...styles.actionButton, alignItems: 'center'}}
+                  onPress={handleUpdatePost}
+                  disabled={!isChanged}
+                >
+                  <Text style={[{ ...styles.actionText, color: isChanged ? '#ECEBED' : '#C0C0C0' }]}>Cập nhật</Text>
+                </TouchableOpacity>
+              </LinearGradient> */}
+              <LinearGradient
+                colors={isChanged ? [Colors.first, Colors.second] : [Colors.background, Colors.background]}
+                style={styles.buttonContainer}>
+                <TouchableOpacity
+                  onPress={() => {
+                    // setLoading(true);
+                    handleUpdatePost();
+                  }}
+                  disabled={!isChanged} // Disable nếu isPost === false
+                  style={{
+                    alignItems: 'center'
+                  }}>
+                  <Text style={[{ ...styles.textHeader, color: isChanged ? '#ECEBED' : '#C0C0C0' }, { fontSize: 16 }]}>Cập nhật</Text>
+                </TouchableOpacity>
+              </LinearGradient>
             </View>
 
 
@@ -272,7 +305,9 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess, existi
                       placeholderTextColor="#888"
                       multiline
                       value={title}
-                      onChangeText={setTitle}
+                      onChangeText={(value) => {
+                        setTitle(value);
+                      }}
                       underlineColorAndroid="transparent"
                       onContentSizeChange={(event) => setInputHeight(event.nativeEvent.contentSize.height)}
 
@@ -341,14 +376,9 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess, existi
                         )}
                       </View>
                     </View>
-
-
-
-
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, display: 'none' }}>
                       <TouchableOpacity style={styles.addButton}
                         onPress={toggleImages}
-
                       >
                         <Image source={require('../../assets/images/add.png')} resizeMode="contain" style={{ width: 12, height: 12 }} />
                       </TouchableOpacity>

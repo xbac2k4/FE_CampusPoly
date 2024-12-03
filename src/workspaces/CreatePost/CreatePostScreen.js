@@ -8,6 +8,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { SocketContext } from '../../services/provider/SocketContext';
 import { TYPE_CREATE_POST } from '../../services/TypeNotify';
 import Loading from '../../components/MenuAuth/Loading';
+import Snackbar from 'react-native-snackbar';
 
 const CreatePostScreen = ({ navigation }) => {
   // const [user, setUser] = useState(null);

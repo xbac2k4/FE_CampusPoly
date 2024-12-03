@@ -152,7 +152,7 @@ const PostComponent = ({ title: initialTitle, content: initialContent, hashtag: 
     setLoadImage(true);
     return new Promise((resolve) => {
       setTimeout(() => {
-        console.log("Images uploaded successfully!");
+        console.log("Images load successfully!");
         setLoadImage(false);
         // setLengthImage(0);
         resolve();
@@ -193,7 +193,7 @@ const PostComponent = ({ title: initialTitle, content: initialContent, hashtag: 
           <View style={styles.inputContainer}>
             <TextInput
               style={[styles.textInput, { height: Math.max(40, inputHeight) }]}
-              placeholder="Title?"
+              placeholder="Tiêu đề?"
               placeholderTextColor="#888"
               multiline
               value={title} // Sử dụng giá trị từ state
