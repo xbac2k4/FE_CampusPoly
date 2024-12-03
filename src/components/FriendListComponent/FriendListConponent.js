@@ -1,5 +1,6 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
+
 import Screens from '../../navigation/Screens';
 
 const FriendListConponent = ({ avatar, full_name, status, send_id, onDeleteFriend, onConfirm, navigation, friendId }) => {

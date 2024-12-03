@@ -15,6 +15,7 @@ import { UserContext } from '../../services/provider/UseContext';
 import { timeAgo } from '../../utils/formatTime';
 import { SocketContext } from '../../services/provider/SocketContext';
 import { TYPE_COMMENT_POST, TYPE_LIKE_POST } from '../../services/TypeNotify';
+import Screens from '../../navigation/Screens';
 const { width: screenWidth } = Dimensions.get('window'); // Lấy chiều rộng màn hình để điều chỉnh kích thước hình ảnh
 const CommentScreen = () => {
   const route = useRoute();
@@ -153,6 +154,18 @@ const CommentScreen = () => {
   // sử lí nút like 
   // Toggle like/unlike functionality
   // Xử lý like/unlike bài viết
+   // Xử lý khi bấm vào avatar và tên người dùng
+   const handleProfileClick = (userId) => {
+    // console.log(userId);
+    if (userId._id === user._id) {
+      // Nếu ID của người dùng hiện tại trùng khớp, chuyển đến màn hình Profile
+      navigation.navigate(Screens.Profile);
+    } else {
+      // Nếu không, chuyển đến màn hình Profile với tham số ID
+      navigation.navigate(Screens.Profile, { id: userId._id });
+    }
+  };
+
   const toggleLike = async (item) => {
     console.log(item);
     const userId = user._id; // Lấy ID người dùng từ context
@@ -315,14 +328,18 @@ const CommentScreen = () => {
           <>
             <View style={styles.headerContent}>
               <View style={{ flexDirection: 'row' }}>
-                <TouchableOpacity onPress={() => { /* Xử lý avatar */ }}>
+                <TouchableOpacity onPress={() => handleProfileClick(post?.postData?.user_id)}>
                   <Image source={{ uri: post?.postData?.user_id?.avatar.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' }}
                     style={styles.imageavatar} />
                 </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleProfileClick(post?.postData?.user_id)}>
                 <View style={{ marginLeft: 6, marginTop: -5 }}>
+                
                   <Text style={{ color: '#fff', fontWeight: 'semibold', fontSize: 14, fontFamily: "HankenGrotesk-Regular" }}>{post?.postData?.user_id?.full_name}</Text>
+                
                   <Text style={{ fontSize: 12, fontFamily: 'HankenGrotesk-Regular', fontWeight: "medium", color: '#727477' }}>{timeAgo(post.postData.createdAt)}</Text>
                 </View>
+                </TouchableOpacity>
               </View>
               {/* <TouchableOpacity onPress={() => { console.log('post:', post); openBottomSheet(post?.postData?._id) }}>
                 <Image source={require('../../assets/images/dot.png')} resizeMode='contain' style={{ width: 20, height: 20 }} />
@@ -432,6 +449,8 @@ const CommentScreen = () => {
                     content={comment?.comment_content}
                     time={timeAgo(comment?.createdAt)} // Format thời gian nếu cần
                     likes={0} // Bạn có thể chỉnh sửa nếu cần thêm thông tin về lượt thích
+                    user_id_comment={comment?.user_id_comment}
+                    navigation={navigation}
                   />
                 ))}
             </View>

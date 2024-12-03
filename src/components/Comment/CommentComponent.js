@@ -1,38 +1,56 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { UserContext } from '../../services/provider/UseContext';
+import Screens from '../../navigation/Screens';
 // Component nhận dữ liệu từ props
 const CommentComponent = ({
-  avatar, name, content, time, likes, initialLiked = false
+  avatar, name, content, time, likes, initialLiked = false, user_id_comment, navigation
 }) => {
+  const { user } = useContext(UserContext);
   // State để lưu trạng thái "đã thích" (liked)
   const [isLiked, setIsLiked] = useState(initialLiked);
   // Hàm xử lý khi nhấn vào biểu tượng heart
   const toggleHeart = () => setIsLiked(!isLiked);
+  // Xử lý khi bấm vào avatar và tên người dùng
+  const handleProfileClick = (user_id_comment) => {
+    console.log(user_id_comment);
+    if (user_id_comment._id === user._id) {
+      // Nếu ID của người dùng hiện tại trùng khớp, chuyển đến màn hình Profile
+      navigation.navigate(Screens.Profile);
+    } else {
+      // Nếu không, chuyển đến màn hình Profile với tham số ID
+      navigation.navigate(Screens.Profile, { id: user_id_comment._id });
+    }
+  };
   return (
     <View style={styles.commentContainer}>
       <View style={styles.userContainer}>
         {/* Hiển thị avatar */}
+        <TouchableOpacity onPress={() => handleProfileClick(user_id_comment)}>
         <Image
           source={{ uri: avatar }}
           resizeMode="cover"
           style={styles.imgAvatar}
         />
+          </TouchableOpacity>
         <View style={{ marginLeft: 10 }}>
           {/* Hiển thị tên và nội dung bình luận */}
+           <TouchableOpacity onPress={() => handleProfileClick(user_id_comment)}>
           <Text style={styles.textName}>{name}</Text>
+          </TouchableOpacity>
           <Text style={styles.textContent}>{content}</Text>
           {/* Thời gian và số lượt thích */}
           <View style={styles.timeLikeContainer}>
             <Text style={styles.textTime}>{time}</Text>
             {/* <Text style={styles.textTime}> · </Text> */}
             <TouchableOpacity >
-              <Text style={{...styles.textTime, marginLeft: 15}}><Text>Thích</Text></Text>
+              <Text style={{ ...styles.textTime, marginLeft: 15 }}><Text>Thích</Text></Text>
             </TouchableOpacity>
           </View>
         </View>
       </View>
       {/* Biểu tượng heart có thể nhấn */}
-      <TouchableOpacity onPress={toggleHeart} style={{display: 'none'}}>
+      <TouchableOpacity onPress={toggleHeart} style={{ display: 'none' }}>
         <Image
           source={
             isLiked
