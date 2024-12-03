@@ -20,6 +20,7 @@ const NotificationScreen = ({ navigation }) => {
 
   const fetchNotifications = async () => {
     try {
+      setLoading(true);
       if (!user || !user._id) {
         throw new Error('Không tìm thấy userID');
       }
@@ -31,6 +32,8 @@ const NotificationScreen = ({ navigation }) => {
       setNotifications(result.data.notifications);
     } catch (e) {
       console.error('Error fetching notifications:', e);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -43,9 +46,7 @@ const NotificationScreen = ({ navigation }) => {
   };
 
   useEffect(() => {
-    setLoading(true);
     fetchNotifications();
-    setLoading(false);
   }, [])
 
   useFocusEffect(
@@ -70,8 +71,8 @@ const NotificationScreen = ({ navigation }) => {
   );
 
   const handleMarkAllAsRead = async () => {
-    setLoading(true);
     try {
+      setLoading(true);
       // console.log("id: ", user._id);
 
       const result = axios.put(`${READ_ALL_NOTIFICATION}`, {
@@ -86,8 +87,8 @@ const NotificationScreen = ({ navigation }) => {
     }
     finally {
       await fetchNotifications();
+      setLoading(false);
     }
-    setLoading(false);
   };
   const fetchPostById = async (postId) => {
     try {
