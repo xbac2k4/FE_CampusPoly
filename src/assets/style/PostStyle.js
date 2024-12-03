@@ -4,18 +4,6 @@ import { StyleSheet, Dimensions } from 'react-native';
 const { width: screenWidth } = Dimensions.get('window');
 
 const PostStyle = StyleSheet.create({
-  textHeader: {
-    color: '#ECEBED',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  buttonContainer: {
-    // backgroundColor: "#F62E8E",
-    borderRadius: 24,
-    width: 80,
-    height: 25,
-    alignItems: 'center',
-  },
   postContainer: {
     width: '100%',
     backgroundColor: '#181A1C',
@@ -27,6 +15,12 @@ const PostStyle = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
+  horizontalScrollContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+
   profileImage: {
     width: 40,
     height: 40,
@@ -136,6 +130,11 @@ const PostStyle = StyleSheet.create({
   inactiveDot: {
     backgroundColor: '#B3B3B3',
   },
+  moreIndicator: {
+    backgroundColor: '#B3B3B3',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   // Các style cho Bottom Sheet
   bottomSheetContent: {
     backgroundColor: 'white',
@@ -196,7 +195,8 @@ const PostStyle = StyleSheet.create({
   },
   crudContainer: {
     flexDirection: 'row',
-    marginTop: 15, alignItems: "center"
+    marginTop: 15, 
+    alignItems: "center"
   },
   crudText: {
     color: '#fff',
@@ -301,6 +301,7 @@ const PostStyle = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     marginBottom: 12,
+    
   },
   avatar: {
     width: 32,
@@ -324,8 +325,17 @@ const PostStyle = StyleSheet.create({
     textAlignVertical: 'top',
     backgroundColor: 'transparent',
   },
+  textInput1: {
+    color: '#ECEBED',
+    fontSize: 16,
+    padding: 0,
+    margin: 0,
+    textAlignVertical: 'top',
+    backgroundColor: 'transparent',
+  },
   inputContainer: {
     flex: 1,
+    // backgroundColor: '#fff', // Màu nền placeholder
   },
   addButton: {
     width: 32,
@@ -423,12 +433,11 @@ const PostStyle = StyleSheet.create({
   },
   deleteIcon: {
     position: 'absolute',
-    top: -5, // Đặt vị trí bên trên
-    right: -5, // Đặt vị trí bên phải
-    backgroundColor: '#fff', // Nền trắng để nút nổi bật
-    borderRadius: 8,
+    top: 0,
+    right: 0,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    borderRadius: 12,
     padding: 2,
-    elevation: 5, // Đổ bóng cho nút "X"
   },
 });
 
