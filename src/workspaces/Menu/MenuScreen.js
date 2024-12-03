@@ -94,18 +94,35 @@ const MenuScreen = () => {
             </TouchableOpacity>
           </View>
         </View>
-
         <SettingItem
           title="Trợ giúp & hỗ trợ"
           icon={require('../../assets/images/hoi.png')}
           subItems={['Trung tâm trợ giúp', 'Báo cáo sự cố', 'Điều khoản & chính sách']}
-          onPress={() => { /* Handle onPress here */ }}
+          onPress={(subItem) => {
+            if (subItem === 'Trung tâm trợ giúp') {
+              navigation.navigate(Screens.HelpCenter); // Điều hướng đến Trung tâm trợ giúp
+            } else if (subItem === 'Báo cáo sự cố') {
+              navigation.navigate(Screens.ReportIssue); // Điều hướng đến Báo cáo sự cố
+            } else if (subItem === 'Điều khoản & chính sách') {
+              navigation.navigate(Screens.TermsAndPolic); // Điều hướng đến Điều khoản & chính sách
+            }
+          }}
         />
+
+
+
+
         <SettingItem
           title="Quyền riêng tư"
           icon={require('../../assets/images/setting.png')}
-          subItems={['Trung tâm quyền riêng tư', 'Cài đặt']}
-          onPress={() => { /* Handle onPress here */ }}
+          subItems={['Trung tâm quyền riêng tư']}
+          onPress={(subItem) => { 
+            if (subItem === 'Trung tâm quyền riêng tư') {
+              navigation.navigate(Screens.Privacy); // Điều hướng đến Trung tâm trợ giúp
+            } else if (subItem === 'Báo cáo sự cố') {
+              navigation.navigate(Screens.ReportIssue);
+            }
+          }}
         />
       </ScrollView>
 

@@ -1,4 +1,4 @@
-import FriendListScreen from "../workspaces/FriendListScreen/FriendListScreen";
+import Privacy from "../workspaces/SupportList/navSupport/Privacy";
 
 
 const Screens = {
@@ -17,7 +17,17 @@ const Screens = {
     CreatePost:"CreatPost",
     ChatView:'ChatView',
     Menu: "Menu",
-    FriendListScreen:"FriendList"
+    FriendListScreen:"FriendList",
+    UpdatePost:'Updatepost',
+    HelpCenter:'HelpCenter',
+    ReportIssue:'ReportIssue',
+    TermsAndPolic:'TermsAndPolic',
+    Introduce:'Introduce',
+    Accountinformation:"Information",
+    Loginproblem:'Loginproblem',
+    Page:'Page',
+    Security:'Security',
+    Privacy:'Privacy',  
 };
 
 export default Screens;
