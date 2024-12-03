@@ -4,6 +4,18 @@ import { StyleSheet, Dimensions } from 'react-native';
 const { width: screenWidth } = Dimensions.get('window');
 
 const PostStyle = StyleSheet.create({
+  textHeader: {
+    color: '#ECEBED',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  buttonContainer: {
+    // backgroundColor: "#F62E8E",
+    borderRadius: 24,
+    width: 80,
+    height: 25,
+    alignItems: 'center',
+  },
   postContainer: {
     width: '100%',
     backgroundColor: '#181A1C',
@@ -195,13 +207,13 @@ const PostStyle = StyleSheet.create({
   },
   crudContainer: {
     flexDirection: 'row',
-    marginTop: 15, 
+    marginTop: 15,
     alignItems: "center"
   },
   crudText: {
-    color: '#fff',
-    fontSize: 16,
-
+    color: '#ECEBED',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   imgCrud: {
     width: 25,
@@ -301,7 +313,7 @@ const PostStyle = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     marginBottom: 12,
-    
+
   },
   avatar: {
     width: 32,

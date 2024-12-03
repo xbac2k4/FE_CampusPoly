@@ -324,9 +324,9 @@ const CommentScreen = () => {
                   <Text style={{ fontSize: 12, fontFamily: 'HankenGrotesk-Regular', fontWeight: "medium", color: '#727477' }}>{timeAgo(post.postData.createdAt)}</Text>
                 </View>
               </View>
-              <TouchableOpacity onPress={() => { console.log('post:', post); openBottomSheet(post?.postData?._id) }}>
+              {/* <TouchableOpacity onPress={() => { console.log('post:', post); openBottomSheet(post?.postData?._id) }}>
                 <Image source={require('../../assets/images/dot.png')} resizeMode='contain' style={{ width: 20, height: 20 }} />
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
             <View style={styles.bodyContent}>
               <Text style={{ fontFamily: 'rgl1', fontSize: 20, fontWeight: 'bold', color: "#fff" }}>

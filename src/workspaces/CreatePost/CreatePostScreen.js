@@ -64,7 +64,7 @@ const CreatePostScreen = ({ navigation }) => {
 
   const fetchCreatePost = async (formData) => {
     try {
-      ToastAndroid.show("Đang đăng bài viết...", ToastAndroid.SHORT);
+      // ToastAndroid.show("Đang đăng bài viết...", ToastAndroid.SHORT);
       const response = await fetch(ADD_POST, {
         method: 'POST',
         body: formData,

@@ -1,4 +1,4 @@
-import { Alert, Image, StyleSheet, Text, TouchableOpacity, View, Modal, TextInput, Button, Dimensions, Animated, ScrollView } from 'react-native';
+import { Alert, Image, StyleSheet, Text, TouchableOpacity, View, Modal, TextInput, Button, Dimensions, Animated, ScrollView, ToastAndroid } from 'react-native';
 import React, { useState, useContext, useEffect } from 'react';
 import styles from '../../assets/style/PostStyle';
 import { UserContext } from '../../services/provider/UseContext';
@@ -8,6 +8,8 @@ import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import NotificationModal from '../Notification/NotificationModal';
 import Snackbar from 'react-native-snackbar';
 import { DELETE_POST, UPDATE_POST } from '../../services/ApiConfig';
+import LinearGradient from 'react-native-linear-gradient';
+import Colors from '../../constants/Color';
 
 const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess, existingPost }) => {
   const { user } = useContext(UserContext);
@@ -21,9 +23,13 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess, existi
   const [isVisible, setIsVisible] = useState(false);
   const [animation] = useState(new Animated.Value(0));
   const [isChanged, setIsChanged] = useState(false); // Trạng thái kiểm tra thay đổi
+  const [oldTitle, setOldTitle] = useState();
+  const [oldContent, setOldContent] = useState();
 
   useEffect(() => {
     if (existingPost) {
+      setOldTitle(existingPost.title || '');
+      setOldContent(existingPost.content || '');
       setTitle(existingPost.title || '');
       setContent(existingPost.content || '');
       setHagtag(existingPost.hagtag || '');
@@ -34,6 +40,14 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess, existi
       }
     }
   }, [existingPost]);
+
+  useEffect(() => {
+    if (title === oldTitle && content === oldContent) {
+      setIsChanged(false);
+      return;
+    }
+    setIsChanged(true);
+  }, [title, content, hagtag]);
 
   const animatedStyle = {
     transform: [
@@ -76,30 +90,33 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess, existi
       if (response.ok) {
         setIsDeleteModalVisible(false); // Đóng modal
         onDeleteSuccess?.(); // Cập nhật giao diện sau khi xóa
+        ToastAndroid.show("Xóa thành công", ToastAndroid.SHORT);
 
         // Hiển thị Snackbar thành công
-        Snackbar.show({
-          text: 'Bài viết đã được xóa thành công!',
-          duration: Snackbar.LENGTH_SHORT,
-          backgroundColor: '#4CAF50', // Màu nền cho thành công
-          textColor: 'white', // Màu chữ
-        });
+        // Snackbar.show({
+        //   text: 'Bài viết đã được xóa thành công!',
+        //   duration: Snackbar.LENGTH_SHORT,
+        //   backgroundColor: '#4CAF50', // Màu nền cho thành công
+        //   textColor: 'white', // Màu chữ
+        // });
       } else {
-        Snackbar.show({
-          text: 'Không thể xóa bài viết. Vui lòng thử lại!',
-          duration: Snackbar.LENGTH_SHORT,
-          backgroundColor: '#f44336', // Màu nền cho lỗi
-          textColor: 'white',
-        });
+        ToastAndroid.show("Không thể xóa bài viết. Vui lòng thử lại!", ToastAndroid.SHORT);
+        // Snackbar.show({
+        //   text: 'Không thể xóa bài viết. Vui lòng thử lại!',
+        //   duration: Snackbar.LENGTH_SHORT,
+        //   backgroundColor: '#f44336', // Màu nền cho lỗi
+        //   textColor: 'white',
+        // });
       }
     } catch (error) {
       console.error('Lỗi xóa bài viết:', error);
-      Snackbar.show({
-        text: 'Đã xảy ra lỗi khi xóa bài viết!',
-        duration: Snackbar.LENGTH_SHORT,
-        backgroundColor: '#f44336',
-        textColor: 'white',
-      });
+      ToastAndroid.show("Đã xảy ra lỗi khi xóa bài viết!", ToastAndroid.SHORT);
+      // Snackbar.show({
+      //   text: 'Đã xảy ra lỗi khi xóa bài viết!',
+      //   duration: Snackbar.LENGTH_SHORT,
+      //   backgroundColor: '#f44336',
+      //   textColor: 'white',
+      // });
     }
   };
 
@@ -142,7 +159,7 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess, existi
       formData.append('title', title);
       formData.append('content', content);
       formData.append('hagtag', hagtag);
-  
+
       // Kiểm tra nếu không có ảnh nào, gửi mảng rỗng
       if (selectedImages.length > 0) {
         selectedImages.forEach((image, index) => {
@@ -157,7 +174,7 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess, existi
       } else {
         formData.append('image', []); // Gửi mảng rỗng nếu không có ảnh
       }
-  
+
       const response = await fetch(
         `${UPDATE_POST}/${postId}?user_id=${user._id}`,
         {
@@ -168,33 +185,36 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess, existi
           },
         }
       );
-  
+
       if (response.ok) {
-        Snackbar.show({
-          text: 'Bài viết đã được cập nhật thành công!',
-          duration: Snackbar.LENGTH_SHORT,
-          backgroundColor: '#4CAF50',
-        });
+        // Snackbar.show({
+        //   text: 'Bài viết đã được cập nhật thành công!',
+        //   duration: Snackbar.LENGTH_SHORT,
+        //   backgroundColor: '#4CAF50',
+        // });
+        ToastAndroid.show("Cập nhật thành công", ToastAndroid.SHORT);
         onUpdateSuccess?.();
       } else {
         const errorResponse = await response.json();
         console.error('Response Error:', errorResponse);
-        Snackbar.show({
-          text: 'Không thể cập nhật bài viết. Vui lòng thử lại!',
-          duration: Snackbar.LENGTH_SHORT,
-          backgroundColor: '#f44336',
-        });
+        ToastAndroid.show("Không thể cập nhật bài viết. Vui lòng thử lại!", ToastAndroid.SHORT);
+        // Snackbar.show({
+        //   text: 'Không thể cập nhật bài viết. Vui lòng thử lại!',
+        //   duration: Snackbar.LENGTH_SHORT,
+        //   backgroundColor: '#f44336',
+        // });
       }
     } catch (error) {
       console.error('Lỗi khi cập nhật bài viết:', error);
-      Snackbar.show({
-        text: 'Đã xảy ra lỗi khi cập nhật bài viết!',
-        duration: Snackbar.LENGTH_SHORT,
-        backgroundColor: '#f44336',
-      });
+      ToastAndroid.show("Đã xảy ra lỗi khi cập nhật bài viết!", ToastAndroid.SHORT);
+      // Snackbar.show({
+      //   text: 'Đã xảy ra lỗi khi cập nhật bài viết!',
+      //   duration: Snackbar.LENGTH_SHORT,
+      //   backgroundColor: '#f44336',
+      // });
     }
   };
-  
+
   return (
     <View style={styles.inner}>
       <TouchableOpacity style={styles.crudContainer} onPress={() => setIsModalVisible(true)}>
@@ -253,12 +273,26 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess, existi
                 <Text style={styles.dialogTitle}>Chỉnh sửa bài viết</Text>
               </View>
 
-              <TouchableOpacity
+              {/* <TouchableOpacity
                 style={styles.actionButton}
                 onPress={handleUpdatePost}
               >
                 <Text style={styles.actionText}>Cập nhật</Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
+              <LinearGradient
+                colors={isChanged ? [Colors.first, Colors.second] : [Colors.background, Colors.background]}
+                style={styles.buttonContainer}>
+                <TouchableOpacity
+                  onPress={() => {
+                    handleUpdatePost()
+                  }}
+                  disabled={!isChanged} // Disable nếu === false
+                  style={{
+                    alignItems: 'center'
+                  }}>
+                  <Text style={[{ ...styles.textHeader, color: isChanged ? '#ECEBED' : '#C0C0C0' }, { fontSize: 16 }]}>Cập nhật</Text>
+                </TouchableOpacity>
+              </LinearGradient>
             </View>
 
             <View style={styles.container}>
@@ -274,15 +308,14 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess, existi
                   {/** Input */}
                   <View style={styles.inputContainer}>
                     <TextInput
-                      style={[styles.textInput, { height: Math.max(40, inputHeight) }]}
-                      placeholder="Title?"
+                      style={[styles.textInput]}
+                      placeholder="Tiêu đề bài viết?"
                       placeholderTextColor="#888"
-                      // multiline
+                      multiline
                       value={title}
                       onChangeText={setTitle}
                       underlineColorAndroid="transparent"
-                      onContentSizeChange={(event) => setInputHeight(event.nativeEvent.contentSize.height)}
-
+                    // onContentSizeChange={(event) => setInputHeight(event.nativeEvent.contentSize.height)}
                     />
                     <TextInput
                       style={[styles.textInput1, { height: Math.max(40, inputHeight) }]}
