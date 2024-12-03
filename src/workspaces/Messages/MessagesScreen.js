@@ -24,8 +24,12 @@ const MessageScreen = ({ navigation }) => {
       const response = await fetch(`${GET_CONVERSATION_BY_USER}${id}`);
       const data = await response.json();
       // console.log(data.data);
-
-      setUsers(data.data);
+      const conversation = data.data.sort((a, b) => {
+        if (!a.last_message_time) return 1; // Đẩy các giá trị null xuống cuối
+        if (!b.last_message_time) return -1;
+        return new Date(b.last_message_time) - new Date(a.last_message_time);
+      });
+      setUsers(conversation);
       setLoading(false)
     } catch (error) {
       console.error('Error fetching user data:', error);

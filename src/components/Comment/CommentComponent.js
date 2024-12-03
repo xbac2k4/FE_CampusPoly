@@ -32,7 +32,7 @@ const CommentComponent = ({
         </View>
       </View>
       {/* Biểu tượng heart có thể nhấn */}
-      <TouchableOpacity onPress={toggleHeart}>
+      <TouchableOpacity onPress={toggleHeart} style={{display: 'none'}}>
         <Image
           source={
             isLiked

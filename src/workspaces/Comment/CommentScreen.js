@@ -373,7 +373,7 @@ const CommentScreen = () => {
                   <Image source={require('../../assets/images/share.png')} resizeMode='contain' style={{ width: 20, height: 20 }} />
                 </TouchableOpacity>
               </View>
-              <TouchableOpacity onPress={() => setIsBookmark(!isBookmark)} style={{ marginTop: 5 }}>
+              <TouchableOpacity onPress={() => setIsBookmark(!isBookmark)} style={{ marginTop: 5, display: 'none' }}>
                 <Image
                   source={isBookmark
                     ? require('../../assets/images/bookmark2.png')
@@ -392,7 +392,7 @@ const CommentScreen = () => {
                 </Text>
               }
 
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', display: 'none' }}>
                 <Text style={styles.recentText}>Mới nhất</Text>
                 <TouchableOpacity onPress={() => {
                   // Handle action when click on Recent
