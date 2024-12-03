@@ -90,13 +90,13 @@ const MenuAuthenticationScreen = ({ navigation }) => {
         // }
         clearTimeout(timeoutId); // Xóa thời gian chờ nếu đăng nhập thành công
         setTimeout(() => {
-          setIsLoading(false);
           navigation.dispatch(
             CommonActions.reset({
               index: 0,
               routes: [{ name: Screens.BottomTab }],
             })
           );
+          setIsLoading(false);
         }, 1000);
       } else if (responseData.status === 400) {
         toggleShowDialog();

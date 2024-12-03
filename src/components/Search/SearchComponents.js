@@ -122,7 +122,9 @@ const SearchComponents = ({ filteredHashtags, filteredUsers, navigation }) => {
                         ListEmptyComponent={<Text style={styles.noResultsText}>Gợi ý</Text>}
                     />
                 ) : (
-                    <ProfilePosts navigation={navigation} data={posts} />
+                    posts ? (
+                        <ProfilePosts navigation={navigation} data={posts} />
+                    ) : null
                 )}
             </View>
 

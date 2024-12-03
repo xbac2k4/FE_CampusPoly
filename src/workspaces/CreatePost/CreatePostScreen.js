@@ -8,6 +8,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { SocketContext } from '../../services/provider/SocketContext';
 import { TYPE_CREATE_POST } from '../../services/TypeNotify';
 import Loading from '../../components/MenuAuth/Loading';
+import Snackbar from 'react-native-snackbar';
 
 const CreatePostScreen = ({ navigation }) => {
   // const [user, setUser] = useState(null);
@@ -48,7 +49,7 @@ const CreatePostScreen = ({ navigation }) => {
         throw new Error('Failed to fetch user friends!');
       }
       const data = await response.json();
-      console.log(data.data);
+      // console.log(data.data);
       // const listFriends = data.data.filter(friend => friend)
       setUserFriend(data.data);
     } catch (error) {
@@ -101,11 +102,12 @@ const CreatePostScreen = ({ navigation }) => {
           });
         }
       });
-      await fetchCreatePost(formData);
+      // await fetchCreatePost(formData);
 
-      // setTimeout(async () => {
-      //   await fetchCreatePost(formData);
-      // }, 5000); // Delay 3 giây (3000 ms)    // if (gif) {
+      setTimeout(async () => {
+        await fetchCreatePost(formData);
+      }, 2000); // Delay 3 giây (3000 ms)    
+      // if (gif) {
       //   formData.append('gif', {
       //     uri: gif,
       //     name: 'gif.gif',
