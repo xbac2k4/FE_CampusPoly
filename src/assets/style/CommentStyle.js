@@ -58,12 +58,14 @@ const CommentStyle = StyleSheet.create({
         backgroundColor: '#B3B3B3',
       },
       postImage: {
-        width: screenWidth - 50, // Giữ nguyên độ rộng
-        height: undefined, // Không gán chiều cao cố định
-        aspectRatio: 1, // Giữ tỷ lệ gốc của ảnh (tỷ lệ rộng/cao)
+        // width: screenWidth - 100,
+        height: 300,
         borderRadius: 8,
-        marginRight: 10,
-        marginTop: 5,
+     
+        marginTop: 20,
+      },
+      imageList: {
+        marginBottom: 10,
       },
       
       errorText: {
