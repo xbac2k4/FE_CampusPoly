@@ -79,10 +79,9 @@ const PostStyle = StyleSheet.create({
   //   marginTop: 5,
   // },
   postImage: {
-    width: screenWidth - 50,
+    // width: screenWidth - 50,
     height: 200,
     borderRadius: 8,
-    marginRight: 10,
   },
   postMeta: {
     flexDirection: 'row',
