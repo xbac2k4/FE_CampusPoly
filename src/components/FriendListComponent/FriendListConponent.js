@@ -12,9 +12,9 @@ const FriendListConponent = ({ avatar, full_name, status, send_id, onDeleteFrien
     navigation.navigate(Screens.Profile, { id: friendId });
 
   };
-  console.log(isPending);
+  // console.log(isPending);
 
-  console.log(send_id);
+  // console.log(send_id);
 
   return (
     <View style={styles.container}>

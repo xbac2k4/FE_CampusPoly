@@ -13,7 +13,7 @@ const CommentComponent = ({
   const toggleHeart = () => setIsLiked(!isLiked);
   // Xử lý khi bấm vào avatar và tên người dùng
   const handleProfileClick = (user_id_comment) => {
-    console.log(user_id_comment);
+    // console.log(user_id_comment);
     if (user_id_comment._id === user._id) {
       // Nếu ID của người dùng hiện tại trùng khớp, chuyển đến màn hình Profile
       navigation.navigate(Screens.Profile);
