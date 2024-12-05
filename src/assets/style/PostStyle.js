@@ -79,7 +79,8 @@ const PostStyle = StyleSheet.create({
   //   marginTop: 5,
   // },
   postImage: {
-    // width: screenWidth - 50,
+    width: screenWidth - 50,
+    marginRight: 10,
     height: 200,
     borderRadius: 8,
   },
