@@ -134,7 +134,7 @@ const st = StyleSheet.create({
     flexDirection: 'row',
   },
   letter: {
-    fontSize: 48,
+    fontSize: 40,
     color: 'white',
     marginHorizontal: 2,
     fontFamily: 'rubik',
