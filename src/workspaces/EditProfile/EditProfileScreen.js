@@ -29,6 +29,7 @@ const EditProfileScreen = () => {
   const [birthday, setBirthday] = useState(user.birthday ? new Date(user.birthday) : null);
   // const defaultProfileImage = Image.resolveAssetSource(require('../../assets/images/default-profile.png')).uri;
   // const defaultBackgroundImage = Image.resolveAssetSource(require('../../assets/images/default-bg.png')).uri;
+  const [loadImage, setLoadImage] = useState(false);
 
   const [profileImage, setProfileImage] = useState({
     uri: user.avatar
@@ -98,21 +99,21 @@ const EditProfileScreen = () => {
       setErrorMessage('Tên là bắt buộc.');
       return;
     }
-  
+
     setIsLoading(true);
-  
+
     const formData = new FormData();
     formData.append('full_name', name);
     formData.append('bio', bio);
     formData.append('sex', gender);
     formData.append('birthday', birthday ? birthday.toISOString() : '');
-  
+
     try {
       await FetchUpdateUser(formData);
-  
+
       setIsSaved(true);
       setIsChanged(false); // Đặt lại isChanged về false khi lưu thành công
-  
+
       navigation.navigate(Screens.Profile, { refresh: true });
     } catch (error) {
       console.error('Lỗi khi lưu hồ sơ:', error);
@@ -121,7 +122,7 @@ const EditProfileScreen = () => {
       setIsLoading(false);
     }
   };
-  
+
   const clearBio = () => setBio('');
 
   // Cập nhật profileImage khi người dùng chọn ảnh mới
@@ -133,22 +134,37 @@ const EditProfileScreen = () => {
         cropping: true,
         cropperCircleOverlay: true,
       })
-        .then((image) => {
-          const formData = new FormData();
-          formData.append('avatar', {
-            uri: image.path,
-            name: 'avatar.jpg',
-            type: 'image/jpeg',
-          });
-          FetchUpdateUser(formData);
-          setProfileImage({ uri: image.path });
-          profileSheetRef.current.close();
+        .then(async (image) => {
+          setLoadImage(true); // Bắt đầu tải ảnh
+          try {
+            // Gọi uploadImage để mô phỏng việc tải ảnh lên máy chủ
+            await uploadImage(image.path);
+
+            // Tạo formData để gửi ảnh lên API
+            const formData = new FormData();
+            formData.append('avatar', {
+              uri: image.path,
+              name: 'avatar.jpg',
+              type: 'image/jpeg',
+            });
+
+            // Gọi API để cập nhật ảnh đại diện
+            await FetchUpdateUser(formData);
+
+            // Cập nhật ảnh đại diện mới
+            setProfileImage({ uri: image.path });
+          } catch (error) {
+            console.error('Lỗi khi tải ảnh lên:', error);
+          } finally {
+            setLoadImage(false); // Kết thúc tải ảnh
+            profileSheetRef.current.close(); // Đóng action sheet
+          }
         })
         .catch((error) => {
           if (error.code === 'E_PICKER_CANCELLED') {
-            console.log('User cancelled image selection');
+            console.log('Người dùng đã hủy chọn ảnh');
           } else {
-            console.error('Image selection error:', error);
+            console.error('Lỗi khi chọn ảnh:', error);
           }
         });
     } else {
@@ -156,7 +172,7 @@ const EditProfileScreen = () => {
       setShowDeleteModal(true);
     }
   };
-  
+
   const handleBackgroundImageEdit = (type) => {
     if (type === 'upload') {
       ImageCropPicker.openPicker({
@@ -164,22 +180,37 @@ const EditProfileScreen = () => {
         height: 300,
         cropping: true,
       })
-        .then((image) => {
-          const formData = new FormData();
-          formData.append('avatar', {
-            uri: image.path,
-            name: 'background.jpg',
-            type: 'image/jpeg',
-          });
-          FetchUpdateUser(formData);
-          setBackgroundImage({ uri: image.path });
-          backgroundSheetRef.current.close();
+        .then(async (image) => {
+          setLoadImage(true); // Bắt đầu tải ảnh
+
+          try {
+            // Gọi uploadImage để mô phỏng việc tải ảnh lên máy chủ
+            await uploadImage(image.path);
+
+            // Tạo formData để gửi ảnh lên API
+            const formData = new FormData();
+            formData.append('avatar', {
+              uri: image.path,
+              name: 'background.jpg',
+              type: 'image/jpeg',
+            });
+            // Gọi API để cập nhật ảnh đại diện
+            await FetchUpdateUser(formData);
+
+            // Cập nhật ảnh đại diện mới
+            setBackgroundImage({ uri: image.path });
+          } catch (error) {
+            console.error('Lỗi khi tải ảnh lên:', error);
+          } finally {
+            setLoadImage(false); // Kết thúc tải ảnh
+            backgroundSheetRef.current.close(); // Đóng action sheet
+          }
         })
         .catch((error) => {
           if (error.code === 'E_PICKER_CANCELLED') {
-            console.log('User cancelled image selection');
+            console.log('Người dùng đã hủy chọn ảnh');
           } else {
-            console.error('Image selection error:', error);
+            console.error('Lỗi khi chọn ảnh:', error);
           }
         });
     } else {
@@ -187,7 +218,20 @@ const EditProfileScreen = () => {
       setShowDeleteModal(true);
     }
   };
-  
+
+
+  const uploadImage = async (images) => {
+    // Giả lập việc tải ảnh lên trong 2 giây
+    setLoadImage(true);
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        console.log("Images load successfully!");
+        setLoadImage(false);
+        // setLengthImage(0);
+        resolve();
+      }, 2000); // Giả lập thời gian tải lên
+    });
+  };
 
   const FetchUpdateUser = async (formData) => {
     const response = await fetch(`${PUT_UPDATE_USER}${user._id}`, {
@@ -198,17 +242,22 @@ const EditProfileScreen = () => {
       },
       body: formData,
     });
-  
+
     if (!response.ok) {
       throw new Error('Failed to update profile');
     }
-  
+
     return response.json();
   };
-  
 
   return (
     <SafeAreaView style={styles.container}>
+      {loadImage && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#fff" />
+        </View>
+      )}
+
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text style={styles.headerButton}>✖</Text>
@@ -251,7 +300,7 @@ const EditProfileScreen = () => {
         <ProfileInput label="Tiểu sử" value={bio} onChangeText={setBio} clearText={clearBio} maxLength={50} />
         <GenderPicker label="Giới tính" selectedGender={gender} onGenderChange={setGender} />
         <BirthdayPicker
-        label="Ngày sinh"
+          label="Ngày sinh"
           selectedDate={birthday}
           onDateChange={(date) => setBirthday(date)}
         />
