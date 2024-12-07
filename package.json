@@ -43,6 +43,7 @@
     "react-native-image-picker": "^7.1.2",
     "react-native-linear-gradient": "^2.8.3",
     "react-native-modal": "^13.0.1",
+    "react-native-page-indicator": "^2.4.0",
     "react-native-paper": "^5.12.5",
     "react-native-pull-to-refresh-custom": "^1.0.3",
     "react-native-raw-bottom-sheet": "^3.0.0",

@@ -1,7 +1,6 @@
-
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, ScrollView, RefreshControl } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, ScrollView, RefreshControl, useWindowDimensions, Animated, Image } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import LoadingTimeline from '../../components/Loading/LoadingTimeline';
 import ProfilePosts from '../../components/ProfileScreen/profilePosts';
@@ -11,6 +10,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import Colors from '../../constants/Color';
 import { UserContext } from '../../services/provider/UseContext';
 import { SocketContext } from '../../services/provider/SocketContext';
+import { PageIndicator } from 'react-native-page-indicator';
 const HomeScreen = ({ navigation }) => {
   const [greeting, setGreeting] = useState('');
   // const navigation = useNavigation();
@@ -83,6 +83,30 @@ const HomeScreen = ({ navigation }) => {
     fetchPostByFriends();
   }, []);
 
+  // slider
+  const pages = [
+    {
+      image: 'https://d1hjkbq40fs2x4.cloudfront.net/2017-08-21/files/landscape-photography_1645-t.jpg',
+      title: 'Admin1',
+      content: 'okccccccccccccccccccccccccccccc',
+    },
+    {
+      image: 'https://photo.znews.vn/w660/Uploaded/mdf_eioxrd/2021_07_06/2.jpg',
+      title: 'Admim2',
+      content: 'okccccccccccccccccccccccccccccc',
+    },
+    {
+      image: 'https://hoinhabaobacgiang.vn/Includes/NewsImg/1_2024/29736_7-1-1626444923.jpg',
+      title: 'Admim3',
+      content: 'okccccccccccccccccccccccccccccc',
+    },
+  ];
+
+  const { width, height } = useWindowDimensions();
+  const scrollX = useRef(new Animated.Value(0)).current;
+  const animatedCurrent = useRef(Animated.divide(scrollX, width)).current;
+  // slider
+
   const renderHeaderTabs = () => (
     <View
       style={[styles.tabContainer]}>
@@ -142,9 +166,57 @@ const HomeScreen = ({ navigation }) => {
                 <AntDesign name="message1" size={15} color="#fff" />
               </TouchableOpacity>
             </View>
-
             {/* Tab điều hướng */}
             {renderHeaderTabs()}
+
+            {/* slider */}
+            <View>
+              <Animated.ScrollView
+                horizontal={true}
+                pagingEnabled={true}
+                showsHorizontalScrollIndicator={false}
+                onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], {
+                  useNativeDriver: true,
+                })}
+              >
+                {pages.map((page, index) => (
+                  <View key={index} style={[{
+
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }, { width, height: height * 0.3 }]}>
+                    <Image source={{ uri: page.image }} width={width * 0.9} height={height * 0.25} style={{
+                      borderRadius: 10,
+                    }}
+                    />
+                     <View style={{
+                      left : 0,
+                      right: 0,
+                      backgroundColor: 'rgba(0,0,0,0.3)',
+                      padding : 20,
+                      bottom: 20,
+                      position: 'absolute',
+                    }}>
+                      <Text style={{ color: 'white',marginLeft: 10 }}>{page.title}</Text>
+                      <Text style={{ color: 'white',marginLeft: 10 }}>{page.content}</Text>
+                    </View>
+                  </View>
+                ))}
+              </Animated.ScrollView>
+              <View style={{
+                left: 20,
+                right: 20,
+                bottom: 0,
+                position: 'absolute',
+                alignItems: 'center',
+                justifyContent: 'center',
+
+              }}>
+                <PageIndicator count={pages.length} current={animatedCurrent} color='white' />
+
+              </View>
+              {/* slider */}
+            </View>
 
             {loading ? (
               // <ActivityIndicator size="large" color="#FFF" style={{ marginTop: 20 }} />
