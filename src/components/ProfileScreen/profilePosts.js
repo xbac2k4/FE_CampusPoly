@@ -17,6 +17,7 @@ import { UserContext } from '../../services/provider/UseContext';
 import { TYPE_LIKE_POST } from '../../services/TypeNotify';
 import { timeAgo } from '../../utils/formatTime';
 import CrudPost from '../CrudPost/CrudPost';
+import RenderImage from '../Post/RenderImage';
 const ProfilePosts = ({ data }) => {
   const navigation = useNavigation();
   const [userAll, setUserAll] = useState(data); // Chứa các bài viết
@@ -54,7 +55,7 @@ const ProfilePosts = ({ data }) => {
       body: JSON.stringify({ user_id, hashtag_id, score }),
     });
     const result = await response.json();
-    
+
   };
 
   const handleReportSuccess = () => {
@@ -176,55 +177,11 @@ const ProfilePosts = ({ data }) => {
   };
 
 
-  const { width, height } = useWindowDimensions();
-  const scrollX = useRef(new Animated.Value(0)).current;
-  const animatedCurrent = useRef(Animated.divide(scrollX, width)).current;
-
-  // Hiển thị hình ảnh của bài viết
-  const renderImages = (images) => {
-    if (!images || images.length === 0) return null; // Handle cases where image is missing
-
-
-    return (
-      <View>
-        <Animated.ScrollView
-          horizontal={true}
-          pagingEnabled={true}
-          showsHorizontalScrollIndicator={false}
-          onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], {
-            useNativeDriver: true,
-          })}
-        >
-          {images.map((page, index) => (
-            <View key={index} style={[{
-              alignItems: 'center',
-              justifyContent: 'center',
-            }, { width, height: height * 0.3 }]}>
-              <Image source={{ uri: page }} width={width * 0.9} height={height * 0.3} style={{
-                borderRadius: 10
-              }} />
-            </View>
-          ))}
-        </Animated.ScrollView>
-        <View style={{
-          left: 20,
-          right: 20,
-          bottom: -20,
-          position: 'absolute',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-          <PageIndicator count={images.length} current={animatedCurrent} color='white' />
-        </View>
-      </View>
-    );
-  };
-
   const getExistingPost = (postId) => {
     const post = userAll.find((item) => item.postData._id === postId);
 
     if (post) {
-      
+
       console.log('hagtag:', post.postData.hashtag.hashtag_name);
       return {
         title: post.postData.title,
@@ -280,7 +237,7 @@ const ProfilePosts = ({ data }) => {
                 {item.postData.hashtag?.hashtag_name ? (
                   <Text style={styles.postHashtag}>{item.postData.hashtag.hashtag_name}</Text>
                 ) : null}
-                {item.postData.image && renderImages(item.postData.image)}
+                {item.postData.image && <RenderImage images={item.postData.image}/>}
                 <View style={styles.postMeta}>
                   <View style={styles.leftMetaIcons}>
                     {/**Suwr lis chức năng like */}
