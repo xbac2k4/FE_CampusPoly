@@ -3,8 +3,8 @@ import { View, Text, Image, StyleSheet, StatusBar, TouchableOpacity } from 'reac
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const Header = ({ data, navigation }) => {
-  const defaultBackgroundImage = require('../../assets/images/default-bg.png');
-  const defaultAvatar = require('../../assets/images/default-profile.png');
+  // const defaultBackgroundImage = require('../../assets/images/default-bg.png');
+  // const defaultAvatar = require('../../assets/images/default-profile.png');
   // console.log(data);
 
   return (
@@ -25,8 +25,7 @@ const Header = ({ data, navigation }) => {
       <Image
         source={
           data?.background
-            ? { uri: data?.background }
-            : defaultBackgroundImage
+            && { uri: data?.background }
         }
         style={styles.backgroundImage}
       />
@@ -35,8 +34,7 @@ const Header = ({ data, navigation }) => {
       <Image
         source={
           data?.avatar
-            ? { uri: data?.avatar }
-            : defaultAvatar
+            && { uri: data?.avatar }
         }
         style={styles.profileImage}
       />
