@@ -136,7 +136,7 @@ const CommentStyle = StyleSheet.create({
   },
   bodyContent: {
     marginTop: 10,
-    paddingHorizontal: 10,
+    // paddingHorizontal: 10,
   },
   imgContent: {
     width: screenWidth - 50,

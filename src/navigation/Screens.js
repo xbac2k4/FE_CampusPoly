@@ -26,7 +26,8 @@ const Screens = {
     Loginproblem:'Loginproblem',
     Page:'Page',
     Security:'Security',
-    Privacy:'Privacy',  
+    Privacy:'Privacy',
+    DetailImage:'DetailImage', 
 };
 
 export default Screens;

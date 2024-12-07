@@ -43,6 +43,10 @@ const PostStyle = StyleSheet.create({
     fontWeight: 'bold',
     color: '#FFF',
   },
+  postTime: {
+    fontSize: 12,
+    color: '#B3B3B3',
+  },
   moreIcon: {
     paddingLeft: 10,
   },
@@ -68,12 +72,12 @@ const PostStyle = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 5,
+    marginTop: 10,
     paddingHorizontal: 20,
   },
   leftMetaIcons: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   iconLike: {
     flexDirection: 'row',

@@ -23,9 +23,7 @@ const Header = ({ data, navigation }) => {
 
       {/* Display background image or default image */}
       <Image
-        source={
-          data?.background
-            && { uri: data?.background }
+        source={{ uri: data?.background ? data?.background : 'https://cdn2.fptshop.com.vn/unsafe/Uploads/images/tin-tuc/172740/Originals/background-la-gi-4.jpg' }
         }
         style={styles.backgroundImage}
       />
@@ -34,7 +32,7 @@ const Header = ({ data, navigation }) => {
       <Image
         source={
           data?.avatar
-            && { uri: data?.avatar }
+          && { uri: data?.avatar }
         }
         style={styles.profileImage}
       />

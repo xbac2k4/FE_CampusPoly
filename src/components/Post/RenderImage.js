@@ -1,9 +1,11 @@
-import React, { useRef } from 'react'
-import { Animated, Image, StyleSheet, useWindowDimensions, View } from 'react-native'
-import { PageIndicator } from 'react-native-page-indicator'
+import React, { useRef } from 'react';
+import { Animated, Image, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { PageIndicator } from 'react-native-page-indicator';
+import Screens from '../../navigation/Screens';
+import { useNavigation } from '@react-navigation/native';
 
-const RenderImage = ({ images }) => {
-
+const RenderImage = ({ images, subStyle }) => {
+    const navigation = useNavigation();
     const { width, height } = useWindowDimensions();
     const scrollX = useRef(new Animated.Value(0)).current;
     const animatedCurrent = useRef(Animated.divide(scrollX, width)).current;
@@ -18,28 +20,33 @@ const RenderImage = ({ images }) => {
                 })}
             >
                 {images.map((page, index) => (
-                    <View key={index} style={[{
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }, { width, height: height * 0.3 }]}>
-                        <Image source={{ uri: page }} width={width * 0.9} height={height * 0.3} style={{
-                            borderRadius: 10
+                    <TouchableOpacity key={index}
+                        onPress={() => navigation.navigate(Screens.DetailImage, {
+                            image: page,
+                        })}
+                        style={[{
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }, { width, height: height * 0.3 }]}>
+                        <Image source={{ uri: page }} width={width * 1} height={height * 0.3} style={{
+                            borderRadius: 10,
+                            resizeMode: 'contain',
                         }} />
-                    </View>
+                    </TouchableOpacity>
                 ))}
             </Animated.ScrollView>
 
             {/* nếu có nhiều hơn 1 hình ảnh thì hiển thị PageIndicator */}
             {
                 images.length > 1 && (
-                    <View style={{
+                    <View style={[{
                         left: 20,
                         right: 20,
-                        bottom: 35,
+                        bottom: 40,
                         position: 'absolute',
                         alignItems: 'center',
                         justifyContent: 'center',
-                    }}>
+                    }, subStyle]}>
                         <PageIndicator count={images.length} current={animatedCurrent} color='white' />
                     </View>
                 )
@@ -50,5 +57,3 @@ const RenderImage = ({ images }) => {
 }
 
 export default RenderImage
-
-const styles = StyleSheet.create({})

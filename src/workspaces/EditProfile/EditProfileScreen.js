@@ -260,16 +260,16 @@ const EditProfileScreen = () => {
       {/* Image Options */}
       <ImageOptionsSheet
         ref={profileSheetRef}
-        // onUpload={() => handleProfileImageEdit('upload')}
-        // onDelete={() => handleProfileImageEdit('delete')}
-        // canDelete={profileImage.uri !== defaultProfileImage} // Điều kiện cho ảnh đại diện
+        onUpload={() => handleProfileImageEdit('upload')}
+        onDelete={() => handleProfileImageEdit('delete')}
+        canDelete={profileImage.uri} // Điều kiện cho ảnh đại diện
       />
 
       <ImageOptionsSheet
         ref={backgroundSheetRef}
-        // onUpload={() => handleBackgroundImageEdit('upload')}
-        // onDelete={() => handleBackgroundImageEdit('delete')}
-        // canDelete={backgroundImage.uri !== defaultBackgroundImage} // Điều kiện cho ảnh nền
+        onUpload={() => handleBackgroundImageEdit('upload')}
+        onDelete={() => handleBackgroundImageEdit('delete')}
+        canDelete={backgroundImage.uri} // Điều kiện cho ảnh nền
       />
 
       <UnsavedChangesModal
