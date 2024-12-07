@@ -20,18 +20,8 @@ const HomeScreen = ({ navigation }) => {
   const [selectedTab, setSelectedTab] = useState('Dành cho bạn'); // Trạng thái cho tab hiện tại
   const [refreshing, setRefreshing] = useState(false);
   const { user } = useContext(UserContext);
-  const { socket } = useContext(SocketContext);
 
   const getGreeting = () => {
-    // const currentHour = new Date().getHours();
-    // if (currentHour >= 7 && currentHour < 10) {
-    //   return 'Chào buổi sáng🌞';
-    // } else if (currentHour >= 10 && currentHour < 18) {
-    //   return 'Chào buổi chiều😎';
-    // } else {
-    //   return 'Chào buổi tối🌚';
-    // }
-    // console.log(user);
 
     return `Xin chào, ${user.full_name}`; // Example greeting
   };

@@ -3,8 +3,8 @@ import { View, Text, Image, StyleSheet, StatusBar, TouchableOpacity } from 'reac
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const Header = ({ data, navigation }) => {
-  const defaultBackgroundImage = require('../../assets/images/default-bg.png');
-  const defaultAvatar = require('../../assets/images/default-profile.png');
+  // const defaultBackgroundImage = require('../../assets/images/default-bg.png');
+  // const defaultAvatar = require('../../assets/images/default-profile.png');
   // console.log(data);
 
   return (
@@ -23,10 +23,7 @@ const Header = ({ data, navigation }) => {
 
       {/* Display background image or default image */}
       <Image
-        source={
-          data?.background
-            ? { uri: data?.background }
-            : defaultBackgroundImage
+        source={{ uri: data?.background ? data?.background : 'https://cdn2.fptshop.com.vn/unsafe/Uploads/images/tin-tuc/172740/Originals/background-la-gi-4.jpg' }
         }
         style={styles.backgroundImage}
       />
@@ -35,8 +32,7 @@ const Header = ({ data, navigation }) => {
       <Image
         source={
           data?.avatar
-            ? { uri: data?.avatar }
-            : defaultAvatar
+          && { uri: data?.avatar }
         }
         style={styles.profileImage}
       />

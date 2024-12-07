@@ -1,6 +1,7 @@
 // SocketContext.js
 import React, { createContext, useState, useEffect } from 'react';
 import io from 'socket.io-client';
+import { IP } from '../ApiConfig';
 
 export const SocketContext = createContext();  // Đảm bảo sử dụng createContext
 
@@ -9,7 +10,7 @@ export const SocketProvider = ({ children }) => {
     const [usersOnline, setUsersOnline] = useState(null);
 
     const connectSocket = (userInfo) => {
-        const newSocket = io('http://10.0.2.2:3000', {
+        const newSocket = io(`http://${IP}:3000`, {
             query: { userId: userInfo._id },
         });
 

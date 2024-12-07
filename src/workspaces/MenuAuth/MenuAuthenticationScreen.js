@@ -194,7 +194,7 @@ const st = StyleSheet.create({
   },
   name: {
     color: 'white',
-    fontSize: 50,
+    fontSize: 45,
     fontFamily: 'rubik',
   },
   title: {

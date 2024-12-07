@@ -27,13 +27,13 @@ const EditProfileScreen = () => {
   const [bio, setBio] = useState(user.bio);
   const [gender, setGender] = useState(user.sex);
   const [birthday, setBirthday] = useState(user.birthday ? new Date(user.birthday) : null);
-  const defaultProfileImage = Image.resolveAssetSource(require('../../assets/images/default-profile.png')).uri;
-  const defaultBackgroundImage = Image.resolveAssetSource(require('../../assets/images/default-bg.png')).uri;
+  // const defaultProfileImage = Image.resolveAssetSource(require('../../assets/images/default-profile.png')).uri;
+  // const defaultBackgroundImage = Image.resolveAssetSource(require('../../assets/images/default-bg.png')).uri;
 
   const [profileImage, setProfileImage] = useState({
-    uri: user.avatar ? user.avatar : defaultProfileImage,
+    uri: user.avatar
   });
-  const [backgroundImage, setBackgroundImage] = useState({ uri: user.background ? user.background : defaultBackgroundImage });
+  const [backgroundImage, setBackgroundImage] = useState({ uri: user.background });
   const [isProfileImageChanged, setIsProfileImageChanged] = useState(false);
 
   const [isChanged, setIsChanged] = useState(false);
@@ -262,14 +262,14 @@ const EditProfileScreen = () => {
         ref={profileSheetRef}
         onUpload={() => handleProfileImageEdit('upload')}
         onDelete={() => handleProfileImageEdit('delete')}
-        canDelete={profileImage.uri !== defaultProfileImage} // Điều kiện cho ảnh đại diện
+        canDelete={profileImage.uri} // Điều kiện cho ảnh đại diện
       />
 
       <ImageOptionsSheet
         ref={backgroundSheetRef}
         onUpload={() => handleBackgroundImageEdit('upload')}
         onDelete={() => handleBackgroundImageEdit('delete')}
-        canDelete={backgroundImage.uri !== defaultBackgroundImage} // Điều kiện cho ảnh nền
+        canDelete={backgroundImage.uri} // Điều kiện cho ảnh nền
       />
 
       <UnsavedChangesModal
