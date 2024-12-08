@@ -48,15 +48,22 @@ const ReportComponent = ({ postId, onReportSuccess }) => {
                 },
                 body: JSON.stringify(payload),
             });
+            // Chuyển phản hồi thành JSON và kiểm tra
+            const data = await response.json();
+            console.log('API Response:', data); // In ra toàn bộ phản hồi để kiểm tra
 
-            if (response.ok) {
+                // Kiểm tra nếu lỗi là do báo cáo đã tồn tại
+                if (data.status === 400 && data.message === 'Bạn đã báo cáo bài viết này, không thể báo cáo lại.') {
+                    console.log("Message:", data.message); // In ra thông báo lỗi
+                    ToastAndroid.show("Bạn đã báo cáo bài viết này rồi", ToastAndroid.SHORT);
+                } else {
+                    ToastAndroid.show("Gửi báo cáo thành công", ToastAndroid.SHORT);
+                }
+                if (response.ok) {
                 setReportSuccess(true);
                 onReportSuccess(); // Gọi hàm callback khi báo cáo thành công
                 setModalVisible(false); // Đóng modal sau khi báo cáo thành công
-            } else {
-                ToastAndroid.show( "Bạn đã báo cáo bài viết này rôi", ToastAndroid.SHORT);
-                // throw new Error('Lỗi khi gửi báo cáo');
-            }
+            } 
         } catch (error) {
             console.error('Error sending report:', error);
         }
