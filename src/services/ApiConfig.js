@@ -1,6 +1,6 @@
-const API_URL = 'http://27.71.21.73:3000/api/v1/';
+const API_URL = 'http://10.0.2.2:3000/api/v1/';
 
-export const GET_ALL_POST = API_URL + 'posts/get-all-post';
+export const GET_ALL_POST = API_URL + 'posts/visible-posts';
 export const GET_POST_ID = API_URL + 'posts/get-post-by-id/';
 export const GET_POST_BY_USERID = API_URL + 'posts/get-post-by-userID';
 export const GET_USER_ID = API_URL + 'users/get-user-by-id/';
@@ -14,7 +14,7 @@ export const GET_SEARCH = API_URL + 'searchpluss/search-plus';
 export const ADD_FRIEND = API_URL + 'friends/add-friend';
 export const UPDATE_FRIEND = API_URL + 'friends/update-friend';
 export const GET_FRIEND_BY_USERID = API_URL + 'friends/get-friend-by-userID';
-export const ADD_REPORT = API_URL + 'reports/add-report';
+export const ADD_REPORT = API_URL + '/reportedposts/create-report';
 export const ADD_COMMENT = API_URL + 'comments/add-comment-to-post';
 export const LIKE_POST = API_URL + 'likes/add-like-to-post';
 export const UNLIKE_POST = API_URL + 'likes/remove-like-from-post';
