@@ -166,7 +166,7 @@ const MenuScreen = () => {
               marginLeft: 10,
             }}>Chế độ tối</Text>
           </View>
-          <Switch trackColor={{ false: '#d2d2d2', true: '#20096d' }} thumbColor={'#fff'} value={theme} onValueChange={toggleTheme} />
+          <Switch trackColor={{ false: '#d2d2d2', true: '#323232' }} thumbColor={'#fff'} value={theme} onValueChange={toggleTheme} />
         </TouchableOpacity>
       </ScrollView>
 
