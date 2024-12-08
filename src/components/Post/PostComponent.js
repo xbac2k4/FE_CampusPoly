@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, TextInput, TouchableOpacity, View, Text, Animated, Alert, Modal, FlatList, ScrollView, ActivityIndicator, TouchableWithoutFeedback, ToastAndroid } from 'react-native';
-import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
-import DocumentPicker from 'react-native-document-picker';
-import GiphySelector from './GiphySelector';
-// import styles from '../../assets/style/CreatCPStyle';
+import React, { useContext, useEffect, useState } from 'react';
+import { ActivityIndicator, Animated, FlatList, Image, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { GET_HASHTAG } from '../../services/ApiConfig';
+import { ThemeContext } from '../../services/provider/ThemeContext';
+import Colors from '../../constants/Color';
 
 const PostComponent = ({ title: initialTitle, content: initialContent, hashtag: initialHashtag, image, gif, onContentChange, user }) => {
   const [inputHeight, setInputHeight] = useState(40);
@@ -12,15 +11,13 @@ const PostComponent = ({ title: initialTitle, content: initialContent, hashtag: 
   const [animation] = useState(new Animated.Value(0));
   const [selectedImages, setSelectedImages] = useState(image || []);
   const [selectedGif, setSelectedGif] = useState(gif || null);
-  const [isGifModalVisible, setGifModalVisible] = useState(false);
   const [content, setContent] = useState(initialContent || ''); // State cho Content
   const [hashtag, setHashtag] = useState(initialHashtag || ''); // State cho hashtag
   const [title, setTitle] = useState(initialTitle || ''); // State cho Title
   const [loadImage, setLoadImage] = useState(false);
   const [lengthImage, setLengthImage] = useState(0);
-
   const [suggestedHashtags, setSuggestedHashtags] = useState([]); // Gợi ý hashtag từ DB
-  const [selectedHashtags, setSelectedHashtags] = useState([]); // Danh sách hashtag đã chọn
+  const { theme } = useContext(ThemeContext);
 
   // Cập nhật giá trị props vào state khi props thay đổi
   useEffect(() => {
@@ -79,25 +76,24 @@ const PostComponent = ({ title: initialTitle, content: initialContent, hashtag: 
 
   // Xử lý chọn hashtag
   const handleSelectHashtag = (hashtag) => {
-    setSelectedHashtags([hashtag]);  // Giới hạn chỉ một hashtag đã chọn
     setSuggestedHashtags([]);  // Ẩn danh sách gợi ý ngay khi chọn hashtag
     setHashtag(hashtag); // Đặt lại TextInput thành hashtag đã chọn
     onContentChange(title, content, hashtag, selectedImages, selectedGif);  // Gửi dữ liệu cập nhật
   };
 
   // Xử lý xóa hashtag đã chọn
-  const handleRemoveHashtag = (hashtag) => {
-    setSelectedHashtags((prev) => prev.filter((item) => item !== hashtag));
-    setSuggestedHashtags([]); // Ẩn danh sách gợi ý khi xóa hashtag
-    setHashtag(''); // Reset TextInput
-    onContentChange(title, content, '', selectedImages, selectedGif);  // Gửi dữ liệu cập nhật khi không còn hashtag
-  };
+  // const handleRemoveHashtag = (hashtag) => {
+  //   setSelectedHashtags((prev) => prev.filter((item) => item !== hashtag));
+  //   setSuggestedHashtags([]); // Ẩn danh sách gợi ý khi xóa hashtag
+  //   setHashtag(''); // Reset TextInput
+  //   onContentChange(title, content, '', selectedImages, selectedGif);  // Gửi dữ liệu cập nhật khi không còn hashtag
+  // };
 
-  const handleGifSelect = (gifUrl) => {
-    setSelectedGif(gifUrl);
-    setGifModalVisible(false);
-    onContentChange(content, hashtag, selectedImages, gifUrl);
-  };
+  // const handleGifSelect = (gifUrl) => {
+  //   setSelectedGif(gifUrl);
+  //   setGifModalVisible(false);
+  //   onContentChange(content, hashtag, selectedImages, gifUrl);
+  // };
 
   const toggleImages = () => {
     setIsVisible(!isVisible);
@@ -164,20 +160,23 @@ const PostComponent = ({ title: initialTitle, content: initialContent, hashtag: 
   };
 
 
-  const clearSelectedImage = () => {
-    setSelectedImages(null);
-  };
+  // const clearSelectedImage = () => {
+  //   setSelectedImages(null);
+  // };
 
-  const clearSelectedGif = () => {
-    setSelectedGif(null);
-  };
+  // const clearSelectedGif = () => {
+  //   setSelectedGif(null);
+  // };
 
   return (
     <TouchableWithoutFeedback style={{ flex: 1 }} onPress={() => {
       setSuggestedHashtags([])
       handleSelectHashtag(hashtag)
     }}>
-      <View style={styles.container}>
+      <View style={[styles.container, {
+        backgroundColor: theme ? '#2B2B2B' : '#fff',
+        elevation: theme ? 0 : 5,
+      }]}>
         <View style={styles.postRow}>
           {user && user?.avatar ? (
             <Image source={{ uri: user?.avatar.replace('localhost', '10.0.2.2') }} style={styles.avatar} />
@@ -186,7 +185,9 @@ const PostComponent = ({ title: initialTitle, content: initialContent, hashtag: 
           )}
           <View style={styles.inputContainer}>
             <TextInput
-              style={[styles.textInput]}
+              style={[styles.textInput, {
+                color: theme ? '#ECEBED' : Colors.background,
+              }]}
               placeholder="Tiêu đề bài viết?"
               placeholderTextColor="#888"
               multiline
@@ -196,7 +197,10 @@ const PostComponent = ({ title: initialTitle, content: initialContent, hashtag: 
               underlineColorAndroid="transparent"
             />
             <TextInput
-              style={[styles.textInput, { height: Math.max(40, inputHeight) }]}
+              style={[styles.textInput, {
+                height: Math.max(40, inputHeight),
+                color: theme ? '#ECEBED' : Colors.background,
+              }]}
               placeholder="Bạn đang nghĩ gì?"
               placeholderTextColor="#888"
               multiline
@@ -207,7 +211,10 @@ const PostComponent = ({ title: initialTitle, content: initialContent, hashtag: 
             />
             {/* TextInput để nhập hashtag */}
             <TextInput
-              style={[styles.textInput, { height: Math.max(40, inputHeight) }]}
+              style={[styles.textInput, {
+                height: Math.max(40, inputHeight),
+                color: theme ? '#ECEBED' : Colors.background,
+              }]}
               placeholder="#Hashtag!"
               placeholderTextColor="#888"
               multiline
@@ -219,7 +226,10 @@ const PostComponent = ({ title: initialTitle, content: initialContent, hashtag: 
 
             {/* FlatList gợi ý hashtag sẽ xổ xuống ngay dưới TextInput */}
             {suggestedHashtags.length > 0 && (
-              <View style={styles.suggestionsContainer}>
+              <View style={[styles.suggestionsContainer, {
+                backgroundColor: theme ? '#545454' : '#f3f4f8',
+                elevation: theme ? 0 : 5,
+              }]}>
                 <FlatList
                   data={suggestedHashtags}
                   keyExtractor={(item, index) => index.toString()}
@@ -229,7 +239,9 @@ const PostComponent = ({ title: initialTitle, content: initialContent, hashtag: 
                       style={styles.suggestionItem}
                       onPress={() => handleSelectHashtag(item)}
                     >
-                      <Text style={styles.suggestionText}>{`${item}`}</Text>
+                      <Text style={[styles.suggestionText, {
+                        color: theme ? '#fff' : Colors.background,
+                      }]}>{`${item}`}</Text>
                     </TouchableOpacity>
                   )}
                 />
@@ -276,27 +288,39 @@ const PostComponent = ({ title: initialTitle, content: initialContent, hashtag: 
         </View>
 
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <TouchableOpacity style={styles.addButton} onPress={toggleImages}>
-            <Image source={require('../../assets/images/add.png')} resizeMode="contain" style={{ width: 12, height: 12 }} />
+          <TouchableOpacity style={[styles.addButton, {
+            borderColor: theme ? '#323436' : Colors.background,
+          }]} onPress={toggleImages}>
+            <Image source={
+              theme ? require('../../assets/images/add.png')
+                : require('../../assets/images/light_add.png')
+            } resizeMode="contain" style={{ width: 12, height: 12 }} />
           </TouchableOpacity>
 
           {isVisible && (
-            <Animated.View style={[styles.imageContainer, animatedStyle]}>
+            <Animated.View style={[styles.imageContainer, animatedStyle, {
+              backgroundColor: theme ? '#323436' : '#f3f4f8',
+            }]}>
               <View style={styles.imageRow}>
                 <TouchableOpacity onPress={openImageLibrary}>
-                  <Image source={require('../../assets/images/image.png')} style={styles.image} />
+                  <Image source={theme
+                    ? require('../../assets/images/image.png')
+                    : require('../../assets/images/light_image.png')
+                  } style={styles.image} />
                 </TouchableOpacity>
 
                 {/* <TouchableOpacity onPress={() => setGifModalVisible(true)}>
                   <Image source={require('../../assets/images/GIF.png')} style={styles.image} />
                 </TouchableOpacity> */}
 
-                <Modal visible={isGifModalVisible} animationType="slide">
+                {/* <Modal visible={isGifModalVisible} animationType="slide">
                   <GiphySelector onGifSelect={handleGifSelect} />
-                </Modal>
+                </Modal> */}
 
                 <TouchableOpacity onPress={openCamera}>
-                  <Image source={require('../../assets/images/Camera.png')} style={styles.image} />
+                  <Image source={theme ? require('../../assets/images/Camera.png')
+                    : require('../../assets/images/light_camera.png')
+                  } style={styles.image} />
                 </TouchableOpacity>
 
               </View>
@@ -320,7 +344,6 @@ const styles = StyleSheet.create({
   },
   container: {
     padding: 10,
-    backgroundColor: '#2B2B2B',
     borderRadius: 10,
   },
   postRow: {
@@ -345,7 +368,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   textInput: {
-    color: '#ECEBED',
     fontSize: 16,
     padding: 0,
     margin: 0,
@@ -358,7 +380,6 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#323436',
     justifyContent: 'center',
   },
   imageContainer: {
@@ -367,7 +388,6 @@ const styles = StyleSheet.create({
     borderRadius: 32,
     overflow: 'hidden',
     marginLeft: 10,
-    backgroundColor: '#323436',
     justifyContent: 'center',
   },
   imageRow: {
@@ -416,14 +436,12 @@ const styles = StyleSheet.create({
   },
   suggestionText: {
     fontSize: 14,
-    color: 'white',
   },
   suggestionsContainer: {
     position: 'absolute',
     top: 105, // Khoảng cách từ trên xuống, điều chỉnh để phù hợp với chiều cao của các TextInput
     left: 0,
     right: 0,
-    backgroundColor: '#545454',
     maxHeight: 200, // Giới hạn chiều cao của FlatList nếu có nhiều mục
     maxWidth: 200,
     zIndex: 1000, // Đảm bảo nó xuất hiện trên các phần tử khác

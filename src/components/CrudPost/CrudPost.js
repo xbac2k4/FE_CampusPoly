@@ -1,17 +1,15 @@
-import { Alert, Image, StyleSheet, Text, TouchableOpacity, View, Modal, TextInput, Button, Dimensions, Animated, ScrollView, ToastAndroid } from 'react-native';
-import React, { useState, useContext, useEffect } from 'react';
-import styles from '../../assets/style/PostStyle';
-import { UserContext } from '../../services/provider/UseContext';
-import { Screen } from 'react-native-screens';
-import Screens from '../../navigation/Screens';
+import React, { useContext, useEffect, useState } from 'react';
+import { Animated, Image, Modal, ScrollView, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
-import NotificationModal from '../Notification/NotificationModal';
-import Snackbar from 'react-native-snackbar';
-import { DELETE_POST, UPDATE_POST } from '../../services/ApiConfig';
 import LinearGradient from 'react-native-linear-gradient';
+import styles from '../../assets/style/PostStyle';
 import Colors from '../../constants/Color';
+import { DELETE_POST, UPDATE_POST } from '../../services/ApiConfig';
+import { ThemeContext } from '../../services/provider/ThemeContext';
+import { UserContext } from '../../services/provider/UseContext';
+import NotificationModal from '../Notification/NotificationModal';
 
-const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess, existingPost }) => {
+const CrudPost = ({ postId, onDeleteSuccess, onUpdateSuccess, existingPost }) => {
   const { user } = useContext(UserContext);
   const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái modal
   const [title, setTitle] = useState(''); // Trạng thái tiêu đề bài viết
@@ -26,6 +24,7 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess, existi
   const [oldTitle, setOldTitle] = useState();
   const [oldContent, setOldContent] = useState();
   const [oldImages, setOldImages] = useState();
+  const { theme } = useContext(ThemeContext);
 
 
   useEffect(() => {
@@ -74,10 +73,6 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess, existi
 
   const openImageLibrary = () => {
     handleChangeImage(); // Gọi hàm handleChangeImage để mở thư viện ảnh
-  };
-  const openCamera = () => {
-    const options = { mediaType: 'photo', saveToPhotos: true };
-    launchCamera(options, handleImageResponse);
   };
 
   const handleDeletePost = async () => {
@@ -150,7 +145,7 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess, existi
   };
 
   const handleImageSelection = (response) => {
-    
+
     if (response.didCancel) {
       console.log('User cancelled image picker');
     } else if (response.errorCode) {
@@ -229,33 +224,33 @@ const CrudPost = ({ postId, onDeleteSuccess, navigation, onUpdateSuccess, existi
   };
 
   return (
-    <View style={styles.inner}>
+    <View style={[styles.inner, {
+      backgroundColor: theme ? Colors.background : '#f3f4f8'
+    }]}>
       <TouchableOpacity style={styles.crudContainer} onPress={() => setIsModalVisible(true)}>
         <Image
-          source={require('../../assets/images/update.png')}
+          source={theme ? require('../../assets/images/update.png') :
+            require('../../assets/images/light_update.png')
+          }
           style={styles.imgCrud}
           resizeMode="contain"
         />
-        <View>
-          <Text style={styles.crudText}>Chỉnh sửa bài viết</Text>
-          <Text style={{ fontSize: 9, color: '#ccc', opacity: 0.4 }}>
-            Bài viết này sẽ thay đổi sau khi bạn chỉnh sửa
-          </Text>
-        </View>
+        <Text style={[styles.crudText, {
+            color: theme ? '#ECEBED' : Colors.background,
+          }]}>Chỉnh sửa bài viết</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.crudContainer} onPress={handleDeletePost}>
         <Image
-          source={require('../../assets/images/delete.png')}
+          source={theme ? require('../../assets/images/delete.png') :
+            require('../../assets/images/light_delete.png')
+          }
           style={styles.imgCrud}
           resizeMode="contain"
         />
-        <View>
-          <Text style={styles.crudText}>Xóa bài viết khỏi trang cá nhân</Text>
-          <Text style={{ fontSize: 9, color: '#ccc', opacity: 0.4 }}>
-            Bài viết này sẽ biến mất khỏi trang cá nhân của bạn
-          </Text>
-        </View>
+        <Text style={[styles.crudText, {
+          color: theme ? '#ECEBED' : Colors.background,
+        }]}>Xóa bài viết khỏi trang cá nhân</Text>
       </TouchableOpacity>
       {/* Modal xác nhận xóa */}
       <NotificationModal

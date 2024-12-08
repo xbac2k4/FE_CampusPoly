@@ -1,19 +1,27 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Colors from '../../constants/Color';
+import { ThemeContext } from '../../services/provider/ThemeContext';
 
 const DetailImage = ({ navigation, route }) => {
   const { image } = route.params;
+  const { theme } = useContext(ThemeContext);
 
   return (
-    <View style={styles.container}>
+    <View style={{
+      backgroundColor: theme ? Colors.background : '#f3f4f8',
+      flex: 1,
+    }}>
 
       <TouchableOpacity style={{
         position: 'absolute', top: 20, left: 20, zIndex: 1,
         padding: 10,
       }} onPress={() => navigation.goBack()}>
         <Image
-          source={require('../../assets/images/arowleft.png')}
+          source={theme
+            ? require('../../assets/images/arowleft.png')
+            : require('../../assets/images/light_arowleft.png')
+          }
           resizeMode="contain"
           style={{ width: 15, height: 15 }}
         />
@@ -29,10 +37,3 @@ const DetailImage = ({ navigation, route }) => {
 }
 
 export default DetailImage
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: Colors.background,
-    flex: 1,
-  }
-})

@@ -311,7 +311,7 @@ const ProfilePosts = ({ data }) => {
       {/* Màn hình Bottom Sheet cho Profile (showEditDeleteSheet) */}
       <RBSheet
         ref={refEditDeleteSheet}
-        height={250}
+        height={150}
         openDuration={300}
         closeDuration={250}
         closeOnDragDown={true}

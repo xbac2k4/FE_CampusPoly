@@ -102,11 +102,10 @@ const PostStyle = StyleSheet.create({
   },
   inner: {
     flex: 1,
-    backgroundColor: '#181A1C',
     paddingHorizontal: 24
   },
   textOne: {
-    color: '#fff', fontWeight: "semibold", fontSize: 16,
+    fontWeight: "semibold", fontSize: 16,
     marginTop: '5%'
   },
   reporttextcontainer: {
@@ -119,7 +118,6 @@ const PostStyle = StyleSheet.create({
     alignItems: "center"
   },
   crudText: {
-    color: '#ECEBED',
     fontSize: 18,
     fontWeight: 'bold',
   },

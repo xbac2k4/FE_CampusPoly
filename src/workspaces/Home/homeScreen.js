@@ -68,8 +68,8 @@ const HomeScreen = ({ navigation }) => {
   const pages = [
     {
       image: 'https://d1hjkbq40fs2x4.cloudfront.net/2017-08-21/files/landscape-photography_1645-t.jpg',
-      title: 'Admin1',
-      content: 'okccccccccccccccccccccccccccccc',
+      title: 'Điều khoản mới',
+      content: 'Các bạn chú ý',
     },
     {
       image: 'https://photo.znews.vn/w660/Uploaded/mdf_eioxrd/2021_07_06/2.jpg',

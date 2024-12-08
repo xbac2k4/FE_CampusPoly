@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Colors from '../../constants/Color';
+import { ThemeContext } from '../../services/provider/ThemeContext';
 
 const ProfileTabs = ({ onTabSelect }) => {
   const [activeTab, setActiveTab] = useState('Bài viết');
+  const { theme } = useContext(ThemeContext)
 
   return (
-    <View style={styles.tabsContainer}>
+    <View style={[styles.tabsContainer, {
+      backgroundColor: theme ? '#181A1C' : '#f3f4f8',
+    }]}>
       <View style={styles.tabsWrapper}>
         {['Bài viết', 'Đã thích'].map((tab, index) => (
           <TouchableOpacity
@@ -18,14 +22,18 @@ const ProfileTabs = ({ onTabSelect }) => {
             style={styles.tab}
           >
             <Text
-              style={[styles.tabText, activeTab === tab && styles.activeTabText]}
+              style={[styles.tabText, activeTab === tab && styles.activeTabText, {
+                color: theme ? '#fff' : Colors.background,
+              }]}
             >
               {tab}
             </Text>
           </TouchableOpacity>
         ))}
         {/* Thanh màu xám dưới tất cả các tab */}
-        <View style={styles.grayUnderline}>
+        <View style={[styles.grayUnderline, {
+          backgroundColor: theme ? '#3E3E3E' : '#ccc',
+        }]}>
           {/* Thanh màu xanh dưới tab được chọn */}
           <View
             style={[
@@ -47,7 +55,6 @@ const ProfileTabs = ({ onTabSelect }) => {
 const styles = StyleSheet.create({
   tabsContainer: {
     width: '100%',
-    backgroundColor: '#181A1C',
     paddingVertical: 20,
     paddingHorizontal: 20,
   },
@@ -63,7 +70,6 @@ const styles = StyleSheet.create({
     width: '50%', // Độ rộng tab chia đều
   },
   tabText: {
-    color: '#fff',
     fontSize: 16,
   },
   activeTabText: {
@@ -74,7 +80,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     height: 3,
-    backgroundColor: '#3E3E3E',
     width: '100%',
   },
   activeIndicator: {
