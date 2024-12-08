@@ -3,6 +3,7 @@ import { PermissionsAndroid, Platform } from 'react-native';
 import AppNavigator from './src/navigation/AppNavigator';
 import { createChannel, notificationListener } from './src/services/Notification';
 import { SocketProvider } from './src/services/provider/SocketContext';
+import { ThemeProvider } from './src/services/provider/ThemeContext';
 import { UserProvider } from './src/services/provider/UseContext';
 
 const App = () => {
@@ -27,11 +28,14 @@ const App = () => {
   }, []);
 
   return (
-    <UserProvider>
-      <SocketProvider>
-        <AppNavigator />
-      </SocketProvider>
-    </UserProvider>
+    <ThemeProvider>
+      <UserProvider>
+        <SocketProvider>
+          <AppNavigator />
+        </SocketProvider>
+      </UserProvider>
+    </ThemeProvider>
+
   );
 };
 

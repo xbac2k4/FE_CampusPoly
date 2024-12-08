@@ -4,14 +4,15 @@ import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react
 import ProfilePosts from '../../components/ProfileScreen/profilePosts';
 import { GET_SEARCH_POST_BY_HASHTAG } from '../../services/ApiConfig';
 import Screens from '../../navigation/Screens';
+import { ThemeContext } from '../../services/provider/ThemeContext';
+import { useContext } from 'react';
+import Colors from '../../constants/Color';
 
 const SearchComponents = ({ filteredHashtags, filteredUsers }) => {
     const navigation = useNavigation();
-    // const [searchQuery, setSearchQuery] = useState("");
-    // const [filteredHashTags, setFilteredHashTags] = useState([]);
-    // const [loading, setLoading] = useState(false); // Trạng thái loading
     const [isHashtagSelected, setIsHashtagSelected] = useState(false);
     const [posts, setPosts] = useState([]); // Dữ liệu bài viết khi hashtag được chọn
+    const { theme } = useContext(ThemeContext);
 
 
     // Hàm xử lý khi bấm vào avatar hoặc tên người dùng
@@ -102,7 +103,9 @@ const SearchComponents = ({ filteredHashtags, filteredUsers }) => {
     );
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, {
+            backgroundColor: theme ? Colors.background : '#fff'
+        }]}>
             {
                 filteredHashtags.length > 0 && (
                     <FlatList
@@ -126,7 +129,7 @@ const SearchComponents = ({ filteredHashtags, filteredUsers }) => {
                         renderItem={renderUserItem}
                         keyExtractor={(item) => item?._id ? item._id.toString() : item.id.toString()}
                         style={styles.userList}
-                        // ListEmptyComponent={<Text style={styles.noResultsText}>Gợi ý</Text>}
+                    // ListEmptyComponent={<Text style={styles.noResultsText}>Gợi ý</Text>}
                     />
                 ) : (
                     posts ? (
@@ -145,8 +148,6 @@ export default SearchComponents;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#181A1C',
-
     },
     hashtagList: {
         marginBottom: 5,

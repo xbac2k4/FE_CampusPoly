@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Animated, Image, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import styles from '../../assets/style/PostStyle';
 import ToastModal from '../../components/Notification/NotificationModal';
@@ -8,11 +8,14 @@ import ReportComponent from '../../components/Report/ReportComponent';
 import Screens from '../../navigation/Screens';
 import { INTERACTION_SCORE, LIKE_POST, UNLIKE_POST } from '../../services/ApiConfig';
 // Import các hình ảnh
-import { PageIndicator } from 'react-native-page-indicator';
 import comment from '../../assets/images/comment.png';
+import grayComment from '../../assets/images/gray_comment.png';
+import grayHeart from '../../assets/images/gray_heart.png';
 import heartFilled from '../../assets/images/hear2.png';
 import heart from '../../assets/images/heart.png';
+import Colors from '../../constants/Color';
 import { SocketContext } from '../../services/provider/SocketContext';
+import { ThemeContext } from '../../services/provider/ThemeContext';
 import { UserContext } from '../../services/provider/UseContext';
 import { TYPE_LIKE_POST } from '../../services/TypeNotify';
 import { timeAgo } from '../../utils/formatTime';
@@ -27,6 +30,7 @@ const ProfilePosts = ({ data }) => {
   const [likedPosts, setLikedPosts] = useState([]); // Lưu trạng thái các bài viết đã thích
   const [selectedPostId, setSelectedPostId] = useState(null); // ID bài viết được chọn để báo cáo
   const { sendNotifySocket } = useContext(SocketContext);
+  const { theme } = useContext(ThemeContext);
 
   const refRBSheet = useRef();
   const openBottomSheet = (postId, postOwnerId) => {
@@ -212,7 +216,9 @@ const ProfilePosts = ({ data }) => {
                   </TouchableOpacity>
                   <View style={styles.headerText}>
                     <TouchableOpacity onPress={() => handleProfileClick(item.postData.user_id._id)}>
-                      <Text style={styles.profileName}>{item.postData.user_id.full_name}</Text>
+                      <Text style={[styles.profileName, {
+                        color: theme ? '#fff' : Colors.background
+                      }]}>{item.postData.user_id.full_name}</Text>
                     </TouchableOpacity>
                     <View style={{
                       flexDirection: 'row',
@@ -233,11 +239,13 @@ const ProfilePosts = ({ data }) => {
                   </TouchableOpacity>
 
                 </View>
-                <Text style={styles.postText}>{item.postData.title}</Text>
+                <Text style={[styles.postText, {
+                  color: theme ? '#fff' : Colors.background
+                }]}>{item.postData.title}</Text>
                 {item.postData.hashtag?.hashtag_name ? (
                   <Text style={styles.postHashtag}>{item.postData.hashtag.hashtag_name}</Text>
                 ) : null}
-                {item.postData.image && <RenderImage images={item.postData.image}/>}
+                {item.postData.image && <RenderImage images={item.postData.image} />}
                 <View style={styles.postMeta}>
                   <View style={styles.leftMetaIcons}>
                     {/**Suwr lis chức năng like */}
@@ -248,7 +256,7 @@ const ProfilePosts = ({ data }) => {
                             likedPosts.includes(item.postData._id) ||
                               item.likeData.some(like => like.user_id_like === user._id)
                               ? heartFilled
-                              : heart
+                              : theme ? heart : grayHeart
                           }
                           style={styles.iconImage}
                         />
@@ -259,11 +267,8 @@ const ProfilePosts = ({ data }) => {
                     <View style={styles.iconLike}>
                       <TouchableOpacity onPress={() => {
                         navigation.navigate(Screens.Comment, { postId: item.postData._id })
-                        // console.log(item);
-
-                        // fetchInteractionScore(user._id, item.postData?.hashtag?._id, 1);
                       }}>
-                        <Image source={comment} style={styles.iconImage} />
+                        <Image source={theme ? comment : grayComment} style={styles.iconImage} />
                       </TouchableOpacity>
                       <Text style={styles.metaText}>{item.postData.comment_count}</Text>
                     </View>

@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { TouchableOpacity, View, Text, Image, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native'; // Hook cho navigation
+import { ThemeContext } from '../../services/provider/ThemeContext';
+import Colors from '../../constants/Color';
 
 const SettingItem = ({ title, icon, subItems }) => {
   const [expanded, setExpanded] = useState(false);
   const navigation = useNavigation(); // Khai báo hook navigation
+  const { theme } = useContext(ThemeContext);
 
   // Hàm xử lý sự kiện nhấn vào subItem
   const handleSubItemPress = (subItem) => {
@@ -15,7 +18,7 @@ const SettingItem = ({ title, icon, subItems }) => {
       navigation.navigate('ReportIssue'); // Điều hướng đến Báo cáo sự cố
     } else if (subItem === 'Điều khoản & chính sách') {
       navigation.navigate('TermsAndPolic'); // Điều hướng đến Điều khoản & chính sách
-    }else if (subItem === 'Trung tâm quyền riêng tư') {
+    } else if (subItem === 'Trung tâm quyền riêng tư') {
       navigation.navigate('Privacy'); // Điều hướng đến Điều khoản & chính sách
     }
   };
@@ -28,9 +31,11 @@ const SettingItem = ({ title, icon, subItems }) => {
       >
         <View style={styles.leftSection}>
           <Image source={icon} style={styles.icon} />
-          <Text style={styles.title}>{title}</Text>
+          <Text style={[styles.title, {
+            color: theme ? '#fff' : Colors.background
+          }]}>{title}</Text>
         </View>
-        <Image source={require('../../assets/images/arrowbottom.png')} style={[styles.arrowIcon, expanded && styles.arrowUp]} />
+        <Image source={theme ? require('../../assets/images/arrowbottom.png') : require('../../assets/images/light_arrowbottom.png')} style={[styles.arrowIcon, expanded && styles.arrowUp]} />
       </TouchableOpacity>
 
       {/* Hiển thị các mục con khi expanded là true */}
@@ -72,7 +77,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#fff',
     marginLeft: 5,
   },
   arrowIcon: {

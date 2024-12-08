@@ -4,13 +4,16 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import SearchComponents from '../../components/Search/SearchComponents'; // Import SearchComponents
 import { GET_SEARCH } from '../../services/ApiConfig'; // Đường dẫn API để lấy bài viết
 import { useFocusEffect } from '@react-navigation/native';
+import { ThemeContext } from '../../services/provider/ThemeContext';
+import { useContext } from 'react';
 
-const SearchScreen = ({ navigation }) => {
+const SearchScreen = () => {
   const [searchQuery, setSearchQuery] = useState(""); // Trạng thái tìm kiếm
   const [filteredUsers, setFilteredUsers] = useState([]); // Trạng thái người dùng sau khi lọc
   const [filteredHashtags, setFilteredHashtags] = useState([]); // Trạng thái hashtag sau khi lọc
   const [loading, setLoading] = useState(false); // Trạng thái loading
   const [debounceTimeout, setDebounceTimeout] = useState(null); // Trạng thái để lưu trữ setTimeout
+  const { theme } = useContext(ThemeContext);
 
   const removeVietnameseTones = (str) => {
     return str
@@ -92,7 +95,9 @@ const SearchScreen = ({ navigation }) => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={{ flex: 1 }}
     >
-      <View style={styles.container}>
+      <View style={[styles.container, {
+        backgroundColor: theme ? '#181A1C' : '#fff',
+      }]}>
         <View style={styles.searchContainer}>
           <AntDesign name="search1" size={20} color="#FFFFFF" style={styles.icon} />
           <TextInput
@@ -117,8 +122,6 @@ const SearchScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#181A1C',
-
     paddingTop: 20,
   },
   searchContainer: {

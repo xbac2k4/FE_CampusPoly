@@ -1,11 +1,14 @@
-import React, { useRef } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import React, { useContext, useRef } from 'react';
 import { Animated, Image, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { PageIndicator } from 'react-native-page-indicator';
 import Screens from '../../navigation/Screens';
-import { useNavigation } from '@react-navigation/native';
+import { ThemeContext } from '../../services/provider/ThemeContext';
+import Colors from '../../constants/Color';
 
 const RenderImage = ({ images, subStyle }) => {
     const navigation = useNavigation();
+    const { theme } = useContext(ThemeContext);
     const { width, height } = useWindowDimensions();
     const scrollX = useRef(new Animated.Value(0)).current;
     const animatedCurrent = useRef(Animated.divide(scrollX, width)).current;
@@ -47,7 +50,7 @@ const RenderImage = ({ images, subStyle }) => {
                         alignItems: 'center',
                         justifyContent: 'center',
                     }, subStyle]}>
-                        <PageIndicator count={images.length} current={animatedCurrent} color='white' />
+                        <PageIndicator activeColor={Colors.second} count={images.length} current={animatedCurrent} color={theme ? '#fff' : '#ccc'} />
                     </View>
                 )
             }

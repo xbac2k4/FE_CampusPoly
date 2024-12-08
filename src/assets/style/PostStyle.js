@@ -41,7 +41,6 @@ const PostStyle = StyleSheet.create({
   profileName: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#FFF',
   },
   postTime: {
     fontSize: 12,
@@ -55,7 +54,6 @@ const PostStyle = StyleSheet.create({
     color: '#B3B3B3',
   },
   postText: {
-    color: '#FFF',
     fontSize: 16,
     marginBottom: 10,
     fontWeight: '500',
