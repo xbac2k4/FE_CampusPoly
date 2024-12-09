@@ -1,12 +1,22 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { ThemeContext } from '../../services/provider/ThemeContext';
+import Colors from '../../constants/Color';
 
-const UnsavedChangesModal = ({ visible, onCancel, onDiscard }) => (
-  <Modal transparent visible={visible} animationType="fade">
+const UnsavedChangesModal = ({ visible, onCancel, onDiscard }) =>{
+  const { theme } = useContext(ThemeContext);
+  return(
+    <Modal transparent visible={visible} animationType="fade">
     <View style={styles.overlay}>
-      <View style={styles.container}>
-        <Text style={styles.title}>Thay đổi chưa lưu</Text>
-        <Text style={styles.text}>Bạn có những thay đổi chưa lưu. Hủy?</Text>
+      <View style={[styles.container,{
+        backgroundColor : theme? Colors.background : '#fff',
+      }]}>
+        <Text style={[styles.title,{
+          color : theme? '#fff' : Colors.background,
+        }]}>Thay đổi chưa lưu</Text>
+        <Text style={[styles.text,{
+          color : theme? '#fff' : Colors.background,
+        }]}>Bạn có những thay đổi chưa lưu. Hủy?</Text>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={onCancel}>
             <Text style={styles.buttonText}>Tiếp tục chỉnh sửa</Text>
@@ -18,7 +28,8 @@ const UnsavedChangesModal = ({ visible, onCancel, onDiscard }) => (
       </View>
     </View>
   </Modal>
-);
+  )
+}
 
 const styles = StyleSheet.create({
   overlay: {
@@ -30,7 +41,6 @@ const styles = StyleSheet.create({
   container: {
     width: 350,
     padding: 20,
-    backgroundColor: '#181A1C',
     borderRadius: 15,
     alignItems: 'center',
   },

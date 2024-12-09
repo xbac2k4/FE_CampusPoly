@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
+import { ThemeContext } from '../../services/provider/ThemeContext';
+import Colors from '../../constants/Color';
 
 const ProfileInput = ({
   label,
@@ -16,24 +18,34 @@ const ProfileInput = ({
   errorMessage,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
+  const { theme } = useContext(ThemeContext);
+
 
   return (
     <View style={styles.inputContainer}>
-      <Text style={styles.label}>{label}</Text>
-      <View style={styles.inputWithButton}>
+      <Text style={[styles.label,{
+        color : theme? '#fff' : '#000'
+      }]}>{label}</Text>
+      <View style={[styles.inputWithButton,{
+        backgroundColor : theme? '#000' : Colors.light
+      }]}>
         <TextInput
-          style={styles.input}
+          style={[styles.input,{
+            color : theme? '#fff' : '#000'
+          }]}
           value={value}
           onChangeText={onChangeText}
           placeholder={label}
-          placeholderTextColor="#ccc"
+          placeholderTextColor={theme? '#CCC' : Colors.background}
           maxLength={maxLength}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
         />
         {value.length > 0 && (
           <TouchableOpacity onPress={clearText} style={styles.clearButton}>
-            <Text style={styles.clearButtonText}>✖</Text>
+            <Text style={[styles.clearButtonText,{
+              color : theme? '#fff' : Colors.background
+            }]}>✖</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -44,7 +56,9 @@ const ProfileInput = ({
           ) : (
             <View style={{flex: 1}} />
           )}
-          <Text style={styles.characterCounter}>
+          <Text style={[styles.characterCounter,{
+            color : theme? '#ccc' : '#000'
+          }]}>
             {value.length}/{maxLength}
           </Text>
         </View>
@@ -58,14 +72,12 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   label: {
-    color: '#ffff',
     fontSize: 16,
     marginBottom: 5,
   },
   inputWithButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#000000',
     borderRadius: 8,
     paddingHorizontal: 12,
     borderColor: '#323436',
@@ -73,7 +85,6 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    color: '#FFFFFF',
     paddingVertical: 10,
     fontSize: 16,
   },
@@ -81,7 +92,6 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   clearButtonText: {
-    color: '#FFFFFF',
     fontSize: 18,
   },
   infoContainer: {
@@ -90,7 +100,6 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   characterCounter: {
-    color: '#ccc',
     fontSize: 12,
     textAlign: 'right',
   },
