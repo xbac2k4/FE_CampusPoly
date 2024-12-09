@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Modal from 'react-native-modal';
+import { ThemeContext } from '../../services/provider/ThemeContext';
+import Colors from '../../constants/Color';
 
 const GenderPicker = ({ label, selectedGender, onGenderChange }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const { theme } = useContext(ThemeContext);
 
   const toggleModal = () => {
     setIsVisible(!isVisible);
@@ -30,10 +33,16 @@ const GenderPicker = ({ label, selectedGender, onGenderChange }) => {
 
   return (
     <View>
-      <Text style={styles.label}>{label}</Text>
+      <Text style={[styles.label,{
+        color : theme? '#fff' : '#000'
+      }]}>{label}</Text>
       <View style={styles.container}>
-        <TouchableOpacity onPress={toggleModal} style={styles.picker}>
-          <Text style={styles.pickerText}>
+        <TouchableOpacity onPress={toggleModal} style={[styles.picker,{
+            backgroundColor : theme? '#000' : '#fff'
+        }]}>
+          <Text style={[styles.pickerText,{
+            color : theme? '#fff' : '#000'
+          }]}>
             {selectedGender ? translate(selectedGender) : "Chọn giới tính"}
           </Text>
         </TouchableOpacity>
@@ -43,16 +52,26 @@ const GenderPicker = ({ label, selectedGender, onGenderChange }) => {
         onBackdropPress={toggleModal}
         style={styles.modal}
       >
-        <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Chọn giới tính</Text>
+        <View style={[styles.modalContent,{
+          backgroundColor : theme? Colors.background : '#fff'
+        }]}>
+          <Text style={[styles.modalTitle,{
+            color : theme? '#fff' : '#000'
+          }]}>Chọn giới tính</Text>
           <TouchableOpacity onPress={() => handleGenderSelect('male')} style={styles.modalItem}>
-            <Text style={styles.modalItemText}>Nam</Text>
+            <Text style={[styles.modalItemText,{
+              color : theme? '#fff' : '#000'
+            }]}>Nam</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => handleGenderSelect('female')} style={styles.modalItem}>
-            <Text style={styles.modalItemText}>Nữ</Text>
+            <Text style={[styles.modalItemText,{
+              color : theme? '#fff' : '#000'
+            }]}>Nữ</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => handleGenderSelect('other')} style={styles.modalItem}>
-            <Text style={styles.modalItemText}>Khác</Text>
+            <Text style={[styles.modalItemText,{
+              color : theme? '#fff' : '#000'
+            }]}>Khác</Text>
           </TouchableOpacity>
 
         </View>
@@ -70,19 +89,16 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   label: {
-    color: '#ffff',
     fontSize: 16,
     marginBottom: 5,
   },
   picker: {
     height: 50,
     width: '100%',
-    backgroundColor: '#000000',
     justifyContent: 'center',
     paddingHorizontal: 17,
   },
   pickerText: {
-    color: '#fff',
     fontSize: 16,
   },
   modal: {
@@ -91,12 +107,10 @@ const styles = StyleSheet.create({
     margin: 0,
   },
   modalContent: {
-    backgroundColor: '#181A1C',
     padding: 20,
     borderRadius: 10,
   },
   modalTitle: {
-    color: '#fff',
     fontSize: 18,
     marginBottom: 10,
   },
@@ -106,7 +120,6 @@ const styles = StyleSheet.create({
     borderBottomColor: '#323436',
   },
   modalItemText: {
-    color: '#fff',
     fontSize: 16,
   },
 });

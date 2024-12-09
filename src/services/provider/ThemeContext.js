@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-    const [theme, setTheme] = useState(false);
+    const [theme, setTheme] = useState(true);
 
     // lấy giá trị theme từ AsyncStorage
     useEffect(() => {

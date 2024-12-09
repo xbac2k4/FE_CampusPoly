@@ -3,7 +3,6 @@ const { width: screenWidth } = Dimensions.get('window'); // Lấy chiều rộng
 const CommentStyle = StyleSheet.create({
   container: {
     paddingBottom: 20,
-    backgroundColor: '#181A1C',
     flexGrow: 1,
   },
   postHeader: {
@@ -82,9 +81,6 @@ const CommentStyle = StyleSheet.create({
   circleIcon: {
     width: "8%",
     height: '4%',
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#323436',
     justifyContent: 'center',
     alignItems: 'center',
     position: 'absolute',
@@ -92,7 +88,6 @@ const CommentStyle = StyleSheet.create({
     top: '2%',
   },
   textHeader: {
-    color: '#ECEBED',
     fontSize: 18,
     fontWeight: 'bold',
     fontFamily: 'rgl1',
@@ -107,7 +102,7 @@ const CommentStyle = StyleSheet.create({
     fontFamily: 'rgl1',
     fontSize: 14,
     fontWeight: 'regular',
-    color: '#ECEBED',
+    
   },
   recentText: {
     fontFamily: 'rgl1',
@@ -159,7 +154,6 @@ const CommentStyle = StyleSheet.create({
   textInteract: {
     fontFamily: 'rgl1',
     fontSize: 16,
-    color: '#fff',
     marginLeft: 5,
     fontWeight: 'bold',
   },

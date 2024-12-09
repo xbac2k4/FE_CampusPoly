@@ -6,6 +6,7 @@ import { GET_SEARCH } from '../../services/ApiConfig'; // Đường dẫn API đ
 import { useFocusEffect } from '@react-navigation/native';
 import { ThemeContext } from '../../services/provider/ThemeContext';
 import { useContext } from 'react';
+import Colors from '../../constants/Color';
 
 const SearchScreen = () => {
   const [searchQuery, setSearchQuery] = useState(""); // Trạng thái tìm kiếm
@@ -96,14 +97,18 @@ const SearchScreen = () => {
       style={{ flex: 1 }}
     >
       <View style={[styles.container, {
-        backgroundColor: theme ? '#181A1C' : '#fff',
+        backgroundColor: theme ? '#181A1C' : '#f3f4f8',
       }]}>
-        <View style={styles.searchContainer}>
-          <AntDesign name="search1" size={20} color="#FFFFFF" style={styles.icon} />
+        <View style={[styles.searchContainer, {
+          backgroundColor: theme ? '#3B3B3B' : '#ECEBED',
+        }]}>
+          <AntDesign name="search1" size={20} color={theme ? '#fff' : Colors.background} style={styles.icon} />
           <TextInput
-            style={styles.input}
+            style={[styles.input, {
+              color: theme ? '#ECEBED' : Colors.background,
+            }]}
             placeholder="Tìm kiếm bài viết hoặc loại bài..."
-            placeholderTextColor="#ECEBED"
+            placeholderTextColor={theme ? '#ECEBED' : Colors.background}
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
@@ -126,7 +131,6 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     flexDirection: 'row',
-    backgroundColor: '#323436',
     borderRadius: 32,
     paddingHorizontal: 12,
     alignItems: 'center',
@@ -140,7 +144,6 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 14,
-    color: '#ECEBED',
   },
 });
 

@@ -3,7 +3,6 @@ const { width: screenWidth } = Dimensions.get('window'); // Lấy chiều rộng
 const FriendList = StyleSheet.create({
   container: {
     padding: 20,
-    backgroundColor: '#181A1C',
     flexGrow: 1,
   },
   barHeader: {
@@ -15,9 +14,6 @@ const FriendList = StyleSheet.create({
   circleIcon: {
     width: 32,
     height: 32,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#323436',
     justifyContent: 'center',
     alignItems: 'center',
     position: 'absolute',
@@ -25,7 +21,6 @@ const FriendList = StyleSheet.create({
     top: '2%',
   },
   textHeader: {
-    color: '#ECEBED',
     fontSize: 18,
     fontWeight: 'bold',
     fontFamily: 'rgl1',

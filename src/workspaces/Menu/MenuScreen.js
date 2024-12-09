@@ -62,7 +62,7 @@ const MenuScreen = () => {
   );
   return (
     <View style={[styles.container, {
-      backgroundColor: theme ? Colors.background : '#f3f4f8',
+      backgroundColor: theme ? Colors.background : Colors.light,
     }]}>
       <ScrollView style={styles.scrollContent}>
         <View style={styles.headContainer}>
@@ -166,7 +166,7 @@ const MenuScreen = () => {
               marginLeft: 10,
             }}>Chế độ tối</Text>
           </View>
-          <Switch trackColor={{ false: '#d2d2d2', true: '#20096d' }} thumbColor={'#fff'} value={theme} onValueChange={toggleTheme} />
+          <Switch trackColor={{ false: '#d2d2d2', true: '#323232' }} thumbColor={'#fff'} value={theme} onValueChange={toggleTheme} />
         </TouchableOpacity>
       </ScrollView>
 

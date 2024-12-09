@@ -10,6 +10,7 @@ import { SocketContext } from '../../services/provider/SocketContext';
 import { UserContext } from '../../services/provider/UseContext';
 import { TYPE_ADD_FRIEND, TYPE_COMMENT_POST, TYPE_CREATE_POST, TYPE_LIKE_POST } from '../../services/TypeNotify';
 import NotificationLoading from '../../components/Loading/NotificationLoading';
+import { ThemeContext } from '../../services/provider/ThemeContext';
 
 const NotificationScreen = ({ navigation }) => {
   const [notifications, setNotifications] = useState([]);
@@ -17,6 +18,7 @@ const NotificationScreen = ({ navigation }) => {
   const { user } = useContext(UserContext);
   const [modalVisible, setModalVisible] = useState(false); // State to control modal
   const { socket } = useContext(SocketContext);
+  const { theme } = useContext(ThemeContext);
 
   const fetchNotifications = async () => {
     try {
@@ -165,15 +167,25 @@ const NotificationScreen = ({ navigation }) => {
             console.log(error);
           }
         }}
-        style={[styles.notificationItem, { backgroundColor: item.isRead ? Colors.background : '#3A3A3C' }]}>
+        style={[styles.notificationItem, {
+          backgroundColor: item.isRead
+            ? theme
+              ? Colors.background
+              : '#f3f4f8'
+            : theme ? '#3A3A3C' : '#ccc',
+        }]}>
         <Image
           source={{ uri: item.imageUrl }}
           style={styles.icon}
           borderRadius={20}
         />
         <View style={styles.notificationContent}>
-          <Text style={styles.boldText}>{item.title}</Text>
-          <Text style={styles.notificationText}>{item.body}</Text>
+          <Text style={[styles.boldText, {
+            color: theme ? '#fff' : Colors.background,
+          }]}>{item.title}</Text>
+          <Text style={[styles.notificationText, {
+            color: theme ? '#fff' : Colors.background,
+          }]}>{item.body}</Text>
           <Text style={styles.timeText}>{time}</Text>
         </View>
       </TouchableOpacity>
@@ -181,9 +193,13 @@ const NotificationScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {
+      backgroundColor: theme ? Colors.background : '#f3f4f8',
+    }]}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Thông báo</Text>
+        <Text style={[styles.headerTitle, {
+          color: theme ? '#fff' : Colors.background,
+        }]}>Thông báo</Text>
         <TouchableOpacity onPress={handleMarkAllAsRead}>
           <Text style={styles.markAllAsRead}>Đánh dấu tất cả là đã đọc</Text>
         </TouchableOpacity>
@@ -217,7 +233,6 @@ const NotificationScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   header: {
     flexDirection: 'row',
@@ -227,7 +242,6 @@ const styles = StyleSheet.create({
     marginTop: 30
   },
   headerTitle: {
-    color: '#fff',
     fontSize: 24,
     fontWeight: 'bold',
   },
@@ -249,12 +263,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   notificationText: {
-    color: '#fff',
     fontSize: 14,
   },
   boldText: {
     fontWeight: 'bold',
-    color: '#fff',
   },
   timeText: {
     color: '#A1A1A1', // Màu xám nhạt cho thời gian
@@ -263,7 +275,7 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: 1,
-    backgroundColor: '#3A3A3C',
+    backgroundColor: '#B3B3B3',
     width: '100%',
   },
 });

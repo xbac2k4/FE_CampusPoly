@@ -102,11 +102,10 @@ const PostStyle = StyleSheet.create({
   },
   inner: {
     flex: 1,
-    backgroundColor: '#181A1C',
     paddingHorizontal: 24
   },
   textOne: {
-    color: '#fff', fontWeight: "semibold", fontSize: 16,
+    fontWeight: "semibold", fontSize: 16,
     marginTop: '5%'
   },
   reporttextcontainer: {
@@ -119,7 +118,6 @@ const PostStyle = StyleSheet.create({
     alignItems: "center"
   },
   crudText: {
-    color: '#ECEBED',
     fontSize: 18,
     fontWeight: 'bold',
   },
@@ -138,7 +136,6 @@ const PostStyle = StyleSheet.create({
   dialog: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#181A1C',
     borderRadius: 8,
     padding: 20,
     alignItems: 'center',
@@ -146,7 +143,6 @@ const PostStyle = StyleSheet.create({
   dialogTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#C0C0C0',
   },
   dialogActions: {
     flexDirection: 'row',
@@ -179,7 +175,6 @@ const PostStyle = StyleSheet.create({
   },
   container: {
     padding: 10,
-    backgroundColor: '#2B2B2B',
     borderRadius: 10,
   },
   postRow: {
@@ -203,7 +198,6 @@ const PostStyle = StyleSheet.create({
     backgroundColor: '#888', // Màu nền placeholder
   },
   textInput: {
-    color: '#ECEBED',
     fontSize: 16,
     padding: 0,
     margin: 0,
@@ -237,7 +231,6 @@ const PostStyle = StyleSheet.create({
     borderRadius: 32,
     overflow: 'hidden',
     marginLeft: 10,
-    backgroundColor: '#323436',
     justifyContent: 'center',
   },
   imageRow: {

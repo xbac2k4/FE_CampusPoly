@@ -5,12 +5,15 @@ import { ADD_FRIEND, UPDATE_FRIEND } from '../../services/ApiConfig';
 import { SocketContext } from '../../services/provider/SocketContext';
 import { UserContext } from '../../services/provider/UseContext';
 import { TYPE_ADD_FRIEND } from '../../services/TypeNotify';
+import Colors from '../../constants/Color';
+import { ThemeContext } from '../../services/provider/ThemeContext';
 
 const FrProfileStats = ({ data, currentUserId }) => {
   const friendsData = data?.friends || [];
   const [acceptedFriends, setAcceptedFriends] = useState([]);
   const { sendNotifySocket } = useContext(SocketContext);
   const { user } = useContext(UserContext);
+  const { theme } = useContext(ThemeContext);
   const [buttonState, setButtonState] = useState(() => {
     const currentFriend = friendsData.find(friend =>
       friend.user_id.some(user => user._id === currentUserId)
@@ -33,12 +36,6 @@ const FrProfileStats = ({ data, currentUserId }) => {
       )
     );
   }, [friendsData, currentUserId]);
-  // Lọc chỉ những bạn bè có trạng thái 'Chấp nhận'
-  // const acceptedFriends = friendsData.filter(friend =>
-  //   friend.status_id.status_name === 'Chấp nhận' && // Chỉ lấy bạn bè đã được chấp nhận
-  //   friend.user_id.some(user => user._id === currentUserId)
-  // );
-  // console.log(acceptedFriends);
 
   const handleButtonPress = async () => {
     try {
@@ -90,7 +87,9 @@ const FrProfileStats = ({ data, currentUserId }) => {
   return (
     <View style={styles.statsContainer}>
       <View style={styles.stat}>
-        <Text style={styles.statNumber}>
+        <Text style={[styles.statNumber, {
+          color: theme ? 'white' : Colors.background
+        }]}>
           {Array.isArray(acceptedFriends) ? acceptedFriends.length.toLocaleString() : 0}
         </Text>
         <Text style={styles.statText}>Bạn bè</Text>
@@ -119,7 +118,6 @@ const styles = StyleSheet.create({
   },
   statNumber: {
     fontSize: 16,
-    color: 'white',
     fontWeight: 'bold',
     textAlign: 'center',
   },

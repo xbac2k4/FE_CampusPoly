@@ -1,21 +1,17 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Alert, ActivityIndicator, ToastAndroid } from 'react-native';
-import PostComponent from '../../components/Post/PostComponent';
-import { UserContext } from '../../services/provider/UseContext';
-import { ADD_POST, GET_FRIEND_BY_USERID } from '../../services/ApiConfig';
-import Colors from '../../constants/Color';
+import { Alert, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { SocketContext } from '../../services/provider/SocketContext';
-import { TYPE_CREATE_POST } from '../../services/TypeNotify';
 import Loading from '../../components/MenuAuth/Loading';
-import Snackbar from 'react-native-snackbar';
+import PostComponent from '../../components/Post/PostComponent';
+import Colors from '../../constants/Color';
 import Screens from '../../navigation/Screens';
-// import containsForbiddenWords from '../../assets/ban/forbiddenWords';
-
+import { ADD_POST, GET_FRIEND_BY_USERID } from '../../services/ApiConfig';
+import { SocketContext } from '../../services/provider/SocketContext';
+import { UserContext } from '../../services/provider/UseContext';
+import { TYPE_CREATE_POST } from '../../services/TypeNotify';
+import { ThemeContext } from '../../services/provider/ThemeContext';
 
 const CreatePostScreen = ({ navigation }) => {
-  // const [user, setUser] = useState(null);
-  // const [id, setID] = useState('670ca3898cfc1be4b41b183b');
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [hashtag, setHashtag] = useState('');
@@ -26,7 +22,7 @@ const CreatePostScreen = ({ navigation }) => {
   const [userFriend, setUserFriend] = useState([]);
   const [loading, setLoading] = useState(false);
   const { sendNotificationToMultipleSocket } = useContext(SocketContext);
-
+  const { theme } = useContext(ThemeContext);
   const uploadImage = async (images) => {
     // Thực hiện công việc bất đồng bộ, ví dụ gọi API hoặc tải ảnh lên
     return new Promise((resolve) => {
@@ -221,14 +217,18 @@ const CreatePostScreen = ({ navigation }) => {
   }, [title, content, hashtag])
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {
+      backgroundColor: theme ? '#181A1C' : '#f3f4f8',
+    }]}>
       <View style={styles.barHeader}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.circleIcon}>
-          <Text style={[styles.textHeader, { color: "#2E8AF6", fontSize: 16 }]}>Hủy</Text>
+          <Text style={[styles.textHeader, { color: Colors.second, fontSize: 16 }]}>Hủy</Text>
         </TouchableOpacity>
-        <Text style={styles.textHeader}>Tạo Bài Viết</Text>
+        <Text style={[styles.textHeader, {
+          color: theme ? '#ECEBED' : Colors.background,
+        }]}>Tạo Bài Viết</Text>
         <LinearGradient
-          colors={isPost ? [Colors.first, Colors.second] : [Colors.background, Colors.background]}
+          colors={isPost ? [Colors.first, Colors.second] : theme ? [Colors.background, Colors.background] : ['#ccc', '#ccc']}
           style={styles.buttonContainer}>
           <TouchableOpacity
             onPress={() => {
@@ -239,7 +239,7 @@ const CreatePostScreen = ({ navigation }) => {
             style={{
               alignItems: 'center'
             }}>
-            <Text style={[{ ...styles.textHeader, color: isPost ? '#ECEBED' : '#C0C0C0' }, { fontSize: 16 }]}>Đăng</Text>
+            <Text style={[{ ...styles.textHeader, color: isPost ? '#ECEBED' : theme ? '#C0C0C0' : '#f3f4f8' }, { fontSize: 16 }]}>Đăng</Text>
           </TouchableOpacity>
         </LinearGradient>
       </View>
@@ -265,7 +265,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 24,
-    backgroundColor: '#181A1C',
   },
   barHeader: {
     flexDirection: 'row',
@@ -275,7 +274,6 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   textHeader: {
-    color: '#ECEBED',
     fontSize: 18,
     fontWeight: 'bold',
   },

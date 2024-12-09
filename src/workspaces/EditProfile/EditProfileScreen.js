@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useContext } from 'react';
 import { View, Text, Image, TouchableOpacity, ActivityIndicator, SafeAreaView } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -12,8 +12,11 @@ import styles from './styles';
 import Screens from '../../navigation/Screens';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import { PUT_UPDATE_USER } from '../../services/ApiConfig';
+import { ThemeContext } from '../../services/provider/ThemeContext';
+import Colors from '../../constants/Color';
 
 const EditProfileScreen = () => {
+  const { theme } = useContext(ThemeContext);
   const route = useRoute();
   const user = route?.params?.user;
 
@@ -251,18 +254,26 @@ const EditProfileScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container,{
+      backgroundColor : theme? '#181A1C' : Colors.light
+    }]}>
       {loadImage && (
         <View style={styles.loadingOverlay}>
           <ActivityIndicator size="large" color="#fff" />
         </View>
       )}
 
-      <View style={styles.header}>
+      <View style={[styles.header,{
+        backgroundColor : theme? '#181A1C' : '#fff'
+      }]}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.headerButton}>✖</Text>
+          <Text style={[styles.headerButton,{
+            color : theme? '#fff' : Colors.second
+          }]}>✖</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Chỉnh sửa trang cá nhân</Text>
+        <Text style={[styles.headerTitle,{
+          color : theme? '#fff' : '#000'
+        }]}>Chỉnh sửa trang cá nhân</Text>
 
         <TouchableOpacity onPress={handleSave} disabled={!isChanged || !name?.trim() || isLoading}>
           {isLoading ? (
@@ -279,7 +290,7 @@ const EditProfileScreen = () => {
       <View style={styles.backgroundContainer}>
         <Image source={backgroundImage} style={styles.backgroundImage} />
         <TouchableOpacity style={styles.iconEditBackground} onPress={() => backgroundSheetRef.current.open()}>
-          <Icon name="pencil" size={20} color="#727477" />
+          <Icon name="pencil" size={20} color={theme? '#727477' : '#fff'} />
         </TouchableOpacity>
       </View>
 
@@ -287,12 +298,14 @@ const EditProfileScreen = () => {
       <View style={styles.profileImageContainer}>
         <Image source={profileImage} style={styles.profileImage} />
         <TouchableOpacity style={styles.iconEditProfile} onPress={() => profileSheetRef.current.open()}>
-          <Icon name="pencil" size={20} color="#727477" />
+          <Icon name="pencil" size={20} color={theme? '#727477' : '#fff'}  />
         </TouchableOpacity>
       </View>
 
       {/* Inputs */}
-      <View style={styles.inputWrapper}>
+      <View style={[styles.inputWrapper,{
+        backgroundColor : theme? '#000' : '#fff', elevation : theme?0:5
+      }]}>
         <ProfileInput label="Tên hiển thị" value={name} onChangeText={text => {
           setName(text);
           validateName(text);

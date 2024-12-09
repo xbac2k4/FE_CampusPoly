@@ -24,7 +24,9 @@ const SettingItem = ({ title, icon, subItems }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container,{
+
+    }]}>
       <TouchableOpacity
         style={styles.itemContainer}
         onPress={() => setExpanded(!expanded)}
@@ -46,7 +48,9 @@ const SettingItem = ({ title, icon, subItems }) => {
               key={index}
               onPress={() => handleSubItemPress(item)} // Gọi hàm handleSubItemPress
             >
-              <Text style={styles.subItem}>{item}</Text>
+              <Text style={[styles.subItem,{
+                color : theme? '#fff' : Colors.background
+              }]}>{item}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -92,7 +96,6 @@ const styles = StyleSheet.create({
   },
   subItem: {
     fontSize: 14,
-    color: '#fff',
     marginVertical: 5,
   },
 });

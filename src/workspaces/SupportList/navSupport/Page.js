@@ -1,19 +1,24 @@
+import React, { useContext } from 'react';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import React from 'react';
-import { useNavigation } from '@react-navigation/native';
 import styles from '../../../assets/style/support'; // Import file style đã tạo
+import { ThemeContext } from '../../../services/provider/ThemeContext';
+import Colors from '../../../constants/Color';
 
-const Page = () => {
-  const navigation = useNavigation();
-  
+const Page = ({ navigation }) => {
+  const { theme } = useContext(ThemeContext);
   return (
-    <View style={{ flex: 1, backgroundColor: '#181A1C' }}>
-      <ScrollView style={styles.container}>
+    <View style={{ flex: 1, backgroundColor: theme ? Colors.background : Colors.light }}>
+      <ScrollView style={[styles.container, {
+        backgroundColor: theme ? Colors.background : Colors.light
+      }]}>
         {/* Back button */}
         <View style={{ alignItems: 'center' }}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.circleIcon}>
             <Image
-              source={require('../../../assets/images/arowleft.png')}
+              source={theme
+                ? require('../../../assets/images/arowleft.png')
+                : require('../../../assets/images/light_arowleft.png')
+              }
               resizeMode="contain"
               style={{ width: 15, height: 15 }}
             />
@@ -21,13 +26,18 @@ const Page = () => {
 
           {/* Header */}
           <View style={styles.barHeader}>
-            <Text style={styles.textHeader}>Trung tâm hỗ trợ bài viết</Text>
+            <Text style={[styles.textHeader, {
+              color: theme ? '#ECEBED' : Colors.background,
+            }]}>Trung tâm hỗ trợ bài viết</Text>
           </View>
         </View>
 
         <View style={{ paddingHorizontal: 24, marginTop: 10 }}>
           {/* Description */}
-          <Text style={[styles.texth1, { fontSize: 20 }]}>
+          <Text style={[styles.texth1, {
+            fontSize: 20,
+            color: theme ? '#ECEBED' : Colors.background,
+          }]}>
             Bạn có thể tìm thấy câu trả lời và các hướng dẫn chi tiết về cách quản lý bài viết trên CampusPoly. Hãy xem qua các tùy chọn hỗ trợ bên dưới để tìm thông tin phù hợp với nhu cầu của bạn.
           </Text>
 
