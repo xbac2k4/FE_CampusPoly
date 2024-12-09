@@ -236,8 +236,8 @@ const CrudPost = ({ postId, onDeleteSuccess, onUpdateSuccess, existingPost }) =>
           resizeMode="contain"
         />
         <Text style={[styles.crudText, {
-            color: theme ? '#ECEBED' : Colors.background,
-          }]}>Chỉnh sửa bài viết</Text>
+          color: theme ? '#ECEBED' : Colors.background,
+        }]}>Chỉnh sửa bài viết</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.crudContainer} onPress={handleDeletePost}>
@@ -267,26 +267,23 @@ const CrudPost = ({ postId, onDeleteSuccess, onUpdateSuccess, existingPost }) =>
         onRequestClose={() => setIsModalVisible(false)}
       >
         <View style={styles.overlay}>
-          <View style={styles.dialog}>
+          <View style={[styles.dialog, {
+            backgroundColor: theme ? Colors.background : '#f3f4f8',
+          }]}>
             {/** Button container */}
             <View style={styles.dialogActions}>
               <TouchableOpacity
                 style={[styles.actionButton, styles.cancelButton]}
                 onPress={() => setIsModalVisible(false)}
               >
-                <Text style={[styles.actionText, { color: '#2E8AF6' }]}>Hủy</Text>
+                <Text style={[styles.actionText, { color: theme ? '#2E8AF6' : Colors.second }]}>Hủy</Text>
               </TouchableOpacity>
 
               <View style={styles.dialogTitleContainer}>
-                <Text style={styles.dialogTitle}>Chỉnh sửa bài viết</Text>
+                <Text style={[styles.dialogTitle, {
+                  color: theme ? '#C0C0C0' : '#000'
+                }]}>Chỉnh sửa bài viết</Text>
               </View>
-
-              {/* <TouchableOpacity
-                style={styles.actionButton}
-                onPress={handleUpdatePost}
-              >
-                <Text style={styles.actionText}>Cập nhật</Text>
-              </TouchableOpacity> */}
               <LinearGradient
                 colors={isChanged ? [Colors.first, Colors.second] : [Colors.background, Colors.background]}
                 style={styles.buttonContainer}>
@@ -303,7 +300,10 @@ const CrudPost = ({ postId, onDeleteSuccess, onUpdateSuccess, existingPost }) =>
               </LinearGradient>
             </View>
 
-            <View style={styles.container}>
+            <View style={[styles.container, {
+              backgroundColor: theme ? '#2B2B2B' : '#f3f4f8',
+              elevation: theme ? 0 : 5
+            }]}>
               <View style={styles.postRow}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, alignSelf: 'flex-start' }}>
                   <View style={{ top: '-40%' }}>
@@ -316,7 +316,9 @@ const CrudPost = ({ postId, onDeleteSuccess, onUpdateSuccess, existingPost }) =>
                   {/** Input */}
                   <View style={styles.inputContainer}>
                     <TextInput
-                      style={[styles.textInput]}
+                      style={[styles.textInput, {
+                        color: theme ? '#ECEBED' : '#000',
+                      }]}
                       placeholder="Tiêu đề bài viết?"
                       placeholderTextColor="#888"
                       multiline
@@ -326,7 +328,10 @@ const CrudPost = ({ postId, onDeleteSuccess, onUpdateSuccess, existingPost }) =>
                     // onContentSizeChange={(event) => setInputHeight(event.nativeEvent.contentSize.height)}
                     />
                     <TextInput
-                      style={[styles.textInput1, { height: Math.max(40, inputHeight) }]}
+                      style={[styles.textInput1, {
+                        height: Math.max(40, inputHeight),
+                        color: theme ? '#ECEBED' : '#000',
+                      }]}
                       placeholder="Bạn đang nghĩ gì?"
                       placeholderTextColor="#888"
                       multiline
@@ -379,18 +384,22 @@ const CrudPost = ({ postId, onDeleteSuccess, onUpdateSuccess, existingPost }) =>
                 <TouchableOpacity style={styles.addButton}
                   onPress={toggleImages}
                 >
-                  <Image source={require('../../assets/images/add.png')} resizeMode="contain" style={{ width: 12, height: 12 }} />
+                  <Image source={theme ? require('../../assets/images/add.png') :
+                    require('../../assets/images/light_add.png')
+                  } resizeMode="contain" style={{ width: 12, height: 12 }} />
                 </TouchableOpacity>
 
                 {isVisible && (
-                  <Animated.View style={[styles.imageContainer, animatedStyle]}>
+                  <Animated.View style={[styles.imageContainer, animatedStyle, {
+                    backgroundColor: theme ? '#323436' : '#ECEBED',
+                  }]}>
                     <View style={styles.imageRow}>
                       <TouchableOpacity onPress={openImageLibrary}>
-                        <Image source={require('../../assets/images/image.png')} style={styles.image} />
+                        <Image source={require('../../assets/images/light_image.png')} style={styles.image} />
                       </TouchableOpacity>
 
                       <TouchableOpacity onPress={handleCaptureImage}>
-                        <Image source={require('../../assets/images/Camera.png')} style={styles.image} />
+                        <Image source={require('../../assets/images/light_camera.png')} style={styles.image} />
                       </TouchableOpacity>
 
                     </View>

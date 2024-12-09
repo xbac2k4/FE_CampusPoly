@@ -1,20 +1,29 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Modal, Image } from 'react-native';
+import { ThemeContext } from '../../services/provider/ThemeContext';
+import Colors from '../../constants/Color';
 
 const NotificationModal = ({ visible, message, onConfirm, onCancel }) => {
+  const { theme } = useContext(ThemeContext);
   return (
     <Modal transparent visible={visible} animationType="fade">
       <View style={styles.overlay}>
-        <View style={styles.modalContainer}>
+        <View style={[styles.modalContainer, {
+          backgroundColor: theme ? Colors.background : Colors.light,
+        }]}>
           <Image source={require('../../assets/images/report.png')} style={styles.icon} />
           <Text style={styles.title}>Thông báo!</Text>
-          <Text style={styles.message}>{message}</Text>
+          <Text style={[styles.message, {
+            color: theme ? '#fff' : Colors.background,
+          }]}>{message}</Text>
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.confirmButton} onPress={onConfirm}>
               <Text style={styles.confirmText}>Đồng ý</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
-              <Text style={styles.cancelText}>Hủy</Text>
+              <Text style={[styles.cancelText, {
+                color: theme ? '#fff' : Colors.background,
+              }]}>Hủy</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -33,7 +42,6 @@ const styles = StyleSheet.create({
   modalContainer: {
     width: 300,
     padding: 20,
-    backgroundColor: '#181A1C',
     borderRadius: 8,
     alignItems: 'center',
   },
@@ -51,7 +59,6 @@ const styles = StyleSheet.create({
   },
   message: {
     fontSize: 16,
-    color: '#fff',
     textAlign: 'center',
     marginBottom: 20,
   },
@@ -77,7 +84,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   cancelText: {
-    color: '#fff',
     fontSize: 16,
   },
 });

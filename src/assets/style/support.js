@@ -76,6 +76,7 @@ const supportlist = StyleSheet.create({
       footerText: {
         fontSize: 14,
         marginBottom: 4,
+        color: '#888',
       },
       footerCopyright: {
         color: '#888',
