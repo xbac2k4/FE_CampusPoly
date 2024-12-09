@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import DatePicker from 'react-native-date-picker';
+import { ThemeContext } from '../../services/provider/ThemeContext';
+import Colors from '../../constants/Color';
 
 const BirthdayPicker = ({ label, selectedDate, onDateChange }) => {
 
@@ -15,6 +17,7 @@ const BirthdayPicker = ({ label, selectedDate, onDateChange }) => {
   const togggleDatePicker = () => {
     setIsShowDate(!isShowDate)
   }
+  const { theme } = useContext(ThemeContext);
 
   const formatDate = (date) => {
     let day = date?.getDate();
@@ -34,9 +37,15 @@ const BirthdayPicker = ({ label, selectedDate, onDateChange }) => {
 
   return (
     <View>
-      <Text style={styles.label}>{label}</Text>
-      <TouchableOpacity onPress={togggleDatePicker} style={styles.dateButton}>
-        <Text style={styles.dateText}>{!selectedDate ? 'Chưa cập nhật' : formatDate(selectedDate)}</Text>
+      <Text style={[styles.label,{
+        color : theme? '#fff' : '#000'
+      }]}>{label}</Text>
+      <TouchableOpacity onPress={togggleDatePicker} style={[styles.dateButton,{
+         backgroundColor : theme? '#000' : '#fff'
+      }]}>
+        <Text style={[styles.dateText,{
+          color : theme? '#fff' : '#000'
+        }]}>{!selectedDate ? 'Chưa cập nhật' : formatDate(selectedDate)}</Text>
       </TouchableOpacity>
 
       <DatePicker
@@ -45,7 +54,7 @@ const BirthdayPicker = ({ label, selectedDate, onDateChange }) => {
         open={isShowDate}
         date={selectedDate || new Date()}
         mode='date'
-        theme='dark'
+        theme={theme? 'dark' : 'light'}
         onConfirm={handleConfirmDate}
         onCancel={togggleDatePicker}
         locale='vi'
@@ -60,19 +69,16 @@ const BirthdayPicker = ({ label, selectedDate, onDateChange }) => {
 const styles = StyleSheet.create({
   dateButton: {
     padding: 15,
-    backgroundColor: '#000000',
     borderRadius: 8,
     borderWidth: 2,
     borderColor: '#323436',
     alignItems: 'flex-start',
   },
   label: {
-    color: '#ffff',
     fontSize: 16,
     marginBottom: 5,
   },
   dateText: {
-    color: '#FFFFFF',
     fontSize: 16,
   },
   modalContainer: {

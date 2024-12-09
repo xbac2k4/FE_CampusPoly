@@ -5,18 +5,15 @@ const { width, height } = Dimensions.get('window');
 export default StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#181A1C',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#1e1f23',
     marginTop: 12,
   },
   headerButton: {
-    color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
   },
@@ -24,7 +21,6 @@ export default StyleSheet.create({
     color: 'orange',
   },
   headerTitle: {
-    color: '#FFFFFF',
     fontSize: 18,
     fontWeight: 'bold',
   },
@@ -67,7 +63,6 @@ export default StyleSheet.create({
     borderRadius: 20,
   },
   inputWrapper: {
-    backgroundColor: '#000000',
     margin: 10,
     padding: 10,
     borderRadius: 10,
