@@ -1,6 +1,6 @@
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { Dimensions, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Image, Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import heartFilled from '../../assets/images/hear2.png';
 import heart from '../../assets/images/heart.png';
@@ -16,6 +16,7 @@ import { timeAgo } from '../../utils/formatTime';
 import { SocketContext } from '../../services/provider/SocketContext';
 import { TYPE_COMMENT_POST, TYPE_LIKE_POST } from '../../services/TypeNotify';
 import Screens from '../../navigation/Screens';
+import ImageViewerModal from '../../components/Zoom/ImageViewerModal';
 const { width: screenWidth } = Dimensions.get('window'); // Lấy chiều rộng màn hình để điều chỉnh kích thước hình ảnh
 const CommentScreen = () => {
   const route = useRoute();
@@ -33,7 +34,7 @@ const CommentScreen = () => {
   const [selectedPostId, setSelectedPostId] = useState(null); // ID bài viết được chọn để báo cáo
   const [reportSuccess, setReportSuccess] = useState(false);
   const { sendNotifySocket, socket } = useContext(SocketContext);
-
+  const [selectedImage, setSelectedImage] = useState([]);
   const refRBSheet = useRef();
 
   const openBottomSheet = (postId) => {
@@ -44,6 +45,15 @@ const CommentScreen = () => {
       console.error('No post ID provided');
     }
   };
+  const openImageViewer = (imageUrl) => {
+    if (imageUrl) {
+      setSelectedImage([{ url: imageUrl }]);
+      setModalVisible(true);
+    } else {
+      console.error('Invalid image URL');
+    }
+  };
+  
 
   // console.log(user);
 
@@ -262,50 +272,37 @@ const CommentScreen = () => {
   // }
 
   const renderImages = (images, postId) => {
-    // console.log(images);
-
-    if (!images || images.length === 0) return null; // Handle cases where image is missing
-
-    if (images.length === 1) {
-      const imageUrl = images[0].replace('localhost', '10.0.2.2');
-      return imageUrl ? (
-        <Image source={{ uri: imageUrl }} style={styles.postImage} />
-      ) : null;
-    }
-
+    if (!images || images.length === 0) return null;
+  
     return (
-      <>
-        <ScrollView
-          horizontal
-          pagingEnabled
-          style={styles.imageList}
-          showsHorizontalScrollIndicator={false}
-          onScroll={(event) => {
-            const index = Math.round(event.nativeEvent.contentOffset.x / screenWidth);
-            setActiveImageIndex((prevState) => ({
-              ...prevState,
-              [postId]: index,
-            }));
-          }}
-        >
-          {images.map((image, index) => (
-            <Image key={index} source={{ uri: image.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' }} style={styles.postImage} />
-          ))}
-        </ScrollView>
-        <View style={styles.paginationContainer}>
-          {images.map((_, index) => (
-            <View
-              key={index}
-              style={[
-                styles.paginationDot,
-                activeImageIndex[postId] === index ? styles.activeDot : styles.inactiveDot,
-              ]}
-            />
-          ))}
-        </View>
-      </>
+      <ScrollView
+        horizontal
+        pagingEnabled
+        style={styles.imageList}
+        showsHorizontalScrollIndicator={false}
+        onScroll={(event) => {
+          const index = Math.round(event.nativeEvent.contentOffset.x / screenWidth);
+          setActiveImageIndex((prevState) => ({
+            ...prevState,
+            [postId]: index,
+          }));
+        }}
+      >
+        {images.map((image, index) => {
+          const imageUrl = image.replace('localhost', '10.0.2.2');
+          return (
+            <TouchableOpacity key={index} onPress={() => openImageViewer(imageUrl)}>
+              <Image
+                source={{ uri: imageUrl || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' }}
+                style={styles.postImage}
+              />
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
     );
   };
+  
 
   return (
     <View style={{ flex: 1, backgroundColor: '#181A1C', }}>
@@ -353,7 +350,7 @@ const CommentScreen = () => {
                 {post?.postData?.content}
               </Text>
               {post?.postData?.hashtag?.hashtag_name ? (
-                <Text style={{ fontFamily: 'rgl1', fontSize: 16, fontWeight: '700', color: "#0078D4", marginTop: 10 }}>
+                <Text style={{ fontFamily: 'rgl1', fontSize: 16, fontWeight: '700', color: "#0078D4", marginTop: 10,marginBottom:7 }}>
                   {post.postData.hashtag.hashtag_name}
                 </Text>
               ) : null}
@@ -386,9 +383,9 @@ const CommentScreen = () => {
                   </TouchableOpacity>
                   <Text style={styles.textInteract}>{post?.postData?.comment_count}</Text>
                 </View>
-                <TouchableOpacity onPress={() => { /* Xử lý nút share */ }} style={[styles.iconLike, { marginLeft: 4 }]}>
+                {/* <TouchableOpacity  style={[styles.iconLike, { marginLeft: 4 }]}>
                   <Image source={require('../../assets/images/share.png')} resizeMode='contain' style={{ width: 20, height: 20 }} />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
               </View>
               <TouchableOpacity onPress={() => setIsBookmark(!isBookmark)} style={{ marginTop: 5, display: 'none' }}>
                 <Image
@@ -491,6 +488,13 @@ const CommentScreen = () => {
         />
 
       </RBSheet>
+      <ImageViewerModal
+  visible={modalVisible}
+  images={selectedImage}
+  onClose={() => setModalVisible(false)}
+/>
+
+
     </View>
 
 

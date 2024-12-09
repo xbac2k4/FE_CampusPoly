@@ -58,7 +58,7 @@ const CommentStyle = StyleSheet.create({
     backgroundColor: '#B3B3B3',
   },
   postImage: {
-    width: screenWidth - 50,
+    width: screenWidth - 40,
     marginRight: 23,
     marginLeft: 10,
     height: 200,
