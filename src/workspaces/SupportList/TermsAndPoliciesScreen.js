@@ -6,8 +6,10 @@ import styles from '../../assets/style/support';
 const TermsAndPoliciesScreen = () => {
   const navigation = useNavigation();
   return (
-    <View style={{ flex: 1}}>
-      <ScrollView style={[styles.container]}>
+    <View style={{ flex: 1 }}>
+      <ScrollView style={[styles.container, {
+        backgroundColor: theme ? Colors.background : Colors.light
+      }]}>
         <View>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.circleIcon}>
             <Image
@@ -65,7 +67,7 @@ const TermsAndPoliciesScreen = () => {
             Không chia sẻ nội dung bất hợp pháp, gây hiểu nhầm, phân biệt đối xử hoặc lừa đảo.
             Không tải lên virus, mã độc hại, gửi spam hay làm bất cứ điều gì có thể vô hiệu hóa hoặc gây ảnh hưởng tiêu cực đến hoạt động của CampusPoly.
             Không truy cập hoặc thu thập dữ liệu từ CampusPoly bằng phương tiện tự động mà chưa được chúng tôi cho phép.</Text>
-          <Text style={[styles.texthp,{marginBottom:60}]}>3:Các giới hạn về việc sử dụng tài sản trí tuệ của chúng tôi
+          <Text style={[styles.texthp, { marginBottom: 60 }]}>3:Các giới hạn về việc sử dụng tài sản trí tuệ của chúng tôi
 
             Nếu bạn sử dụng nội dung thuộc quyền sở hữu trí tuệ của chúng tôi (ví dụ: hình ảnh, thiết kế, video hoặc âm thanh), chúng tôi sẽ giữ lại tất cả các quyền đối với nội dung đó, nhưng bạn chỉ có thể sử dụng các tài sản này khi được phép rõ ràng theo nguyên tắc của CampusPoly.</Text>
 

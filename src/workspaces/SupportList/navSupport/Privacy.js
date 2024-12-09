@@ -8,7 +8,9 @@ const Privacy = () => {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#181A1C' }}>
-      <ScrollView style={styles.container}>
+      <ScrollView style={[styles.container, {
+        backgroundColor: theme ? Colors.background : Colors.light
+      }]}>
         {/* Back button */}
         <View style={{ alignItems: 'center' }}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.circleIcon}>
@@ -52,7 +54,7 @@ const Privacy = () => {
             </View>
 
           </View>
-          <View style={[styles.navItem, { flexDirection: 'row', alignItems: 'center', paddingVertical: 10,marginTop:15 }]}>
+          <View style={[styles.navItem, { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, marginTop: 15 }]}>
             <Image
               source={require('../../../assets/images/avt.png')} // Đổi thành icon chat của bạn
               style={[styles.imgGrid, { marginRight: 10 }]}

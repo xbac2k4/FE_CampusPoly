@@ -172,7 +172,7 @@ const NotificationScreen = ({ navigation }) => {
             ? theme
               ? Colors.background
               : '#f3f4f8'
-            : '#3A3A3C'
+            : theme ? '#3A3A3C' : '#ccc',
         }]}>
         <Image
           source={{ uri: item.imageUrl }}
