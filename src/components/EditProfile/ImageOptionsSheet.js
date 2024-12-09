@@ -1,8 +1,11 @@
-import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
+import React, { useContext } from 'react';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
+import { ThemeContext } from '../../services/provider/ThemeContext';
+import Colors from '../../constants/Color';
 
 const ImageOptionsSheet = React.forwardRef(({ onUpload }, ref) => {
+  const { theme } = useContext(ThemeContext);
   return (
     <RBSheet
       ref={ref}
@@ -17,7 +20,7 @@ const ImageOptionsSheet = React.forwardRef(({ onUpload }, ref) => {
           backgroundColor: '#000',
         },
         container: {
-          backgroundColor: '#181A1C',
+          backgroundColor: theme ? '#181A1C' : '#fff',
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
           padding: 20,
@@ -25,7 +28,9 @@ const ImageOptionsSheet = React.forwardRef(({ onUpload }, ref) => {
       }}
     >
       <TouchableOpacity style={styles.bottomSheetButton} onPress={onUpload}>
-        <Text style={styles.bottomSheetButtonText}>Tải ảnh lên</Text>
+        <Text style={[styles.bottomSheetButtonText, {
+          color: theme ? '#fff' : Colors.background,
+        }]}>Tải ảnh lên</Text>
       </TouchableOpacity>
     </RBSheet>
   );
@@ -36,11 +41,10 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 10,
     alignItems: 'center',
-    backgroundColor: 'transparent', 
+    backgroundColor: 'transparent',
   },
   bottomSheetButtonText: {
     fontSize: 16,
-    color: '#fff', 
   },
 });
 

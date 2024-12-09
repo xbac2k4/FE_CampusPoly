@@ -9,6 +9,7 @@ import { GET_USER_ID, REMOVE_FRIEND, UPDATE_FRIEND } from '../../services/ApiCon
 import { SocketContext } from '../../services/provider/SocketContext';
 import { UserContext } from '../../services/provider/UseContext';
 import { TYPE_ADD_FRIEND } from '../../services/TypeNotify';
+import { ThemeContext } from '../../services/provider/ThemeContext';
 
 const FriendListScreen = ({ navigation }) => {
   const { user } = useContext(UserContext);
@@ -17,6 +18,8 @@ const FriendListScreen = ({ navigation }) => {
   const { sendNotifySocket } = useContext(SocketContext);
   const [modalVisible, setModalVisible] = useState(false); // State to control modal
   const [id, setId] = useState();
+
+  const { theme, toggleTheme } = useContext(ThemeContext);
 
   const fetchFriendList = async () => {
     try {
@@ -106,11 +109,15 @@ const FriendListScreen = ({ navigation }) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView contentContainerStyle={[styles.container,{
+        backgroundColor : theme? '#181A1C' : Colors.light
+      }]}>
         {/* Nút quay lại */}
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.circleIcon}>
           <Image
-            source={require('../../assets/images/arowleft.png')}
+            source={theme? require('../../assets/images/arowleft.png'): 
+              require('../../assets/images/light_arowleft.png')
+            }
             resizeMode="contain"
             style={{ width: 15, height: 15 }}
           />
@@ -118,12 +125,16 @@ const FriendListScreen = ({ navigation }) => {
 
         {/* Tiêu đề */}
         <View style={styles.barHeader}>
-          <Text style={styles.textHeader}>Danh sách bạn bè</Text>
+          <Text style={[styles.textHeader,{
+            color: theme? '#fff' : Colors.background
+          }]}>Danh sách bạn bè</Text>
           <View style={{ height: 2, backgroundColor: '#fff' }} />
         </View>
 
         {/* Tabs */}
-        <View style={styles.tabContainer}>
+        <View style={[styles.tabContainer,{
+          
+        }]}>
           <TouchableOpacity
             onPress={() => setSelectedTab('accepted')}
             style={[
@@ -132,7 +143,7 @@ const FriendListScreen = ({ navigation }) => {
             ]}
           >
             <LinearGradient
-              colors={selectedTab === 'accepted' ? [Colors.first, Colors.second] : [Colors.background, Colors.background]}
+              colors={selectedTab === 'accepted' ? [Colors.first, Colors.second] : theme? [Colors.background, Colors.background]: ['#CCC','#CCC']}
               style={{ ...styles.tab, width: 170 }}
             >
               <Text style={selectedTab === 'accepted' ? styles.activeTabText : styles.tabText}>
@@ -148,7 +159,7 @@ const FriendListScreen = ({ navigation }) => {
             ]}
           >
             <LinearGradient
-              colors={selectedTab === 'pending' ? [Colors.first, Colors.second] : [Colors.background, Colors.background]}
+              colors={selectedTab === 'pending' ? [Colors.first, Colors.second] : theme? [Colors.background, Colors.background] : ['#CCC','#CCC']}
               style={{ ...styles.tab, width: 170 }}
             >
               <Text style={selectedTab === 'pending' ? styles.activeTabText : styles.tabText}>
@@ -160,7 +171,9 @@ const FriendListScreen = ({ navigation }) => {
 
         {/* Danh sách bạn bè */}
         <View>
-          <Text style={styles.textHeader}>
+          <Text style={[styles.textHeader,{
+            color : theme? '#fff' : Colors.background 
+          }]}>
             {selectedTab === 'accepted' ? ' Danh sách bạn bè' : ' Danh sách lời mời'}
           </Text>
           {filteredFriends.map((friend, index) => {

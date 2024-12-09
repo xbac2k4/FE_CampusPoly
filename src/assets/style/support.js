@@ -3,7 +3,6 @@ const { width, height } = Dimensions.get('window'); // Get device dimensions
 const supportlist = StyleSheet.create({
     container: {
         paddingVertical: 20,
-        backgroundColor: '#181A1C',
         flexGrow: 1,
       },
       barHeader: {
@@ -25,13 +24,12 @@ const supportlist = StyleSheet.create({
         top: '2%',
       },
       textHeader: {
-        color: '#ECEBED',
         fontSize: 18,
         fontWeight: 'bold',
         fontFamily: 'rgl1',
       },
       texth1:{
-        fontSize:25,fontWeight:'500',color:'#fff'
+        fontSize:25,fontWeight:'500'
       },
       gridContainer: {
         marginTop: height * 0.03, // 3% of screen height
@@ -44,7 +42,6 @@ const supportlist = StyleSheet.create({
       },
       navItem: {
         flex: 1,
-        backgroundColor: '#333333',
         borderRadius: 10,
         paddingVertical: height * 0.02, // Adjust padding for height
         paddingHorizontal: width * 0.02, // Adjust padding for width
@@ -57,7 +54,6 @@ const supportlist = StyleSheet.create({
         marginBottom: height * 0.01, // Adjust margin for height
       },
       navText: {
-        color: '#fff',
         fontSize: width * 0.04, // Responsive font size
         fontWeight: '500',
         
@@ -65,7 +61,6 @@ const supportlist = StyleSheet.create({
       footer: {
         marginTop: 20,
         padding: 16,
-        backgroundColor: '#1a1a1a',
         alignItems: 'center',
       },
       footerTitle: {
@@ -79,19 +74,18 @@ const supportlist = StyleSheet.create({
         
       },
       footerText: {
-        color: '#cccccc',
         fontSize: 14,
         marginBottom: 4,
+        color: '#888',
       },
       footerCopyright: {
-        color: '#888888',
+        color: '#888',
         fontSize: 15,
         marginBottom:10,
-        backgroundColor:'#181A1C'
 
       },
       texthp:{
-        fontSize:15,fontWeight:'400',color:'#fff',
+        fontSize:15,fontWeight:'400',
         marginTop:10
       },
       

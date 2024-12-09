@@ -4,14 +4,15 @@ import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react
 import ProfilePosts from '../../components/ProfileScreen/profilePosts';
 import { GET_SEARCH_POST_BY_HASHTAG } from '../../services/ApiConfig';
 import Screens from '../../navigation/Screens';
+import { ThemeContext } from '../../services/provider/ThemeContext';
+import { useContext } from 'react';
+import Colors from '../../constants/Color';
 
 const SearchComponents = ({ filteredHashtags, filteredUsers }) => {
     const navigation = useNavigation();
-    // const [searchQuery, setSearchQuery] = useState("");
-    // const [filteredHashTags, setFilteredHashTags] = useState([]);
-    // const [loading, setLoading] = useState(false); // Trạng thái loading
     const [isHashtagSelected, setIsHashtagSelected] = useState(false);
     const [posts, setPosts] = useState([]); // Dữ liệu bài viết khi hashtag được chọn
+    const { theme } = useContext(ThemeContext);
 
 
     // Hàm xử lý khi bấm vào avatar hoặc tên người dùng
@@ -65,44 +66,47 @@ const SearchComponents = ({ filteredHashtags, filteredUsers }) => {
         } catch (error) {
             console.error("Lỗi khi tải bài viết:", error);
             setPosts([]); // Xóa dữ liệu bài viết nếu có lỗi
-        } finally {
-            // console.log('Posts:', posts);
-            // Chuyển sang chế độ hiển thị bài viết
         }
     };
 
 
     // Thành phần cho mỗi hashtag
     const renderHashtagItem = ({ item }) => (
-        <TouchableOpacity style={styles.hashtagContainer} onPress={() => handleHashtagClick(item?.hashtag_name)}>
-            <Text style={styles.hashtagText}>{item?.hashtag_name || 'Hashtag'}</Text>
+        <TouchableOpacity style={[styles.hashtagContainer, {
+            backgroundColor: theme ? '#323436' : '#fff',
+            elevation: theme ? 0 : 5,
+        }]} onPress={() => handleHashtagClick(item?.hashtag_name)}>
+            <Text style={[styles.hashtagText, {
+                color: theme ? '#FFFFFF' : Colors.background
+            }]}>{item?.hashtag_name || 'Hashtag'}</Text>
         </TouchableOpacity>
     );
 
     // Thành phần cho mỗi người dùng
     const renderUserItem = ({ item }) => (
-        <TouchableOpacity style={styles.userContainer}
+        <TouchableOpacity style={[styles.userContainer, {
+            backgroundColor: theme ? '#323436' : '#fff',
+            elevation: theme ? 0 : 5,
+        }]}
             onPress={() => handleProfileClick(item?._id)}
         >
-            <View>
-                <Image
-                    source={{
-                        uri: item?.avatar?.replace('localhost', '10.0.2.2') ||
-                            'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg',
-                    }}
-                    style={styles.profileImage}
-                />
-            </View>
-            <View>
-                <View>
-                    <Text style={styles.userName}>{item?.full_name || 'Vô danh'}</Text>
-                </View>
-            </View>
+            <Image
+                source={{
+                    uri: item?.avatar?.replace('localhost', '10.0.2.2') ||
+                        'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg',
+                }}
+                style={styles.profileImage}
+            />
+            <Text style={[styles.userName,{
+                color: theme ? '#FFFFFF' : Colors.background
+            }]}>{item?.full_name || 'Vô danh'}</Text>
         </TouchableOpacity>
     );
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, {
+            backgroundColor: theme ? Colors.background : '#f3f4f8'
+        }]}>
             {
                 filteredHashtags.length > 0 && (
                     <FlatList
@@ -126,7 +130,7 @@ const SearchComponents = ({ filteredHashtags, filteredUsers }) => {
                         renderItem={renderUserItem}
                         keyExtractor={(item) => item?._id ? item._id.toString() : item.id.toString()}
                         style={styles.userList}
-                        // ListEmptyComponent={<Text style={styles.noResultsText}>Gợi ý</Text>}
+                    // ListEmptyComponent={<Text style={styles.noResultsText}>Gợi ý</Text>}
                     />
                 ) : (
                     posts ? (
@@ -145,8 +149,6 @@ export default SearchComponents;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#181A1C',
-
     },
     hashtagList: {
         marginBottom: 5,
@@ -154,7 +156,6 @@ const styles = StyleSheet.create({
         marginHorizontal: 20
     },
     hashtagContainer: {
-        backgroundColor: '#323436',
         borderRadius: 5,
         maxHeight: 35,
         marginRight: 10,
@@ -162,7 +163,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 8,
     },
     hashtagText: {
-        color: '#FFFFFF',
         fontSize: 16,
         fontWeight: 'bold',
     },
@@ -173,7 +173,6 @@ const styles = StyleSheet.create({
     userContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#323436',
         borderRadius: 20,
         padding: 10,
         marginBottom: 15,
@@ -185,7 +184,6 @@ const styles = StyleSheet.create({
         marginRight: 12,
     },
     userName: {
-        color: '#FFFFFF',
         fontSize: 16,
         fontWeight: 'bold',
     },

@@ -4,12 +4,14 @@ import styles from '../../assets/style/PostStyle';
 import { ADD_REPORT } from '../../services/ApiConfig';
 import { UserContext } from '../../services/provider/UseContext';
 import NotificationModal from '../Notification/NotificationModal'; // Import NotificationModal
+import Colors from '../../constants/Color';
+import { ThemeContext } from '../../services/provider/ThemeContext';
 
 const ReportComponent = ({ postId, onReportSuccess }) => {
-    const [reportType, setReportType] = useState(null);
     const [modalVisible, setModalVisible] = useState(false); // State để điều khiển modal
     const [pendingReportId, setPendingReportId] = useState(null); // Lưu trữ báo cáo đang chờ gửi
     const [reportSuccess, setReportSuccess] = useState(false); // State để kiểm tra kết quả gửi báo cáo
+    const { theme } = useContext(ThemeContext);
 
     // ID báo cáo dưới dạng MongoDB ObjectId (chuỗi)
     const reportIds = {
@@ -81,20 +83,14 @@ const ReportComponent = ({ postId, onReportSuccess }) => {
     };
 
     const handleReportPress = (reportId) => {
-        setReportType(reportId);
         setPendingReportId(reportId); // Lưu lại báo cáo đang chờ gửi
         setModalVisible(true); // Hiển thị modal xác nhận
     };
 
     return (
-        <View style={styles.inner}>
-            {/* Hiển thị NotificationModal */}
-            {/* <NotificationModal
-                visible={modalVisible}
-                onConfirm={handleConfirm}
-                onCancel={handleCancel}
-                success={reportSuccess} // Truyền trạng thái thành công hay không vào NotificationModal
-            /> */}
+        <View style={[styles.inner, {
+            backgroundColor: theme ? Colors.background : '#f3f4f8'
+        }]}>
             <NotificationModal
                 visible={modalVisible}
                 onConfirm={handleConfirm}
@@ -110,17 +106,23 @@ const ReportComponent = ({ postId, onReportSuccess }) => {
                     source={require('../../assets/images/report.png')}
                     style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }}
                 />
-                <Text style={styles.textOne}>Bài viết xúc phạm người dùng khác</Text>
+                <Text style={[styles.textOne, {
+                    color: theme ? '#fff' : Colors.background,
+                }]}>Bài viết xúc phạm người dùng khác</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
                 onPress={() => handleReportPress(reportIds.untrue)}
                 style={styles.reporttextcontainer}>
                 <Image
-                    source={require('../../assets/images/untrue.png')}
+                    source={theme ? require('../../assets/images/untrue.png') :
+                        require('../../assets/images/light_untrue.png')
+                    }
                     style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }}
                 />
-                <Text style={styles.textOne}>Bài viết sai sự thật</Text>
+                <Text style={[styles.textOne, {
+                    color: theme ? '#fff' : Colors.background,
+                }]}>Bài viết sai sự thật</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -130,7 +132,9 @@ const ReportComponent = ({ postId, onReportSuccess }) => {
                     source={require('../../assets/images/violet.png')}
                     style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }}
                 />
-                <Text style={styles.textOne}>Bài viết mang tính bạo lực - kích động</Text>
+                <Text style={[styles.textOne, {
+                    color: theme ? '#fff' : Colors.background,
+                }]}>Bài viết mang tính bạo lực - kích động</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -140,7 +144,9 @@ const ReportComponent = ({ postId, onReportSuccess }) => {
                     source={require('../../assets/images/rectionary.png')}
                     style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }}
                 />
-                <Text style={styles.textOne}>Bài viết mang tính phản động</Text>
+                <Text style={[styles.textOne, {
+                    color: theme ? '#fff' : Colors.background,
+                }]}>Bài viết mang tính phản động</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -150,7 +156,9 @@ const ReportComponent = ({ postId, onReportSuccess }) => {
                     source={require('../../assets/images/racsim.png')}
                     style={{ marginTop: '5.5%', width: 20, height: 20, marginRight: 4 }}
                 />
-                <Text style={styles.textOne}>Bài viết mang tính phân biệt chủng tộc</Text>
+                <Text style={[styles.textOne, {
+                    color: theme ? '#fff' : Colors.background,
+                }]}>Bài viết mang tính phân biệt chủng tộc</Text>
             </TouchableOpacity>
 
         </View>

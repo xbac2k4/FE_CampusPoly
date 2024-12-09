@@ -12,8 +12,11 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import { UserContext } from '../../services/provider/UseContext';
 import { ADD_COMMENT } from '../../services/ApiConfig';
+import { ThemeContext } from '../../services/provider/ThemeContext';
+import Colors from '../../constants/Color';
 
 const CommentInputComponent = ({ postId, onSend }) => {
+  const { theme, toggleTheme } = useContext(ThemeContext);
   const [comment, setComment] = useState('');
   const { user } = useContext(UserContext); // Lấy user từ Context
   const animationValue = useRef(new Animated.Value(0)).current;
@@ -44,7 +47,7 @@ const CommentInputComponent = ({ postId, onSend }) => {
           comment_content: comment.trim(),
         }),
       });
-  
+
       const data = await response.json();
       // console.log('Response data:', data);
       if (data.status === 200) {
@@ -83,18 +86,27 @@ const CommentInputComponent = ({ postId, onSend }) => {
     outputRange: [50, 0], // Trượt từ 50px sang 0px
   });
   return (
-    <View style={styles.container}>
-      <View style={styles.inputWrapper}>
+    <View style={[styles.container, {
+      backgroundColor: theme ? '#000' : Colors.light
+    }]}>
+      <View style={[styles.inputWrapper, {
+        backgroundColor: theme ? '#3B3B3B' : '#ECEBED',
+        elevation : theme? 0:5
+      }]}>
         <TextInput
-          style={styles.textInput}
+          style={[styles.textInput,{
+            color : theme? '#fff' : Colors.background
+          }]}
           placeholder="Nhập comment tại đây..."
-          placeholderTextColor="#ECEBED"
+          placeholderTextColor={theme ? '#ECEBED' : Colors.background}
           value={comment}
           onChangeText={setComment}
         />
         <TouchableOpacity>
           <Image
-            source={require('../../assets/images/add.png')}
+            source={theme? require('../../assets/images/add.png'):
+              require('../../assets/images/light_add.png')
+            }
             style={styles.icon}
           />
         </TouchableOpacity>
@@ -139,7 +151,6 @@ export default CommentInputComponent;
 const styles = StyleSheet.create({
   container: {
     height: 88,
-    backgroundColor: '#000000',
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
@@ -148,7 +159,6 @@ const styles = StyleSheet.create({
   inputWrapper: {
     flex: 1,
     height: 40,
-    backgroundColor: '#323436',
     borderRadius: 20,
     paddingHorizontal: 12,
     flexDirection: 'row',
@@ -157,7 +167,6 @@ const styles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-    color: '#ECEBED',
     fontSize: 14,
   },
   icon: {

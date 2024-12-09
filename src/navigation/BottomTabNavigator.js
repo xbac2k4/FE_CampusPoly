@@ -13,6 +13,8 @@ import SearchScreen from '../workspaces/SearchScreen/SearchScreen';
 import Screens from './Screens';
 import { useFocusEffect } from '@react-navigation/native';
 import { SocketContext } from '../services/provider/SocketContext';
+import { ThemeContext } from '../services/provider/ThemeContext';
+import Colors from '../constants/Color';
 
 const Tab = createBottomTabNavigator();
 
@@ -21,6 +23,7 @@ const BottomTabNavigator = ({ navigation }) => {
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
   const { user } = useContext(UserContext);
   const { socket } = useContext(SocketContext);
+  const { theme } = useContext(ThemeContext);
 
 
   useEffect(() => {
@@ -53,7 +56,6 @@ const BottomTabNavigator = ({ navigation }) => {
 
   useFocusEffect(
     useCallback(() => {
-      // fetchNotifications();
       if (socket) {
         socket.on('load_notification', () => {
           checkNotifications();
@@ -74,7 +76,7 @@ const BottomTabNavigator = ({ navigation }) => {
           position: 'absolute',
           bottom: 0,
           height: 60,
-          backgroundColor: '#000',
+          backgroundColor: theme ? '#000' : '#fff',
           display: isKeyboardVisible ? 'none' : 'flex',
         },
       }}
@@ -87,7 +89,9 @@ const BottomTabNavigator = ({ navigation }) => {
             <Image
               source={
                 focused
-                  ? require('../assets/images/feed.png')
+                  ? theme
+                    ? require('../assets/images/feed.png')
+                    : require('../assets/images/gray_feed.png')
                   : require('../assets/images/feed2.png')
               }
               style={{ width: 24, height: 24 }}
@@ -104,7 +108,9 @@ const BottomTabNavigator = ({ navigation }) => {
             <Image
               source={
                 focused
-                  ? require('../assets/images/search.png')
+                  ? theme
+                    ? require('../assets/images/search.png')
+                    : require('../assets/images/gray_search.png')
                   : require('../assets/images/search3.png')
               }
               style={{ width: 24, height: 24 }}
@@ -120,7 +126,7 @@ const BottomTabNavigator = ({ navigation }) => {
           tabBarIcon: () => (
             <View style={styles.iconContainer}>
               <LinearGradient
-                colors={['#F7B733', '#FC4A1A']}
+                colors={[Colors.first, Colors.second]}
                 style={styles.gradientCircle}
               >
                 <Image
@@ -148,8 +154,12 @@ const BottomTabNavigator = ({ navigation }) => {
               source={
                 focused
                   ? (hasUnreadNotifications
-                    ? require('../assets/images/dot_active_clock.png')
-                    : require('../assets/images/4781824_alarm_alert_attention_bell_clock_icon.png')
+                    ? theme
+                      ? require('../assets/images/dot_active_clock.png')
+                      : require('../assets/images/gray_dot_active_clock.png')
+                    : theme
+                      ? require('../assets/images/4781824_alarm_alert_attention_bell_clock_icon.png')
+                      : require('../assets/images/gray_notification.png')
                   )
                   : (hasUnreadNotifications
                     ? require('../assets/images/dot_alert2.png')
@@ -170,7 +180,9 @@ const BottomTabNavigator = ({ navigation }) => {
             <Image
               source={
                 focused
-                  ? require('../assets/images/Menu.png')
+                  ? theme
+                    ? require('../assets/images/Menu.png')
+                    : require('../assets/images/grayMenu.png')
                   : require('../assets/images/Menu2.png')
               }
               style={{ width: 20, height: 20 }}

@@ -1,37 +1,26 @@
-
-import { useFocusEffect } from '@react-navigation/native';
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, ScrollView, RefreshControl } from 'react-native';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { Animated, Image, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import { PageIndicator } from 'react-native-page-indicator';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import LoadingTimeline from '../../components/Loading/LoadingTimeline';
 import ProfilePosts from '../../components/ProfileScreen/profilePosts';
-import Screens from '../../navigation/Screens';
-import { GET_ALL_POST, GET_POST_BY_FRIENDS, GET_POST_BY_USER_INTERACTION } from '../../services/ApiConfig';
-import LinearGradient from 'react-native-linear-gradient';
 import Colors from '../../constants/Color';
+import Screens from '../../navigation/Screens';
+import { GET_POST_BY_FRIENDS, GET_POST_BY_USER_INTERACTION } from '../../services/ApiConfig';
 import { UserContext } from '../../services/provider/UseContext';
-import { SocketContext } from '../../services/provider/SocketContext';
+import { ThemeContext } from '../../services/provider/ThemeContext';
 const HomeScreen = ({ navigation }) => {
   const [greeting, setGreeting] = useState('');
-  // const navigation = useNavigation();
   const [data, setData] = useState([]);
   const [dataPost, setDataPost] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState('Dành cho bạn'); // Trạng thái cho tab hiện tại
   const [refreshing, setRefreshing] = useState(false);
   const { user } = useContext(UserContext);
-  const { socket } = useContext(SocketContext);
+  const { theme } = useContext(ThemeContext);
 
   const getGreeting = () => {
-    // const currentHour = new Date().getHours();
-    // if (currentHour >= 7 && currentHour < 10) {
-    //   return 'Chào buổi sáng🌞';
-    // } else if (currentHour >= 10 && currentHour < 18) {
-    //   return 'Chào buổi chiều😎';
-    // } else {
-    //   return 'Chào buổi tối🌚';
-    // }
-    // console.log(user);
 
     return `Xin chào, ${user.full_name}`; // Example greeting
   };
@@ -68,20 +57,36 @@ const HomeScreen = ({ navigation }) => {
       setLoading(false);
     }
   };
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     const handleUserData = async () => {
-  //       await fetchUserData();
-  //     }
-  //     handleUserData();
-  //   }, [])
-  // );
 
   useEffect(() => {
     setGreeting(getGreeting());
     fetchUserData();
     fetchPostByFriends();
   }, []);
+
+  // slider
+  const pages = [
+    {
+      image: 'https://d1hjkbq40fs2x4.cloudfront.net/2017-08-21/files/landscape-photography_1645-t.jpg',
+      title: 'Điều khoản mới',
+      content: 'Các bạn chú ý',
+    },
+    {
+      image: 'https://photo.znews.vn/w660/Uploaded/mdf_eioxrd/2021_07_06/2.jpg',
+      title: 'Admim2',
+      content: 'okccccccccccccccccccccccccccccc',
+    },
+    {
+      image: 'https://hoinhabaobacgiang.vn/Includes/NewsImg/1_2024/29736_7-1-1626444923.jpg',
+      title: 'Admim3',
+      content: 'okccccccccccccccccccccccccccccc',
+    },
+  ];
+
+  const { width, height } = useWindowDimensions();
+  const scrollX = useRef(new Animated.Value(0)).current;
+  const animatedCurrent = useRef(Animated.divide(scrollX, width)).current;
+  // slider
 
   const renderHeaderTabs = () => (
     <View
@@ -91,7 +96,7 @@ const HomeScreen = ({ navigation }) => {
         onPress={() => setSelectedTab('Dành cho bạn')}
       >
         <LinearGradient
-          colors={selectedTab == 'Dành cho bạn' ? [Colors.first, Colors.second] : [Colors.background, Colors.background]}
+          colors={selectedTab == 'Dành cho bạn' ? [Colors.first, Colors.second] : theme ? [Colors.background, Colors.background] : ['#ccc', '#ccc']}
           style={styles.tab}
         >
           <Text style={styles.tabText}>Dành cho bạn</Text>
@@ -102,7 +107,7 @@ const HomeScreen = ({ navigation }) => {
         onPress={() => setSelectedTab('Bạn bè')}
       >
         <LinearGradient
-          colors={selectedTab == 'Bạn bè' ? [Colors.first, Colors.second] : [Colors.background, Colors.background]}
+          colors={selectedTab == 'Bạn bè' ? [Colors.first, Colors.second] : theme ? [Colors.background, Colors.background] : ['#ccc', '#ccc']}
           style={styles.tab}
         >
           <Text style={styles.tabText}>Bạn bè</Text>
@@ -123,7 +128,9 @@ const HomeScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {
+      backgroundColor: theme ? Colors.background : '#fff',
+    }]}>
       <ScrollView
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -132,19 +139,74 @@ const HomeScreen = ({ navigation }) => {
         <View style={styles.container}>
           <View style={{ flex: 1 }}>
             <View style={styles.headerContent}>
-              <Text style={styles.greetingText}>
+              <Text style={[styles.greetingText, {
+                color: theme ? '#fff' : Colors.second,
+              }]}>
                 <Text>{greeting}</Text>
               </Text>
               <TouchableOpacity
-                style={styles.circleIcon}
+                style={[styles.circleIcon, {
+                  borderColor: theme ? '#fff' : Colors.second
+                }]}
                 onPress={() => navigation.navigate(Screens.Message)}
               >
-                <AntDesign name="message1" size={15} color="#fff" />
+                <AntDesign name="message1" size={15} color={theme ? '#fff' : Colors.second} />
               </TouchableOpacity>
             </View>
-
             {/* Tab điều hướng */}
             {renderHeaderTabs()}
+
+            {/* slider */}
+            <View>
+              <Animated.ScrollView
+                horizontal={true}
+                pagingEnabled={true}
+                showsHorizontalScrollIndicator={false}
+                onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], {
+                  useNativeDriver: true,
+                })}
+              >
+                {pages.map((page, index) => (
+                  <View key={index} style={[{
+
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }, { width, height: height * 0.3 }]}>
+                    <Image source={{ uri: page.image }} width={width * 0.9} height={height * 0.25} style={{
+                      borderRadius: 10,
+                    }}
+                    />
+                    <View style={{
+                      left: 0,
+                      right: 0,
+                      backgroundColor: 'rgba(0,0,0,0.3)',
+                      paddingVertical: 20,
+                      marginHorizontal: 20,
+                      bottom: 20,
+                      position: 'absolute',
+                      borderBottomEndRadius: 10,
+                      borderBottomStartRadius: 10,
+                    }}>
+                      <Text style={{ color: 'white', marginLeft: 10 }}>{page.title}</Text>
+                      <Text style={{ color: 'white', marginLeft: 10 }}>{page.content}</Text>
+                    </View>
+                  </View>
+                ))}
+              </Animated.ScrollView>
+              <View style={{
+                left: 20,
+                right: 20,
+                bottom: 0,
+                position: 'absolute',
+                alignItems: 'center',
+                justifyContent: 'center',
+
+              }}>
+                <PageIndicator count={pages.length} current={animatedCurrent} color='white' />
+
+              </View>
+              {/* slider */}
+            </View>
 
             {loading ? (
               // <ActivityIndicator size="large" color="#FFF" style={{ marginTop: 20 }} />
@@ -169,7 +231,6 @@ export default HomeScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#181A1C',
   },
   headerContent: {
     justifyContent: 'space-between',
@@ -178,7 +239,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   greetingText: {
-    color: '#ffff',
     fontSize: 18,
     fontFamily: 'HankenGrotesk-Regular',
     fontWeight: '500',
@@ -188,7 +248,6 @@ const styles = StyleSheet.create({
     height: 32,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
   },

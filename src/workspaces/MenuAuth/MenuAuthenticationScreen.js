@@ -1,29 +1,28 @@
-import React, { useCallback, useState, useContext } from 'react'
-import Screens from '../../navigation/Screens'
-import Colors from '../../constants/Color'
-import BlockDialog from '../../components/MenuAuth/BlockDialog'
-import { CommonActions } from '@react-navigation/native'
-import { UserContext } from '../../services/provider/UseContext';
-import { SocketContext } from '../../services/provider/SocketContext';
 import messaging from '@react-native-firebase/messaging'
+import { CommonActions } from '@react-navigation/native'
+import React, { useCallback, useContext, useState } from 'react'
 import { Image, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import BlockDialog from '../../components/MenuAuth/BlockDialog'
 import Loading from '../../components/MenuAuth/Loading'
-import { LOGIN_WITH_GOOGLE } from '../../services/ApiConfig'
 import NotificationModal from '../../components/Notification/NotificationModal'
+import Colors from '../../constants/Color'
+import Screens from '../../navigation/Screens'
+import { LOGIN_WITH_GOOGLE } from '../../services/ApiConfig'
+import { SocketContext } from '../../services/provider/SocketContext'
+import { UserContext } from '../../services/provider/UseContext'
+import { ThemeContext } from '../../services/provider/ThemeContext'
 
 
 
 const MenuAuthenticationScreen = ({ navigation }) => {
   const { setUser, GoogleSignin } = useContext(UserContext);
-  const { connectSocket, socket, disconnectSocket, usersOnline } = useContext(SocketContext);
+  const { connectSocket, disconnectSocket } = useContext(SocketContext);
+  const { theme } = useContext(ThemeContext);
+
 
 
   const [isShowDialog, setIsShowDialog] = useState(false)
   const [modalVisible, setModalVisible] = useState(false); // State to control modal
-  // const [listUserOnline, setListUserOnline] = useState(false)
-  // const { setUser } = useContext(UserContext);
-  // const { connectSocket } = useContext(SocketContext);
-  // const [isShowDialog, setIsShowDialog] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
   const toggleShowDialog = useCallback(() => {
@@ -119,19 +118,25 @@ const MenuAuthenticationScreen = ({ navigation }) => {
     setModalVisible(false); // Hide modal
   };
   return (
-    <View style={st.container}>
+    <View style={[st.container, {
+      backgroundColor: theme ? Colors.background : '#fff',
+    }]}>
 
       {/* làm cho thanh statusbar trong suốt */}
-      <StatusBar translucent backgroundColor="transparent" barStyle={'light-content'} />
+      <StatusBar translucent backgroundColor="transparent" barStyle={theme ? 'light-content' : 'dark-content'} />
 
       {/* phần nội dung */}
       <View style={st.content}>
 
         {/* tên ứng dụng */}
-        <Text style={st.name}>CAMPUSPOLY</Text>
+        <Text style={[st.name, {
+          color: theme ? '#fff' : Colors.background,
+        }]}>CAMPUSPOLY</Text>
 
         {/* tiêu đề */}
-        <Text style={st.title}>Cùng xem điều gì đang diễn ra ngay bây giờ</Text>
+        <Text style={[st.title, {
+          color: theme ? '#fff' : Colors.background,
+        }]}>Cùng xem điều gì đang diễn ra ngay bây giờ</Text>
 
         {/* phần nút */}
         <View
@@ -140,14 +145,18 @@ const MenuAuthenticationScreen = ({ navigation }) => {
 
           {/* nút đăng nhập với google */}
           <TouchableOpacity
-            style={st.btn}
+            style={[st.btn, {
+              borderColor: theme ? '#fff' : Colors.background,
+            }]}
             onPress={SignInWithGoogle}
           >
             <Image
               style={{ width: 30, height: 30 }}
               source={require('../../assets/images/GoogleLogo.png')} />
             <Text
-              style={st.btnText}
+              style={[st.btnText, {
+                color: theme ? '#fff' : Colors.background,
+              }]}
             >Đăng nhập với Google</Text>
           </TouchableOpacity>
 
@@ -160,10 +169,11 @@ const MenuAuthenticationScreen = ({ navigation }) => {
             width: '80%',
             textAlign: 'center',
             marginBottom: 100,
+            color: theme ? '#fff' : Colors.background,
           }}>
-          <Text style={{ color: 'white' }}>Bằng cách đăng ký bạn đồng ý với </Text>
-          <Text style={{ color: '#57B5F4', }}>Điều khoản, Chính sách riêng tư và Sử dụng cookie </Text>
-          <Text style={{ color: 'white' }}>của chúng tôi</Text>
+          <Text>Bằng cách đăng ký bạn đồng ý với </Text>
+          <Text style={{ color: '#57B5F4' }}>Điều khoản, Chính sách riêng tư và Sử dụng cookie </Text>
+          <Text>của chúng tôi</Text>
         </Text>
       </View>
 
@@ -184,7 +194,6 @@ export default MenuAuthenticationScreen
 const st = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   content: {
     flex: 1,
@@ -193,14 +202,12 @@ const st = StyleSheet.create({
     alignItems: 'center',
   },
   name: {
-    color: 'white',
-    fontSize: 50,
+    fontSize: 45,
     fontFamily: 'rubik',
   },
   title: {
     fontWeight: 'bold',
     fontSize: 30,
-    color: 'white',
     marginHorizontal: 20,
   },
   buttonContainer: {
@@ -216,12 +223,10 @@ const st = StyleSheet.create({
     width: '90%',
     padding: 10,
     borderRadius: 30,
-    borderColor: 'white',
     borderWidth: 1,
     minHeight: 60,
   },
   btnText: {
-    color: 'white',
     fontWeight: 'bold',
     fontSize: 18,
     marginLeft: 10

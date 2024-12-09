@@ -8,6 +8,8 @@ import { ADD_MESSAGE, GET_MESSAGE_BY_CONVERSATION, UPDATE_MESSAGE } from '../../
 import { UserContext } from '../../services/provider/UseContext';
 import { SocketContext } from '../../services/provider/SocketContext';
 import { useFocusEffect } from '@react-navigation/native';
+import { ThemeContext } from '../../services/provider/ThemeContext';
+import Colors from '../../constants/Color';
 
 // Dữ liệu giả lập cho chatView
 
@@ -21,6 +23,8 @@ const ChatScreen = ({ navigation, route }) => {
   const [page, setPage] = useState(1);
   const [message, setMessage] = useState([]);
   const [conversation, setConversation] = useState();
+  const { theme } = useContext(ThemeContext);
+
 
   const [notify, setNotify] = useState(false);
 
@@ -62,28 +66,6 @@ const ChatScreen = ({ navigation, route }) => {
   // console.log(sender_name);
 
   // Render mỗi tin nhắn
-  const MessageItem = React.memo(({ item, isCurrentUser, memberWithDifferentUserId }) => {
-    return (
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: isCurrentUser ? 'flex-start' : 'flex-end',
-        }}
-      >
-        {item.content === 'emoji::like::' ? (
-          <AntDesign name="like1" size={24} color="#FA7F26" />
-        ) : (
-          <>
-            {isCurrentUser && <Image source={{ uri: memberWithDifferentUserId.avatar }} style={styles.avatar} />}
-            <View style={isCurrentUser ? styles.messageLeft : styles.messageRight}>
-              <Text style={styles.messageText}>{item.content}</Text>
-            </View>
-          </>
-        )}
-      </View>
-    );
-  });
 
   const renderMessage = ({ item }) => {
     const isCurrentUser = item.sender_id._id !== user._id;
@@ -101,11 +83,11 @@ const ChatScreen = ({ navigation, route }) => {
         {item.content === 'emoji::like::' ? (
           <AntDesign name="like1" size={24} color="#FA7F26" /> // Hiển thị biểu tượng like nếu item.content là 'emoji::like::'
         ) : (
-          <>
-            <View style={isCurrentUser ? styles.messageLeft : styles.messageRight}>
-              <Text style={styles.messageText}>{item.content}</Text>
-            </View>
-          </>
+          <View style={isCurrentUser ? [styles.messageLeft,{
+            backgroundColor: theme? '#323436': '#B3B3B3',
+          }] : styles.messageRight}>
+            <Text style={styles.messageText}>{item.content}</Text>
+          </View>
         )}
       </View>
     );
@@ -302,14 +284,19 @@ const ChatScreen = ({ navigation, route }) => {
   };
   return (
     // KeyboardAvoidingView vẫn không đẩy được container
-    <KeyboardAvoidingView style={styles.container}>
+    <KeyboardAvoidingView style={[styles.container, {
+      backgroundColor: theme ? Colors.background : '#fff',
+
+    }]}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, {
+        backgroundColor: theme ? Colors.background : '#fff',
+      }]}>
         {/* View trống để đẩy ảnh vào giữa */}
         <View style={{ flex: 1 }}>
           {/* Icon quay lại */}
           <TouchableOpacity style={styles.iconContainer} onPress={handleArrowLeft}  >
-            <AntDesign name="arrowleft" size={24} color="white" />
+            <AntDesign name="arrowleft" size={24} color={theme ? '#fff' : Colors.background} />
           </TouchableOpacity>
         </View>
 
@@ -319,15 +306,17 @@ const ChatScreen = ({ navigation, route }) => {
             source={{ uri: avatarUrl }} // Đảm bảo đường dẫn đến ảnh là chính xác
             style={styles.profileImage}
           />
-          <Text style={styles.profileName}>{memberWithDifferentUserId?.full_name}</Text>
+          <Text style={[styles.profileName, {
+            color: theme ? '#fff' : '#000',
+          }]}>{memberWithDifferentUserId?.full_name}</Text>
         </View>
 
         {/* View trống để đẩy ảnh vào giữa */}
         <View style={{ flex: 1, alignItems: 'flex-end' }}>
           {/* Icon thêm chức năng */}
-          <TouchableOpacity style={styles.iconContainer} onPress={() => setIsShowOption(!isShowOption)}>
-            <MaterialIcons name="more-vert" size={24} color="white" />
-          </TouchableOpacity>
+          {/* <TouchableOpacity style={styles.iconContainer} onPress={() => setIsShowOption(!isShowOption)}>
+            <MaterialIcons name="more-vert" size={24} color={theme ? '#fff' : Colors.background} />
+          </TouchableOpacity> */}
         </View>
       </View>
       {/* Đường kẻ ngang ngăn cách header và nội dung chat */}
@@ -349,8 +338,12 @@ const ChatScreen = ({ navigation, route }) => {
       />
 
       {/* Thanh nhập tin nhắn */}
-      <View style={styles.blackBar}>
-        <View style={styles.Textting}>
+      <View style={[styles.blackBar,{
+        backgroundColor : theme? '#000' : '#fff'
+      }]}>
+        <View style={[styles.Textting,{
+          backgroundColor : theme? '#323436' : '#ECEBED'
+        }]}>
           {/* Nút thêm camera */}
           <TouchableOpacity style={{ padding: 3 }} onPress={handleCamera} >
             <Feather name="camera" size={24} color="#727477" />
@@ -358,7 +351,7 @@ const ChatScreen = ({ navigation, route }) => {
           <TextInput
             style={styles.input}
             placeholder="Nhập tin nhắn của bạn ở đây..."
-            placeholderTextColor="#ECEBED"
+            placeholderTextColor= {theme? '#ECEBED' : Colors.background}
             value={inputText}
             onChangeText={setInputText}
           />
@@ -424,7 +417,6 @@ const styles = StyleSheet.create({
   // Toàn bộ màn hình
   container: {
     flex: 1,
-    backgroundColor: '#181A1C',
   },
   // Header chứa thông tin người dùng và các icon
   header: {
@@ -433,7 +425,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 12,
     paddingVertical: 8,
-    backgroundColor: '#181A1C',
     marginTop: 12,
   },
   // Phần hiển thị ảnh và tên người chat
@@ -445,7 +436,6 @@ const styles = StyleSheet.create({
   },
   profileName: {
     fontSize: 16,
-    color: 'white',
     fontWeight: 'bold',
     marginLeft: 10, // Thêm khoảng cách giữa ảnh và tên
   },
@@ -458,9 +448,6 @@ const styles = StyleSheet.create({
   iconContainer: {
     width: 40,
     height: 40,
-    borderWidth: 1,
-    borderColor: '#323436',
-    borderRadius: 30,
     padding: 4,
     justifyContent: 'center',
     alignItems: 'center',
@@ -477,7 +464,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 2,
     padding: 10,
-    backgroundColor: '#323436',
     borderRadius: 15,
     maxWidth: '80%',
     alignSelf: 'flex-start',
@@ -509,13 +495,11 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: '100%',
     alignItems: 'center',
-    backgroundColor: 'black',
     borderTopColor: '#727477',
     borderTopWidth: 1,
   },
   Textting: {
     flexDirection: 'row',
-    backgroundColor: '#323436',
     borderRadius: 32,
     paddingHorizontal: 8, // Giảm giá trị này để thu nhỏ chiều dài
     alignItems: 'center',
@@ -528,7 +512,6 @@ const styles = StyleSheet.create({
     marginLeft: 3,
     flex: 1,
     fontSize: 16,
-    color: '#ECEBED',
   },
   avatar: {
     width: 35,

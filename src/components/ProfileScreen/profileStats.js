@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Screens from '../../navigation/Screens';
+import { ThemeContext } from '../../services/provider/ThemeContext';
+import Colors from '../../constants/Color';
 
 const ProfileStats = ({ data }) => {
   const navigation = useNavigation();
+  const { theme } = useContext(ThemeContext);
 
   // Ensure data.friends is an array before counting
   // const friendsCount = Array.isArray(data?.friends) ? data?.friends.length : 0;
@@ -16,17 +19,25 @@ const ProfileStats = ({ data }) => {
   return (
     <View style={styles.statsContainer}>
       <View style={styles.stat}>
-        <Text style={styles.statNumber}>{friendsCount.toLocaleString()}</Text>
-        <Text style={styles.statText}>Bạn bè</Text>
+        <Text style={[styles.statNumber, {
+          color: theme ? '#fff' : Colors.background
+        }]}>{friendsCount.toLocaleString()}</Text>
+        <Text style={[styles.statText, {
+          color: theme ? '#fff' : Colors.background
+        }]}>Bạn bè</Text>
       </View>
 
       <TouchableOpacity
-        style={styles.editButton}
+        style={[styles.editButton, {
+          borderColor: theme? '#fff' : Colors.background,
+        }]}
         onPress={() => navigation.navigate(Screens.EditProfile, {
           user: data
         })}
       >
-        <Text style={styles.editButtonText}>Chỉnh sửa</Text>
+        <Text style={[styles.editButtonText, {
+          color: theme ? '#fff' : Colors.background
+        }]}>Chỉnh sửa</Text>
       </TouchableOpacity>
     </View>
   );
@@ -51,11 +62,9 @@ const styles = StyleSheet.create({
   },
   statText: {
     fontSize: 14,
-    color: '#727477',
   },
   editButton: {
     backgroundColor: 'transparent',
-    borderColor: 'white',
     borderWidth: 1,
     borderRadius: 20,
     paddingVertical: 8,
@@ -63,7 +72,6 @@ const styles = StyleSheet.create({
     marginLeft: 16,
   },
   editButtonText: {
-    color: 'white',
     fontSize: 15,
     fontWeight: 'bold',
   },

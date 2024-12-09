@@ -1,4 +1,6 @@
-const API_URL = 'http://10.0.2.2:3000/api/v1/';
+export const IP = '27.71.21.73'
+// export const IP = '10.0.2.2'
+const API_URL = `http://${IP}:3000/api/v1/`;
 
 export const GET_ALL_POST = API_URL + 'posts/get-all-post';
 export const GET_POST_ID = API_URL + 'posts/get-post-by-id/';

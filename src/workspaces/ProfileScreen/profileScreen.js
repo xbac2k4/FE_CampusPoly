@@ -10,6 +10,8 @@ import ProfileStats from '../../components/ProfileScreen/profileStats';
 import ProfileTabs from '../../components/ProfileScreen/profileTabs';
 import { GET_POST_BY_USERID, GET_USER_ID } from '../../services/ApiConfig';
 import { UserContext } from '../../services/provider/UseContext';
+import { ThemeContext } from '../../services/provider/ThemeContext';
+import Colors from '../../constants/Color';
 
 const ProfileScreen = ({ navigation, route }) => {
   const [activeTab, setActiveTab] = useState('Bài viết');
@@ -20,6 +22,7 @@ const ProfileScreen = ({ navigation, route }) => {
   const [userProfile, setUserProfile] = useState();
   const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(false);
+  const { theme } = useContext(ThemeContext);
 
   const initializeID = () => {
     if (user?._id) {
@@ -79,7 +82,9 @@ const ProfileScreen = ({ navigation, route }) => {
   }, [id, refresh, route.params?.id, user._id]);
 
   return (
-    <View style={styles.screen}>
+    <View style={[styles.screen, {
+      backgroundColor: theme ? '#181A1C' : '#f3f4f8'
+    }]}>
       {loading ? (
         <ProfileLoading />
       ) : (
@@ -113,10 +118,12 @@ const ProfileScreen = ({ navigation, route }) => {
               alignItems: 'center',
               marginTop: 50,
             }}>
-              <Text style={{ color: '#fff' }}>
+              <Text style={{ color: theme ? '#fff' : Colors.background }}>
                 Đang phát triển tính năng
               </Text>
-              <Image source={require('../../assets/images/white_bee.png')} style={{ width: '50%' }} />
+              <Image source={theme ? require('../../assets/images/white_bee.png') :
+                require('../../assets/images/black_bee.png')
+              } style={{ width: '50%' }} />
             </View>
 
           )
@@ -130,7 +137,6 @@ const ProfileScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#181A1C',
   },
 });
 

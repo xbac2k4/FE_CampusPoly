@@ -4,13 +4,17 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import SearchComponents from '../../components/Search/SearchComponents'; // Import SearchComponents
 import { GET_SEARCH } from '../../services/ApiConfig'; // Đường dẫn API để lấy bài viết
 import { useFocusEffect } from '@react-navigation/native';
+import { ThemeContext } from '../../services/provider/ThemeContext';
+import { useContext } from 'react';
+import Colors from '../../constants/Color';
 
-const SearchScreen = ({ navigation }) => {
+const SearchScreen = () => {
   const [searchQuery, setSearchQuery] = useState(""); // Trạng thái tìm kiếm
   const [filteredUsers, setFilteredUsers] = useState([]); // Trạng thái người dùng sau khi lọc
   const [filteredHashtags, setFilteredHashtags] = useState([]); // Trạng thái hashtag sau khi lọc
   const [loading, setLoading] = useState(false); // Trạng thái loading
   const [debounceTimeout, setDebounceTimeout] = useState(null); // Trạng thái để lưu trữ setTimeout
+  const { theme } = useContext(ThemeContext);
 
   const removeVietnameseTones = (str) => {
     return str
@@ -92,13 +96,19 @@ const SearchScreen = ({ navigation }) => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={{ flex: 1 }}
     >
-      <View style={styles.container}>
-        <View style={styles.searchContainer}>
-          <AntDesign name="search1" size={20} color="#FFFFFF" style={styles.icon} />
+      <View style={[styles.container, {
+        backgroundColor: theme ? '#181A1C' : '#f3f4f8',
+      }]}>
+        <View style={[styles.searchContainer, {
+          backgroundColor: theme ? '#3B3B3B' : '#ECEBED',
+        }]}>
+          <AntDesign name="search1" size={20} color={theme ? '#fff' : Colors.background} style={styles.icon} />
           <TextInput
-            style={styles.input}
+            style={[styles.input, {
+              color: theme ? '#ECEBED' : Colors.background,
+            }]}
             placeholder="Tìm kiếm bài viết hoặc loại bài..."
-            placeholderTextColor="#ECEBED"
+            placeholderTextColor={theme ? '#ECEBED' : Colors.background}
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
@@ -117,13 +127,10 @@ const SearchScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#181A1C',
-
     paddingTop: 20,
   },
   searchContainer: {
     flexDirection: 'row',
-    backgroundColor: '#323436',
     borderRadius: 32,
     paddingHorizontal: 12,
     alignItems: 'center',
@@ -137,7 +144,6 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 14,
-    color: '#ECEBED',
   },
 });
 

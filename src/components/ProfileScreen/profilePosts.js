@@ -1,53 +1,38 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
-import { View, ScrollView, Text, StyleSheet, TouchableOpacity, Image, Dimensions, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Screens from '../../navigation/Screens';
-const { width: screenWidth } = Dimensions.get('window');
-import styles from '../../assets/style/PostStyle';
-import ReportComponent from '../../components/Report/ReportComponent';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
+import styles from '../../assets/style/PostStyle';
+import ToastModal from '../../components/Notification/NotificationModal';
+import ReportComponent from '../../components/Report/ReportComponent';
+import Screens from '../../navigation/Screens';
 import { INTERACTION_SCORE, LIKE_POST, UNLIKE_POST } from '../../services/ApiConfig';
-import ToastModal from '../../components/Notification/NotificationModal'
 // Import các hình ảnh
 import comment from '../../assets/images/comment.png';
-import heart from '../../assets/images/heart.png';
+import grayComment from '../../assets/images/gray_comment.png';
+import grayHeart from '../../assets/images/gray_heart.png';
 import heartFilled from '../../assets/images/hear2.png';
-import share from '../../assets/images/share.png';
-import { UserContext } from '../../services/provider/UseContext';
-import ShareComponent from '../Sheet/ShareButton ';
+import heart from '../../assets/images/heart.png';
+import Colors from '../../constants/Color';
 import { SocketContext } from '../../services/provider/SocketContext';
+import { ThemeContext } from '../../services/provider/ThemeContext';
+import { UserContext } from '../../services/provider/UseContext';
 import { TYPE_LIKE_POST } from '../../services/TypeNotify';
 import { timeAgo } from '../../utils/formatTime';
 import CrudPost from '../CrudPost/CrudPost';
+import RenderImage from '../Post/RenderImage';
 const ProfilePosts = ({ data }) => {
   const navigation = useNavigation();
   const [userAll, setUserAll] = useState(data); // Chứa các bài viết
   useEffect(() => { setUserAll(data) }, [data]);
-  // console.log('userAll:', userAll);
   const { user } = useContext(UserContext);
-  //   const [user, setUser] = useState(props.data.map((item) => item?.post));
   const refEditDeleteSheet = useRef(); // Dùng cho showEditDeleteSheet
-  const [loading, setLoading] = useState(true); // Quản lý trạng thái loading
-  const [error, setError] = useState(null); // Quản lý lỗi
   const [likedPosts, setLikedPosts] = useState([]); // Lưu trạng thái các bài viết đã thích
-  const [savedPosts, setSavedPosts] = useState([]); // Lưu trạng thái các bài viết đã lưu
-  const [activeImageIndex, setActiveImageIndex] = useState({}); // Quản lý chỉ số ảnh đang hiển thị cho mỗi bài có nhiều ảnh
-  //   const navigation = useNavigation(); // Hook to access navigation
   const [selectedPostId, setSelectedPostId] = useState(null); // ID bài viết được chọn để báo cáo
-  const [reportSuccess, setReportSuccess] = useState(false);
   const { sendNotifySocket } = useContext(SocketContext);
-  // const navigation = useNavigation(); // Hook to access navigation
+  const { theme } = useContext(ThemeContext);
 
   const refRBSheet = useRef();
-
-  // const openBottomSheet = (postId) => {
-  //   if (postId) {
-  //     setSelectedPostId(postId);
-  //     refRBSheet.current.open();
-  //   } else {
-  //     console.error('No post ID provided');
-  //   }
-  // };
   const openBottomSheet = (postId, postOwnerId) => {
     if (postId) {
       setSelectedPostId(postId);
@@ -74,17 +59,10 @@ const ProfilePosts = ({ data }) => {
       body: JSON.stringify({ user_id, hashtag_id, score }),
     });
     const result = await response.json();
-    // if (response.ok) {
-    //   if (result.status === 200) {
-    //     // console.log('okok');
-    //   }
-    // }
+
   };
 
-  {/** Sử lí cái thông báo  */ }
-  // const [modalVisible, setModalVisible] = useState(false);
   const handleReportSuccess = () => {
-    setReportSuccess(true); // Set report success
     refRBSheet.current.close(); // Close the RBSheet when the report is successful
   };
   // Xử lý khi bấm vào avatar và tên người dùng
@@ -109,7 +87,6 @@ const ProfilePosts = ({ data }) => {
           initialIndices[postData.postData._id] = 0; // Thiết lập chỉ mục đầu tiên cho các bài có nhiều ảnh
         }
       });
-      setActiveImageIndex(initialIndices);
     }
   }, [userAll]);
   {/** Sử lí nút like  */ }
@@ -163,20 +140,6 @@ const ProfilePosts = ({ data }) => {
         } else {
           // Cập nhật trạng thái khi thích bài viết
           setLikedPosts((prevPosts) => [...prevPosts, item.postData._id]);
-          // setUserAll((prevPosts) =>
-          //   prevPosts.map((postData) =>
-          //     postData.postData._id === item.postData._id
-          //       ? {
-          //         ...postData,
-          //         likeData: [...postData.likeData, result.data], // Thêm lượt thích mới vào likeData
-          //         postData: {
-          //           ...postData.postData,
-          //           like_count: postData.postData.like_count + 1, // Tăng số lượng like
-          //         },
-          //       }
-          //       : postData
-          //   )
-          // );
           setUserAll((prevPosts) => {
             return prevPosts.map((postData) => {
               if (postData.postData._id === item.postData._id) {
@@ -218,101 +181,23 @@ const ProfilePosts = ({ data }) => {
   };
 
 
-
-
-  // const toggleSave = (postId) => {
-  //   setSavedPosts((prevSavedPosts) =>
-  //     prevSavedPosts.includes(postId)
-  //       ? prevSavedPosts.filter((id) => id !== postId)
-  //       : [...prevSavedPosts, postId]
-  //   );
-  // };
-
-  // Hiển thị hình ảnh của bài viết
-  const renderImages = (images, postId) => {
-    if (!images || images.length === 0) return null; // Handle cases where image is missing
-
-    if (images.length === 1) {
-      const imageUrl = images[0].replace('localhost', '10.0.2.2');
-      return imageUrl ? (
-        <Image source={{ uri: imageUrl }} style={styles.postImage} />
-      ) : null;
-    }
-
-    return (
-      <>
-        <ScrollView
-          horizontal
-          pagingEnabled
-          style={styles.imageList}
-          showsHorizontalScrollIndicator={false}
-          onScroll={(event) => {
-            const index = Math.round(event.nativeEvent.contentOffset.x / screenWidth);
-            setActiveImageIndex((prevState) => ({
-              ...prevState,
-              [postId]: index,
-            }));
-          }}
-        >
-          {images.map((image, index) => (
-            <Image key={index} source={{ uri: image.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' }} style={styles.postImage} />
-          ))}
-        </ScrollView>
-        <View style={styles.paginationContainer}>
-          {images.map((_, index) => (
-            <View
-              key={index}
-              style={[
-                styles.paginationDot,
-                activeImageIndex[postId] === index ? styles.activeDot : styles.inactiveDot,
-              ]}
-            />
-          ))}
-        </View>
-      </>
-    );
-  };
-
-  // hàm format thời gian
-  // hàm format thời gian
-  // const timeAgo = (date) => {
-  //   const now = new Date();
-  //   const postDate = new Date(date);
-  //   const diff = Math.floor((now - postDate) / 1000); // Chênh lệch thời gian tính bằng giây
-
-  //   if (diff < 60) return `${diff} giây trước`;
-  //   const minutes = Math.floor(diff / 60);
-  //   if (minutes < 60) return `${minutes} phút trước`;
-  //   const hours = Math.floor(minutes / 60);
-  //   if (hours < 24) return `${hours} giờ trước`;
-  //   const days = Math.floor(hours / 24);
-  //   if (days < 30) return `${days} ngày trước`;
-  //   const months = Math.floor(days / 30);
-  //   if (months < 12) return `${months} tháng trước`;
-  //   const years = Math.floor(months / 12);
-  //   return `${years} năm trước`;
-  // };
-
   const getExistingPost = (postId) => {
     const post = userAll.find((item) => item.postData._id === postId);
-  
+
     if (post) {
-      // // Log dữ liệu title và content của bài viết
-      // console.log('Title:', post.postData.title);
-      // console.log('Content:', post.postData.content);
-      // console.log('img:', post.postData.image);
-    console.log('hagtag:', post.postData.hashtag.hashtag_name);
+
+      console.log('hagtag:', post.postData.hashtag.hashtag_name);
       return {
         title: post.postData.title,
         content: post.postData.content,
         image: post.postData.image,
-        hashtag:post.postData.hashtag.hashtag_name
+        hashtag: post.postData.hashtag.hashtag_name
       };
     }
-  
+
     return null; // Trả về null nếu không tìm thấy bài viết
   };
-  
+
 
 
 
@@ -331,7 +216,9 @@ const ProfilePosts = ({ data }) => {
                   </TouchableOpacity>
                   <View style={styles.headerText}>
                     <TouchableOpacity onPress={() => handleProfileClick(item.postData.user_id._id)}>
-                      <Text style={styles.profileName}>{item.postData.user_id.full_name}</Text>
+                      <Text style={[styles.profileName, {
+                        color: theme ? '#fff' : Colors.background
+                      }]}>{item.postData.user_id.full_name}</Text>
                     </TouchableOpacity>
                     <View style={{
                       flexDirection: 'row',
@@ -352,11 +239,13 @@ const ProfilePosts = ({ data }) => {
                   </TouchableOpacity>
 
                 </View>
-                <Text style={styles.postText}>{item.postData.title}</Text>
+                <Text style={[styles.postText, {
+                  color: theme ? '#fff' : Colors.background
+                }]}>{item.postData.title}</Text>
                 {item.postData.hashtag?.hashtag_name ? (
                   <Text style={styles.postHashtag}>{item.postData.hashtag.hashtag_name}</Text>
                 ) : null}
-                {item.postData.image && renderImages(item.postData.image, item.postData._id)}
+                {item.postData.image && <RenderImage images={item.postData.image} />}
                 <View style={styles.postMeta}>
                   <View style={styles.leftMetaIcons}>
                     {/**Suwr lis chức năng like */}
@@ -367,7 +256,7 @@ const ProfilePosts = ({ data }) => {
                             likedPosts.includes(item.postData._id) ||
                               item.likeData.some(like => like.user_id_like === user._id)
                               ? heartFilled
-                              : heart
+                              : theme ? heart : grayHeart
                           }
                           style={styles.iconImage}
                         />
@@ -378,24 +267,11 @@ const ProfilePosts = ({ data }) => {
                     <View style={styles.iconLike}>
                       <TouchableOpacity onPress={() => {
                         navigation.navigate(Screens.Comment, { postId: item.postData._id })
-                        // console.log(item);
-
-                        // fetchInteractionScore(user._id, item.postData?.hashtag?._id, 1);
                       }}>
-                        <Image source={comment} style={styles.iconImage} />
+                        <Image source={theme ? comment : grayComment} style={styles.iconImage} />
                       </TouchableOpacity>
                       <Text style={styles.metaText}>{item.postData.comment_count}</Text>
                     </View>
-
-                    {/* <View style={styles.iconLike}>
-                      <ShareComponent post={{
-                        title: item.postData.title,
-                        url: item.postData.link, // Link bài viết
-                        image: item.postData.image?.[0]?.replace('localhost', '10.0.2.2') || null, // Hình ảnh đầu tiên của bài viết
-                      }} />
-
-
-                    </View> */}
                   </View>
 
                 </View>
@@ -404,7 +280,6 @@ const ProfilePosts = ({ data }) => {
             )
           })
         ) : (
-          // <Text style={{ color: 'gray', marginTop: 20 }}>No posts available</Text>
           null
         )}
       </ScrollView>
@@ -436,7 +311,7 @@ const ProfilePosts = ({ data }) => {
       {/* Màn hình Bottom Sheet cho Profile (showEditDeleteSheet) */}
       <RBSheet
         ref={refEditDeleteSheet}
-        height={250}
+        height={150}
         openDuration={300}
         closeDuration={250}
         closeOnDragDown={true}

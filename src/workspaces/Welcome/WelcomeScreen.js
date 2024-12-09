@@ -1,10 +1,12 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, Easing, Image, StatusBar } from 'react-native';
 import Screens from '../../navigation/Screens';
 import Colors from '../../constants/Color';
 import { CommonActions } from '@react-navigation/native';
+import { ThemeContext } from '../../services/provider/ThemeContext';
 
 const WelcomeScreen = ({ navigation }) => {
+  const { theme } = useContext(ThemeContext);
   const letters = 'CAMPUSPOLY'.split('');
   const animations = useRef(letters.map(() => new Animated.Value(0))).current;
   const fadeAnim = useRef(new Animated.Value(0)).current; // Animated.Value cho logo
@@ -87,6 +89,7 @@ const WelcomeScreen = ({ navigation }) => {
             {
               transform: [{ translateY }, { rotate }],
               opacity: opacity,
+              color: theme ? '#fff' : Colors.background,
             },
           ]}>
           {letter}
@@ -96,18 +99,24 @@ const WelcomeScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={st.container}>
+    <View style={[st.container, {
+      backgroundColor: theme ? Colors.background : '#fff',
+    }]}>
       {/* Logo với hiệu ứng fade-in */}
-      <StatusBar translucent backgroundColor="transparent" barStyle={'light-content'} />
+      <StatusBar translucent backgroundColor="transparent" barStyle={theme ? 'light-content' : 'dark-content'} />
       <Animated.View style={{ opacity: fadeAnim }}>
         <Image
-          source={require('../../assets/images/white_bee.png')}
+          source={
+            theme ? require('../../assets/images/white_bee.png')
+              : require('../../assets/images/black_bee.png')}
           style={st.logo}
         />
       </Animated.View>
 
       <View style={st.textContainer}>{renderLetters()}</View>
-      <Text style={st.sinceText}>SINCE 2024</Text>
+      <Text style={[st.sinceText, {
+        color: theme ? '#fff' : Colors.background,
+      }]}>SINCE 2024</Text>
     </View>
   );
 };
@@ -119,7 +128,6 @@ const st = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Colors.background,
   },
   logo: {
     width: 250,
@@ -134,15 +142,13 @@ const st = StyleSheet.create({
     flexDirection: 'row',
   },
   letter: {
-    fontSize: 48,
-    color: 'white',
+    fontSize: 40,
     marginHorizontal: 2,
     fontFamily: 'rubik',
   },
   sinceText: {
     fontSize: 16,
     fontWeight: '400',
-    color: 'white',
     fontFamily: 'rubik',
     marginTop: 50,
   },

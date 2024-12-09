@@ -3,6 +3,8 @@ import React, { useCallback, useContext, useEffect, useRef, useState } from 'rea
 import { Dimensions, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import heartFilled from '../../assets/images/hear2.png';
+import grayComment from '../../assets/images/gray_comment.png';
+import commentIcon from '../../assets/images/comment.png';
 import heart from '../../assets/images/heart.png';
 import styles from '../../assets/style/CommentStyle';
 import CommentComponent from '../../components/Comment/CommentComponent';
@@ -16,6 +18,10 @@ import { timeAgo } from '../../utils/formatTime';
 import { SocketContext } from '../../services/provider/SocketContext';
 import { TYPE_COMMENT_POST, TYPE_LIKE_POST } from '../../services/TypeNotify';
 import Screens from '../../navigation/Screens';
+import RenderImage from '../../components/Post/RenderImage';
+import { ThemeContext } from '../../services/provider/ThemeContext';
+import Colors from '../../constants/Color';
+import grayHeart from '../../assets/images/gray_heart.png';
 const { width: screenWidth } = Dimensions.get('window'); // Lấy chiều rộng màn hình để điều chỉnh kích thước hình ảnh
 const CommentScreen = () => {
   const route = useRoute();
@@ -31,26 +37,16 @@ const CommentScreen = () => {
   const [likedPosts, setLikedPosts] = useState(); // Lưu trạng thái các bài viết đã thích
   const [activeImageIndex, setActiveImageIndex] = useState({}); // Quản lý chỉ số ảnh đang hiển thị cho mỗi bài có nhiều ảnh
   const [selectedPostId, setSelectedPostId] = useState(null); // ID bài viết được chọn để báo cáo
-  const [reportSuccess, setReportSuccess] = useState(false);
   const { sendNotifySocket, socket } = useContext(SocketContext);
 
   const refRBSheet = useRef();
 
-  const openBottomSheet = (postId) => {
-    if (postId) {
-      setSelectedPostId(postId);
-      refRBSheet.current.open();
-    } else {
-      console.error('No post ID provided');
-    }
-  };
+  const { theme, toggleTheme } = useContext(ThemeContext);
 
   // console.log(user);
 
   {/** Sử lí cái thông báo  */ }
-  const [modalVisible, setModalVisible] = useState(false);
   const handleReportSuccess = () => {
-    setReportSuccess(true); // Set report success
     refRBSheet.current.close(); // Close the RBSheet when the report is successful
   };
   const { user } = useContext(UserContext);
@@ -131,31 +127,7 @@ const CommentScreen = () => {
       };
     }, [socket, user._id, post])
   );
-  // useEffect(() => {
-  //   if (socket) {
-  //     socket.on('get_user_comment_post', (newComment) => {
-  //       console.log('123: ' + newComment);
-  //       // fetchPostById();
-  //       setPost({
-  //         ...post,
-  //         postData: {
-  //           ...post.postData,
-  //           comment_count: post.postData.comment_count + 1,
-  //         },
-  //       })
-  //       setComment([newComment, ...comment])
-  //     })
-  //   }
-  //   return () => {
-  //     socket.off('new_message');
-  //   };
-  // }, [newComment])
-  // console.log(post);
-  // sử lí nút like 
-  // Toggle like/unlike functionality
-  // Xử lý like/unlike bài viết
-   // Xử lý khi bấm vào avatar và tên người dùng
-   const handleProfileClick = (userId) => {
+  const handleProfileClick = (userId) => {
     // console.log(userId);
     if (userId._id === user._id) {
       // Nếu ID của người dùng hiện tại trùng khớp, chuyển đến màn hình Profile
@@ -168,11 +140,7 @@ const CommentScreen = () => {
 
   const toggleLike = async (item) => {
     console.log(item);
-    const userId = user._id; // Lấy ID người dùng từ context
-    // console.log(user._id);
-    // console.log(item.likeData);
-    // isLiked = item.likeData.some((like) => like.user_id_like._id === user._id);
-    // console.log(isLiked);
+    const userId = user._id;
 
     try {
       let response;
@@ -308,21 +276,29 @@ const CommentScreen = () => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#181A1C', }}>
+    <View style={{ flex: 1, backgroundColor: theme ? '#181A1C' : '#fff' }}>
       <TouchableOpacity
         onPress={() => navigation.goBack()}
-        style={styles.circleIcon}
+        style={[styles.circleIcon, {
+          backgroundColor: theme ? '#181A1C' : '#fff'
+        }]}
       >
         <Image
-          source={require('../../assets/images/arowleft.png')}
+          source={theme ? require('../../assets/images/arowleft.png') :
+            require('../../assets/images/light_arowleft.png')
+          }
           resizeMode="contain"
-          style={{ width: 15, height: 15 }}
+          style={{ width: 15, hteight: 15 }}
         />
       </TouchableOpacity>
       <View style={styles.barHeader}>
-        <Text style={styles.textHeader}>Comment</Text>
+        <Text style={[styles.textHeader, {
+          color: theme ? '#ECEBED' : '#000'
+        }]}>Comment</Text>
       </View>
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView contentContainerStyle={[styles.container, {
+        backgroundColor: theme ? '#181A1C' : '#fff'
+      }]}>
         <View style={{ height: 1, backgroundColor: '#323436', marginBottom: 15 }} />
         {loading ? <PostCommentLoading /> : (
           <>
@@ -333,12 +309,12 @@ const CommentScreen = () => {
                     style={styles.imageavatar} />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => handleProfileClick(post?.postData?.user_id)}>
-                <View style={{ marginLeft: 6, marginTop: -5 }}>
-                
-                  <Text style={{ color: '#fff', fontWeight: 'semibold', fontSize: 14, fontFamily: "HankenGrotesk-Regular" }}>{post?.postData?.user_id?.full_name}</Text>
-                
-                  <Text style={{ fontSize: 12, fontFamily: 'HankenGrotesk-Regular', fontWeight: "medium", color: '#727477' }}>{timeAgo(post.postData.createdAt)}</Text>
-                </View>
+                  <View style={{ marginLeft: 6, marginTop: -5 }}>
+
+                    <Text style={{ fontWeight: 'semibold', fontSize: 14, fontFamily: "HankenGrotesk-Regular", color: theme ? '#fff' : Colors.background }}>{post?.postData?.user_id?.full_name}</Text>
+
+                    <Text style={{ fontSize: 12, fontFamily: 'HankenGrotesk-Regular', fontWeight: "medium", color: '#727477' }}>{timeAgo(post.postData.createdAt)}</Text>
+                  </View>
                 </TouchableOpacity>
               </View>
               {/* <TouchableOpacity onPress={() => { console.log('post:', post); openBottomSheet(post?.postData?._id) }}>
@@ -346,19 +322,23 @@ const CommentScreen = () => {
               </TouchableOpacity> */}
             </View>
             <View style={styles.bodyContent}>
-              <Text style={{ fontFamily: 'rgl1', fontSize: 20, fontWeight: 'bold', color: "#fff" }}>
+              <Text style={{ fontFamily: 'rgl1', fontSize: 20, fontWeight: 'bold', color: theme ? '#fff' : Colors.background, paddingHorizontal: 10, }}>
                 {post?.postData?.title}
               </Text>
-              <Text style={{ fontFamily: 'rgl1', fontSize: 17, fontWeight: '600', color: "#fff", marginTop: 10 }}>
+              <Text style={{ fontFamily: 'rgl1', fontSize: 17, fontWeight: '600', color: theme ? '#fff' : Colors.background, paddingHorizontal: 10, marginTop: 10 }}>
                 {post?.postData?.content}
               </Text>
               {post?.postData?.hashtag?.hashtag_name ? (
-                <Text style={{ fontFamily: 'rgl1', fontSize: 16, fontWeight: '700', color: "#0078D4", marginTop: 10 }}>
+                <Text style={{ fontFamily: 'rgl1', fontSize: 16, fontWeight: '700', color: "#0078D4", marginTop: 10, paddingHorizontal: 10, }}>
                   {post.postData.hashtag.hashtag_name}
                 </Text>
               ) : null}
 
-              {post?.postData?.image && renderImages(post?.postData?.image, post?.postData?._id)}
+              {post?.postData?.image && <RenderImage images={post?.postData?.image} subStyle={
+                {
+                  bottom: -33
+                }
+              } />}
             </View>
 
             <View style={styles.interactContainer}>
@@ -370,41 +350,32 @@ const CommentScreen = () => {
                         isLiked === true &&
                           post.likeData.some(like => like.user_id_like._id === user._id)
                           ? heartFilled
-                          : heart}
+                          : theme ? heart : grayHeart}
                       resizeMode="contain"
                       style={{ width: 20, height: 20, marginLeft: 3 }}
                     />
                   </TouchableOpacity>
-
-
-
-                  <Text style={styles.textInteract}>{post?.postData?.like_count}</Text>
+                  <Text style={[styles.textInteract,{
+                    color: theme ? '#fff' : Colors.background
+                  }]}>{post?.postData?.like_count}</Text>
                 </View>
                 <View style={styles.iconLike}>
                   <TouchableOpacity onPress={() => { /* Xử lý nút comment */ }}>
-                    <Image source={require("../../assets/images/comment.png")} resizeMode='contain' style={{ width: 20, height: 20, marginLeft: 3 }} />
+                    <Image source={theme ? commentIcon : grayComment} resizeMode='contain' style={{ width: 20, height: 20, marginLeft: 3 }} />
                   </TouchableOpacity>
-                  <Text style={styles.textInteract}>{post?.postData?.comment_count}</Text>
+                  <Text style={[styles.textInteract,{
+                    color: theme ? '#fff' : Colors.background
+                  }]}>{post?.postData?.comment_count}</Text>
                 </View>
-                <TouchableOpacity onPress={() => { /* Xử lý nút share */ }} style={[styles.iconLike, { marginLeft: 4 }]}>
-                  <Image source={require('../../assets/images/share.png')} resizeMode='contain' style={{ width: 20, height: 20 }} />
-                </TouchableOpacity>
               </View>
-              <TouchableOpacity onPress={() => setIsBookmark(!isBookmark)} style={{ marginTop: 5, display: 'none' }}>
-                <Image
-                  source={isBookmark
-                    ? require('../../assets/images/bookmark2.png')
-                    : require('../../assets/images/bookmark.png')}
-                  resizeMode='contain'
-                  style={{ width: 20, height: 20 }}
-                />
-              </TouchableOpacity>
             </View>
             <View style={{ height: 1, backgroundColor: '#323436', marginTop: 15 }} />
-            {/** Sử lí phầm comment */}
+            {/** Sử lí phần comment */}
             <View style={styles.barComment}>
               {loading ? <SkeletonShimmer width={100} height={20} borderRadius={10} />
-                : <Text style={styles.commentTitle}>
+                : <Text style={[styles.commentTitle, {
+                  color: theme ? '#ECEBED' : '#000'
+                }]}>
                   COMMENTS (<Text>{comment.length}</Text>)
                 </Text>
               }
@@ -421,20 +392,6 @@ const CommentScreen = () => {
                 </TouchableOpacity>
               </View>
             </View>
-            {/* {
-              !loading && (
-                comment.map((comment) => (
-                  <CommentComponent
-                    key={comment._id}
-                    avatar={comment.user_id_comment.avatar.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg'}
-                    name={comment.user_id_comment.full_name}
-                    content={comment.comment_content}
-                    time={timeAgo(comment.createdAt)} // Format thời gian nếu cần
-                    likes={0} // Bạn có thể chỉnh sửa nếu cần thêm thông tin về lượt thích
-                  />
-                ))
-              )
-            } */}
 
             <View style={{
               paddingHorizontal: 10

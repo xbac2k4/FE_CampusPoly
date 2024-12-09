@@ -1,10 +1,14 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React from 'react';
+import React, { useContext } from 'react';
+import { ThemeContext } from '../../services/provider/ThemeContext';
+import Colors from '../../constants/Color';
+
 
 import Screens from '../../navigation/Screens';
 
 const FriendListConponent = ({ avatar, full_name, status, send_id, onDeleteFriend, onConfirm, navigation, friendId }) => {
   const isPending = status === 'Chờ phản hồi'; // Kiểm tra trạng thái
+  const { theme, toggleTheme } = useContext(ThemeContext);
   // Xử lý khi bấm vào avatar và tên người dùng
   const handleProfileClick = (friendId) => {
 
@@ -17,13 +21,17 @@ const FriendListConponent = ({ avatar, full_name, status, send_id, onDeleteFrien
   // console.log(send_id);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container,{
+      backgroundColor : theme? Colors.background : Colors.light
+    }]}>
       <TouchableOpacity onPress={() => handleProfileClick(friendId)}>
         <Image source={{ uri: avatar.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' }} style={styles.imgavt} resizeMode={'contain'} />
       </TouchableOpacity>
       <View style={{ marginLeft: 20 }}>
         <TouchableOpacity onPress={() => handleProfileClick(friendId)}>
-          <Text style={styles.username}>{full_name}</Text>
+          <Text style={[styles.username,{
+            color: theme? '#fff' : Colors.background
+          }]}>{full_name}</Text>
         </TouchableOpacity>
         <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center' }}>
           {
@@ -49,7 +57,7 @@ const FriendListConponent = ({ avatar, full_name, status, send_id, onDeleteFrien
           }
           <TouchableOpacity
             onPress={onDeleteFriend}
-            style={[styles.statuscontainer, { backgroundColor: '#3b3d3e', marginLeft: 10 }]}>
+            style={[styles.statuscontainer, { backgroundColor: theme? '#3b3d3e' : '#CCC', marginLeft: 10 }]}>
             <Text style={{ fontSize: 16, color: '#fff', fontWeight: '400' }}>Hủy</Text>
           </TouchableOpacity>
         </View>
@@ -62,7 +70,6 @@ export default FriendListConponent;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#181A1C',
     flexDirection: 'row',
     flex: 1,
     marginTop: 15,
@@ -74,7 +81,7 @@ const styles = StyleSheet.create({
     borderRadius: 32,
   },
   username: {
-    color: '#fff',
+    
     fontSize: 14,
     fontWeight: '700',
   },

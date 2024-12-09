@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, Image, StyleSheet, StatusBar, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import Colors from '../../constants/Color';
+import { ThemeContext } from '../../services/provider/ThemeContext';
 
 const Header = ({ data, navigation }) => {
-  const defaultBackgroundImage = require('../../assets/images/default-bg.png');
-  const defaultAvatar = require('../../assets/images/default-profile.png');
-  // console.log(data);
+  const { theme } = useContext(ThemeContext);
 
   return (
     <View style={styles.headerContainer}>
@@ -15,7 +15,9 @@ const Header = ({ data, navigation }) => {
       {/* Back button */}
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Image
-          source={require('../../assets/images/arowleft.png')}
+          source={theme ? require('../../assets/images/arowleft.png') :
+            require('../../assets/images/light_arowleft.png')
+          }
           resizeMode="contain"
           style={{ width: 15, height: 15 }}
         />
@@ -23,10 +25,7 @@ const Header = ({ data, navigation }) => {
 
       {/* Display background image or default image */}
       <Image
-        source={
-          data?.background
-            ? { uri: data?.background }
-            : defaultBackgroundImage
+        source={{ uri: data?.background ? data?.background : 'https://cdn2.fptshop.com.vn/unsafe/Uploads/images/tin-tuc/172740/Originals/background-la-gi-4.jpg' }
         }
         style={styles.backgroundImage}
       />
@@ -35,25 +34,31 @@ const Header = ({ data, navigation }) => {
       <Image
         source={
           data?.avatar
-            ? { uri: data?.avatar }
-            : defaultAvatar
+          && { uri: data?.avatar }
         }
         style={styles.profileImage}
       />
 
       {/* Display name and email icon */}
       <View style={styles.nameContainer}>
-        <Text style={styles.name}>{data?.full_name}</Text>
-        <TouchableOpacity style={styles.circleIcon} onPress={() => { /* handle icon press */ }}>
-          <Icon name="mail-outline" size={15} color="#fff" />
+        <Text style={[styles.name, {
+          color: theme ? '#fff' : Colors.background,
+        }]}>{data?.full_name}</Text>
+        <TouchableOpacity style={[styles.circleIcon, {
+          backgroundColor: theme ? '#333' : '#fff',
+        }]} onPress={() => { /* handle icon press */ }}>
+          <Icon name="mail-outline" size={15} color={theme ? '#fff' : Colors.background} />
         </TouchableOpacity>
       </View>
       <Text style={{
         ...styles.bio,
         marginTop: 0,
+        color: theme ? '#ECEBED' : '#333'
       }}>{data?.role[0]?.role_name}</Text>
       {/* Conditionally display bio if it exists */}
-      {data?.bio ? <Text style={styles.bio}>{data?.bio}</Text> : null}
+      {data?.bio ? <Text style={[styles.bio,{
+        color : theme?  '#fff' : Colors.background 
+      }]}>{data?.bio}</Text> : null}
     </View>
   );
 };
@@ -97,13 +102,11 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
-    color: '#FFFFFF',
   },
   circleIcon: {
     width: 30,
     height: 30,
     borderRadius: 15,
-    backgroundColor: '#333',
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 8,
@@ -113,7 +116,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 8,
     textAlign: 'center',
-    color: '#ECEBED',
   },
 });
 
