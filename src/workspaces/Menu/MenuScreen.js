@@ -97,14 +97,14 @@ const MenuScreen = () => {
         <SettingItem
           title="Trợ giúp & hỗ trợ"
           icon={require('../../assets/images/hoi.png')}
-          subItems={['Trung tâm trợ giúp', 'Điều khoản & chính sách']}
+          subItems={['Trung tâm trợ giúp','Gửi yêu cầu hỗ trợ hoặc khiếu lại' ,'Điều khoản & chính sách']}
           onPress={(subItem) => {
             if (subItem === 'Trung tâm trợ giúp') {
               navigation.navigate(Screens.HelpCenter); // Điều hướng đến Trung tâm trợ giúp
             } 
-            // else if (subItem === 'Báo cáo sự cố') {
-            //   navigation.navigate(Screens.ReportIssue); // Điều hướng đến Báo cáo sự cố
-            // } 
+            else if (subItem === 'Gửi yêu cầu hỗ trợ hoặc khiếu lại') {
+              navigation.navigate(Screens.ReportIssue); // Điều hướng đến Báo cáo sự cố
+            } 
             else if (subItem === 'Điều khoản & chính sách') {
               navigation.navigate(Screens.TermsAndPolic); // Điều hướng đến Điều khoản & chính sách
             }

@@ -10,6 +10,8 @@ import { TYPE_CREATE_POST } from '../../services/TypeNotify';
 import Loading from '../../components/MenuAuth/Loading';
 import Snackbar from 'react-native-snackbar';
 import Screens from '../../navigation/Screens';
+// import containsForbiddenWords from '../../assets/ban/forbiddenWords';
+
 
 const CreatePostScreen = ({ navigation }) => {
   // const [user, setUser] = useState(null);
@@ -33,6 +35,85 @@ const CreatePostScreen = ({ navigation }) => {
         resolve();
       }, 2000); // Giả lập tác vụ mất 2 giây
     });
+  };
+  const forbiddenWords = [
+    "địt",
+    "dit",
+    "đụ",
+    "du",
+    "đéo",
+    "deo",
+    "đcm",
+    "dcm",
+    "đmm",
+    "dmm",
+    "đml",
+    "dml",
+    "mẹ mày",
+    "me may",
+    "cái lồn",
+    "cai lon",
+    "lồn",
+    "lon",
+    "buồi",
+    "buoi",
+    "cặc",
+    "cak",
+    "cac",
+    "chó chết",
+    "cho chet",
+    "đĩ",
+    "di",
+    "điếm",
+    "diem",
+    "mẹ kiếp",
+    "me kiep",
+    "vãi lồn",
+    "vai lon",
+    "như cặc",
+    "nhu cac",
+    "nhu cak",
+    "đầu buồi",
+    "dau buoi",
+    "thằng ngu",
+    "thang ngu",
+    "đần độn",
+    "dan don",
+    "óc chó",
+    "oc cho",
+    "não phẳng",
+    "nao phang",
+    "khốn nạn",
+    "khon nan",
+    "hãm lồn",
+    "ham lon",
+    "bố láo",
+    "bo lao",
+    "đồ rác rưởi",
+    "do rac ruoi",
+    "thằng chó",
+    "thang cho",
+    "con điên",
+    "con dien",
+    "con khùng",
+    "con khung",
+    "đồ ngu",
+    "do ngu",
+    "mất dạy",
+    "mat day",
+    "mày hả",
+    "may ha",
+    "đm",
+    "dm"
+  ];
+
+  const containsForbiddenWords = (title, content) => {
+    const lowerCasedTitle = title.toLowerCase();
+    const lowerCasedContent = content.toLowerCase();
+
+    return forbiddenWords.some((word) =>
+      lowerCasedTitle.includes(word) || lowerCasedContent.includes(word)
+    );
   };
   // Hàm để cập nhật dữ liệu từ PostComponent
   const handleContentChange = async (newTitle, newContent, newHashtag, newImages, newGif) => {
@@ -89,37 +170,48 @@ const CreatePostScreen = ({ navigation }) => {
   };
   const handlePublish = async () => {
     try {
+      // Kiểm tra từ cấm trong title và content
+      if (containsForbiddenWords(title, content)) {
+        setLoading(false);
+      Snackbar.show({
+        text: 'Bài đăng chứa từ ngữ vi phạm. Vui lòng chỉnh sửa trước khi đăng.',
+        duration: Snackbar.LENGTH_INDEFINITE, // Snackbar sẽ không tự động tắt
+        action: {
+          text: 'OK',
+          textColor: '#FF6347',
+          onPress: () => {
+            // Hành động khi nhấn OK
+            console.log('Snackbar dismissed');
+          },
+        },
+      });
+      return;
+      }
+
       const formData = new FormData();
-      formData.append('user_id', user._id); // Gia dinh khi chua co user_id
+      formData.append('user_id', user._id);
       formData.append('title', title || "");
       formData.append('content', content || "");
       formData.append('hashtag', hashtag || "");
-      // Thêm hình ảnh vào formData
+
       images?.forEach((imgUri, index) => {
         if (imgUri) {
           formData.append('image', {
             uri: imgUri,
-            type: 'image/jpeg', // Đảm bảo điều này phù hợp với loại hình ảnh của bạn
-            name: `image_${index}.jpg`, // Tên cho mỗi ảnh
+            type: 'image/jpeg',
+            name: `image_${index}.jpg`,
           });
         }
       });
-      // await fetchCreatePost(formData);
 
       setTimeout(async () => {
         await fetchCreatePost(formData);
-      }, 2000); // Delay 3 giây (3000 ms)    
-      // if (gif) {
-      //   formData.append('gif', {
-      //     uri: gif,
-      //     name: 'gif.gif',
-      //     type: 'image/gif',
-      //   });
-      // }
+      }, 2000); // Delay 2 giây
     } catch (error) {
-      console.error('Error fetching user friends:', error);
+      console.error('Error publishing post:', error);
     }
   };
+
   useEffect(() => {
     if (title.trim() && content.trim() && hashtag.trim()) {
       setIsPost(true);
@@ -177,7 +269,7 @@ const styles = StyleSheet.create({
   },
   barHeader: {
     flexDirection: 'row',
-    marginTop: 40,
+    marginTop: 20,
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingBottom: 20,

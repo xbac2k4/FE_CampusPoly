@@ -1,67 +1,78 @@
-import React, { useState } from 'react';
-import { Image, ScrollView, Text, TextInput, TouchableOpacity, View, Alert } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  Image,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+  Animated,
+  PanResponder,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import axios from 'axios';
+
 import styles from '../../assets/style/ReportStyle';
 import LinearGradient from 'react-native-linear-gradient';
 
 const ReportIssueScreen = () => {
   const navigation = useNavigation();
-  const [email, setEmail] = useState('');
-  const [issue, setIssue] = useState('');
+  const [isVisible, setIsVisible] = useState(true);
+  const [currentText, setCurrentText] = useState(0); // Index của text hiện tại
+  const textOpacity = useRef(new Animated.Value(1)).current; // Giá trị opacity của text
 
-  const handleSend = async () => {
-    if (!email || !issue) {
-      Alert.alert('Lỗi', 'Vui lòng nhập đầy đủ thông tin.');
-      return;
-    }
+  // Các text cần hiển thị
+  const textArray = [
+    'Xin chào, đây là ứng dụng Campuspoly!',
+    'Bạn đang gặp vấn đề hoặc khiếu nại ư?',
+    'Nếu bạn muốn khiếu nại hoặc báo cáo .',
+    'Hãy nhập vào biểu mẫu trên chúng tôi sẽ sử lí'
+  ];
 
-    const mailData = {
-      from: { email: 'your-email@example.com', name: 'CampusPoly Support' },
-      to: [{ email: 'thangnam19218@gmail.com' }],
-      subject: 'Báo cáo sự cố từ người dùng',
-      text: `Email của người báo cáo: ${email}\n\nMô tả sự cố: ${issue}`,
-    };
-
-    try {
-      const response = await axios.post(
-        'https://api.mailersend.com/v1/email',
-        mailData,
-        {
-          headers: {
-            Authorization: `Bearer mlsn.5706748ada7d39b19fc96de5b768fef916ed21227958269acc0d5a7b67c35527`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      if (response.status === 202) {
-        Alert.alert('Thành công', 'Cảm ơn bạn đã báo cáo sự cố! Chúng tôi sẽ phản hồi sớm nhất.');
-        setEmail('');
-        setIssue('');
-      } else {
-        Alert.alert('Lỗi', 'Có lỗi xảy ra trong quá trình gửi email.');
-      }
-    } catch (error) {
-      console.error('Error sending email: ', error);
-      Alert.alert('Lỗi', 'Có lỗi xảy ra trong quá trình gửi email.');
-    }
+  // Animation cho text
+  const startTextAnimation = () => {
+    Animated.sequence([
+      Animated.timing(textOpacity, {
+        toValue: 0, // Ẩn text hiện tại
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(textOpacity, {
+        toValue: 1, // Hiển thị text mới
+        duration: 500,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      setCurrentText((prev) => (prev + 1) % textArray.length); // Chuyển sang text tiếp theo
+    });
   };
+
+  // Vòng lặp hiển thị text
+  useEffect(() => {
+    const interval = setInterval(() => {
+      startTextAnimation();
+    }, 7000); // Chạy hiệu ứng mỗi 3 giây
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <View style={{ flex: 1 }}>
       <ScrollView style={styles.container}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.circleIcon}>
-          <Image
-            source={require('../../assets/images/arowleft.png')}
-            resizeMode="contain"
-            style={{ width: 15, height: 15 }}
-          />
-        </TouchableOpacity>
+        <View>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.circleIcon}
+          >
+            <Image
+              source={require('../../assets/images/arowleft.png')}
+              resizeMode="contain"
+              style={{ width: 15, height: 15 }}
+            />
+          </TouchableOpacity>
 
-        {/* Tiêu đề */}
-        <View style={styles.barHeader}>
-          <Text style={styles.textHeader}>Báo cáo sự cố</Text>
+          {/* Tiêu đề */}
+          <View style={styles.barHeader}>
+            <Text style={styles.textHeader}>Gửi yêu cầu hỗ trợ</Text>
+          </View>
         </View>
         <Text style={styles.descriptionText}>
           Bạn đang gặp sự cố? Vậy hãy nhắn tin cho chúng tôi.
@@ -74,8 +85,6 @@ const ReportIssueScreen = () => {
             style={styles.input}
             placeholder="Nhập email của bạn"
             placeholderTextColor="#888"
-            value={email}
-            onChangeText={setEmail}
             keyboardType="email-address"
           />
 
@@ -84,8 +93,6 @@ const ReportIssueScreen = () => {
             style={[styles.input, styles.multilineInput]}
             placeholder="Mô tả sự cố của bạn"
             placeholderTextColor="#888"
-            value={issue}
-            onChangeText={setIssue}
             multiline
             numberOfLines={4}
           />
@@ -95,13 +102,72 @@ const ReportIssueScreen = () => {
             end={{ x: 1, y: 0 }}
             style={styles.submitButton}
           >
-              <TouchableOpacity onPress={handleSend} style={{ width: '100%', alignItems: 'center' }}>
+            <TouchableOpacity style={{ width: '100%', alignItems: 'center' }}>
               <Text style={styles.submitButtonText}>Gửi</Text>
             </TouchableOpacity>
           </LinearGradient>
-
         </View>
       </ScrollView>
+
+      {/* Bong bóng kéo thả */}
+      {isVisible && (
+        <View
+          style={{
+            position: 'absolute',
+            bottom: 20,
+            right: 20,
+            backgroundColor: '#FFD700',
+            borderRadius: 20, // Giảm kích thước và bo góc nhiều hơn
+            elevation: 5,
+            padding: 10, // Căn chỉnh padding
+            maxWidth: 200, // Giới hạn chiều rộng để tự động xuống dòng
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}
+        >
+          {/* Text + Ảnh đại diện */}
+          <Animated.Text
+            style={{
+              color: '#000',
+              fontWeight: 'bold',
+              marginRight: 10,
+              opacity: textOpacity, // Chỉ áp dụng animation cho text
+              flex: 1, // Text sẽ chiếm hết không gian còn lại
+              flexWrap: 'wrap', // Đảm bảo text xuống dòng
+            }}
+          >
+            {textArray[currentText]} {/* Hiển thị text hiện tại */}
+          </Animated.Text>
+          <Image
+            source={require('../../assets/images/phungvanduy.png')}
+            style={{
+              width: 50, // Giảm kích thước ảnh
+              height: 50,
+              borderRadius: 25,
+            }}
+            resizeMode="cover"
+          />
+
+          {/* Nút đóng */}
+          <TouchableOpacity
+            onPress={() => setIsVisible(false)}
+            style={{
+              position: 'absolute',
+              top: -10,
+              right: -10,
+              width: 20,
+              height: 20,
+              backgroundColor: '#FF0000',
+              borderRadius: 10,
+              alignItems: 'center',
+              justifyContent: 'center',
+              elevation: 2,
+            }}
+          >
+            <Text style={{ color: '#FFF', fontSize: 12 }}>X</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 };
