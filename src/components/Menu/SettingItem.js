@@ -14,7 +14,7 @@ const SettingItem = ({ title, icon, subItems }) => {
     // Kiểm tra tên subItem và điều hướng đến màn hình tương ứng
     if (subItem === 'Trung tâm trợ giúp') {
       navigation.navigate('HelpCenter'); // Điều hướng đến Trung tâm trợ giúp
-    } else if (subItem === 'Báo cáo sự cố') {
+    } else if (subItem === 'Gửi yêu cầu hỗ trợ hoặc khiếu lại') {
       navigation.navigate('ReportIssue'); // Điều hướng đến Báo cáo sự cố
     } else if (subItem === 'Điều khoản & chính sách') {
       navigation.navigate('TermsAndPolic'); // Điều hướng đến Điều khoản & chính sách
