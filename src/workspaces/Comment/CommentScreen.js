@@ -3,6 +3,8 @@ import React, { useCallback, useContext, useEffect, useRef, useState } from 'rea
 import { Dimensions, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import heartFilled from '../../assets/images/hear2.png';
+import grayComment from '../../assets/images/gray_comment.png';
+import commentIcon from '../../assets/images/comment.png';
 import heart from '../../assets/images/heart.png';
 import styles from '../../assets/style/CommentStyle';
 import CommentComponent from '../../components/Comment/CommentComponent';
@@ -17,6 +19,9 @@ import { SocketContext } from '../../services/provider/SocketContext';
 import { TYPE_COMMENT_POST, TYPE_LIKE_POST } from '../../services/TypeNotify';
 import Screens from '../../navigation/Screens';
 import RenderImage from '../../components/Post/RenderImage';
+import { ThemeContext } from '../../services/provider/ThemeContext';
+import Colors from '../../constants/Color';
+import grayHeart from '../../assets/images/gray_heart.png';
 const { width: screenWidth } = Dimensions.get('window'); // Lấy chiều rộng màn hình để điều chỉnh kích thước hình ảnh
 const CommentScreen = () => {
   const route = useRoute();
@@ -35,6 +40,8 @@ const CommentScreen = () => {
   const { sendNotifySocket, socket } = useContext(SocketContext);
 
   const refRBSheet = useRef();
+
+  const { theme, toggleTheme } = useContext(ThemeContext);
 
   // console.log(user);
 
@@ -269,21 +276,29 @@ const CommentScreen = () => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#181A1C', }}>
+    <View style={{ flex: 1, backgroundColor: theme ? '#181A1C' : '#fff' }}>
       <TouchableOpacity
         onPress={() => navigation.goBack()}
-        style={styles.circleIcon}
+        style={[styles.circleIcon, {
+          backgroundColor: theme ? '#181A1C' : '#fff'
+        }]}
       >
         <Image
-          source={require('../../assets/images/arowleft.png')}
+          source={theme ? require('../../assets/images/arowleft.png') :
+            require('../../assets/images/light_arowleft.png')
+          }
           resizeMode="contain"
-          style={{ width: 15, height: 15 }}
+          style={{ width: 15, hteight: 15 }}
         />
       </TouchableOpacity>
       <View style={styles.barHeader}>
-        <Text style={styles.textHeader}>Comment</Text>
+        <Text style={[styles.textHeader, {
+          color: theme ? '#ECEBED' : '#000'
+        }]}>Comment</Text>
       </View>
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView contentContainerStyle={[styles.container, {
+        backgroundColor: theme ? '#181A1C' : '#fff'
+      }]}>
         <View style={{ height: 1, backgroundColor: '#323436', marginBottom: 15 }} />
         {loading ? <PostCommentLoading /> : (
           <>
@@ -296,7 +311,7 @@ const CommentScreen = () => {
                 <TouchableOpacity onPress={() => handleProfileClick(post?.postData?.user_id)}>
                   <View style={{ marginLeft: 6, marginTop: -5 }}>
 
-                    <Text style={{ color: '#fff', fontWeight: 'semibold', fontSize: 14, fontFamily: "HankenGrotesk-Regular" }}>{post?.postData?.user_id?.full_name}</Text>
+                    <Text style={{ fontWeight: 'semibold', fontSize: 14, fontFamily: "HankenGrotesk-Regular", color: theme ? '#fff' : Colors.background }}>{post?.postData?.user_id?.full_name}</Text>
 
                     <Text style={{ fontSize: 12, fontFamily: 'HankenGrotesk-Regular', fontWeight: "medium", color: '#727477' }}>{timeAgo(post.postData.createdAt)}</Text>
                   </View>
@@ -307,10 +322,10 @@ const CommentScreen = () => {
               </TouchableOpacity> */}
             </View>
             <View style={styles.bodyContent}>
-              <Text style={{ fontFamily: 'rgl1', fontSize: 20, fontWeight: 'bold', color: "#fff", paddingHorizontal: 10, }}>
+              <Text style={{ fontFamily: 'rgl1', fontSize: 20, fontWeight: 'bold', color: theme ? '#fff' : Colors.background, paddingHorizontal: 10, }}>
                 {post?.postData?.title}
               </Text>
-              <Text style={{ fontFamily: 'rgl1', fontSize: 17, fontWeight: '600', color: "#fff", paddingHorizontal: 10, marginTop: 10 }}>
+              <Text style={{ fontFamily: 'rgl1', fontSize: 17, fontWeight: '600', color: theme ? '#fff' : Colors.background, paddingHorizontal: 10, marginTop: 10 }}>
                 {post?.postData?.content}
               </Text>
               {post?.postData?.hashtag?.hashtag_name ? (
@@ -335,29 +350,32 @@ const CommentScreen = () => {
                         isLiked === true &&
                           post.likeData.some(like => like.user_id_like._id === user._id)
                           ? heartFilled
-                          : heart}
+                          : theme ? heart : grayHeart}
                       resizeMode="contain"
                       style={{ width: 20, height: 20, marginLeft: 3 }}
                     />
                   </TouchableOpacity>
-
-
-
-                  <Text style={styles.textInteract}>{post?.postData?.like_count}</Text>
+                  <Text style={[styles.textInteract,{
+                    color: theme ? '#fff' : Colors.background
+                  }]}>{post?.postData?.like_count}</Text>
                 </View>
                 <View style={styles.iconLike}>
                   <TouchableOpacity onPress={() => { /* Xử lý nút comment */ }}>
-                    <Image source={require("../../assets/images/comment.png")} resizeMode='contain' style={{ width: 20, height: 20, marginLeft: 3 }} />
+                    <Image source={theme ? commentIcon : grayComment} resizeMode='contain' style={{ width: 20, height: 20, marginLeft: 3 }} />
                   </TouchableOpacity>
-                  <Text style={styles.textInteract}>{post?.postData?.comment_count}</Text>
+                  <Text style={[styles.textInteract,{
+                    color: theme ? '#fff' : Colors.background
+                  }]}>{post?.postData?.comment_count}</Text>
                 </View>
               </View>
             </View>
             <View style={{ height: 1, backgroundColor: '#323436', marginTop: 15 }} />
-            {/** Sử lí phầm comment */}
+            {/** Sử lí phần comment */}
             <View style={styles.barComment}>
               {loading ? <SkeletonShimmer width={100} height={20} borderRadius={10} />
-                : <Text style={styles.commentTitle}>
+                : <Text style={[styles.commentTitle, {
+                  color: theme ? '#ECEBED' : '#000'
+                }]}>
                   COMMENTS (<Text>{comment.length}</Text>)
                 </Text>
               }

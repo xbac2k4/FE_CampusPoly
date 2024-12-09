@@ -56,7 +56,9 @@ const Header = ({ data, navigation }) => {
         color: theme ? '#ECEBED' : '#333'
       }}>{data?.role[0]?.role_name}</Text>
       {/* Conditionally display bio if it exists */}
-      {data?.bio ? <Text style={styles.bio}>{data?.bio}</Text> : null}
+      {data?.bio ? <Text style={[styles.bio,{
+        color : theme?  '#fff' : Colors.background 
+      }]}>{data?.bio}</Text> : null}
     </View>
   );
 };

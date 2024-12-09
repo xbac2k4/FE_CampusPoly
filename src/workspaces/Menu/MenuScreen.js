@@ -62,7 +62,7 @@ const MenuScreen = () => {
   );
   return (
     <View style={[styles.container, {
-      backgroundColor: theme ? Colors.background : '#f3f4f8',
+      backgroundColor: theme ? Colors.background : Colors.light,
     }]}>
       <ScrollView style={styles.scrollContent}>
         <View style={styles.headContainer}>

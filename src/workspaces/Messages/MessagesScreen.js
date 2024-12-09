@@ -10,6 +10,8 @@ import { SocketContext } from '../../services/provider/SocketContext';
 import { timeAgo } from '../../utils/formatTime';
 import FriendLoading from '../../components/Loading/Message/FriendLoading';
 import UserLoading from '../../components/Loading/Message/UserLoading';
+import { ThemeContext } from '../../services/provider/ThemeContext';
+import Colors from '../../constants/Color';
 
 const MessageScreen = ({ navigation }) => {
   const { socket, usersOnline } = useContext(SocketContext);
@@ -17,10 +19,10 @@ const MessageScreen = ({ navigation }) => {
   const [users, setUsers] = useState();
   const [friends, setFriends] = useState();
   const [loading, setLoading] = useState(true)
+  const {theme} = useContext(ThemeContext);
 
   const FetchConversation = async (id) => {
     try {
-      setLoading(true)
       const response = await fetch(`${GET_CONVERSATION_BY_USER}${id}`);
       const data = await response.json();
       // console.log(data.data);
@@ -30,7 +32,6 @@ const MessageScreen = ({ navigation }) => {
         return new Date(b.last_message_time) - new Date(a.last_message_time);
       });
       setUsers(conversation);
-      setLoading(false)
     } catch (error) {
       console.error('Error fetching user data:', error);
     }
@@ -38,8 +39,10 @@ const MessageScreen = ({ navigation }) => {
   useFocusEffect(
     useCallback(() => {
       const handleUserData = async () => {
+        setLoading(true);
         FetchConversation(user._id);
         FetchFriends(user._id);
+        setLoading(false);
         socket.emit('get_users_online');
       }
       handleUserData();
@@ -60,8 +63,10 @@ const MessageScreen = ({ navigation }) => {
     }, [socket, user._id])
   );
   useEffect(() => {
+    setLoading(true);
     FetchConversation(user._id);
     FetchFriends(user._id);
+    setLoading(false);
     // console.log(usersOnline);
   }, [])
 
@@ -98,12 +103,10 @@ const MessageScreen = ({ navigation }) => {
 
   const FetchFriends = async (userID) => {
     try {
-      setLoading(true);
       const response = await fetch(`${GET_USER_ID}${userID}`);
       const data = await response.json();
       // console.log(data.data.friends);
       setFriends(data.data.friends);
-      setLoading(false);
     } catch (error) {
       console.error('Error fetching user data:', error);
     }
@@ -139,7 +142,9 @@ const MessageScreen = ({ navigation }) => {
           style={styles.pinnedUserAvatar}
         />
         {isUserOnline && <View style={styles.onlineDot} />}
-        <Text style={styles.pinnedUserName} numberOfLines={1}>
+        <Text style={[styles.pinnedUserName, {
+          color : theme? '#fff' : Colors.background
+        }]} numberOfLines={1}>
           {firstFilteredUser.full_name}
         </Text>
       </TouchableOpacity>
@@ -200,13 +205,15 @@ const MessageScreen = ({ navigation }) => {
         <Image source={{ uri: avatarUrl }} style={styles.messageAvatar} />
         {isUserOnline && <View style={styles.onlineDotConversation} />}
         <View style={styles.messageContent}>
-          <Text style={styles.messageName}>{memberWithDifferentUserId.full_name}</Text>
+          <Text style={[styles.messageName,{
+            color :theme ? '#fff' : Colors.background
+          }]}>{memberWithDifferentUserId.full_name}</Text>
           {
             item?.sender?._id !== user._id ? (
               <Text style={{
                 ...styles.messageText,
-                fontWeight: item?.viewed === true ? 'normal' : 'bold',
-                color: item?.viewed === true ? '#888' : '#fff',
+                fontWeight: item?.viewed  ? 'normal' : 'bold',
+                color: item?.viewed  ? '#888' : theme? '#fff': Colors.background 
               }}>{last_message}</Text>
             ) : (
               <Text style={{
@@ -225,8 +232,8 @@ const MessageScreen = ({ navigation }) => {
           {
             item?.sender?._id !== user._id ? (
               <Text style={{
-                fontWeight: item?.viewed === true ? 'normal' : 'bold',
-                color: item?.viewed === true ? '#888' : '#fff',
+                fontWeight: item?.viewed  ? 'normal' : 'bold',
+                color: item?.viewed  ? '#888' : theme? '#fff': Colors.background  ,
               }}>{timeAgo(item?.last_message_time)}</Text>
             ) : (
               <Text style={{
@@ -269,22 +276,30 @@ const MessageScreen = ({ navigation }) => {
   // };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {
+    backgroundColor: theme? Colors.background: Colors.light,
+    }]}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => {
           navigation.goBack()
         }}>
-          <Icon name="arrow-back" size={24} color="#fff" />
+          <Icon name="arrow-back" size={24} color={theme? '#fff': Colors.background } />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Tin nhắn</Text>
+        <Text style={[styles.headerTitle,{
+          color:theme? '#fff': Colors.background 
+        }]}>Tin nhắn</Text>
         <TouchableOpacity>
-          <Icon name="settings-outline" size={24} color="#fff" />
+          <Icon name="settings-outline" size={24} color={theme? '#fff': Colors.background } />
         </TouchableOpacity>
       </View>
       {/* Search Bar */}
-      <View style={styles.searchContainer}>
+      <View style={[styles.searchContainer,{
+        backgroundColor: theme ? '#3B3B3B' : '#ECEBED',
+      }]}>
         <TextInput
-          style={styles.searchInput}
+          style={[styles.searchInput,{
+            color: theme ? '#ECEBED' : Colors.background,
+          }]}
           placeholder="Tìm kiếm"
           placeholderTextColor="#999"
         />
@@ -301,7 +316,7 @@ const MessageScreen = ({ navigation }) => {
           showsHorizontalScrollIndicator={true}
         />}
 
-      <View style={styles.divider} />
+      <View style={[styles.divider]} />
 
       {/* Phần danh sách tin nhắn */}
       {loading ?
@@ -321,7 +336,6 @@ const MessageScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
   },
   header: {
     flexDirection: 'row',
@@ -355,7 +369,6 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#fff',
   },
   searchContainer: {
     flexDirection: 'row',
@@ -368,7 +381,6 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    color: '#fff',
     fontSize: 16,
   },
   searchIcon: {
@@ -411,7 +423,6 @@ const styles = StyleSheet.create({
   },
   pinnedUserName: {
     marginTop: 5,
-    color: '#fff',
     fontSize: 12,
     textAlign: 'center',
   },
@@ -432,15 +443,13 @@ const styles = StyleSheet.create({
   },
   messageName: {
     fontWeight: 'bold',
-    color: '#fff',
   },
   messageText: {
-    // color: '#fff',
     marginTop: 10,
   },
   divider: {
     height: 1,
-    backgroundColor: '#444',
+    backgroundColor: '#B3B3B3',
   },
   messageList: {
     flex: 1,

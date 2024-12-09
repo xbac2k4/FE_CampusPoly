@@ -2,10 +2,13 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { useState, useContext } from 'react';
 import { UserContext } from '../../services/provider/UseContext';
 import Screens from '../../navigation/Screens';
+import { ThemeContext } from '../../services/provider/ThemeContext';
+import Colors from '../../constants/Color';
 // Component nhận dữ liệu từ props
 const CommentComponent = ({
   avatar, name, content, time, likes, initialLiked = false, user_id_comment, navigation
 }) => {
+  const { theme } = useContext(ThemeContext);
   const { user } = useContext(UserContext);
   // State để lưu trạng thái "đã thích" (liked)
   const [isLiked, setIsLiked] = useState(initialLiked);
@@ -33,12 +36,16 @@ const CommentComponent = ({
           style={styles.imgAvatar}
         />
           </TouchableOpacity>
-        <View style={{ marginLeft: 10 }}>
+        <View style={{ marginLeft: 10,  }}>
           {/* Hiển thị tên và nội dung bình luận */}
            <TouchableOpacity onPress={() => handleProfileClick(user_id_comment)}>
-          <Text style={styles.textName}>{name}</Text>
+          <Text style={[styles.textName,{
+            color : theme? '#ECEBED' : Colors.background 
+          }]}>{name}</Text>
           </TouchableOpacity>
-          <Text style={styles.textContent}>{content}</Text>
+          <Text style={[styles.textContent,{
+            color : theme? '#ECEBED' : Colors.background 
+          }]}>{content}</Text>
           {/* Thời gian và số lượt thích */}
           <View style={styles.timeLikeContainer}>
             <Text style={styles.textTime}>{time}</Text>
@@ -84,7 +91,7 @@ const styles = StyleSheet.create({
     borderRadius: 100,
   },
   textName: {
-    color: '#ECEBED',
+    
     fontWeight: 'bold',
     fontSize: 13,
   },
