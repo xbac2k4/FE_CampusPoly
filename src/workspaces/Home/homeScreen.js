@@ -44,15 +44,33 @@ const HomeScreen = ({ navigation,route }) => {
       const response = await fetch(`${GET_POST_BY_USER_INTERACTION}?user_id=${user._id}`);
       const responseData = await response.json();
       // console.log(responseData);
-
       // const sortedData = responseData.data.sort((a, b) => new Date(b.postData.createdAt) - new Date(a.postData.createdAt));
-      setData(responseData.data);
+      const filteredData = responseData.data.filter(item => item.postData.is_pinned !== true);
+      setData(filteredData);
     } catch (error) {
       console.error('Lỗi khi lấy dữ liệu người dùng:', error);
     } finally {
       setLoading(false);
     }
   };
+
+  const fetchAdminData = async () => {
+    setRefreshing(false); // Stop the refresh animation
+    try {
+      setLoading(true); // Đặt lại loading trước khi gọi API
+      const response = await fetch(`${GET_POST_BY_USER_INTERACTION}?user_id=${user._id}`);
+      const responseData = await response.json();
+      // console.log(responseData);
+      // const sortedData = responseData.data.sort((a, b) => new Date(b.postData.createdAt) - new Date(a.postData.createdAt));
+      const filteredData = responseData.data.filter(item => item.postData.is_pinned === true);
+      setData(filteredData);
+    } catch (error) {
+      console.error('Lỗi khi lấy dữ liệu người dùng:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const fetchPostByFriends = async () => {
     setRefreshing(false); // Stop the refresh animation
     try {
