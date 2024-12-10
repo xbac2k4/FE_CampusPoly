@@ -136,6 +136,8 @@ const NotificationScreen = ({ navigation }) => {
         minute: '2-digit',
       });
 
+    // const image = item.imageUrl
+
 
     return (
       <TouchableOpacity
@@ -170,7 +172,7 @@ const NotificationScreen = ({ navigation }) => {
             : theme ? '#3A3A3C' : '#ccc',
         }]}>
         <Image
-          source={{ uri: item.imageUrl }}
+          source={{ uri: item.imageUrl.replace('localhost', '10.0.2.2') }}
           style={styles.icon}
           borderRadius={20}
         />
