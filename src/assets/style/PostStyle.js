@@ -103,7 +103,7 @@ const PostStyle = StyleSheet.create({
   },
   inner: {
     flex: 1,
-    paddingHorizontal: 24
+    paddingHorizontal: 24,
   },
   textOne: {
     fontWeight: "semibold", fontSize: 16,

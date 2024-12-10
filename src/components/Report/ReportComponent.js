@@ -91,7 +91,9 @@ const ReportComponent = ({ postId, onReportSuccess }) => {
     };
 
     return (
-        <View style={styles.inner}>
+        <View style={[styles.inner,{
+            backgroundColor : theme? Colors.background : Colors.light
+        }]}>
             {/* Hiển thị NotificationModal */}
             {/* <NotificationModal
                 visible={modalVisible}
