@@ -10,7 +10,6 @@ import { ThemeContext } from '../../services/provider/ThemeContext';
 const ReportComponent = ({ postId, onReportSuccess }) => {
     const [reportType, setReportType] = useState(null);
     const [modalVisible, setModalVisible] = useState(false); // State để điều khiển modal
-    const [pendingReportId, setPendingReportId] = useState(null); // Lưu trữ báo cáo đang chờ gửi
     const [reportSuccess, setReportSuccess] = useState(false); // State để kiểm tra kết quả gửi báo cáo
     const { theme } = useContext(ThemeContext);
 
@@ -86,7 +85,6 @@ const ReportComponent = ({ postId, onReportSuccess }) => {
 
     const handleReportPress = (reportId) => {
         setReportType(reportId);
-        setPendingReportId(reportId); // Lưu lại báo cáo đang chờ gửi
         setModalVisible(true); // Hiển thị modal xác nhận
     };
 

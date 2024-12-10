@@ -11,7 +11,7 @@ import { GET_POST_BY_FRIENDS, GET_POST_BY_USER_INTERACTION } from '../../service
 import { UserContext } from '../../services/provider/UseContext';
 import { ThemeContext } from '../../services/provider/ThemeContext';
 import { useFocusEffect } from '@react-navigation/native';
-const HomeScreen = ({ navigation,route }) => {
+const HomeScreen = ({ navigation, route }) => {
   const [greeting, setGreeting] = useState('');
   const [data, setData] = useState([]);
   const [dataPost, setDataPost] = useState([]);
@@ -24,12 +24,12 @@ const HomeScreen = ({ navigation,route }) => {
   useFocusEffect(
     useCallback(() => {
       // console.log(route.params?.from);
-      if (route.params?.from ===Screens.CreatePost) {
+      if (route.params?.from === Screens.CreatePost || route.params?.from === Screens.Comment) {
         fetchUserData();
         fetchPostByFriends();
         console.log('fetch data');
       }
-    },[route.params?.from])
+    }, [route.params?.from])
   )
 
   const getGreeting = () => {
@@ -45,7 +45,7 @@ const HomeScreen = ({ navigation,route }) => {
       const responseData = await response.json();
       // console.log(responseData);
       // const sortedData = responseData.data.sort((a, b) => new Date(b.postData.createdAt) - new Date(a.postData.createdAt));
-      const filteredData = responseData.data.filter(item => item.postData.is_pinned !== true);
+      const filteredData = responseData.data.filter(item => item.postData.is_pinned !== true && item.postData.is_blocked !== true);
       setData(filteredData);
     } catch (error) {
       console.error('Lỗi khi lấy dữ liệu người dùng:', error);

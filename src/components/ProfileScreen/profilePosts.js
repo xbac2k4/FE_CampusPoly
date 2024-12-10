@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import styles from '../../assets/style/PostStyle';
 import ToastModal from '../../components/Notification/NotificationModal';
@@ -266,6 +266,9 @@ const ProfilePosts = ({ data }) => {
 
                     <View style={styles.iconLike}>
                       <TouchableOpacity onPress={() => {
+                        if (item.postData.is_blocked) {
+                          ToastAndroid.show('Bài viết đã bị chặn', ToastAndroid.SHORT);
+                        }
                         navigation.navigate(Screens.Comment, { postId: item.postData._id })
                       }}>
                         <Image source={theme ? comment : grayComment} style={styles.iconImage} />
