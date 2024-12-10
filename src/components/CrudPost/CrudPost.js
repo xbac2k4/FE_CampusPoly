@@ -276,7 +276,7 @@ const CrudPost = ({ postId, onDeleteSuccess, onUpdateSuccess, existingPost }) =>
                 style={[styles.actionButton, styles.cancelButton]}
                 onPress={() => setIsModalVisible(false)}
               >
-                <Text style={[styles.actionText, { color: theme ? '#2E8AF6' : Colors.second }]}>Hủy</Text>
+                <Text style={styles.actionText}>Hủy</Text>
               </TouchableOpacity>
 
               <View style={styles.dialogTitleContainer}>

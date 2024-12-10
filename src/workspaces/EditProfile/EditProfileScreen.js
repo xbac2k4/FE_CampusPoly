@@ -1,19 +1,18 @@
-import React, { useRef, useState, useEffect, useContext } from 'react';
-import { View, Text, Image, TouchableOpacity, ActivityIndicator, SafeAreaView } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { launchImageLibrary } from 'react-native-image-picker';
-import ProfileInput from '../../components/EditProfile/ProfileInput';
-import ImageOptionsSheet from '../../components/EditProfile/ImageOptionsSheet';
-import UnsavedChangesModal from '../../components/EditProfile/UnsavedChangesModal';
-import GenderPicker from '../../components/EditProfile/GenderPicker';
-import BirthdayPicker from '../../components/EditProfile/BirthdayPicker';
-import styles from './styles';
-import Screens from '../../navigation/Screens';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import ImageCropPicker from 'react-native-image-crop-picker';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import BirthdayPicker from '../../components/EditProfile/BirthdayPicker';
+import GenderPicker from '../../components/EditProfile/GenderPicker';
+import ImageOptionsSheet from '../../components/EditProfile/ImageOptionsSheet';
+import ProfileInput from '../../components/EditProfile/ProfileInput';
+import UnsavedChangesModal from '../../components/EditProfile/UnsavedChangesModal';
+import Colors from '../../constants/Color';
+import Screens from '../../navigation/Screens';
 import { PUT_UPDATE_USER } from '../../services/ApiConfig';
 import { ThemeContext } from '../../services/provider/ThemeContext';
-import Colors from '../../constants/Color';
+import styles from './styles';
 
 const EditProfileScreen = () => {
   const { theme } = useContext(ThemeContext);
@@ -30,15 +29,12 @@ const EditProfileScreen = () => {
   const [bio, setBio] = useState(user.bio);
   const [gender, setGender] = useState(user.sex);
   const [birthday, setBirthday] = useState(user.birthday ? new Date(user.birthday) : null);
-  // const defaultProfileImage = Image.resolveAssetSource(require('../../assets/images/default-profile.png')).uri;
-  // const defaultBackgroundImage = Image.resolveAssetSource(require('../../assets/images/default-bg.png')).uri;
   const [loadImage, setLoadImage] = useState(false);
 
   const [profileImage, setProfileImage] = useState({
     uri: user.avatar
   });
   const [backgroundImage, setBackgroundImage] = useState({ uri: user.background });
-  const [isProfileImageChanged, setIsProfileImageChanged] = useState(false);
 
   const [isChanged, setIsChanged] = useState(false);
   const [showUnsavedChangesModal, setShowUnsavedChangesModal] = useState(false);
@@ -62,8 +58,6 @@ const EditProfileScreen = () => {
       bio !== originalData.current.bio ||
       gender !== originalData.current.gender ||
       (birthday && birthday.toISOString()) !== (originalData.current.birthday && originalData.current.birthday.toISOString());
-    // profileImage.uri !== originalData.current.profileImage ||
-    // backgroundImage.uri !== originalData.current.backgroundImage;
 
     setIsChanged(hasChanges);
   }, [name, bio, gender, birthday]);
@@ -223,7 +217,7 @@ const EditProfileScreen = () => {
   };
 
 
-  const uploadImage = async (images) => {
+  const uploadImage = async () => {
     // Giả lập việc tải ảnh lên trong 2 giây
     setLoadImage(true);
     return new Promise((resolve) => {

@@ -74,22 +74,17 @@ const NotificationScreen = ({ navigation }) => {
 
   const handleMarkAllAsRead = async () => {
     try {
-      setLoading(true);
-      // console.log("id: ", user._id);
 
-      const result = axios.put(`${READ_ALL_NOTIFICATION}`, {
+      const result = await axios.put(`${READ_ALL_NOTIFICATION}`, {
         receiver_id: user._id
       });
 
-      // console.log(result);
+      if (result.data.success) {
+        await fetchNotifications();
+      }
 
     } catch (error) {
       console.log(error);
-
-    }
-    finally {
-      await fetchNotifications();
-      setLoading(false);
     }
   };
   const fetchPostById = async (postId) => {

@@ -13,7 +13,7 @@ const Screens = {
     Comment: "Comment",
     Message:'Message',
     EditProfile: "EditProfile",
-    CreatePost:"CreatPost",
+    CreatePost:"CreatePost",
     ChatView:'ChatView',
     Menu: "Menu",
     FriendListScreen:"FriendList",

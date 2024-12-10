@@ -1,5 +1,6 @@
 // PostStyle.js
 import { StyleSheet } from 'react-native';
+import Colors from '../../constants/Color';
 
 const PostStyle = StyleSheet.create({
   textHeader: {
@@ -171,7 +172,7 @@ const PostStyle = StyleSheet.create({
   actionText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#fff',
+    color: Colors.second
   },
   container: {
     padding: 10,

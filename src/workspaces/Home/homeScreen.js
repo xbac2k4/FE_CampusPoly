@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Animated, Image, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { PageIndicator } from 'react-native-page-indicator';
@@ -10,7 +10,8 @@ import Screens from '../../navigation/Screens';
 import { GET_POST_BY_FRIENDS, GET_POST_BY_USER_INTERACTION } from '../../services/ApiConfig';
 import { UserContext } from '../../services/provider/UseContext';
 import { ThemeContext } from '../../services/provider/ThemeContext';
-const HomeScreen = ({ navigation }) => {
+import { useFocusEffect } from '@react-navigation/native';
+const HomeScreen = ({ navigation,route }) => {
   const [greeting, setGreeting] = useState('');
   const [data, setData] = useState([]);
   const [dataPost, setDataPost] = useState([]);
@@ -19,6 +20,17 @@ const HomeScreen = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
   const { user } = useContext(UserContext);
   const { theme } = useContext(ThemeContext);
+
+  useFocusEffect(
+    useCallback(() => {
+      // console.log(route.params?.from);
+      if (route.params?.from ===Screens.CreatePost) {
+        fetchUserData();
+        fetchPostByFriends();
+        console.log('fetch data');
+      }
+    },[route.params?.from])
+  )
 
   const getGreeting = () => {
 
@@ -212,9 +224,9 @@ const HomeScreen = ({ navigation }) => {
               // <ActivityIndicator size="large" color="#FFF" style={{ marginTop: 20 }} />
               <LoadingTimeline quantity={3} />
             ) : selectedTab === 'Dành cho bạn' ? (
-              <ProfilePosts navigation={navigation} data={data} />
+              <ProfilePosts data={data} />
             ) : (
-              <ProfilePosts navigation={navigation} data={dataPost} />
+              <ProfilePosts data={dataPost} />
             )}
 
             {/* Thêm khoảng trống ở cuối danh sách bài post */}
