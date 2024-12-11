@@ -28,7 +28,7 @@ const CommentScreen = ({ navigation, route }) => {
   const { postId } = route.params;/// ID của  bài viết
   const [post, setPost] = useState(null);
   const [comment, setComment] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isLiked, setIsLiked] = useState();
   const [likedPosts, setLikedPosts] = useState(); // Lưu trạng thái các bài viết đã thích
@@ -215,80 +215,10 @@ const CommentScreen = ({ navigation, route }) => {
     }
   };
 
-  // if (loading) {
-  //   return <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 20 }} />;
-  //   // return <CommentLoading/>
-  // }
-
   if (error) {
     return <Text style={styles.errorText}>Error loading post: {error.message}</Text>;
   }
 
-  // if (!post) {
-  //   return <Text style={styles.errorText}>No post found</Text>;
-  // }
-
-  const renderImages = (images, postId) => {
-    // console.log(images);
-
-    if (!images || images.length === 0) return null; // Handle cases where image is missing
-
-    if (images.length === 1) {
-      const imageUrl = images[0].replace('localhost', '10.0.2.2');
-      return imageUrl ? (
-        <Image source={{ uri: imageUrl }} style={styles.postImage} />
-      ) : null;
-    }
-
-    return (
-      <>
-        <ScrollView
-          horizontal
-          pagingEnabled
-          style={styles.imageList}
-          showsHorizontalScrollIndicator={false}
-          onScroll={(event) => {
-            const index = Math.round(event.nativeEvent.contentOffset.x / screenWidth);
-            setActiveImageIndex((prevState) => ({
-              ...prevState,
-              [postId]: index,
-            }));
-          }}
-        >
-          {images.map((image, index) => (
-            <Image key={index} source={{ uri: image.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' }} style={styles.postImage} />
-          ))}
-        </ScrollView>
-        <View style={styles.paginationContainer}>
-          {images.map((_, index) => (
-            <View
-              key={index}
-              style={[
-                styles.paginationDot,
-                activeImageIndex[postId] === index ? styles.activeDot : styles.inactiveDot,
-              ]}
-            />
-          ))}
-        </View>
-      </>
-    );
-  };
-
-
-  const NoData = () => {
-    setTimeout(() => {
-      navigation.navigate(Screens.Home, { from: Screens.Comment });
-    }, 2000);
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ fontSize: 16, fontWeight: 'bold' }}>Bài viết không tồn tại</Text>
-      </View>
-    );
-  }
-
-  if (post === null) {
-    return <NoData />;
-  }
 
   return (
     <View style={{ flex: 1, backgroundColor: theme ? '#181A1C' : '#fff' }}>

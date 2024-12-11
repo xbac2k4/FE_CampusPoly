@@ -33,3 +33,5 @@ export const GET_POST_BY_USER_INTERACTION = API_URL + 'posts/get-posts-by-user-i
 export const INTERACTION_SCORE = API_URL + 'userpreferences/interaction-scoring';
 export const GET_SEARCH_POST_BY_HASHTAG = API_URL + 'searchpluss/search-by-hashtag?searchTerm=';
 export const GET_POST_BY_FRIENDS = API_URL + 'posts/get-posts-by-friends';
+export const CHECK_POST = API_URL + 'posts/check-post';
+export const DELETE_NOTIFICATION = API_URL + 'notifications/delete-notification';

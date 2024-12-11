@@ -6,7 +6,7 @@ import styles from '../../assets/style/PostStyle';
 import ToastModal from '../../components/Notification/NotificationModal';
 import ReportComponent from '../../components/Report/ReportComponent';
 import Screens from '../../navigation/Screens';
-import { INTERACTION_SCORE, LIKE_POST, UNLIKE_POST } from '../../services/ApiConfig';
+import { CHECK_POST, INTERACTION_SCORE, LIKE_POST, UNLIKE_POST } from '../../services/ApiConfig';
 // Import các hình ảnh
 import comment from '../../assets/images/comment.png';
 import grayComment from '../../assets/images/gray_comment.png';
@@ -21,6 +21,7 @@ import { TYPE_LIKE_POST } from '../../services/TypeNotify';
 import { timeAgo } from '../../utils/formatTime';
 import CrudPost from '../CrudPost/CrudPost';
 import RenderImage from '../Post/RenderImage';
+import axios from 'axios';
 const ProfilePosts = ({ data }) => {
   const navigation = useNavigation();
   const [userAll, setUserAll] = useState(data); // Chứa các bài viết
@@ -198,6 +199,25 @@ const ProfilePosts = ({ data }) => {
     return null; // Trả về null nếu không tìm thấy bài viết
   };
 
+  const handdleComment = async (postData) => {
+
+    const result = await axios.post(CHECK_POST, {
+      _id: postData._id
+    })
+
+    if (!result.data.success) {
+      ToastAndroid.show(result.data.message, ToastAndroid.SHORT);
+      return
+    }
+
+    if (result.data.isBlocked) {
+      ToastAndroid.show(result.data.message, ToastAndroid.SHORT);
+      return
+    }
+
+    navigation.navigate(Screens.Comment, { postId: postData._id })
+  }
+
 
 
 
@@ -265,12 +285,7 @@ const ProfilePosts = ({ data }) => {
                     </View>
 
                     <View style={styles.iconLike}>
-                      <TouchableOpacity onPress={() => {
-                        if (item.postData.is_blocked) {
-                          ToastAndroid.show('Bài viết đã bị chặn', ToastAndroid.SHORT);
-                        }
-                        navigation.navigate(Screens.Comment, { postId: item.postData._id })
-                      }}>
+                      <TouchableOpacity onPress={() => handdleComment(item.postData)}>
                         <Image source={theme ? comment : grayComment} style={styles.iconImage} />
                       </TouchableOpacity>
                       <Text style={styles.metaText}>{item.postData.comment_count}</Text>
