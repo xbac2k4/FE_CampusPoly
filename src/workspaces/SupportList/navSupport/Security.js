@@ -42,24 +42,36 @@ const Security = ({ navigation }) => {
             <Text style={{ color: '#2D88FF' }}> tùy chỉnh quyền truy cập vào tài khoản CampusPoly</Text>, hoặc kích hoạt các phương thức bảo mật nâng cao.
           </Text>
 
-          <Text style={styles.texthp}>
+          <Text style={[styles.texthp, {
+            color: theme ? '#fff' : Colors.background
+
+          }]}>
             Tìm hiểu thêm về <Text style={{ color: '#2D88FF' }}>quyền riêng tư và cài đặt bảo mật</Text> của bạn trên CampusPoly.
           </Text>
 
           {/* Options */}
           <View style={{ marginTop: 20 }}>
             <TouchableOpacity style={styles.navItem}>
-              <Text style={[styles.navText, { alignSelf: 'flex-start' }]}>
+              <Text style={[styles.navText, {
+                alignSelf: 'flex-start',
+                color: theme ? '#fff' : Colors.background
+              }]}>
                 Quản lý ai có thể xem thông tin cá nhân
               </Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.navItem, { marginTop: 10 }]}>
-              <Text style={[styles.navText, { alignSelf: 'flex-start' }]}>
+              <Text style={[styles.navText, {
+                alignSelf: 'flex-start',
+                color: theme ? '#fff' : Colors.background
+              }]}>
                 Kích hoạt xác thực hai yếu tố
               </Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.navItem, { marginTop: 10 }]}>
-              <Text style={[styles.navText, { alignSelf: 'flex-start' }]}>
+              <Text style={[styles.navText, {
+                alignSelf: 'flex-start',
+                color: theme ? '#fff' : Colors.background
+              }]}>
                 Xem lại và quản lý quyền truy cập ứng dụng
               </Text>
             </TouchableOpacity>

@@ -41,20 +41,32 @@ const Page = ({ navigation }) => {
             Bạn có thể tìm thấy câu trả lời và các hướng dẫn chi tiết về cách quản lý bài viết trên CampusPoly. Hãy xem qua các tùy chọn hỗ trợ bên dưới để tìm thông tin phù hợp với nhu cầu của bạn.
           </Text>
 
-          <Text style={styles.texthp}>
+          <Text style={[styles.texthp, {
+            color: theme ? '#fff' : Colors.background
+
+          }]}>
             Nếu cần thêm thông tin, hãy truy cập vào <Text style={{ color: '#2D88FF' }}>trung tâm trợ giúp CampusPoly</Text>.
           </Text>
 
           {/* Options */}
           <View style={{ marginTop: 20 }}>
             <TouchableOpacity style={styles.navItem}>
-              <Text style={[styles.navText, { alignSelf: 'flex-start' }]}>Cách chỉnh sửa bài viết</Text>
+              <Text style={[styles.navText, {
+                alignSelf: 'flex-start',
+                color: theme ? '#fff' : Colors.background
+              }]}>Cách chỉnh sửa bài viết</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.navItem, { marginTop: 10 }]}>
-              <Text style={[styles.navText, { alignSelf: 'flex-start' }]}>Xóa bài viết đã đăng</Text>
+              <Text style={[styles.navText, {
+                alignSelf: 'flex-start',
+                color: theme ? '#fff' : Colors.background
+              }]}>Xóa bài viết đã đăng</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.navItem, { marginTop: 10 }]}>
-              <Text style={[styles.navText, { alignSelf: 'flex-start' }]}>Quản lý quyền riêng tư bài viết</Text>
+              <Text style={[styles.navText, {
+                alignSelf: 'flex-start',
+                color: theme ? '#fff' : Colors.background
+              }]}>Quản lý quyền riêng tư bài viết</Text>
             </TouchableOpacity>
           </View>
         </View>

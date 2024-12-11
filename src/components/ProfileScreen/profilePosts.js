@@ -354,6 +354,7 @@ const ProfilePosts = ({ data }) => {
           }}
           onUpdateSuccess={() => {
             refEditDeleteSheet.current.close(); // Đóng sheet khi sửa thành công
+            
           }}
           existingPost={getExistingPost(selectedPostId)} // Gọi hàm để lấy dữ liệu bài viết
         />
