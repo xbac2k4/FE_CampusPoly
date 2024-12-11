@@ -30,7 +30,7 @@ const ProfilePosts = ({ data }) => {
   const refEditDeleteSheet = useRef(); // Dùng cho showEditDeleteSheet
   const [likedPosts, setLikedPosts] = useState([]); // Lưu trạng thái các bài viết đã thích
   const [selectedPostId, setSelectedPostId] = useState(null); // ID bài viết được chọn để báo cáo
-  const { sendNotifySocket } = useContext(SocketContext);
+  const { sendNotifySocket, socket } = useContext(SocketContext);
   const { theme } = useContext(ThemeContext);
 
   const refRBSheet = useRef();
@@ -187,7 +187,7 @@ const ProfilePosts = ({ data }) => {
 
     if (post) {
 
-      console.log('hagtag:', post.postData.hashtag.hashtag_name);
+      // console.log('hagtag:', post.postData.hashtag.hashtag_name);
       return {
         title: post.postData.title,
         content: post.postData.content,
@@ -352,8 +352,28 @@ const ProfilePosts = ({ data }) => {
             setSelectedPostId(null);
             refEditDeleteSheet.current.close(); // Đóng sheet khi xóa thành công
           }}
-          onUpdateSuccess={() => {
-            refEditDeleteSheet.current.close(); // Đóng sheet khi sửa thành công
+          onUpdateSuccess={(data) => {
+            // Cập nhật lại mảng userAll với dữ liệu mới
+            const updatedArray = userAll.map((item) =>
+              item.postData._id === data._id
+                ? {
+                  ...item,
+                  postData: {
+                    ...item.postData, // Giữ nguyên các trường khác
+                    title: data.title, // Cập nhật title
+                    content: data.content, // Cập nhật content
+                    image: data.image, // Cập nhật image
+                  },
+                }
+                : item
+            );
+            // console.log(userAll);
+            // console.log(updatedArray);
+            // Cập nhật lại state
+            setUserAll(updatedArray);
+
+            // Đóng sheet khi sửa thành công
+            refEditDeleteSheet.current.close();
           }}
           existingPost={getExistingPost(selectedPostId)} // Gọi hàm để lấy dữ liệu bài viết
         />
