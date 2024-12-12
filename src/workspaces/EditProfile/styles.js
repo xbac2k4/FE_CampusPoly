@@ -16,6 +16,7 @@ export default StyleSheet.create({
   headerButton: {
     fontSize: 18,
     fontWeight: 'bold',
+    color : '#727477'
   },
   headerButtonActive: {
     color: 'orange',
