@@ -58,6 +58,7 @@ const CommentScreen = ({ navigation, route }) => {
 
       const data = await response.json();
 
+      console.log("Fetched post data:", data);
 
       setPost(data.data);
       if (data?.data?.likeData.some((like) => like.user_id_like._id === user._id)) {
@@ -274,16 +275,19 @@ const CommentScreen = ({ navigation, route }) => {
                 {post?.postData?.content}
               </Text>
               {post?.postData?.hashtag?.hashtag_name ? (
-                <Text style={{ fontFamily: 'rgl1', fontSize: 16, fontWeight: '700', color: "#0078D4", marginTop: 10, paddingHorizontal: 10, }}>
+                <Text style={{ fontFamily: 'rgl1', fontSize: 16, fontWeight: '700', color: "#0078D4", marginTop: 10, paddingHorizontal: 10, paddingBottom: 13}}>
                   {post.postData.hashtag.hashtag_name}
                 </Text>
               ) : null}
 
-              {post?.postData?.image && <RenderImage images={post?.postData?.image} subStyle={
-                {
-                  bottom: -33
-                }
-              } />}
+              {post?.postData?.image && post?.postData?.image.length > 0 && (
+                <RenderImage
+                  images={post?.postData?.image.map(img =>
+                    img.includes('localhost') ? img.replace('localhost', '10.0.2.2') : img // Thay localhost thành 10.0.2.2 hoặc giữ nguyên nếu không phải localhost
+                  )}
+                  subStyle={{ bottom: -33 }}
+                />
+              )}
             </View>
 
             <View style={styles.interactContainer}>
