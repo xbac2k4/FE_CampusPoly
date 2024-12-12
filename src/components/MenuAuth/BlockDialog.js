@@ -1,9 +1,15 @@
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import React, { useContext } from 'react'
 import { BlurView } from '@react-native-community/blur'
 import Feather from 'react-native-vector-icons/Feather';
+import { ThemeContext } from '../../services/provider/ThemeContext';
+import Colors from '../../constants/Color';
+
+
 
 const BlockDialog = ({ isShowDialog, toggleShowDialog }) => {
+  const { theme } = useContext(ThemeContext);
+
     return (
         <Modal animationType='fade'
             transparent={true}
@@ -15,7 +21,10 @@ const BlockDialog = ({ isShowDialog, toggleShowDialog }) => {
             <View style={st.modalContainer}>
 
                 {/* dialog */}
-                <View style={st.modalContent}>
+                <View style={[st.modalContent,{
+                    backgroundColor : theme? Colors.background : Colors.light,
+                    borderColor : theme? Colors.light : Colors.background
+                }]}>
 
                     <View style={{
                         flexDirection: 'row',
@@ -23,14 +32,21 @@ const BlockDialog = ({ isShowDialog, toggleShowDialog }) => {
                         <Feather name='alert-triangle' size={30} color='red' />
                         <Text style={st.modalHeader}>Tạm thời tài khoản của bạn bị vô hiệu hóa</Text>
                     </View>
-                    <Text style={st.modalTitle}>
+                    <Text style={[st.modalTitle,{
+                        color: theme? '#fff' : Colors.background
+                    }]}>
                         Cần hỗ trợ vui lòng liên hệ qua địa chỉ: campuspoly.vn@gmail.com
                     </Text>
 
                     <TouchableOpacity
                         onPress={toggleShowDialog}
-                        style={st.modalButton}>
-                        <Text style={st.modalBtnText}>
+                        style={[st.modalButton,{
+                            backgroundColor : theme? Colors.background : Colors.light , 
+                            borderColor : theme? Colors.light : Colors.background, elevation : theme?0:5
+                        }]}>
+                        <Text style={[st.modalBtnText,{
+                            color: theme? '#fff' : Colors.background
+                        }]}>
                             Tôi hiểu
                         </Text>
                     </TouchableOpacity>
@@ -52,11 +68,9 @@ const st = StyleSheet.create({
         backgroundColor: 'rgba(0,0,0,0.5)'
     },
     modalContent: {
-        backgroundColor: '#181a1c',
         width: '70%',
         borderRadius: 20,
         borderWidth: 1,
-        borderColor: 'white',
         padding: 20,
         alignItems: 'center'
     },
@@ -75,17 +89,14 @@ const st = StyleSheet.create({
         paddingHorizontal: 10
     },
     modalButton: {
-        backgroundColor: '#181a1c',
         padding: 10,
         borderRadius: 20,
         borderWidth: 1,
-        borderColor: 'white',
         marginTop: 20,
         width: '50%',
         alignItems: 'center',
     },
     modalBtnText: {
-        color: 'white',
         fontSize: 16
     }
 })
