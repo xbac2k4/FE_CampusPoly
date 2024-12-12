@@ -249,7 +249,7 @@ const HomeScreen = ({ navigation, route }) => {
             justifyContent: 'center',
 
           }}>
-            <PageIndicator count={pages.length} current={animatedCurrent} color='white' />
+            <PageIndicator count={pages.length} current={animatedCurrent} color={Colors.second} />
 
           </View>
           {/* slider */}
