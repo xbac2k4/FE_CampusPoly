@@ -20,14 +20,14 @@ const HomeScreen = ({ navigation, route }) => {
   const [refreshing, setRefreshing] = useState(false);
   const { user } = useContext(UserContext);
   const { theme } = useContext(ThemeContext);
+  const scrollViewRef = useRef(null);
 
   useFocusEffect(
     useCallback(() => {
       // console.log(route.params?.from);
       if (route.params?.from === Screens.CreatePost || route.params?.from === Screens.Comment) {
         fetchUserData();
-        fetchPostByFriends();
-        console.log('fetch data');
+        // fetchPostByFriends();
       }
     }, [route.params?.from])
   )
@@ -91,7 +91,7 @@ const HomeScreen = ({ navigation, route }) => {
   useEffect(() => {
     setGreeting(getGreeting());
     fetchUserData();
-    fetchPostByFriends();
+    // fetchPostByFriends();
   }, []);
 
   // slider
@@ -113,6 +113,17 @@ const HomeScreen = ({ navigation, route }) => {
     },
   ];
 
+  const forYou = async () => {
+    scrollToTop();
+    setSelectedTab('Dành cho bạn')
+    fetchUserData()
+  }
+
+  const forFriends = async () => {
+    scrollToTop();
+    setSelectedTab('Bạn bè')
+    fetchPostByFriends()
+  }
   const { width, height } = useWindowDimensions();
   const scrollX = useRef(new Animated.Value(0)).current;
   const animatedCurrent = useRef(Animated.divide(scrollX, width)).current;
@@ -120,10 +131,10 @@ const HomeScreen = ({ navigation, route }) => {
 
   const renderHeaderTabs = () => (
     <View
-      style={[styles.tabContainer]}>
+      style={styles.tabContainer}>
       <TouchableOpacity
         style={{ flex: 1 }}
-        onPress={() => setSelectedTab('Dành cho bạn')}
+        onPress={forYou}
       >
         <LinearGradient
           colors={selectedTab == 'Dành cho bạn' ? [Colors.first, Colors.second] : theme ? [Colors.background, Colors.background] : ['#ccc', '#ccc']}
@@ -134,7 +145,7 @@ const HomeScreen = ({ navigation, route }) => {
       </TouchableOpacity>
       <TouchableOpacity
         style={{ flex: 1 }}
-        onPress={() => setSelectedTab('Bạn bè')}
+        onPress={forFriends}
       >
         <LinearGradient
           colors={selectedTab == 'Bạn bè' ? [Colors.first, Colors.second] : theme ? [Colors.background, Colors.background] : ['#ccc', '#ccc']}
@@ -157,100 +168,106 @@ const HomeScreen = ({ navigation, route }) => {
     // refreshing, you can return promise here.
   };
 
+  const scrollToTop = () => {
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollTo({ y: 0, animated: true });
+    }
+  };
+
   return (
     <View style={[styles.container, {
       backgroundColor: theme ? Colors.background : '#fff',
     }]}>
       <ScrollView
+        ref={scrollViewRef}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
+        stickyHeaderIndices={[1]}
       >
-        <View style={styles.container}>
-          <View style={{ flex: 1 }}>
-            <View style={styles.headerContent}>
-              <Text style={[styles.greetingText, {
-                color: theme ? '#fff' : Colors.second,
-              }]}>
-                <Text>{greeting}</Text>
-              </Text>
-              <TouchableOpacity
-                style={[styles.circleIcon, {
-                  borderColor: theme ? '#fff' : Colors.second
-                }]}
-                onPress={() => navigation.navigate(Screens.Message)}
-              >
-                <AntDesign name="message1" size={15} color={theme ? '#fff' : Colors.second} />
-              </TouchableOpacity>
-            </View>
-            {/* Tab điều hướng */}
-            {renderHeaderTabs()}
+        <View style={styles.headerContent}>
+          <Text style={[styles.greetingText, {
+            color: theme ? '#fff' : Colors.second,
+          }]}>
+            <Text>{greeting}</Text>
+          </Text>
+          <TouchableOpacity
+            style={[styles.circleIcon, {
+              borderColor: theme ? '#fff' : Colors.second
+            }]}
+            onPress={() => navigation.navigate(Screens.Message)}
+          >
+            <AntDesign name="message1" size={15} color={theme ? '#fff' : Colors.second} />
+          </TouchableOpacity>
+        </View>
+        {/* Tab điều hướng */}
+        <>
+          {renderHeaderTabs()}
+        </>
 
-            {/* slider */}
-            <View>
-              <Animated.ScrollView
-                horizontal={true}
-                pagingEnabled={true}
-                showsHorizontalScrollIndicator={false}
-                onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], {
-                  useNativeDriver: true,
-                })}
-              >
-                {pages.map((page, index) => (
-                  <View key={index} style={[{
+        {/* slider */}
+        <View>
+          <Animated.ScrollView
+            horizontal={true}
+            pagingEnabled={true}
+            showsHorizontalScrollIndicator={false}
+            onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], {
+              useNativeDriver: true,
+            })}
+          >
+            {pages.map((page, index) => (
+              <View key={index} style={[{
 
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }, { width, height: height * 0.3 }]}>
-                    <Image source={{ uri: page.image }} width={width * 0.9} height={height * 0.25} style={{
-                      borderRadius: 10,
-                    }}
-                    />
-                    <View style={{
-                      left: 0,
-                      right: 0,
-                      backgroundColor: 'rgba(0,0,0,0.3)',
-                      paddingVertical: 20,
-                      marginHorizontal: 20,
-                      bottom: 20,
-                      position: 'absolute',
-                      borderBottomEndRadius: 10,
-                      borderBottomStartRadius: 10,
-                    }}>
-                      <Text style={{ color: 'white', marginLeft: 10 }}>{page.title}</Text>
-                      <Text style={{ color: 'white', marginLeft: 10 }}>{page.content}</Text>
-                    </View>
-                  </View>
-                ))}
-              </Animated.ScrollView>
-              <View style={{
-                left: 20,
-                right: 20,
-                bottom: 0,
-                position: 'absolute',
                 alignItems: 'center',
                 justifyContent: 'center',
-
-              }}>
-                <PageIndicator count={pages.length} current={animatedCurrent} color='white' />
-
+              }, { width, height: height * 0.3 }]}>
+                <Image source={{ uri: page.image }} width={width * 0.9} height={height * 0.25} style={{
+                  borderRadius: 10,
+                }}
+                />
+                <View style={{
+                  left: 0,
+                  right: 0,
+                  backgroundColor: 'rgba(0,0,0,0.3)',
+                  paddingVertical: 20,
+                  marginHorizontal: 20,
+                  bottom: 20,
+                  position: 'absolute',
+                  borderBottomEndRadius: 10,
+                  borderBottomStartRadius: 10,
+                }}>
+                  <Text style={{ color: 'white', marginLeft: 10 }}>{page.title}</Text>
+                  <Text style={{ color: 'white', marginLeft: 10 }}>{page.content}</Text>
+                </View>
               </View>
-              {/* slider */}
-            </View>
+            ))}
+          </Animated.ScrollView>
+          <View style={{
+            left: 20,
+            right: 20,
+            bottom: 0,
+            position: 'absolute',
+            alignItems: 'center',
+            justifyContent: 'center',
 
-            {loading ? (
-              // <ActivityIndicator size="large" color="#FFF" style={{ marginTop: 20 }} />
-              <LoadingTimeline quantity={3} />
-            ) : selectedTab === 'Dành cho bạn' ? (
-              <ProfilePosts data={data} />
-            ) : (
-              <ProfilePosts data={dataPost} />
-            )}
+          }}>
+            <PageIndicator count={pages.length} current={animatedCurrent} color='white' />
 
-            {/* Thêm khoảng trống ở cuối danh sách bài post */}
-            <View style={{ height: 60 }} />
           </View>
+          {/* slider */}
         </View>
+
+        {loading ? (
+          // <ActivityIndicator size="large" color="#FFF" style={{ marginTop: 20 }} />
+          <LoadingTimeline quantity={3} />
+        ) : selectedTab === 'Dành cho bạn' ? (
+          <ProfilePosts data={data} />
+        ) : (
+          <ProfilePosts data={dataPost} />
+        )}
+
+        {/* Thêm khoảng trống ở cuối danh sách bài post */}
+        <View style={{ height: 60 }} />
       </ScrollView>
     </View>
   );
