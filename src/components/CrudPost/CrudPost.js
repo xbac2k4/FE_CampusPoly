@@ -8,6 +8,9 @@ import { DELETE_POST, UPDATE_POST } from '../../services/ApiConfig';
 import { ThemeContext } from '../../services/provider/ThemeContext';
 import { UserContext } from '../../services/provider/UseContext';
 import NotificationModal from '../Notification/NotificationModal';
+import { isEmpty } from '../../utils/isEmpty';
+import Loading from '../MenuAuth/Loading';
+import { SocketContext } from '../../services/provider/SocketContext';
 
 const CrudPost = ({ postId, onDeleteSuccess, onUpdateSuccess, existingPost }) => {
   const { user } = useContext(UserContext);
@@ -23,15 +26,15 @@ const CrudPost = ({ postId, onDeleteSuccess, onUpdateSuccess, existingPost }) =>
   const [isChanged, setIsChanged] = useState(false); // Trạng thái kiểm tra thay đổi
   const [oldTitle, setOldTitle] = useState();
   const [oldContent, setOldContent] = useState();
-  const [oldImages, setOldImages] = useState();
+  const [oldImage, setOldImages] = useState([]);
   const { theme } = useContext(ThemeContext);
+  const [loading, setLoading] = useState(false);
 
 
   useEffect(() => {
     if (existingPost) {
       setOldTitle(existingPost.title || '');
       setOldContent(existingPost.content || '');
-      setOldImages(existingPost.image)
       setTitle(existingPost.title || '');
       setContent(existingPost.content || '');
       setHagtag(existingPost.hagtag || '');
@@ -39,12 +42,22 @@ const CrudPost = ({ postId, onDeleteSuccess, onUpdateSuccess, existingPost }) =>
       if (existingPost.image && existingPost.image.length > 0) {
         const oldImages = existingPost.image.map(uri => ({ uri: uri.replace('localhost', '10.0.2.2') }));
         setSelectedImages(oldImages); // Thêm ảnh cũ vào state
+        setOldImages(oldImages);
       }
     }
   }, [existingPost]);
 
+  const arraysEqual = (arr1, arr2) => {
+    if (arr1.length !== arr2.length) return false;
+    return arr1.every((value, index) => value === arr2[index]);
+  };
+
   useEffect(() => {
-    if (title === oldTitle && content === oldContent && oldImages === selectedImages) {
+    if (title === oldTitle && content === oldContent && arraysEqual(selectedImages, oldImage)) {
+      setIsChanged(false);
+      return;
+    }
+    if (isEmpty(title) || isEmpty(content)) {
       setIsChanged(false);
       return;
     }
@@ -183,8 +196,18 @@ const CrudPost = ({ postId, onDeleteSuccess, onUpdateSuccess, existingPost }) =>
         formData.append('image', []); // Gửi mảng rỗng nếu không có ảnh
       }
 
-      const response = await fetch(
-        `${UPDATE_POST}/${postId}?user_id=${user._id}`,
+      setTimeout( async () => {
+        await fetchUpdate(formData)
+      }, 2000);
+
+    } catch (error) {
+      console.error('Lỗi khi cập nhật bài viết:', error);
+      ToastAndroid.show("Đã xảy ra lỗi khi cập nhật bài viết!", ToastAndroid.SHORT);
+    }
+  };
+  const fetchUpdate = async (formData) => {
+    try {
+      const response = await fetch(`${UPDATE_POST}/${postId}?user_id=${user._id}`,
         {
           method: 'PUT',
           body: formData,
@@ -193,36 +216,24 @@ const CrudPost = ({ postId, onDeleteSuccess, onUpdateSuccess, existingPost }) =>
           },
         }
       );
-
+  
       if (response.ok) {
-        // Snackbar.show({
-        //   text: 'Bài viết đã được cập nhật thành công!',
-        //   duration: Snackbar.LENGTH_SHORT,
-        //   backgroundColor: '#4CAF50',
-        // });
+        const data = await response.json();
+        // console.log(data.data);        
+        setLoading(false)
         ToastAndroid.show("Cập nhật thành công", ToastAndroid.SHORT);
-        onUpdateSuccess?.();
+        onUpdateSuccess?.(data.data);
       } else {
         const errorResponse = await response.json();
         console.error('Response Error:', errorResponse);
         ToastAndroid.show("Không thể cập nhật bài viết. Vui lòng thử lại!", ToastAndroid.SHORT);
-        // Snackbar.show({
-        //   text: 'Không thể cập nhật bài viết. Vui lòng thử lại!',
-        //   duration: Snackbar.LENGTH_SHORT,
-        //   backgroundColor: '#f44336',
-        // });
       }
     } catch (error) {
-      console.error('Lỗi khi cập nhật bài viết:', error);
-      ToastAndroid.show("Đã xảy ra lỗi khi cập nhật bài viết!", ToastAndroid.SHORT);
-      // Snackbar.show({
-      //   text: 'Đã xảy ra lỗi khi cập nhật bài viết!',
-      //   duration: Snackbar.LENGTH_SHORT,
-      //   backgroundColor: '#f44336',
-      // });
+      console.log(error);
+    } finally {
+      setLoading(false)
     }
-  };
-
+  }
   return (
     <View style={[styles.inner, {
       backgroundColor: theme ? Colors.background : '#f3f4f8'
@@ -289,6 +300,7 @@ const CrudPost = ({ postId, onDeleteSuccess, onUpdateSuccess, existingPost }) =>
                 style={styles.buttonContainer}>
                 <TouchableOpacity
                   onPress={() => {
+                    setLoading(true)
                     handleUpdatePost()
                   }}
                   disabled={!isChanged} // Disable nếu === false
@@ -412,7 +424,7 @@ const CrudPost = ({ postId, onDeleteSuccess, onUpdateSuccess, existingPost }) =>
           </View>
 
         </View>
-
+        <Loading isLoading={loading} />
       </Modal>
 
     </View>
