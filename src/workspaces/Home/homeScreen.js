@@ -31,7 +31,6 @@ const HomeScreen = ({ navigation, route }) => {
       if (route.params?.from === Screens.CreatePost || route.params?.from === Screens.Comment) {
         fetchUserData();
         fetchPostByFriends();
-        console.log('fetch data');
       }
     }, [route.params?.from])
   )
@@ -47,15 +46,14 @@ const HomeScreen = ({ navigation, route }) => {
       setLoading(true); // Đặt lại loading trước khi gọi API
       const response = await fetch(`${GET_POST_BY_USER_INTERACTION}?user_id=${user._id}`);
       const responseData = await response.json();
-      // console.log(responseData);
       // const sortedData = responseData.data.sort((a, b) => new Date(b.postData.createdAt) - new Date(a.postData.createdAt));
       const filteredData = responseData.data.filter(item => item.postData.is_pinned !== true && item.postData.is_blocked !== true);
       setData(filteredData);
       const filteredDataAdmin = responseData.data.filter(item => item.postData.is_pinned === true && item.postData.is_blocked !== true);
       const sortedDataAdmin = filteredDataAdmin.sort((a, b) => new Date(b.postData.createdAt) - new Date(a.postData.createdAt));
-      if (sortedDataAdmin.length === 0) {
-        console.log("Không có bài viết admin nào.");
-      }
+      // if (sortedDataAdmin.length === 0) {
+      //   console.log("Không có bài viết admin nào.");
+      // }
       // Cập nhật slider
       const adminPages = sortedDataAdmin.map(item => ({
         image: item?.postData?.image[0] || 'https://i.ytimg.com/vi/eETwsp0_HkA/sddefault.jpg', // Lấy ảnh đầu tiên trong mảng image, nếu không có thì dùng ảnh mặc định

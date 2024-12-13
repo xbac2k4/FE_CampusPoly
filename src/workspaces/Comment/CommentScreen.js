@@ -58,7 +58,7 @@ const CommentScreen = ({ navigation, route }) => {
 
       const data = await response.json();
 
-      console.log("Fetched post data:", data);
+      // console.log("Fetched post data:", data);
 
       setPost(data.data);
       if (data?.data?.likeData.some((like) => like.user_id_like._id === user._id)) {
