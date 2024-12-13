@@ -196,7 +196,7 @@ const CrudPost = ({ postId, onDeleteSuccess, onUpdateSuccess, existingPost }) =>
         formData.append('image', []); // Gửi mảng rỗng nếu không có ảnh
       }
 
-      setTimeout( async () => {
+      setTimeout(async () => {
         await fetchUpdate(formData)
       }, 2000);
 
@@ -216,7 +216,7 @@ const CrudPost = ({ postId, onDeleteSuccess, onUpdateSuccess, existingPost }) =>
           },
         }
       );
-  
+
       if (response.ok) {
         const data = await response.json();
         // console.log(data.data);        
@@ -317,8 +317,8 @@ const CrudPost = ({ postId, onDeleteSuccess, onUpdateSuccess, existingPost }) =>
               elevation: theme ? 0 : 5
             }]}>
               <View style={styles.postRow}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, alignSelf: 'flex-start' }}>
-                  <View style={{ top: '-40%' }}>
+                <View style={{ flexDirection: 'row', marginBottom: 10, alignSelf: 'flex-start' }}>
+                  <View>
                     {user && user?.avatar ? (
                       <Image source={{ uri: user?.avatar.replace('localhost', '10.0.2.2') }} style={styles.avatar} />
                     ) : (

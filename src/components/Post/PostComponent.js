@@ -198,28 +198,28 @@ const PostComponent = ({ title: initialTitle, content: initialContent, hashtag: 
             />
             <TextInput
               style={[styles.textInput, {
-                height: Math.max(40, inputHeight),
+                // height: Math.max(40, inputHeight),
                 color: theme ? '#ECEBED' : Colors.background,
               }]}
               placeholder="Bạn đang nghĩ gì?"
               placeholderTextColor="#888"
               multiline
               value={content} // Sử dụng giá trị từ state
-              onContentSizeChange={(event) => setInputHeight(event.nativeEvent.contentSize.height)}
+              // onContentSizeChange={(event) => setInputHeight(event.nativeEvent.contentSize.height)}
               onChangeText={handleContentChange}
               underlineColorAndroid="transparent"
             />
             {/* TextInput để nhập hashtag */}
             <TextInput
               style={[styles.textInput, {
-                height: Math.max(40, inputHeight),
+                // height: Math.max(40, inputHeight),
                 color: theme ? '#ECEBED' : Colors.background,
               }]}
               placeholder="#Hashtag!"
               placeholderTextColor="#888"
               multiline
               value={hashtag}
-              onContentSizeChange={(event) => setInputHeight(event.nativeEvent.contentSize.height)}
+              // onContentSizeChange={(event) => setInputHeight(event.nativeEvent.contentSize.height)}
               onChangeText={handleHashtagChange}
               underlineColorAndroid="transparent"
             />
