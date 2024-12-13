@@ -217,7 +217,8 @@ const PostComponent = ({ title: initialTitle, content: initialContent, hashtag: 
               }]}
               placeholder="#Hashtag!"
               placeholderTextColor="#888"
-              multiline
+              multiline={false} // Không cho phép nhiều dòng
+              numberOfLines={1} // Hiển thị đúng 1 dòng
               value={hashtag}
               // onContentSizeChange={(event) => setInputHeight(event.nativeEvent.contentSize.height)}
               onChangeText={handleHashtagChange}
