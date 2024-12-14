@@ -1,12 +1,12 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import styles from '../../assets/style/PostStyle';
 import ToastModal from '../../components/Notification/NotificationModal';
 import ReportComponent from '../../components/Report/ReportComponent';
 import Screens from '../../navigation/Screens';
-import { INTERACTION_SCORE, LIKE_POST, UNLIKE_POST } from '../../services/ApiConfig';
+import { CHECK_POST, INTERACTION_SCORE, LIKE_POST, UNLIKE_POST } from '../../services/ApiConfig';
 // Import các hình ảnh
 import comment from '../../assets/images/comment.png';
 import grayComment from '../../assets/images/gray_comment.png';
@@ -21,6 +21,7 @@ import { TYPE_LIKE_POST } from '../../services/TypeNotify';
 import { timeAgo } from '../../utils/formatTime';
 import CrudPost from '../CrudPost/CrudPost';
 import RenderImage from '../Post/RenderImage';
+import axios from 'axios';
 const ProfilePosts = ({ data }) => {
   const navigation = useNavigation();
   const [userAll, setUserAll] = useState(data); // Chứa các bài viết
@@ -29,7 +30,7 @@ const ProfilePosts = ({ data }) => {
   const refEditDeleteSheet = useRef(); // Dùng cho showEditDeleteSheet
   const [likedPosts, setLikedPosts] = useState([]); // Lưu trạng thái các bài viết đã thích
   const [selectedPostId, setSelectedPostId] = useState(null); // ID bài viết được chọn để báo cáo
-  const { sendNotifySocket } = useContext(SocketContext);
+  const { sendNotifySocket, socket } = useContext(SocketContext);
   const { theme } = useContext(ThemeContext);
 
   const refRBSheet = useRef();
@@ -186,7 +187,7 @@ const ProfilePosts = ({ data }) => {
 
     if (post) {
 
-      console.log('hagtag:', post.postData.hashtag.hashtag_name);
+      // console.log('hagtag:', post.postData.hashtag.hashtag_name);
       return {
         title: post.postData.title,
         content: post.postData.content,
@@ -197,6 +198,25 @@ const ProfilePosts = ({ data }) => {
 
     return null; // Trả về null nếu không tìm thấy bài viết
   };
+
+  const handdleComment = async (postData) => {
+
+    const result = await axios.post(CHECK_POST, {
+      _id: postData._id
+    })
+
+    if (!result.data.success) {
+      ToastAndroid.show(result.data.message, ToastAndroid.SHORT);
+      return
+    }
+
+    if (result.data.isBlocked) {
+      ToastAndroid.show(result.data.message, ToastAndroid.SHORT);
+      return
+    }
+
+    navigation.navigate(Screens.Comment, { postId: postData._id })
+  }
 
 
 
@@ -265,9 +285,7 @@ const ProfilePosts = ({ data }) => {
                     </View>
 
                     <View style={styles.iconLike}>
-                      <TouchableOpacity onPress={() => {
-                        navigation.navigate(Screens.Comment, { postId: item.postData._id })
-                      }}>
+                      <TouchableOpacity onPress={() => handdleComment(item.postData)}>
                         <Image source={theme ? comment : grayComment} style={styles.iconImage} />
                       </TouchableOpacity>
                       <Text style={styles.metaText}>{item.postData.comment_count}</Text>
@@ -334,8 +352,28 @@ const ProfilePosts = ({ data }) => {
             setSelectedPostId(null);
             refEditDeleteSheet.current.close(); // Đóng sheet khi xóa thành công
           }}
-          onUpdateSuccess={() => {
-            refEditDeleteSheet.current.close(); // Đóng sheet khi sửa thành công
+          onUpdateSuccess={(data) => {
+            // Cập nhật lại mảng userAll với dữ liệu mới
+            const updatedArray = userAll.map((item) =>
+              item.postData._id === data._id
+                ? {
+                  ...item,
+                  postData: {
+                    ...item.postData, // Giữ nguyên các trường khác
+                    title: data.title, // Cập nhật title
+                    content: data.content, // Cập nhật content
+                    image: data.image, // Cập nhật image
+                  },
+                }
+                : item
+            );
+            // console.log(userAll);
+            // console.log(updatedArray);
+            // Cập nhật lại state
+            setUserAll(updatedArray);
+
+            // Đóng sheet khi sửa thành công
+            refEditDeleteSheet.current.close();
           }}
           existingPost={getExistingPost(selectedPostId)} // Gọi hàm để lấy dữ liệu bài viết
         />

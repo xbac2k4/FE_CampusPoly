@@ -107,7 +107,7 @@ const HelpCenterScreen = ({ navigation }) => {
               <TouchableOpacity
                 onPress={() => {
                   {/**Sử lí chuyển màn sang màn giới thiệu */ }
-                  // navigation.navigate(Screens.Introduce)
+                  navigation.navigate(Screens.Introduce)
                 }}
               >
                 <Text style={[styles.footerText, {

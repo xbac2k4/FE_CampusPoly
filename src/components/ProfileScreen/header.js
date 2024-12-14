@@ -44,11 +44,7 @@ const Header = ({ data, navigation }) => {
         <Text style={[styles.name, {
           color: theme ? '#fff' : Colors.background,
         }]}>{data?.full_name}</Text>
-        <TouchableOpacity style={[styles.circleIcon, {
-          backgroundColor: theme ? '#333' : '#fff',
-        }]} onPress={() => { /* handle icon press */ }}>
-          <Icon name="mail-outline" size={15} color={theme ? '#fff' : Colors.background} />
-        </TouchableOpacity>
+        
       </View>
       <Text style={{
         ...styles.bio,

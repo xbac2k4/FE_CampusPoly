@@ -23,32 +23,28 @@ import { ThemeContext } from '../../services/provider/ThemeContext';
 import Colors from '../../constants/Color';
 import grayHeart from '../../assets/images/gray_heart.png';
 const { width: screenWidth } = Dimensions.get('window'); // Lấy chiều rộng màn hình để điều chỉnh kích thước hình ảnh
-const CommentScreen = () => {
-  const route = useRoute();
+const CommentScreen = ({ navigation, route }) => {
 
   const { postId } = route.params;/// ID của  bài viết
-  const navigation = useNavigation();
   const [post, setPost] = useState(null);
   const [comment, setComment] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isLiked, setIsLiked] = useState();
-  const [isBookmark, setIsBookmark] = useState(false);
   const [likedPosts, setLikedPosts] = useState(); // Lưu trạng thái các bài viết đã thích
   const [activeImageIndex, setActiveImageIndex] = useState({}); // Quản lý chỉ số ảnh đang hiển thị cho mỗi bài có nhiều ảnh
-  const [selectedPostId, setSelectedPostId] = useState(null); // ID bài viết được chọn để báo cáo
+  // const [selectedPostId, setSelectedPostId] = useState(null); // ID bài viết được chọn để báo cáo
   const { sendNotifySocket, socket } = useContext(SocketContext);
 
-  const refRBSheet = useRef();
 
-  const { theme, toggleTheme } = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
 
   // console.log(user);
 
   {/** Sử lí cái thông báo  */ }
-  const handleReportSuccess = () => {
-    refRBSheet.current.close(); // Close the RBSheet when the report is successful
-  };
+  // const handleReportSuccess = () => {
+  //   refRBSheet.current.close(); // Close the RBSheet when the report is successful
+  // };
   const { user } = useContext(UserContext);
   const fetchPostById = async () => {
     try {
@@ -61,16 +57,19 @@ const CommentScreen = () => {
 
 
       const data = await response.json();
+
+      // console.log("Fetched post data:", data);
+
       setPost(data.data);
       if (data?.data?.likeData.some((like) => like.user_id_like._id === user._id)) {
         setIsLiked(true)
       } else {
         setIsLiked(false)
       }
-      setComment(data.data.commentData);
+
+
+      setComment(data?.data?.commentData);
       setLoading(false);
-      // console.log(data.data.commentData);
-      // console.log(data.data.likeData);
 
 
     } catch (error) {
@@ -79,6 +78,7 @@ const CommentScreen = () => {
       setLoading(false);
     }
   };
+
   const fetchInteractionScore = async (user_id, hashtag_id, score) => {
     const response = await fetch(INTERACTION_SCORE, {
       method: 'POST',
@@ -216,64 +216,10 @@ const CommentScreen = () => {
     }
   };
 
-  // if (loading) {
-  //   return <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 20 }} />;
-  //   // return <CommentLoading/>
-  // }
-
   if (error) {
     return <Text style={styles.errorText}>Error loading post: {error.message}</Text>;
   }
 
-  // if (!post) {
-  //   return <Text style={styles.errorText}>No post found</Text>;
-  // }
-
-  const renderImages = (images, postId) => {
-    // console.log(images);
-
-    if (!images || images.length === 0) return null; // Handle cases where image is missing
-
-    if (images.length === 1) {
-      const imageUrl = images[0].replace('localhost', '10.0.2.2');
-      return imageUrl ? (
-        <Image source={{ uri: imageUrl }} style={styles.postImage} />
-      ) : null;
-    }
-
-    return (
-      <>
-        <ScrollView
-          horizontal
-          pagingEnabled
-          style={styles.imageList}
-          showsHorizontalScrollIndicator={false}
-          onScroll={(event) => {
-            const index = Math.round(event.nativeEvent.contentOffset.x / screenWidth);
-            setActiveImageIndex((prevState) => ({
-              ...prevState,
-              [postId]: index,
-            }));
-          }}
-        >
-          {images.map((image, index) => (
-            <Image key={index} source={{ uri: image.replace('localhost', '10.0.2.2') || 'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1706867365.jpg' }} style={styles.postImage} />
-          ))}
-        </ScrollView>
-        <View style={styles.paginationContainer}>
-          {images.map((_, index) => (
-            <View
-              key={index}
-              style={[
-                styles.paginationDot,
-                activeImageIndex[postId] === index ? styles.activeDot : styles.inactiveDot,
-              ]}
-            />
-          ))}
-        </View>
-      </>
-    );
-  };
 
   return (
     <View style={{ flex: 1, backgroundColor: theme ? '#181A1C' : '#fff' }}>
@@ -313,7 +259,7 @@ const CommentScreen = () => {
 
                     <Text style={{ fontWeight: 'semibold', fontSize: 14, fontFamily: "HankenGrotesk-Regular", color: theme ? '#fff' : Colors.background }}>{post?.postData?.user_id?.full_name}</Text>
 
-                    <Text style={{ fontSize: 12, fontFamily: 'HankenGrotesk-Regular', fontWeight: "medium", color: '#727477' }}>{timeAgo(post.postData.createdAt)}</Text>
+                    <Text style={{ fontSize: 12, fontFamily: 'HankenGrotesk-Regular', fontWeight: "medium", color: '#727477' }}>{timeAgo(post?.postData?.createdAt)}</Text>
                   </View>
                 </TouchableOpacity>
               </View>
@@ -329,16 +275,19 @@ const CommentScreen = () => {
                 {post?.postData?.content}
               </Text>
               {post?.postData?.hashtag?.hashtag_name ? (
-                <Text style={{ fontFamily: 'rgl1', fontSize: 16, fontWeight: '700', color: "#0078D4", marginTop: 10, paddingHorizontal: 10, }}>
+                <Text style={{ fontFamily: 'rgl1', fontSize: 16, fontWeight: '700', color: "#0078D4", marginTop: 10, paddingHorizontal: 10, paddingBottom: 13}}>
                   {post.postData.hashtag.hashtag_name}
                 </Text>
               ) : null}
 
-              {post?.postData?.image && <RenderImage images={post?.postData?.image} subStyle={
-                {
-                  bottom: -33
-                }
-              } />}
+              {post?.postData?.image && post?.postData?.image.length > 0 && (
+                <RenderImage
+                  images={post?.postData?.image.map(img =>
+                    img.includes('localhost') ? img.replace('localhost', '10.0.2.2') : img // Thay localhost thành 10.0.2.2 hoặc giữ nguyên nếu không phải localhost
+                  )}
+                  subStyle={{ bottom: -33 }}
+                />
+              )}
             </View>
 
             <View style={styles.interactContainer}>
@@ -355,7 +304,7 @@ const CommentScreen = () => {
                       style={{ width: 20, height: 20, marginLeft: 3 }}
                     />
                   </TouchableOpacity>
-                  <Text style={[styles.textInteract,{
+                  <Text style={[styles.textInteract, {
                     color: theme ? '#fff' : Colors.background
                   }]}>{post?.postData?.like_count}</Text>
                 </View>
@@ -363,7 +312,7 @@ const CommentScreen = () => {
                   <TouchableOpacity onPress={() => { /* Xử lý nút comment */ }}>
                     <Image source={theme ? commentIcon : grayComment} resizeMode='contain' style={{ width: 20, height: 20, marginLeft: 3 }} />
                   </TouchableOpacity>
-                  <Text style={[styles.textInteract,{
+                  <Text style={[styles.textInteract, {
                     color: theme ? '#fff' : Colors.background
                   }]}>{post?.postData?.comment_count}</Text>
                 </View>
@@ -376,7 +325,7 @@ const CommentScreen = () => {
                 : <Text style={[styles.commentTitle, {
                   color: theme ? '#ECEBED' : '#000'
                 }]}>
-                  COMMENTS (<Text>{comment.length}</Text>)
+                  COMMENTS (<Text>{comment?.length}</Text>)
                 </Text>
               }
 
@@ -423,31 +372,6 @@ const CommentScreen = () => {
           socket.emit('user_comment_post', { postId: post?.postData?._id });
           fetchInteractionScore(user._id, post?.postData?.hashtag._id, 2);
         }} style={styles.commentInput} />
-      {/* Bottom Sheet */}
-      <RBSheet
-        ref={refRBSheet}
-        height={250}
-        openDuration={300}
-        closeDuration={250}
-        closeOnDragDown={true} // Cho phép kéo xuống để đóng
-        closeOnPressMask={true} // Cho phép đóng khi bấm ra ngoài
-
-        customStyles={{
-          wrapper: {
-            backgroundColor: 'rgba(0, 0, 0, 0.3)',
-          },
-          draggableIcon: {
-            backgroundColor: '#ffff',
-          },
-
-        }}
-      >
-        <ReportComponent
-          postId={selectedPostId}  // Pass selectedPostId here
-          onReportSuccess={handleReportSuccess}
-        />
-
-      </RBSheet>
     </View>
 
 

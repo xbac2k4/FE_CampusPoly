@@ -10,6 +10,7 @@ import { SocketContext } from '../../services/provider/SocketContext';
 import { UserContext } from '../../services/provider/UseContext';
 import { TYPE_CREATE_POST } from '../../services/TypeNotify';
 import { ThemeContext } from '../../services/provider/ThemeContext';
+import Snackbar from 'react-native-snackbar';
 
 const CreatePostScreen = ({ navigation }) => {
   const [title, setTitle] = useState('');
@@ -36,7 +37,6 @@ const CreatePostScreen = ({ navigation }) => {
     "địt",
     "dit",
     "đụ",
-    "du",
     "đéo",
     "deo",
     "đcm",
@@ -100,7 +100,11 @@ const CreatePostScreen = ({ navigation }) => {
     "mày hả",
     "may ha",
     "đm",
-    "dm"
+    "dm",
+    'parky',
+    'parkyvn',
+    'namki',
+    'namkiki',
   ];
 
   const containsForbiddenWords = (title, content) => {
@@ -151,9 +155,8 @@ const CreatePostScreen = ({ navigation }) => {
         throw new Error('Failed to publish post!');
       }
       const post = await response.json();
-      // console.log('API response:', post.data);
       if (post.status === 200) {
-        navigation.navigate(Screens.Home)
+        navigation.navigate(Screens.Home, { from: Screens.CreatePost });
         await sendNotificationToMultipleSocket(user.full_name, user._id, 'đã đăng bài viết mới', userFriend, TYPE_CREATE_POST, post?.data?._id);
       }
       ToastAndroid.show("Đăng thành công", ToastAndroid.SHORT);
@@ -169,19 +172,19 @@ const CreatePostScreen = ({ navigation }) => {
       // Kiểm tra từ cấm trong title và content
       if (containsForbiddenWords(title, content)) {
         setLoading(false);
-      Snackbar.show({
-        text: 'Bài đăng chứa từ ngữ vi phạm. Vui lòng chỉnh sửa trước khi đăng.',
-        duration: Snackbar.LENGTH_INDEFINITE, // Snackbar sẽ không tự động tắt
-        action: {
-          text: 'OK',
-          textColor: '#FF6347',
-          onPress: () => {
-            // Hành động khi nhấn OK
-            console.log('Snackbar dismissed');
+        Snackbar.show({
+          text: 'Bài đăng chứa từ ngữ vi phạm. Vui lòng chỉnh sửa trước khi đăng.',
+          duration: Snackbar.LENGTH_INDEFINITE, // Snackbar sẽ không tự động tắt
+          action: {
+            text: 'OK',
+            textColor: '#FF6347',
+            onPress: () => {
+              // Hành động khi nhấn OK
+              console.log('Snackbar dismissed');
+            },
           },
-        },
-      });
-      return;
+        });
+        return;
       }
 
       const formData = new FormData();

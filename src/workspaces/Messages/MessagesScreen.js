@@ -19,7 +19,9 @@ const MessageScreen = ({ navigation }) => {
   const [users, setUsers] = useState();
   const [friends, setFriends] = useState();
   const [loading, setLoading] = useState(true)
-  const {theme} = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
+  const [searchText, setSearchText] = useState('');
+  const [filteredFriends, setFilteredFriends] = useState(friends);
 
   const FetchConversation = async (id) => {
     try {
@@ -143,7 +145,7 @@ const MessageScreen = ({ navigation }) => {
         />
         {isUserOnline && <View style={styles.onlineDot} />}
         <Text style={[styles.pinnedUserName, {
-          color : theme? '#fff' : Colors.background
+          color: theme ? '#fff' : Colors.background
         }]} numberOfLines={1}>
           {firstFilteredUser.full_name}
         </Text>
@@ -205,22 +207,24 @@ const MessageScreen = ({ navigation }) => {
         <Image source={{ uri: avatarUrl }} style={styles.messageAvatar} />
         {isUserOnline && <View style={styles.onlineDotConversation} />}
         <View style={styles.messageContent}>
-          <Text style={[styles.messageName,{
-            color :theme ? '#fff' : Colors.background
+          <Text style={[styles.messageName, {
+            color: theme ? '#fff' : Colors.background
           }]}>{memberWithDifferentUserId.full_name}</Text>
           {
             item?.sender?._id !== user._id ? (
               <Text style={{
                 ...styles.messageText,
-                fontWeight: item?.viewed  ? 'normal' : 'bold',
-                color: item?.viewed  ? '#888' : theme? '#fff': Colors.background 
-              }}>{last_message}</Text>
+                fontWeight: item?.viewed ? 'normal' : 'bold',
+                color: item?.viewed ? '#888' : theme ? '#fff' : Colors.background
+              }} numberOfLines={1}
+                ellipsizeMode="tail">{last_message}</Text>
             ) : (
               <Text style={{
                 ...styles.messageText,
                 fontWeight: 'normal',
                 color: '#888',
-              }}>{last_message}</Text>
+              }} numberOfLines={1}
+                ellipsizeMode="tail">{last_message}</Text>
             )
           }
         </View>
@@ -232,8 +236,8 @@ const MessageScreen = ({ navigation }) => {
           {
             item?.sender?._id !== user._id ? (
               <Text style={{
-                fontWeight: item?.viewed  ? 'normal' : 'bold',
-                color: item?.viewed  ? '#888' : theme? '#fff': Colors.background  ,
+                fontWeight: item?.viewed ? 'normal' : 'bold',
+                color: item?.viewed ? '#888' : theme ? '#fff' : Colors.background,
               }}>{timeAgo(item?.last_message_time)}</Text>
             ) : (
               <Text style={{
@@ -277,31 +281,32 @@ const MessageScreen = ({ navigation }) => {
 
   return (
     <View style={[styles.container, {
-    backgroundColor: theme? Colors.background: Colors.light,
+      backgroundColor: theme ? Colors.background : Colors.light,
     }]}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => {
           navigation.goBack()
         }}>
-          <Icon name="arrow-back" size={24} color={theme? '#fff': Colors.background } />
+          <Icon name="arrow-back" size={24} color={theme ? '#fff' : Colors.background} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle,{
-          color:theme? '#fff': Colors.background 
+        <Text style={[styles.headerTitle, {
+          color: theme ? '#fff' : Colors.background
         }]}>Tin nhắn</Text>
         <TouchableOpacity>
-          <Icon name="settings-outline" size={24} color={theme? '#fff': Colors.background } />
+          <Icon name="settings-outline" size={24} color={theme ? '#fff' : Colors.background} />
         </TouchableOpacity>
       </View>
       {/* Search Bar */}
-      <View style={[styles.searchContainer,{
+      <View style={[styles.searchContainer, {
         backgroundColor: theme ? '#3B3B3B' : '#ECEBED',
-      }]}>
+      }]} onPress={() => navigation.navigate('MessageSearch')}>
         <TextInput
-          style={[styles.searchInput,{
+          style={[styles.searchInput, {
             color: theme ? '#ECEBED' : Colors.background,
           }]}
           placeholder="Tìm kiếm"
           placeholderTextColor="#999"
+          editable={false}
         />
         <Icon name="search" size={20} color="#999" style={styles.searchIcon} />
       </View>

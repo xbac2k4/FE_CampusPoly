@@ -345,18 +345,20 @@ const ChatScreen = ({ navigation, route }) => {
           backgroundColor : theme? '#323436' : '#ECEBED'
         }]}>
           {/* Nút thêm camera */}
-          <TouchableOpacity style={{ padding: 3 }} onPress={handleCamera} >
+          <TouchableOpacity style={{ padding: 3 }}  >
             <Feather name="camera" size={24} color="#727477" />
           </TouchableOpacity>
           <TextInput
-            style={styles.input}
+            style={[styles.input,{
+              color : theme? '#fff' : Colors.background
+            }]}
             placeholder="Nhập tin nhắn của bạn ở đây..."
             placeholderTextColor= {theme? '#ECEBED' : Colors.background}
             value={inputText}
             onChangeText={setInputText}
           />
           {/* Nút thêm file */}
-          <TouchableOpacity style={{ marginRight: 8 }} onPress={handlePlus}>
+          <TouchableOpacity style={{ marginRight: 8 }}>
             <AntDesign name="plus" size={24} color="#727477" />
           </TouchableOpacity>
           {/* Nút gửi tin nhắn hoặc nút thích */}

@@ -5,12 +5,14 @@ import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react
 import NotificationModal from '../../components/Notification/NotificationModal';
 import Colors from '../../constants/Color';
 import Screens from '../../navigation/Screens';
-import { GET_NOTIFICATIONS_BY_USERID, GET_POST_ID, READ_ALL_NOTIFICATION, READ_NOTIFICATION } from '../../services/ApiConfig';
+import { DELETE_NOTIFICATION, GET_NOTIFICATIONS_BY_USERID, GET_POST_ID, READ_ALL_NOTIFICATION, READ_NOTIFICATION } from '../../services/ApiConfig';
 import { SocketContext } from '../../services/provider/SocketContext';
 import { UserContext } from '../../services/provider/UseContext';
 import { TYPE_ADD_FRIEND, TYPE_COMMENT_POST, TYPE_CREATE_POST, TYPE_LIKE_POST } from '../../services/TypeNotify';
 import NotificationLoading from '../../components/Loading/NotificationLoading';
 import { ThemeContext } from '../../services/provider/ThemeContext';
+import { Swipeable } from 'react-native-gesture-handler';
+import Feather from 'react-native-vector-icons/Feather';
 
 const NotificationScreen = ({ navigation }) => {
   const [notifications, setNotifications] = useState([]);
@@ -31,7 +33,7 @@ const NotificationScreen = ({ navigation }) => {
         throw new Error('Lỗi khi lấy thông báo');
       }
 
-      setNotifications(result.data.notifications);
+      setNotifications(result.data.notifications.sort((a, b) => new Date(b.sentTime) - new Date(a.sentTime)));
     } catch (e) {
       console.error('Error fetching notifications:', e);
     } finally {
@@ -59,10 +61,8 @@ const NotificationScreen = ({ navigation }) => {
 
   useFocusEffect(
     useCallback(() => {
-      // fetchNotifications();
       if (socket) {
         socket.on('load_notification', () => {
-          // console.log('12345555');
           fetchNotifications();
         })
       }
@@ -74,22 +74,17 @@ const NotificationScreen = ({ navigation }) => {
 
   const handleMarkAllAsRead = async () => {
     try {
-      setLoading(true);
-      // console.log("id: ", user._id);
 
-      const result = axios.put(`${READ_ALL_NOTIFICATION}`, {
+      const result = await axios.put(`${READ_ALL_NOTIFICATION}`, {
         receiver_id: user._id
       });
 
-      // console.log(result);
+      if (result.data.success) {
+        await fetchNotifications();
+      }
 
     } catch (error) {
       console.log(error);
-
-    }
-    finally {
-      await fetchNotifications();
-      setLoading(false);
     }
   };
   const fetchPostById = async (postId) => {
@@ -122,6 +117,34 @@ const NotificationScreen = ({ navigation }) => {
     }
   }
 
+  const deleteNotification = async (notificationId) => {
+    try {
+      const result = await axios.delete(DELETE_NOTIFICATION, {
+        data: {
+          notificationId
+        }
+      });
+      if (result.data.success) {
+        setNotifications(notifications.filter((notification) => notification._id !== notificationId));
+      }
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const renderActions = (id) => (
+    <TouchableOpacity onPress={() => deleteNotification(id)} style={{
+      backgroundColor: 'red',
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: 100,
+      height: '100%',
+    }}>
+      <Feather name="trash" size={30} color="white" />
+    </TouchableOpacity>
+  );
+
   const renderItem = ({ item }) => {
     const sentTime = new Date(item.sentTime);
     const currentTime = new Date();
@@ -142,53 +165,61 @@ const NotificationScreen = ({ navigation }) => {
       });
 
 
+
+
+
     return (
-      <TouchableOpacity
-        onPress={() => {
-          try {
-            axios.put(`${READ_NOTIFICATION}`, {
-              notificationId: item._id
-            })
-              .then((result) => {
-                if (result?.data?.data?.type === TYPE_ADD_FRIEND) {
-                  navigation.navigate(Screens.Profile, { id: result?.data?.data?.sender_id });
-                } if (result?.data?.data?.type === TYPE_LIKE_POST) {
-                  openModal(result?.data?.data?.post_id);
-                } if (result?.data?.data?.type === TYPE_COMMENT_POST) {
-                  openModal(result?.data?.data?.post_id);
-                } if (result?.data?.data?.type === TYPE_CREATE_POST) {
-                  openModal(result?.data?.data?.post_id);
-                }
+      <Swipeable renderRightActions={() => renderActions(item._id)}
+        renderLeftActions={() => renderActions(item._id)}
+      >
+        <TouchableOpacity
+          onPress={() => {
+            try {
+              axios.put(`${READ_NOTIFICATION}`, {
+                notificationId: item._id
               })
-              .catch((error) => {
-                console.log(error);
-              });
-          } catch (error) {
-            console.log(error);
-          }
-        }}
-        style={[styles.notificationItem, {
-          backgroundColor: item.isRead
-            ? theme
-              ? Colors.background
-              : '#f3f4f8'
-            : theme ? '#3A3A3C' : '#ccc',
-        }]}>
-        <Image
-          source={{ uri: item.imageUrl }}
-          style={styles.icon}
-          borderRadius={20}
-        />
-        <View style={styles.notificationContent}>
-          <Text style={[styles.boldText, {
-            color: theme ? '#fff' : Colors.background,
-          }]}>{item.title}</Text>
-          <Text style={[styles.notificationText, {
-            color: theme ? '#fff' : Colors.background,
-          }]}>{item.body}</Text>
-          <Text style={styles.timeText}>{time}</Text>
-        </View>
-      </TouchableOpacity>
+                .then((result) => {
+                  if (result?.data?.data?.type === TYPE_ADD_FRIEND) {
+                    navigation.navigate(Screens.Profile, { id: result?.data?.data?.sender_id });
+                  } if (result?.data?.data?.type === TYPE_LIKE_POST) {
+                    openModal(result?.data?.data?.post_id);
+                  } if (result?.data?.data?.type === TYPE_COMMENT_POST) {
+                    openModal(result?.data?.data?.post_id);
+                  } if (result?.data?.data?.type === TYPE_CREATE_POST) {
+                    openModal(result?.data?.data?.post_id);
+                  }
+                })
+                .catch((error) => {
+                  console.log(error);
+                });
+            } catch (error) {
+              console.log(error);
+            }
+          }}
+          style={[styles.notificationItem, {
+            backgroundColor: item.isRead
+              ? theme
+                ? Colors.background
+                : '#f3f4f8'
+              : theme ? '#3A3A3C' : '#ccc',
+          }]}>
+          <Image
+            source={{ uri: item.imageUrl.replace('localhost', '10.0.2.2') }}
+            style={styles.icon}
+            borderRadius={20}
+          />
+          <View style={styles.notificationContent}>
+            <Text style={[styles.boldText, {
+              color: theme ? '#fff' : Colors.background,
+            }]}>{item.title}</Text>
+            <Text style={[styles.notificationText, {
+              color: theme ? '#fff' : Colors.background,
+            }]}>{item.body}</Text>
+            <Text style={styles.timeText}>{time}</Text>
+          </View>
+        </TouchableOpacity>
+      </Swipeable>
+
     );
   };
 
@@ -209,7 +240,7 @@ const NotificationScreen = ({ navigation }) => {
         :
         <>
           <FlatList
-            data={notifications.reverse()}
+            data={notifications}
             keyExtractor={(item) => item._id}
             renderItem={renderItem}
             ItemSeparatorComponent={() => <View style={styles.separator} />}
