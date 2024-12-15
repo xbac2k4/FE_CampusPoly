@@ -95,7 +95,7 @@ const MenuScreen = () => {
                 source={require('../../assets/images/friend.png')}
                 style={styles.imgGrid}
               />
-              <Text style={[styles.navText,{
+              <Text style={[styles.navText, {
                 color: theme ? '#fff' : Colors.background,
               }]}>Bạn bè</Text>
             </TouchableOpacity>
@@ -106,7 +106,7 @@ const MenuScreen = () => {
               navigation.navigate(Screens.Message)
             }}>
               <AntDesign name="message1" size={width * 0.06} color="#ff7d97" />
-              <Text style={[[styles.navText,{
+              <Text style={[[styles.navText, {
                 color: theme ? '#fff' : Colors.background,
               }], { marginTop: 10 }]}>Tin nhắn</Text>
             </TouchableOpacity>
@@ -148,7 +148,7 @@ const MenuScreen = () => {
           }}
         />
 
-        <TouchableOpacity style={{
+        <TouchableOpacity onPress={toggleTheme} style={{
           alignItems: 'center',
           borderRadius: 10,
           padding: 12,

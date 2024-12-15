@@ -139,7 +139,7 @@ const CommentScreen = ({ navigation, route }) => {
   };
 
   const toggleLike = async (item) => {
-    console.log(item);
+    // console.log(item);
     const userId = user._id;
 
     try {
