@@ -28,7 +28,7 @@ const HelpCenterScreen = ({ navigation }) => {
           <View style={styles.barHeader}>
             <Text style={[styles.textHeader, {
               color: theme ? '#ECEBED' : Colors.background,
-            }]}>CampusPoly Trung tâm hộ trợ</Text>
+            }]}>CampusPoly Trung tâm hỗ trợ</Text>
             <View style={{ height: 2, backgroundColor: '#fff' }} />
           </View>
         </View>
