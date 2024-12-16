@@ -112,19 +112,19 @@ async function onDisplayNotification(remoteMessage) {
 //     }
 //   }
 // });
-// async function onBackgroundEvent({ type, detail }) {
-//   switch (type) {
-//     case EventType.DISMISSED:
-//       console.log('Notification dismissed');
-//       break;
-//     case EventType.PRESS:
-//       navigation.navigate('NotificationScreen');
-//       break;
-//   }
-// }
+async function onBackgroundEvent({ type, detail }) {
+  switch (type) {
+    case EventType.DISMISSED:
+      console.log('Bạn đã xóa thông báo');
+      break;
+    case EventType.PRESS:
+      console.log('Bạn đã nhấn vào thông báo');
+      break;
+  }
+}
 
-// // Đăng ký sự kiện nền
-// notifee.onBackgroundEvent(onBackgroundEvent);
+// Đăng ký sự kiện nền
+notifee.onBackgroundEvent(onBackgroundEvent);
 
-// // Đăng ký sự kiện foreground
-// notifee.onForegroundEvent(onBackgroundEvent);
+// Đăng ký sự kiện foreground
+notifee.onForegroundEvent(onBackgroundEvent);
